@@ -18,11 +18,14 @@
 ```text
 2026-hk-quant-trading-competition/
 ├── README.md
+├── rules.md
 ├── rules.pdf
 └── competition-analysis.md
 ```
 
 `rules.pdf` 是比赛原始规则文件。
+
+`rules.md` 是根据原始 PDF 整理的 Markdown 版本，保留了主要标题、编号、列表、表格和计算公式，便于搜索、引用和版本管理。
 
 `competition-analysis.md` 是根据规则、公开资料和相关讨论整理的分析文档，内容涵盖赛事背景、账户结构、评分方式、策略选择和全球股票市场指数增强方案。
 
