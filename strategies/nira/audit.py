@@ -48,6 +48,31 @@ def audit_forward_alignment(
     )
 
 
+@dataclass(frozen=True, slots=True)
+class FeatureCutoffAudit:
+    feature_after_signal_count: int
+    label_not_after_signal_count: int
+
+    @property
+    def passed(self) -> bool:
+        return self.feature_after_signal_count == 0 and self.label_not_after_signal_count == 0
+
+
+def audit_feature_cutoff(signal_dates, feature_dates, label_dates) -> FeatureCutoffAudit:
+    signals = list(signal_dates)
+    features = list(feature_dates)
+    labels = list(label_dates)
+    if not (len(signals) == len(features) == len(labels)):
+        raise ValueError("signal, feature and label date sequences must have equal length")
+    signal_values = [_as_date(value) for value in signals]
+    feature_values = [_as_date(value) for value in features]
+    label_values = [_as_date(value) for value in labels]
+    return FeatureCutoffAudit(
+        feature_after_signal_count=sum(feature > signal for feature, signal in zip(feature_values, signal_values)),
+        label_not_after_signal_count=sum(label <= signal for label, signal in zip(label_values, signal_values)),
+    )
+
+
 def _as_date(value: date | datetime | str) -> date:
     if isinstance(value, datetime):
         return value.date()
