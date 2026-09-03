@@ -4,3 +4,6 @@ __pycache__/
 .pytest-tmp*/
 .venv/
 *.egg-info/
+.env.local
+*.env
+runs/*
