@@ -24,15 +24,16 @@ targets.json → OrderIntent → BrokerCommand → OrderEvent / Fill → Project
 
 ## Agent 协作流程
 
-所有代码或文档改动必须遵循 worktree-first：
+所有代码或文档改动必须遵循以下 worktree-first、PR-first 流程：
 
-1. 从 `origin/main` 创建独立 worktree 和功能分支。
-2. 一个 Agent 只负责一个清晰、可验收的任务。
-3. 不允许多个 Agent 同时修改同一组核心文件。
-4. 新功能必须先写失败测试，再写最小实现。
-5. 完成本地测试、静态检查和安全检查后提交。
-6. 推送功能分支并创建 PR，review 后合并到 `main`。
-7. 合并后删除远端分支、本地分支和 worktree。
+1. 先确认当前 checkout 的状态；不得直接在 `main` 上开始任务。
+2. 从 `origin/main` 创建独立 worktree 和功能分支；worktree 放在项目的 `.worktrees/` 下，并确保该目录被 `.gitignore` 忽略。
+3. 一个 Agent 只负责一个清晰、可验收的任务；并行 Agent 必须拥有不同 worktree、分支和不重叠的核心文件集合。
+4. 新功能必须先写失败测试，再写最小实现；共享契约、配置、迁移和执行核心存在依赖时必须串行。
+5. 在功能 worktree 内完成测试、静态检查、安全检查和人工审阅；不得把未验证的改动直接带回 `main`。
+6. 在功能分支提交并推送，创建 PR；PR 必须经过 review 和 CI 检查后，才允许合并到 `main`。
+7. 合并后确认 `main` 测试通过，再删除远端功能分支、本地功能分支和对应 worktree。
+8. 清理完成后检查 `git worktree list`、`git branch -a` 和 `git status --short --branch`，确保没有残留分支、worktree 或未提交改动。
 
 推荐分支命名：`feat/*`、`fix/*`、`chore/*`、`docs/*`。
 
