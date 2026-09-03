@@ -9,16 +9,19 @@ import re
 
 
 class Market(str, Enum):
+    HK = "HK"
     JP = "JP"
     US = "US"
 
 
 class Exchange(str, Enum):
+    SEHK = "SEHK"
     TSEJ = "TSEJ"
     SMART = "SMART"
 
 
 class Currency(str, Enum):
+    HKD = "HKD"
     JPY = "JPY"
     USD = "USD"
 
@@ -55,6 +58,7 @@ _SYMBOL_RE = re.compile(r"^(?P<code>[A-Z0-9]{1,12})\.(?P<suffix>[A-Z]+)$")
 # caller can still explicitly pass ``asset_class=ETF`` for another ETF while
 # its exchange-specific metadata is added later.
 _JP_UNIT_LOT_ETFS = frozenset({"1306", "1320", "1321", "1348", "2558", "2568", "2569"})
+_HK_BASELINE_LOTS = {"0700": Decimal("100")}
 
 
 def normalize_symbol(
@@ -107,6 +111,23 @@ def normalize_symbol(
             currency=Currency.USD,
             asset_class=resolved_class,
             lot_size=Decimal("1"),
+        )
+
+    if suffix == "HK":
+        resolved_class = requested_class or AssetClass.EQUITY
+        if resolved_class not in (AssetClass.EQUITY, AssetClass.ETF):
+            raise SymbolError(f"unsupported Hong Kong asset class: {resolved_class.value}")
+        return InstrumentSpec(
+            symbol=canonical,
+            code=code,
+            market=Market.HK,
+            exchange=Exchange.SEHK,
+            currency=Currency.HKD,
+            asset_class=resolved_class,
+            # HK lot sizes vary by instrument. This baseline is only a safe
+            # default for the initial candidate and must be replaced by the
+            # qualified IBKR contract metadata before submission.
+            lot_size=_HK_BASELINE_LOTS.get(code, Decimal("100")),
         )
 
     raise SymbolError(f"unsupported market suffix: .{suffix}")
