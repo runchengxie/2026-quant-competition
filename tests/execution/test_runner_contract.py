@@ -136,7 +136,53 @@ def test_runner_blocks_non_dry_run_until_a_real_adapter_is_installed() -> None:
     assert result.status == "blocked"
     assert result.submitted is False
     assert result.broker_call_attempted is False
-    assert "Task 4" in result.message
+    assert "configured broker adapter" in result.message
+
+
+def test_runner_submits_through_port_and_journals_intent(tmp_path) -> None:
+    class RecordingPort:
+        def __init__(self):
+            self.calls = []
+
+        def submit(self, candidates):
+            self.calls.append(candidates)
+
+    target_set = TargetSet.from_dict(
+        {
+            "schema_version": "1.0", "strategy_id": "japanese-nira", "market": "JP",
+            "as_of": "2026-09-03T00:00:00Z",
+            "targets": [{"symbol": "1321.T", "weight": "1.0", "quantity": "1"}],
+        }
+    )
+    port = RecordingPort()
+    runner = ExecutionRunner(RunnerSettings(), submission_port=port,
+                             journal_path=tmp_path / "events.jsonl", run_id="run-1")
+    result = runner.run(target_set)
+    assert result.status == "submitted"
+    assert result.submitted is True
+    assert result.broker_call_attempted is True
+    assert len(port.calls) == 1
+    assert runner.journal.read()[0]["kind"] == "order_submitted"
+
+
+def test_runner_reports_unknown_when_submission_raises_after_attempt(tmp_path) -> None:
+    class FailingPort:
+        def submit(self, candidates):
+            raise TimeoutError("connection lost after submit")
+
+    target_set = TargetSet.from_dict(
+        {
+            "schema_version": "1.0", "strategy_id": "japanese-nira", "market": "JP",
+            "as_of": "2026-09-03T00:00:00Z",
+            "targets": [{"symbol": "1321.T", "weight": "1.0", "quantity": "1"}],
+        }
+    )
+    runner = ExecutionRunner(RunnerSettings(), submission_port=FailingPort(),
+                             journal_path=tmp_path / "events.jsonl", run_id="run-2")
+    result = runner.run(target_set)
+    assert result.status == "unknown"
+    assert result.submitted is False
+    assert any(event["kind"] == "order_error" for event in runner.journal.read())
 
 
 def test_nautilus_dependency_is_optional_and_described_without_import_failure() -> None:
