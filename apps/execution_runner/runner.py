@@ -4,8 +4,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from decimal import Decimal
+from pathlib import Path
+from uuid import uuid4
 from typing import Protocol
 
+from packages.audit import EventJournal
 from packages.contracts import TargetSet
 
 from .config import RunnerSettings
@@ -50,9 +53,13 @@ class ExecutionRunner:
         settings: RunnerSettings,
         *,
         submission_port: SubmissionPort | None = None,
+        journal_path: str | Path | None = None,
+        run_id: str | None = None,
     ) -> None:
         self.settings = settings
         self.submission_port = submission_port
+        self.journal = EventJournal(journal_path) if journal_path is not None else EventJournal("runs/events.jsonl")
+        self.run_id = run_id or str(uuid4())
 
     def run(self, target_set: TargetSet) -> ExecutionRunResult:
         """Prepare execution candidates and return a safe, observable result."""
@@ -73,13 +80,34 @@ class ExecutionRunner:
                 candidates=candidates,
                 message="dry-run prepared candidates; no broker submission was attempted",
             )
+        if self.submission_port is not None:
+            event_id = str(uuid4())
+            self.journal.append({
+                "event_id": event_id, "kind": "order_submitted", "run_id": self.run_id,
+                "order_id": f"{self.run_id}:batch", "symbols": [item.symbol for item in candidates],
+            })
+            try:
+                self.submission_port.submit(candidates)
+            except Exception as exc:
+                self.journal.append({
+                    "event_id": str(uuid4()), "kind": "order_error", "run_id": self.run_id,
+                    "order_id": f"{self.run_id}:batch", "message": str(exc),
+                })
+                return ExecutionRunResult(
+                    status="unknown", submitted=False, broker_call_attempted=True,
+                    candidates=candidates,
+                    message="submission outcome is unknown; reconcile with broker before retrying",
+                )
+            return ExecutionRunResult(
+                status="submitted", submitted=True, broker_call_attempted=True,
+                candidates=candidates, message="submission request sent through the configured adapter",
+            )
         return ExecutionRunResult(
             status="blocked",
             submitted=False,
             broker_call_attempted=False,
             candidates=candidates,
             message=(
-                "external submission is unavailable until the Task 4 IBKR event "
-                "adapter, risk checks, and event journal are installed"
+                "external submission requires a configured broker adapter"
             ),
         )
