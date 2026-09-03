@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://competition.local/schemas/targets.schema.json",
+  "title": "Competition target set",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "strategy_id", "market", "as_of", "targets"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "strategy_id": {"type": "string", "minLength": 1},
+    "market": {"enum": ["JP", "US"]},
+    "as_of": {"type": "string", "format": "date-time"},
+    "targets": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["symbol", "weight"],
+        "properties": {
+          "symbol": {"type": "string", "minLength": 1},
+          "weight": {"type": "string", "pattern": "^(0|0\\.[0-9]+|1(?:\\.0+)?)$"},
+          "quantity": {"type": "string", "pattern": "^[0-9]+(?:\\.[0-9]+)?$"}
+        }
+      }
+    }
+  }
+}
