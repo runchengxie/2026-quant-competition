@@ -47,7 +47,11 @@ def contract_for_symbol(symbol: str) -> Any:
     """Build an ib_insync Stock contract without importing ib_insync in tests."""
 
     instrument = normalize_symbol(symbol)
-    primary_exchange = "TSEJ" if instrument.market.value == "JP" else "ARCA"
+    primary_exchange = {
+        "HK": "SEHK",
+        "JP": "TSEJ",
+        "US": "ARCA",
+    }[instrument.market.value]
     try:
         from ib_insync import Stock
     except ImportError:
@@ -116,6 +120,15 @@ class IBKRAdapter:
                 raise ValueError(f"quantity is required for {candidate.symbol}")
             contract = contract_for_symbol(candidate.symbol)
             order = self._market_order("BUY", candidate.quantity)
+            self.ib.placeOrder(contract, order)
+
+    def submit_intents(self, intents: tuple[Any, ...]) -> None:
+        """Submit pre-planned order intents without deciding portfolio deltas."""
+        if not self.allow_submission or self.ib is None:
+            raise RuntimeError("IBKR submission is disabled")
+        for intent in intents:
+            contract = contract_for_symbol(intent.symbol)
+            order = self._market_order(intent.side, intent.quantity)
             self.ib.placeOrder(contract, order)
 
     @staticmethod

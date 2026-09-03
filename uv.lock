@@ -26,6 +26,18 @@ wheels = [
 ]
 
 [[package]]
+name = "eventkit"
+version = "1.0.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/16/1e/0fac4e45d71ace143a2673ec642701c3cd16f833a0e77a57fa6a40472696/eventkit-1.0.3.tar.gz", hash = "sha256:99497f6f3c638a50ff7616f2f8cd887b18bbff3765dc1bd8681554db1467c933", size = 28320, upload-time = "2023-12-11T11:41:35.339Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/93/d9/7497d650b69b420e1a913329a843e16c715dac883750679240ef00a921e2/eventkit-1.0.3-py3-none-any.whl", hash = "sha256:0e199527a89aff9d195b9671ad45d2cc9f79ecda0900de8ecfb4c864d67ad6a2", size = 31837, upload-time = "2023-12-11T11:41:33.358Z" },
+]
+
+[[package]]
 name = "fsspec"
 version = "2026.2.0"
 source = { registry = "https://pypi.org/simple" }
@@ -40,6 +52,10 @@ version = "0.1.0"
 source = { editable = "." }
 
 [package.optional-dependencies]
+ibkr = [
+    { name = "ib-insync" },
+    { name = "tzdata" },
+]
 nautilus = [
     { name = "nautilus-trader" },
 ]
@@ -49,10 +65,25 @@ test = [
 
 [package.metadata]
 requires-dist = [
+    { name = "ib-insync", marker = "extra == 'ibkr'", specifier = ">=0.9.86" },
     { name = "nautilus-trader", marker = "extra == 'nautilus'", specifier = ">=1.0" },
     { name = "pytest", marker = "extra == 'test'", specifier = ">=8.0" },
+    { name = "tzdata", marker = "extra == 'ibkr'", specifier = ">=2024.1" },
 ]
-provides-extras = ["nautilus", "test"]
+provides-extras = ["nautilus", "test", "ibkr"]
+
+[[package]]
+name = "ib-insync"
+version = "0.9.86"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "eventkit" },
+    { name = "nest-asyncio" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/55/bb/733d5c81c8c2f54e90898afc7ff3a99f4d53619e6917c848833f9cc1ab56/ib_insync-0.9.86.tar.gz", hash = "sha256:73af602ca2463f260999970c5bd937b1c4325e383686eff301743a4de08d381e", size = 69859, upload-time = "2023-07-02T12:43:31.968Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/8f/f3/28ea87be30570f4d6b8fd24380d12fa74e59467ee003755e76aeb29082b8/ib_insync-0.9.86-py3-none-any.whl", hash = "sha256:a61fbe56ff405d93d211dad8238d7300de76dd6399eafc04c320470edec9a4a4", size = 72980, upload-time = "2023-07-02T12:43:29.928Z" },
+]
 
 [[package]]
 name = "iniconfig"
@@ -102,6 +133,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/24/04/caa9e6a138440d728ef63af23212cdaf02714c5072451d72dd2382c89c3c/nautilus_trader-1.231.0-cp312-cp312-manylinux_2_35_aarch64.whl", hash = "sha256:cae3d3b0dd26e88ce44b75d7696bd0193af62846c22cf6b19d93928643089b83", size = 170436061, upload-time = "2026-08-02T18:47:55.767Z" },
     { url = "https://files.pythonhosted.org/packages/06/16/8862b5ab63b81d21b3b12a138e8c64cd8702927973a2892cc1452aaf883c/nautilus_trader-1.231.0-cp312-cp312-manylinux_2_35_x86_64.whl", hash = "sha256:8c438e95c275a13df0c0ddb7012c462708b5e99ff3612e36a1b7bd49ab39c216", size = 189045623, upload-time = "2026-08-02T18:48:12.262Z" },
     { url = "https://files.pythonhosted.org/packages/cc/6b/9e9e55e75754c61ebeb8fe0e37997169a5d08fcb8849eb8fd245acb04d1c/nautilus_trader-1.231.0-cp312-cp312-win_amd64.whl", hash = "sha256:0697f51e9143f9d8d040f75d2e6a45218003cc34f7ea5b0eb2f9cda6935427de", size = 112750098, upload-time = "2026-08-02T18:48:23.525Z" },
+]
+
+[[package]]
+name = "nest-asyncio"
+version = "1.6.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/83/f8/51569ac65d696c8ecbee95938f89d4abf00f47d58d48f6fbabfe8f0baefe/nest_asyncio-1.6.0.tar.gz", hash = "sha256:6f172d5449aca15afd6c646851f4e31e02c598d553a667e38cafa997cfec55fe", size = 7418, upload-time = "2024-01-21T14:25:19.227Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a0/c4/c2971a3ba4c6103a3d10c4b0f24f461ddc027f0f09763220cf35ca1401b3/nest_asyncio-1.6.0-py3-none-any.whl", hash = "sha256:87af6efd6b5e897c81050477ef65c62e2b2f35d51703cae01aff2905b1852e1c", size = 5195, upload-time = "2024-01-21T14:25:17.223Z" },
 ]
 
 [[package]]
