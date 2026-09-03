@@ -1,6 +1,6 @@
 # 2026 Hong Kong Quantitative Trading Competition
 
-2026 年香港量化交易大赛的规则文件、参赛分析和策略研究笔记。
+2026 年香港量化交易大赛的规则、研究记录与可审计执行边界。
 
 ## 项目内容
 
@@ -17,10 +17,12 @@
 
 ```text
 2026-hk-quant-trading-competition/
-├── README.md
-├── rules.md
-├── rules.pdf
-└── competition-analysis.md
+├── packages/              # contracts, audit, reconciliation, policies
+├── strategies/nira/       # external targets.json handoff only
+├── adapters/              # Nautilus boundary and IBKR event mapping
+├── apps/execution_runner/ # Paper-first runner configuration
+├── docs/operations/       # release and evidence checks
+└── tests/
 ```
 
 `rules.pdf` 是比赛原始规则文件。
@@ -28,6 +30,10 @@
 `rules.md` 是根据原始 PDF 整理的 Markdown 版本，保留了主要标题、编号、列表、表格和计算公式，便于搜索、引用和版本管理。
 
 `competition-analysis.md` 是根据规则、公开资料和相关讨论整理的分析文档，内容涵盖赛事背景、账户结构、评分方式、策略选择和全球股票市场指数增强方案。
+
+执行层与 Linux 研究层通过版本化的 `targets.json` 和 `lineage.json` 交接，不直接导入
+`research-workspace` 或 Nira 源码。发布前检查见
+[docs/operations/release-checks.md](docs/operations/release-checks.md)。
 
 ## 当前策略定位
 
