@@ -23,7 +23,10 @@ example the Nira revision, signal artifact, data snapshot and run ID. The
 handoff preserves its fields without interpreting research-specific paths.
 If `lineage.json` is next to `targets.json`, the loader discovers it by
 convention; an explicit path is preferred when files are transferred between
-machines.
+machines. When lineage is both embedded and supplied by an explicit or sibling
+file, both sources are read. They are accepted only when their canonical JSON
+values are identical (object key order does not matter); conflicting sources
+are rejected before the target can reach execution.
 
 ## Linux producer / Windows consumer
 
@@ -40,9 +43,26 @@ python -m strategies.nira.handoff validate `
 
 To publish normalized copies into a run directory, use `export` with explicit
 output paths. Existing files are not overwritten unless `--overwrite` is
-provided. Each file is written through a same-directory temporary file and an
-atomic replace; the target and lineage files should still be treated as one
-versioned handoff and transferred together.
+provided. Publication has the following transaction semantics:
+
+1. Both JSON documents are fully serialized and flushed to temporary files in
+   their respective destination directories before either destination changes.
+2. Existing destination files are copied to same-directory recovery backups
+   before replacement.
+3. Each destination is replaced atomically at the file level. If any replace
+   fails, every destination already changed by that call is removed (for a new
+   publication) or restored from its backup (for an overwrite), and the
+   original error is raised.
+4. Temporary files and successful recovery backups are removed. If rollback
+   itself cannot restore a destination, the surviving backup is retained and
+   its path is included in `HandoffValidationError` for manual recovery.
+
+This provides failure rollback for the pair but is not a lock-free atomic
+snapshot for concurrent readers: there is a short interval between the two
+file replacements. Producers should publish into a run-specific directory and
+only hand that completed directory to the Windows consumer after this function
+returns successfully. Target and lineage files must still be transferred
+together as one versioned handoff.
 
 The loader validates the target payload through `packages.contracts.TargetSet`.
 It rejects malformed JSON, non-object lineage, market or strategy mismatches,
