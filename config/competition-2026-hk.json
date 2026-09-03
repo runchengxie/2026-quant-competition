@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "strategy_id": "hk-pit-ml-index-enhancement",
+  "market": "HK",
+  "benchmark": "HSCI",
+  "portfolio": {"top_k": 30, "max_single_weight": 0.1, "rebalance_frequency": "monthly", "cash_buffer": 0.02},
+  "eligibility": {"min_holding_rate": 0.5, "max_empty_days": 10, "min_average_turnover": 1.0},
+  "costs": {"commission_bps": 5.0, "slippage_bps": 5.0},
+  "execution": {"environment": "paper", "dry_run": true, "gateway_host": "127.0.0.1", "gateway_port": 4002},
+  "pending_confirmations": ["benchmark definition and constituent coverage", "holding-rate and turnover calculation formula", "minimum-price and 30-day average turnover thresholds", "market-data entitlement and Flex Token fields"]
+}

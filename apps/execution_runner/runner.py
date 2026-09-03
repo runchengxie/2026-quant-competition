@@ -7,6 +7,7 @@ from decimal import Decimal
 from pathlib import Path
 from uuid import uuid4
 from typing import Protocol
+from collections.abc import Mapping
 
 from packages.audit import EventJournal
 from .safety import KillSwitch
@@ -33,6 +34,7 @@ class ExecutionRunResult:
     broker_call_attempted: bool
     candidates: tuple[ExecutionCandidate, ...]
     message: str
+    intents: tuple[object, ...] = ()
 
 
 class SubmissionPort(Protocol):
@@ -115,4 +117,50 @@ class ExecutionRunner:
             message=(
                 "external submission requires a configured broker adapter"
             ),
+        )
+
+    def run_rebalance(
+        self, target_set: TargetSet, positions: Mapping[str, Decimal]
+    ) -> ExecutionRunResult:
+        """Plan target deltas, then optionally submit them through an adapter."""
+        from packages.execution_policies.rebalance import plan_rebalance
+
+        candidates = tuple(
+            ExecutionCandidate(target.symbol, target.weight, target.quantity)
+            for target in target_set.targets
+        )
+        intents = plan_rebalance(candidates, positions)
+        if self.settings.dry_run:
+            return ExecutionRunResult(
+                status="dry_run", submitted=False, broker_call_attempted=False,
+                candidates=candidates, message="dry-run planned rebalance intents",
+                intents=intents,
+            )
+        submit_intents = getattr(self.submission_port, "submit_intents", None)
+        if not callable(submit_intents):
+            return ExecutionRunResult(
+                status="blocked", submitted=False, broker_call_attempted=False,
+                candidates=candidates,
+                message="rebalance submission requires an adapter with submit_intents",
+                intents=intents,
+            )
+        if self.kill_switch is not None:
+            self.kill_switch.assert_clear()
+        try:
+            submit_intents(intents)
+        except Exception as exc:
+            self.journal.append({
+                "event_id": str(uuid4()), "kind": "order_error", "run_id": self.run_id,
+                "order_id": f"{self.run_id}:rebalance", "message": str(exc),
+            })
+            return ExecutionRunResult(
+                status="unknown", submitted=False, broker_call_attempted=True,
+                candidates=candidates,
+                message="rebalance outcome is unknown; reconcile with broker before retrying",
+                intents=intents,
+            )
+        return ExecutionRunResult(
+            status="submitted", submitted=True, broker_call_attempted=True,
+            candidates=candidates, message="rebalance intents submitted through adapter",
+            intents=intents,
         )
