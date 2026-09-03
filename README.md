@@ -1,6 +1,6 @@
 # 2026 Hong Kong Quantitative Trading Competition
 
-2026 年香港量化交易大赛的规则、研究记录与可审计执行边界。
+2026 年香港量化交易大赛的规则文件、参赛分析和策略研究笔记。
 
 ## 项目内容
 
@@ -17,31 +17,40 @@
 
 ```text
 2026-hk-quant-trading-competition/
-├── packages/              # contracts, audit, reconciliation, policies
-├── strategies/nira/       # external targets.json handoff only
-├── adapters/              # Nautilus boundary and IBKR event mapping
-├── apps/execution_runner/ # Paper-first runner configuration
-├── docs/operations/       # release and evidence checks
+├── README.md
+├── docs/
+│   ├── competition/       # 规则与比赛解读
+│   ├── strategy/          # 参赛策略研究
+│   ├── operations/        # IBKR 与团队系统操作指南
+│   ├── sources/           # 原始 PDF
+│   └── superpowers/       # 文档架构设计与执行计划
+├── packages/               # contracts, audit, reconciliation, policies
+├── strategies/nira/        # external targets.json handoff only
+├── adapters/               # Nautilus boundary and IBKR event mapping
+├── apps/execution_runner/  # Paper-first runner configuration
 └── tests/
 ```
 
-`rules.pdf` 是比赛原始规则文件。
+原始材料统一放在 `docs/sources/`；可搜索的规则、策略分析和操作指南分别放在对应主题目录。
 
-`rules.md` 是根据原始 PDF 整理的 Markdown 版本，保留了主要标题、编号、列表、表格和计算公式，便于搜索、引用和版本管理。
-
-`competition-analysis.md` 是根据规则、公开资料和相关讨论整理的分析文档，内容涵盖赛事背景、账户结构、评分方式、策略选择和全球股票市场指数增强方案。
+- [比赛规则](docs/competition/rules.md)
+- [比赛解读与策略建议](docs/competition/competition-analysis.md)
+- [参赛策略分析](docs/strategy/strategy-analysis.md)
+- [IBKR 模拟账户指南](docs/operations/ibkr-simulated-account-guide.md)
+- [团队 Token 指引](docs/operations/team-token-guide.md)
+- [执行发布检查](docs/operations/release-checks.md)
 
 执行层与 Linux 研究层通过版本化的 `targets.json` 和 `lineage.json` 交接，不直接导入
-`research-workspace` 或 Nira 源码。发布前检查见
-[docs/operations/release-checks.md](docs/operations/release-checks.md)。
+`research-workspace` 或 Nira 源码。执行层默认为 Paper，发布检查和证据要求见
+[执行发布检查](docs/operations/release-checks.md)。
 
 ## 当前策略定位
 
 当前拟报名的策略定位为：
 
-> 基于 Point-in-Time 基本面与横截面排序模型的全球股票市场指数增强策略
+> 基于 Point-in-Time 基本面与横截面排序模型的港股多头指数增强策略
 
-策略以全球股票市场为投资范围，重点考虑美国、欧洲、日本、香港及其他符合流动性和数据要求的市场。核心方法包括：
+策略以港股为主投资范围；全球股票策略仅作为扩展研究方向。核心方法包括：
 
 - 使用 `Point-in-Time` 数据，减少未来信息泄漏
 - 根据盈利质量、财务稳健性、估值、盈利预期修正、动量和低波动等因素进行横截面排序
@@ -61,11 +70,14 @@
 - 资格条件提供持仓率和换手率两条路径，满足其中一条即可
 - 交易阶段评价包括收益、Sharpe、最大回撤和稳定性
 
-参赛前需要重点确认持仓率、换手率、衍生品名义价值、跨市场货币转换及加密资产周末统计等计算口径。详细清单见 [competition-analysis.md](competition-analysis.md)。
+参赛前需要重点确认持仓率、换手率、衍生品名义价值、跨市场货币转换及加密资产周末统计等计算口径。详细清单见 [赛前时间与确认清单](docs/competition/schedule-and-checklist.md)。
 
 ## 阅读顺序
 
-建议先阅读 [rules.pdf](rules.pdf)，了解原始规则，再阅读 [competition-analysis.md](competition-analysis.md)，查看规则解读和策略建议。
+1. 先看 [比赛规则](docs/competition/rules.md)，必要时对照 [原始规则 PDF](docs/sources/rules.pdf)。
+2. 再看 [比赛解读](docs/competition/competition-analysis.md)，了解账户、评分、奖项和待确认问题。
+3. 然后看 [参赛策略分析](docs/strategy/strategy-analysis.md)。
+4. 需要开通账户或提交凭据时，查看 `docs/operations/` 下的操作指南。
 
 ## 研究边界
 
