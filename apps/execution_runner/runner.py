@@ -9,6 +9,7 @@ from uuid import uuid4
 from typing import Protocol
 
 from packages.audit import EventJournal
+from .safety import KillSwitch
 from packages.contracts import TargetSet
 
 from .config import RunnerSettings
@@ -55,11 +56,13 @@ class ExecutionRunner:
         submission_port: SubmissionPort | None = None,
         journal_path: str | Path | None = None,
         run_id: str | None = None,
+        kill_switch: KillSwitch | None = None,
     ) -> None:
         self.settings = settings
         self.submission_port = submission_port
         self.journal = EventJournal(journal_path) if journal_path is not None else EventJournal("runs/events.jsonl")
         self.run_id = run_id or str(uuid4())
+        self.kill_switch = kill_switch
 
     def run(self, target_set: TargetSet) -> ExecutionRunResult:
         """Prepare execution candidates and return a safe, observable result."""
@@ -81,6 +84,8 @@ class ExecutionRunner:
                 message="dry-run prepared candidates; no broker submission was attempted",
             )
         if self.submission_port is not None:
+            if self.kill_switch is not None:
+                self.kill_switch.assert_clear()
             event_id = str(uuid4())
             self.journal.append({
                 "event_id": event_id, "kind": "order_submitted", "run_id": self.run_id,

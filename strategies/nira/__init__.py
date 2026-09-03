@@ -6,7 +6,7 @@ from .handoff import (
     load_target_artifact,
     write_target_artifact,
 )
-from .audit import AlignmentAudit, audit_forward_alignment
+from .audit import AlignmentAudit, FeatureCutoffAudit, audit_feature_cutoff, audit_forward_alignment
 
 __all__ = [
     "HandoffValidationError",
@@ -14,5 +14,7 @@ __all__ = [
     "load_target_artifact",
     "write_target_artifact",
     "AlignmentAudit",
+    "FeatureCutoffAudit",
+    "audit_feature_cutoff",
     "audit_forward_alignment",
 ]
