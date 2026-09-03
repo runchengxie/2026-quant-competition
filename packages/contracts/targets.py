@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from decimal import Decimal, InvalidOperation
+import re
 from typing import Any, Mapping
 
 from packages.market_model import Market, SymbolError, normalize_symbol, validate_quantity
@@ -33,6 +34,17 @@ class TargetSet:
     def from_dict(cls, payload: Mapping[str, Any]) -> "TargetSet":
         if not isinstance(payload, Mapping):
             raise TargetValidationError("target payload must be an object")
+        unknown_root_fields = set(payload) - {
+            "schema_version",
+            "strategy_id",
+            "market",
+            "as_of",
+            "targets",
+        }
+        if unknown_root_fields:
+            raise TargetValidationError(
+                f"unknown root field: {sorted(unknown_root_fields)!r}"
+            )
 
         schema_version = payload.get("schema_version")
         if schema_version != "1.0":
@@ -57,6 +69,11 @@ class TargetSet:
         for raw_target in raw_targets:
             if not isinstance(raw_target, Mapping):
                 raise TargetValidationError("each target must be an object")
+            unknown_target_fields = set(raw_target) - {"symbol", "weight", "quantity"}
+            if unknown_target_fields:
+                raise TargetValidationError(
+                    f"unknown target field: {sorted(unknown_target_fields)!r}"
+                )
             try:
                 instrument = normalize_symbol(str(raw_target.get("symbol", "")))
             except SymbolError as exc:
@@ -69,19 +86,27 @@ class TargetSet:
                 raise TargetValidationError(f"duplicate symbol: {instrument.symbol}")
             symbols.add(instrument.symbol)
 
-            weight = _parse_decimal(raw_target.get("weight"), "weight")
+            weight = _parse_decimal(
+                raw_target.get("weight"), "weight", _WEIGHT_RE
+            )
             if not Decimal("0") <= weight <= Decimal("1"):
                 raise TargetValidationError("weight must be between 0 and 1")
 
             quantity = None
             if "quantity" in raw_target and raw_target["quantity"] is not None:
-                quantity = _parse_decimal(raw_target["quantity"], "quantity")
+                quantity = _parse_decimal(
+                    raw_target["quantity"], "quantity", _QUANTITY_RE
+                )
                 try:
                     quantity = validate_quantity(instrument, quantity)
                 except ValueError as exc:
                     raise TargetValidationError(str(exc)) from exc
 
             targets.append(Target(instrument.symbol, weight, quantity))
+
+        total_weight = sum((target.weight for target in targets), Decimal("0"))
+        if total_weight > Decimal("1"):
+            raise TargetValidationError("sum of weights must be at most 1")
 
         return cls(
             schema_version=schema_version,
@@ -124,11 +149,15 @@ def _parse_utc(value: Any) -> datetime:
     return parsed.astimezone(UTC)
 
 
-def _parse_decimal(value: Any, field: str) -> Decimal:
-    if isinstance(value, bool) or value is None:
-        raise TargetValidationError(f"{field} must be a decimal value")
+_WEIGHT_RE = re.compile(r"^(?:0|0\.[0-9]+|1(?:\.0+)?)$")
+_QUANTITY_RE = re.compile(r"^[0-9]+(?:\.[0-9]+)?$")
+
+
+def _parse_decimal(value: Any, field: str, wire_pattern: re.Pattern[str]) -> Decimal:
+    if not isinstance(value, str) or not wire_pattern.fullmatch(value):
+        raise TargetValidationError(f"{field} must be a decimal string")
     try:
-        parsed = value if isinstance(value, Decimal) else Decimal(str(value))
+        parsed = Decimal(value)
     except (InvalidOperation, ValueError) as exc:
         raise TargetValidationError(f"{field} must be a decimal value") from exc
     if not parsed.is_finite():

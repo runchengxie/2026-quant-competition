@@ -68,3 +68,50 @@ def test_target_set_rejects_non_lot_quantity() -> None:
 
     with pytest.raises(TargetValidationError, match="lot"):
         TargetSet.from_dict(payload)
+
+
+def test_target_set_rejects_over_allocated_weights() -> None:
+    payload = valid_payload()
+    payload["targets"] = [
+        {"symbol": "7203.T", "weight": "0.70"},
+        {"symbol": "1321.T", "weight": "0.70"},
+    ]
+
+    with pytest.raises(TargetValidationError, match="sum of weights"):
+        TargetSet.from_dict(payload)
+
+
+@pytest.mark.parametrize(
+    "payload_update, message",
+    [
+        ({"unexpected": "value"}, "unknown root field"),
+        ({"targets": [{"symbol": "7203.T", "weight": "0.5", "oops": True}]}, "unknown target field"),
+    ],
+)
+def test_target_set_rejects_unknown_wire_fields(
+    payload_update: dict[str, object], message: str
+) -> None:
+    payload = valid_payload()
+    payload.update(payload_update)
+
+    with pytest.raises(TargetValidationError, match=message):
+        TargetSet.from_dict(payload)
+
+
+@pytest.mark.parametrize("field", ["weight", "quantity"])
+def test_target_set_rejects_numeric_decimal_wire_values(field: str) -> None:
+    payload = valid_payload()
+    payload["targets"] = [{"symbol": "1321.T", "weight": "0.5", "quantity": "1"}]
+    payload["targets"][0][field] = 1
+
+    with pytest.raises(TargetValidationError, match=f"{field} must be a decimal string"):
+        TargetSet.from_dict(payload)
+
+
+def test_target_set_to_dict_round_trips_through_json_loader() -> None:
+    import json
+
+    original = TargetSet.from_dict(valid_payload())
+    wire_payload = json.loads(json.dumps(original.to_dict()))
+
+    assert TargetSet.from_dict(wire_payload) == original
