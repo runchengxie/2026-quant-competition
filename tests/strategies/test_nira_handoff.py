@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 import pytest
+import strategies.nira.handoff as handoff_module
 
 from strategies.nira.handoff import (
     HandoffValidationError,
@@ -68,6 +69,68 @@ def test_loader_accepts_embedded_lineage_without_importing_research_code(
 
     assert handoff.lineage == lineage_payload()
     assert handoff.target_set.to_dict() == target_payload()
+
+
+def test_loader_rejects_conflicting_embedded_and_explicit_lineage(
+    tmp_path: Path,
+) -> None:
+    payload = target_payload()
+    payload["lineage"] = lineage_payload()
+    target_path = tmp_path / "targets.json"
+    explicit_path = tmp_path / "explicit-lineage.json"
+    write_json(target_path, payload)
+    write_json(explicit_path, {**lineage_payload(), "source_revision": "different"})
+
+    with pytest.raises(HandoffValidationError, match="conflicting lineage sources"):
+        load_target_artifact(target_path, lineage_path=explicit_path)
+
+
+def test_loader_accepts_canonically_identical_embedded_and_explicit_lineage(
+    tmp_path: Path,
+) -> None:
+    payload = target_payload()
+    payload["lineage"] = lineage_payload()
+    target_path = tmp_path / "targets.json"
+    explicit_path = tmp_path / "explicit-lineage.json"
+    write_json(target_path, payload)
+    write_json(explicit_path, dict(reversed(list(lineage_payload().items()))))
+
+    handoff = load_target_artifact(target_path, lineage_path=explicit_path)
+
+    assert handoff.lineage == lineage_payload()
+    assert handoff.lineage_path == explicit_path
+
+
+def test_loader_rejects_conflicting_embedded_and_sibling_lineage(
+    tmp_path: Path,
+) -> None:
+    payload = target_payload()
+    payload["lineage"] = lineage_payload()
+    target_path = tmp_path / "targets.json"
+    write_json(target_path, payload)
+    write_json(
+        tmp_path / "lineage.json",
+        {**lineage_payload(), "research_run_id": "different-run"},
+    )
+
+    with pytest.raises(HandoffValidationError, match="conflicting lineage sources"):
+        load_target_artifact(target_path)
+
+
+def test_loader_accepts_canonically_identical_embedded_and_sibling_lineage(
+    tmp_path: Path,
+) -> None:
+    payload = target_payload()
+    payload["lineage"] = lineage_payload()
+    target_path = tmp_path / "targets.json"
+    sibling_path = tmp_path / "lineage.json"
+    write_json(target_path, payload)
+    write_json(sibling_path, dict(reversed(list(lineage_payload().items()))))
+
+    handoff = load_target_artifact(target_path)
+
+    assert handoff.lineage == lineage_payload()
+    assert handoff.lineage_path == sibling_path
 
 
 def test_loader_accepts_lineage_in_a_small_artifact_envelope(tmp_path: Path) -> None:
@@ -135,6 +198,65 @@ def test_write_target_artifact_is_atomic_and_writes_normalized_consumable_files(
     assert json.loads(targets_path.read_text(encoding="utf-8")) == target_payload()
     assert json.loads(lineage_path.read_text(encoding="utf-8")) == lineage_payload()
     assert not list(targets_path.parent.glob("*.tmp"))
+
+
+def test_write_target_artifact_removes_new_target_when_lineage_publish_fails(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    targets_path = tmp_path / "targets.json"
+    lineage_path = tmp_path / "lineage.json"
+    handoff = NiraTargetHandoff.from_payload(target_payload(), lineage_payload())
+    real_replace = handoff_module.os.replace
+    failed = False
+
+    def fail_first_lineage_publish(source: object, destination: object) -> None:
+        nonlocal failed
+        if Path(destination) == lineage_path and not failed:
+            failed = True
+            raise OSError("simulated lineage publish failure")
+        real_replace(source, destination)
+
+    monkeypatch.setattr(handoff_module.os, "replace", fail_first_lineage_publish)
+
+    with pytest.raises(OSError, match="simulated lineage publish failure"):
+        write_target_artifact(handoff, targets_path, lineage_path=lineage_path)
+
+    assert not targets_path.exists()
+    assert not lineage_path.exists()
+
+
+def test_write_target_artifact_restores_previous_pair_when_publish_fails(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    targets_path = tmp_path / "targets.json"
+    lineage_path = tmp_path / "lineage.json"
+    old_target = {**target_payload(), "as_of": "2026-09-02T00:00:00Z"}
+    old_lineage = {**lineage_payload(), "research_run_id": "run-41"}
+    write_json(targets_path, old_target)
+    write_json(lineage_path, old_lineage)
+    handoff = NiraTargetHandoff.from_payload(target_payload(), lineage_payload())
+    real_replace = handoff_module.os.replace
+    failed = False
+
+    def fail_first_lineage_publish(source: object, destination: object) -> None:
+        nonlocal failed
+        if Path(destination) == lineage_path and not failed:
+            failed = True
+            raise OSError("simulated lineage publish failure")
+        real_replace(source, destination)
+
+    monkeypatch.setattr(handoff_module.os, "replace", fail_first_lineage_publish)
+
+    with pytest.raises(OSError, match="simulated lineage publish failure"):
+        write_target_artifact(
+            handoff,
+            targets_path,
+            lineage_path=lineage_path,
+            overwrite=True,
+        )
+
+    assert json.loads(targets_path.read_text(encoding="utf-8")) == old_target
+    assert json.loads(lineage_path.read_text(encoding="utf-8")) == old_lineage
 
 
 def test_write_target_artifact_does_not_overwrite_lineage_by_default(
