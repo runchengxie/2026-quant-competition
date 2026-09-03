@@ -28,8 +28,11 @@ def test_pipeline_kill_switch_blocks_submission(tmp_path):
     }))
     switch = KillSwitch(tmp_path / "STOP")
     switch.trigger("test")
+    class RecordingPort:
+        def submit(self, candidates):
+            raise AssertionError("kill switch should block before submission")
     with pytest.raises(RuntimeError, match="kill switch"):
         run_target_pipeline(
             target, RunnerSettings(),
-            journal_path=tmp_path / "events.jsonl", kill_switch=switch,
+            journal_path=tmp_path / "events.jsonl", submission_port=RecordingPort(), kill_switch=switch,
         )
