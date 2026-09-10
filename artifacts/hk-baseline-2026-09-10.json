@@ -1,0 +1,111 @@
+{
+  "as_of": "2026-09-10",
+  "data": {
+    "stock_root": "D:\\data\\hk-competition-2026\\raw\\ibkr\\daily",
+    "benchmark_path": "D:\\data\\global-six-market\\raw\\ibkr\\daily\\HK_2800.csv",
+    "stock_count": 20,
+    "stock_rows": {
+      "1024": 738,
+      "1093": 738,
+      "1211": 738,
+      "1299": 738,
+      "1398": 738,
+      "1810": 738,
+      "2015": 738,
+      "2318": 738,
+      "2388": 738,
+      "2628": 738,
+      "3690": 738,
+      "386": 738,
+      "3988": 738,
+      "5": 738,
+      "700": 738,
+      "883": 738,
+      "939": 738,
+      "941": 738,
+      "9618": 738,
+      "9988": 738
+    },
+    "stock_start": "2023-09-05",
+    "stock_end": "2026-09-03",
+    "benchmark_rows": 738,
+    "benchmark_start": "2023-09-05",
+    "benchmark_end": "2026-09-03"
+  },
+  "assumptions": {
+    "rebalance": "first shared trading date of each month, signal as of prior shared date",
+    "execution": "next-session close-to-close proxy because only daily close is available",
+    "commission_plus_slippage_bps": 10.0,
+    "top_k": 10,
+    "max_weight": 0.12,
+    "cash_weight": 0.02,
+    "lookbacks": [
+      126,
+      252
+    ],
+    "momentum_weights": [
+      0.5,
+      0.3
+    ],
+    "volatility_window": 60
+  },
+  "strategies": {
+    "2800_buy_and_hold": {
+      "metrics": {
+        "cumulative_return": 0.3543638275499499,
+        "sharpe": 0.560877024767047,
+        "max_drawdown": 0.2055730809674019,
+        "positive_period_fraction": 0.4925373134328358
+      },
+      "sample_start": "2023-09-06",
+      "sample_end": "2026-09-03"
+    },
+    "pure_momentum": {
+      "metrics": {
+        "cumulative_return": 0.21334295786018442,
+        "sharpe": 0.5196302586680909,
+        "max_drawdown": 0.2392895416036468,
+        "positive_period_fraction": 0.4989429175475687
+      },
+      "benchmark_metrics_on_same_dates": {
+        "cumulative_return": 0.18056828597616903,
+        "sharpe": 0.4918597134105167,
+        "max_drawdown": 0.20095693779904322,
+        "positive_period_fraction": 0.5052854122621564
+      },
+      "average_rebalance_turnover": 0.343,
+      "holding_rate": 1.0,
+      "empty_days": 0,
+      "rebalance_count": 24,
+      "sample_start": "2024-10-02",
+      "sample_end": "2026-09-03"
+    },
+    "momentum_volatility": {
+      "metrics": {
+        "cumulative_return": 0.33992674054877137,
+        "sharpe": 0.758077836987505,
+        "max_drawdown": 0.1986532427577975,
+        "positive_period_fraction": 0.5221987315010571
+      },
+      "benchmark_metrics_on_same_dates": {
+        "cumulative_return": 0.18056828597616903,
+        "sharpe": 0.4918597134105167,
+        "max_drawdown": 0.20095693779904322,
+        "positive_period_fraction": 0.5052854122621564
+      },
+      "average_rebalance_turnover": 0.3021666666666667,
+      "holding_rate": 1.0,
+      "empty_days": 0,
+      "rebalance_count": 24,
+      "sample_start": "2024-10-02",
+      "sample_end": "2026-09-03"
+    }
+  },
+  "limitations": [
+    "Only 20 HK stocks are available; this is not a complete historical competition universe.",
+    "No point-in-time constituents or fundamentals are used.",
+    "No realtime, bid/ask, depth, tick, or order-level data is used.",
+    "Daily close execution is a research proxy and does not prove live fillability.",
+    "Competition rule interpretation, benchmark, and turnover threshold still require organizer confirmation."
+  ]
+}
