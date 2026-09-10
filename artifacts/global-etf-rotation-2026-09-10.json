@@ -1,0 +1,93 @@
+{
+  "as_of": "2026-09-10",
+  "assets": [
+    "US_SPY",
+    "HK_2800",
+    "UK_ISF",
+    "AU_STW",
+    "CA_XIU",
+    "SG_ES3"
+  ],
+  "data": {
+    "US_SPY": {
+      "rows": 753,
+      "start": "2023-09-05",
+      "end": "2026-09-03"
+    },
+    "HK_2800": {
+      "rows": 738,
+      "start": "2023-09-05",
+      "end": "2026-09-03"
+    },
+    "UK_ISF": {
+      "rows": 759,
+      "start": "2023-09-05",
+      "end": "2026-09-03"
+    },
+    "AU_STW": {
+      "rows": 760,
+      "start": "2023-09-06",
+      "end": "2026-09-04"
+    },
+    "CA_XIU": {
+      "rows": 754,
+      "start": "2023-09-05",
+      "end": "2026-09-03"
+    },
+    "SG_ES3": {
+      "rows": 754,
+      "start": "2023-09-06",
+      "end": "2026-09-04"
+    }
+  },
+  "common_sample": {
+    "start": "2024-11-01",
+    "end": "2026-09-03",
+    "rows": 421
+  },
+  "assumptions": {
+    "rebalance": "monthly",
+    "signal": "prior common trading date",
+    "top_k": 3,
+    "max_weight": 0.45,
+    "cash_weight": 0.1,
+    "cost_bps": 10.0,
+    "fx": "not hedged; prices are compared in native quote currencies and therefore are a research proxy"
+  },
+  "strategies": {
+    "equal_weight_common_dates": {
+      "metrics": {
+        "cumulative_return": 0.3580638591931715,
+        "sharpe": 1.7378190645059532,
+        "max_drawdown": 0.12685333488630968,
+        "positive_period_fraction": 0.5819477434679335
+      }
+    },
+    "pure_momentum": {
+      "metrics": {
+        "cumulative_return": 0.32074352599778133,
+        "sharpe": 1.4647182903392126,
+        "max_drawdown": 0.1297747405908306,
+        "positive_period_fraction": 0.5700712589073634
+      },
+      "rebalance_count": 23,
+      "average_turnover": 0.4826086956521739
+    },
+    "defended_rotation": {
+      "metrics": {
+        "cumulative_return": 0.32743594719756275,
+        "sharpe": 1.4956991194209222,
+        "max_drawdown": 0.1297747405908306,
+        "positive_period_fraction": 0.5819477434679335
+      },
+      "rebalance_count": 23,
+      "average_turnover": 0.3521739130434782
+    }
+  },
+  "limitations": [
+    "Six ETF sample is not a complete global asset universe.",
+    "No FX conversion or hedging is applied; native-currency equal weighting is not investable portfolio accounting.",
+    "No realtime, bid/ask, depth or order-level data is used.",
+    "This research strategy is separate from the HK competition strategy and does not establish competition eligibility."
+  ]
+}
