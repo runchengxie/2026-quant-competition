@@ -1,6 +1,6 @@
 # 香港资管通团队 Token 获取指引
 
-> 来源：[`team-token-guide.pdf`](../sources/team-token-guide.pdf)
+> 来源：[下载原始 PDF](https://github.com/runchengxie/2026-hk-quant-trading-competition/releases/download/reference-pdfs-2026-09/team-token-guide.pdf)
 > 说明：以下内容根据 PDF 文本和页面顺序整理；截图页面仍需结合原 PDF 查看。
 
 ## 一、Token 是什么
@@ -26,7 +26,7 @@ Flex Token 仅用于读取报表数据，不具备交易权限，不会直接产
 
 > 注意：新创建的 Token 会覆盖旧 Token。
 
-第 4、6—10 页含有操作截图或版式信息，具体按钮位置以 [原始 PDF](../sources/team-token-guide.pdf) 为准。
+第 4、6—10 页含有操作截图或版式信息，具体按钮位置以[原始 PDF](https://github.com/runchengxie/2026-hk-quant-trading-competition/releases/download/reference-pdfs-2026-09/team-token-guide.pdf) 为准。
 
 ## 四、获取 Query ID
 
@@ -37,7 +37,7 @@ Flex Token 仅用于读取报表数据，不具备交易权限，不会直接产
 5. 点击“继续”，查看活动自助查询。
 6. 点击“创建”，获取 Query ID。
 
-第 12—17 页主要为操作截图，建议对照 [原始 PDF](../sources/team-token-guide.pdf) 操作。
+第 12—17 页主要为操作截图，建议对照[原始 PDF](https://github.com/runchengxie/2026-hk-quant-trading-competition/releases/download/reference-pdfs-2026-09/team-token-guide.pdf) 操作。
 
 ## 五、提交团队系统
 

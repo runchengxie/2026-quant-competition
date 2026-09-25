@@ -1,6 +1,6 @@
 # 团队 IBKR 模拟账户开通指南
 
-> 来源：[`ibkr-simulated-account-guide.pdf`](../sources/ibkr-simulated-account-guide.pdf)
+> 来源：[下载原始 PDF](https://github.com/runchengxie/2026-hk-quant-trading-competition/releases/download/reference-pdfs-2026-09/ibkr-simulated-account-guide.pdf)
 > 说明：以下内容根据 PDF 文本和页面顺序整理；截图页面仍需结合原 PDF 查看。
 
 ## 一、选择开通路径
