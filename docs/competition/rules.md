@@ -7,6 +7,8 @@
 
 > 原 PDF 标注为：香港資管通 FUNDCONNECT HK LIMITED，保密，仅供已报名团队使用。本文尽量保留原文内容和结构，去除了重复出现在每页的页眉、页脚及保密标记。具体安排以主办方通过官方渠道发布的最新规则和通知为准。
 
+本项目经授权公开提供原始规则文件：[下载 PDF](https://github.com/runchengxie/2026-hk-quant-trading-competition/releases/download/reference-pdfs-2026-09/rules.pdf)。
+
 ## 一、赛事概述
 
 ### 1.1 合作机构
