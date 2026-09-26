@@ -22,7 +22,6 @@
 │   ├── competition/       # 规则与比赛解读
 │   ├── strategy/          # 参赛策略研究
 │   ├── operations/        # IBKR 与团队系统操作指南
-│   ├── sources/           # 原始 PDF
 │   └── superpowers/       # 文档架构设计与执行计划
 ├── packages/               # contracts, audit, reconciliation, policies
 ├── strategies/nira/        # external targets.json handoff only
@@ -31,9 +30,10 @@
 └── tests/
 ```
 
-原始材料统一放在 `docs/sources/`；可搜索的规则、策略分析和操作指南分别放在对应主题目录。
+原始 PDF 作为附件保存在 [GitHub Releases](https://github.com/runchengxie/2026-hk-quant-trading-competition/releases/tag/reference-pdfs-2026-09)；可搜索的规则、策略分析和操作指南分别放在对应主题目录。
 
 - [比赛规则](docs/competition/rules.md)
+- [原始 PDF 下载](https://github.com/runchengxie/2026-hk-quant-trading-competition/releases/tag/reference-pdfs-2026-09)
 - [比赛解读与策略建议](docs/competition/competition-analysis.md)
 - [参赛策略分析](docs/strategy/strategy-analysis.md)
 - [IBKR 模拟账户指南](docs/operations/ibkr-simulated-account-guide.md)
@@ -74,7 +74,7 @@
 
 ## 阅读顺序
 
-1. 先看 [比赛规则](docs/competition/rules.md)，必要时对照 [原始规则 PDF](docs/sources/rules.pdf)。
+1. 先看 [比赛规则](docs/competition/rules.md)，必要时对照 [原始规则 PDF](https://github.com/runchengxie/2026-hk-quant-trading-competition/releases/download/reference-pdfs-2026-09/rules.pdf)。
 2. 再看 [比赛解读](docs/competition/competition-analysis.md)，了解账户、评分、奖项和待确认问题。
 3. 然后看 [参赛策略分析](docs/strategy/strategy-analysis.md)。
 4. 需要开通账户或提交凭据时，查看 `docs/operations/` 下的操作指南。
