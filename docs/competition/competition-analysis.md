@@ -1,197 +1,62 @@
-# 2026 Hong Kong Quantitative Trading Competition
+# 2026 Hong Kong Quant Competition: Analysis and Strategy Notes
 
-## 比赛解读与策略建议
+> Originally drafted on 2026-08-26 from the rules then available. The schedule below follows the organizer's public rules dated 2026-09-23. This is research material, not investment, legal, or compliance advice. No strategy has been selected or registered.
 
-> 整理日期：2026 年 8 月 26 日
->
-> 本文根据现有比赛规则、公开资料和相关讨论整理，仅作为研究笔记，不构成投资、法律或合规意见。标注为待确认的事项，建议在报名或参加实盘前向组委会取得书面答复。
+## 1. Competition overview
 
-> 文档分工：本文负责比赛规则、账户、评分、奖项和赛前确认事项；具体港股参赛策略见 [strategy-analysis.md](../strategy/strategy-analysis.md)，赛前清单见 [schedule-and-checklist.md](schedule-and-checklist.md)。
+The competition combines a short trading stage with a presentation. The trading score uses net return (25%), Sharpe ratio (35%), maximum drawdown (25%), and strategy stability (15%); the final score weights trading at 70% and the presentation at 30%. The competition may identify teams for later asset-management cooperation, but participation or an award does not guarantee a capital allocation.
 
-## 一、核心结论
+Current dates, in Hong Kong time:
 
-这场比赛兼具量化团队筛选和潜在资金合作的性质。交易阶段的评价包括收益、Sharpe、最大回撤和稳定性。单纯押注单一高 Beta 标的，未必适合这样的评分方式。
+- Registration deadline: 2026-10-23 23:59.
+- Trading: 2026-10-26 00:00 through 2027-01-27 06:00.
+- Presentations and awards are expected in February 2027; the organizer has not published an exact date.
 
-如果目标是提高综合评分并做好答辩，比较合适的方向包括：
+See the [official public rules page](https://fundconnecthk.com/quant-league/legal/competition-rules/) and [pre-competition checklist](schedule-and-checklist.md).
 
-- 全球或区域高流动性股票的系统化策略
-- 成熟的市场中性统计套利
-- 多头或指数增强策略
+## 2. Strategy choice and eligibility
 
-目前拟报名的全球股票市场策略，选择多头或指数增强类别是合理的。策略可以通过持续保持有效持仓来满足资格条件，不需要为了比赛刻意提高换手率。
+Potential categories include market-neutral/relative-value, systematic directional, long-only/index enhancement, and hybrid/other. The team's current candidates are:
 
-## 二、账户结构与安全边界
+- Hong Kong Point-in-Time fundamental and cross-sectional stock ranking.
+- A U.S. ETF portfolio driven in part by AIVIX crypto sentiment signals.
 
-规则明确说明，参赛不需要提供 IBKR 登录密码，赛事授权也不包含下单、转账或资金转移权限。
+Both require data-entitlement checks, out-of-sample validation, transaction-cost analysis, and Paper execution before a selection. Only one strategy may be registered for the team account. AIVIX award eligibility requires application through the team portal, actual use of the data, and a clear explanation of its contribution.
 
-因此，参加实盘组时，比赛资金原则上仍位于参赛者本人实名 IBKR 账户内。资金不会因为参赛直接转给主办方或资产管理公司托管。这样的账户结构能够减少资金托管和转移环节带来的交易对手风险。
+To qualify for awards, a strategy must maintain either an average daily position rate of at least 50% with no more than 10 cumulative flat trading days, or average daily turnover of at least 100%. The official rules do not fully specify all calculation details; confirm them with the organizer.
 
-使用 IBKR Flex Token 或其他只读数据授权时，仍建议向组委会确认实际开放的字段和权限范围，尤其包括：
+## 3. Accounts and data security
 
-- Cash Transactions
-- NAV 及每日估值
-- 持仓与持仓市值
-- 现金变化
-- 交易记录、手续费和融资数据
-- 账户识别信息及其他敏感字段
+The competition uses IBKR accounts. The organizer states that teams should not provide their IBKR login password. Competition data collection uses read-only Flex access; the scope of fields and setup must be confirmed in the team portal. Keep API credentials, account identifiers, order records, and raw provider data out of public documents and source control.
 
-## 三、主办方、高校与公司关系
+Potentially sensitive Flex fields can include cash activity, NAV and daily valuation, holdings and market values, cash movements, trades, fees, financing, and account identifiers. Use a minimum-necessary field set and store tokens locally.
 
-现有比赛规则写明：
+## 4. Organizer and partner claims
 
-- 主办方：香港资管通 FUND CONNECT HK
-- 协办方：香港大学 Web3 研究院
+The rules name Fund Connect HK as organizer and the University of Hong Kong Web3 Institute as co-organizer. Do not describe the event as hosted by the University of Hong Kong unless an official university source supports that wording. Public company-name history is not sufficient evidence of ownership, university sponsorship, or a formal commercial relationship; verify those claims against corporate records and official announcements before using them externally.
 
-因此，较准确的说法是香港资管通主办、香港大学 Web3 研究院协办。将比赛直接称为香港大学主办，或称为香港大学官方量化比赛，都不够严谨。
+The rules describe potential asset-management cooperation opportunities of approximately HKD 100 million equivalent in aggregate. This is not a cash prize or a guaranteed allocation. Any future arrangement would require continued performance review, risk assessment, due diligence, compliance approval, and a signed agreement.
 
-目前已有第三方报道与比赛规则中的表述相互印证。不过，香港大学官方页面是否发布过本届比赛的独立公告，仍建议继续核实。
+## 5. Research implications
 
-公开公司资料中还出现过一条与量化科技有关的名称变更线索：
+The trading window is roughly three months, which may provide few observations for low-frequency strategies. In addition to long-horizon annualized measures, evaluate the exact competition window, monthly path, drawdowns, turnover, and stability. Freeze the competition run's data version, universe, model, portfolio rules, costs, and evaluation period so that submitted results come from one reproducible source.
 
-`Fund Connect HK Quantitative Technology Limited`
+For the Hong Kong equity candidate, choose a benchmark that matches the actual tradable universe, such as the Hang Seng Index or Hang Seng Composite Index, subject to final universe coverage and organizer confirmation. Useful diagnostics include annualized excess return, tracking error, information ratio, maximum and active drawdown, turnover, monthly benchmark hit rate, sector active exposure, and size/value/momentum exposures.
 
-该公司曾使用过包含 HKUST 的英文名称，之后于 2025 年 2 月 13 日改为现名。这只能说明公司历史名称中存在相关线索。要确认股东关系、高校成立背景或正式合作关系，还需要股东资料、正式合作文件或校方公告。
+For the U.S. ETF candidate, validate the availability and publication timestamps of AIVIX observations, survivorship-safe ETF data, market calendar alignment, FX and transaction costs, and how the strategy maintains competition eligibility. Index One calculations should use the same frozen portfolio-weight manifest that feeds the execution target file, followed by an independent weight reconciliation.
 
-## 四、比赛时间与奖项
+## 6. Supporting project work
 
-按现有规则，正式交易阶段的时间均以香港时间计算：
+- The Hong Kong execution pipeline demonstrates how targets can be validated and translated into Paper order intents with a cash buffer, lot-size handling, liquidity checks, and audit records.
+- The machine-learning research materials demonstrate Point-in-Time data handling, walk-forward validation, calibration, and out-of-sample evaluation. They do not establish competition performance by themselves.
+- The global-futures, ETF-rotation, intraday, pairs, and crypto projects can illustrate engineering or research capabilities, but should not be presented as the competition's selected strategy unless formally selected and supported by evidence.
+- External strategy or reference alpha must be clearly distinguished from work developed by the team.
 
-- 交易阶段：2026 年 9 月 28 日 00:00 至 2026 年 12 月 29 日 06:00
-- 答辩评审：2027 年 1 月 1 日至 2027 年 1 月 15 日
-- 颁奖：2027 年 1 月 18 日至 2027 年 1 月 22 日
+## 7. Questions for the organizer
 
-正式交易阶段约三个月，时间比较短。低频策略在这段时间内可能只有少量有效信号，因此回测时除了长期年化收益，还要重点观察三个月窗口下的收益、Sharpe、回撤和稳定性。
+Confirm benchmark selection, holding-rate and turnover formulas, derivative exposure conventions, stock-price and liquidity rules across currencies, weekend crypto valuation, market calendars, FX conversion, and stability scoring. Also confirm account permissions and the minimum Flex fields needed for scoring. Keep the written responses with the internal competition record.
 
-现有规则中没有看到明确的现金奖金金额。奖项包括：
+## Sources
 
-- 模拟盘组和实盘组的总排名奖
-- 最佳市场中性策略、最佳系统化方向策略、最佳多头或指数增强策略等奖项
-- 最佳收益、最佳 Sharpe 等单项奖
-- AIVIX 另类数据应用奖及相应的软件或数据服务使用权
-
-规则还提到，赛事计划为优秀团队探索合计约 1 亿港币等值的潜在管理资金合作机会，其中原则上约 90％面向实盘组，约 10％面向模拟盘组。
-
-这笔资金不是自动发放的奖金，也不是获奖后自动获得的配置。后续仍要经过持续表现评估、风险控制、尽职调查、合规审核和协议审批。
-
-## 五、持仓率与换手率
-
-现有规则提供两条资格路径，满足其中一条即可：
-
-1. 日均持仓率不低于 50％，累计空仓时间不超过 10 个交易日
-2. 日均换手率不低于 100％
-
-普通多因子、指数增强和 CTA 策略，只要长期保持足够的有效持仓，通常不需要额外刷换手。低持仓、低换手、长期等待机会的择时策略和事件驱动策略，受到的影响会更明显。
-
-### 需要确认的计算口径
-
-规则目前没有公布持仓率和换手率的具体计算公式。建议向组委会书面确认：
-
-- 多空组合的持仓率按 `gross exposure` 还是 `net exposure` 计算
-- 期货按保证金、名义本金还是风险敞口计算
-- 期权按权利金、名义本金还是 `Delta-adjusted notional` 计算
-- 换手率按单边成交额除以 NAV，还是按买卖双边成交额除以 NAV
-- 加密资产在周末产生的 NAV 和收益，是否计入持仓率、换手率及 Sharpe
-- Sharpe 年化采用 252 个交易日还是 365 个自然日
-
-## 六、全球股票市场策略方向
-
-根据现有规则和组委会讨论，只要 IBKR 账户支持交易且平台能够读取相关数据，港股、美股、日股以及其他市场的股票、衍生品和加密资产都可能进入候选范围。实际建仓时仍要结合流动性、数据质量、交易成本和执行条件筛选。
-
-### 1. 全球股票市场多头或指数增强
-
-如果以全球股票市场为主要投资范围，建议先建立由高流动性股票和主要指数成分股组成的股票池。可以覆盖：
-
-- 美国：S&P 500、Nasdaq 100、Russell 1000 和 Russell 2000 成分股
-- 欧洲：Euro Stoxx 50、DAX、CAC 40 和 FTSE 100 成分股
-- 日本及亚太：Nikkei 225、TOPIX、恒生、恒生中国企业指数和澳大利亚主要指数成分股
-- 其他市场：在 IBKR 可交易、数据完整且流动性达标的加拿大、韩国、新加坡等市场股票
-- 基准指数：MSCI World、MSCI ACWI 或各区域代表性指数
-
-信号可以来自盈利质量、财务稳健性、估值、盈利预期修正、动量和低波动等因素。模型应遵循 `Point-in-Time` 原则，只使用决策当时已经公开的信息。组合构建阶段可以进行行业、国家、区域和风格中性化，并控制个股权重、Beta、`Tracking Error`、组合波动率和回撤。
-
-全球股票策略会面临货币、交易时区、税费、数据授权和跨市场相关性等问题。这些因素需要在研究和执行阶段单独建模。
-
-如果使用 ETF 或指数期货进行风险管理，应明确它们是辅助工具，并控制其对组合主要风险特征的影响。加密货币、裸卖波动率、期货方向仓以及单一国家或行业的高 Beta 仓位，不宜成为这套全球股票多头策略的主要组成部分。
-
-### 2. 市场中性统计套利
-
-如果团队已经具备分钟级数据、执行系统、交易成本模型、融券和 TCA 能力，美国大型股市场中性统计套利可能更适合三个月的比赛窗口。可研究市场、行业和风格中性后的残差反转、相对价值和短周期动量。
-
-这类策略必须真实计入滑点、手续费、借券成本、执行延迟、公司行动和股票池存活偏差。否则，回测中的 Sharpe 很容易被高估。
-
-### 3. 期权波动率相对价值
-
-具备期权专业能力的团队，可以研究期限结构、偏度、指数与成分股波动率、dispersion 和 delta-hedged volatility 等相对价值机会。
-
-裸卖 SPX Put 或其他无保护的 short volatility 策略不适合作为比赛主策略。一次尾部亏损可能同时损害收益、Sharpe、最大回撤和稳定性。
-
-## 七、拟报名策略的适配性
-
-### 建议的策略名称
-
-> 基于 Point-in-Time 基本面与横截面排序模型的全球股票市场指数增强策略
-
-本次比赛的实际运行版本应覆盖美国、欧洲、日本、香港及其他符合流动性和数据要求的股票市场，并使用全球股票基准作为主要的风险和业绩参照。
-
-如果受 IBKR 可交易性、数据授权或交易成本限制而缩减市场范围，应在报名材料中列明实际启用的市场。全球市场的说法需要与实际投资范围保持一致。
-
-### 与比赛规则的匹配点
-
-- 多头持仓和基准相对收益目标与该类别的定义一致
-- `PIT` 数据、滚动训练和 `Walk-Forward` 验证有助于降低未来信息泄漏和过拟合风险
-- `Top-K`、进入和退出缓冲区、行业及个股约束具备清晰的组合构建逻辑
-- 可以将不同市场的交易日历、最小交易单位、货币转换、流动性、交易成本和现金使用效率纳入执行模型
-- 中低频调仓不影响资格，只要持仓率长期达到要求
-- 基本面因子和横截面 `Ranker` 便于在答辩中解释
-
-### 建议补强的内容
-
-1. 明确全球基准，例如 MSCI World 或 MSCI ACWI，并说明选择理由。
-2. 补充国家、区域、行业、市场 Beta、`Tracking Error`、风格因子、货币和单股风险贡献的控制方法。
-3. 将机器学习 `Ranker` 定义为对具有经济含义的基本面因子进行非线性组合和横截面排序，避免把模型描述成自动发现 Alpha 的黑箱。
-4. 说明数据供应商、授权范围、财报发布日期字段、数据版本冻结方式和缺失值处理规则。
-5. 设计比赛版风险层，保持主要全球股票多头暴露，同时管理组合 Beta、区域集中度、行业集中度、波动率和回撤。
-
-## 八、比赛版组合框架
-
-```text
-PIT 基本面数据
-      ↓
-横截面特征与 Ranker
-      ↓
-Top-K 选股与进入、退出缓冲
-      ↓
-基准相对组合优化
-      ↓
-国家、区域、行业、个股、Beta、流动性和换手约束
-      ↓
-交易成本、交易日历、货币和各市场最小交易单位检查
-      ↓
-回撤与波动率风险控制
-      ↓
-IBKR 可执行订单
-```
-
-比赛评分可以近似理解为：
-
-```text
-综合表现 ≈ 25％收益 + 35％Sharpe + 25％最大回撤 + 15％稳定性
-```
-
-因此，策略不能只优化相对基准的超额收益。比如组合跑赢 MSCI World，但绝对收益仍为负，它可能是一套合格的指数增强产品，却未必适合比赛排名。回测和比赛复盘都应同时观察全球基准相对收益与绝对风险，并分析国家、行业、货币和风格暴露。
-
-## 九、报名和参赛前的确认清单
-
-完整的逐项清单已单独整理为 [赛前时间与确认清单](schedule-and-checklist.md)，避免与本文的比赛解读重复维护。
-
-## 十、最终建议
-
-报名策略的具体定位、模型逻辑、组合构建、验证指标和 Strategy Deck 结构统一以 [参赛策略分析](../strategy/strategy-analysis.md) 为准。本文只保留比赛规则层面的适配判断；策略执行前仍应完成 [赛前确认清单](schedule-and-checklist.md)，并用真实交易成本和三个月滚动窗口重新评估比赛适配性。
-
-## 参考资料
-
-- [Hong Kong Companies Registry](https://www.cr.gov.hk/)
-- [Fund Connect HK](https://fundconnecthk.com/)
-- [HKU Business School：Avenir-HKU Web3 Quantitative Trading Challenge 2025](https://www.hkubs.hku.hk/media/in-the-media/web3-competition-brought-by-hku-business-school-and-avenir-group/)
-- [U.S. Federal Reserve FOMC Calendars](https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm)
-- [U.S. Federal Election Commission](https://www.fec.gov/introduction-campaign-finance/election-results-and-voting-information/)
+- [Official competition rules](https://fundconnecthk.com/quant-league/legal/competition-rules/)
+- [Competition overview](https://fundconnecthk.com/quant-league/)

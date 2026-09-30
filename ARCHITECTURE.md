@@ -1,34 +1,32 @@
-# Competition workspace boundary
+# Competition Workspace Boundary
 
-这个仓库是 2026 香港量化交易大赛的控制面，负责：
+This repository is the control plane for the 2026 Hong Kong quantitative trading competition. It contains:
 
-- 比赛规则、待确认事项和操作说明；
-- 比赛专属参数、实验配置和 frozen run 元数据；
-- 最终提交材料及其来源索引。
+- Competition rules, open questions, and operating instructions.
+- Competition-specific configuration, experiment settings, and frozen-run metadata.
+- Final submission materials and their source index.
 
-它不复制量化平台、数据供应商或交易执行实现。
+It does not duplicate the quantitative platform, data-vendor adapters, or trade-execution implementations.
 
-## 代码归属
+## Source-of-truth locations
 
-| 能力 | 权威位置 |
-| --- | --- |
-| 原始市场数据、数据质量和供应商适配 | `research-workspace/market-data-platform` |
-| 因子、策略假设、生命周期和研究证据 | `research-workspace/strategy-research` |
-| 策略计算、组合结果和应用层 | `research-workspace/strategy-app` |
-| 数据编排、运行目录、原子发布和执行交接 | `research-workspace/strategy-pipeline` |
-| IBKR 合约、订单、风控、对账和审计 | `research-workspace/quant-execution-engine` |
+| Capability | Authoritative location |
+|---|---|
+| Raw market data, data quality, and vendor adapters | `research-workspace/market-data-platform` |
+| Factors, strategy hypotheses, lifecycle, and research evidence | `research-workspace/strategy-research` |
+| Strategy calculations, portfolio results, and application layer | `research-workspace/strategy-app` |
+| Data orchestration, run directories, atomic publication, and execution handoff | `research-workspace/strategy-pipeline` |
+| IBKR contracts, orders, risk, reconciliation, and audit | `research-workspace/quant-execution-engine` |
 
-比赛仓库通过配置、版本锁定、运行清单和结果索引复用上述能力。只有当比赛
-需求形成可复用能力时，才回迁到对应的 `research-workspace` 子项目；不要在本
-仓库建立第二套执行引擎或数据平台。
+The competition repository reuses these capabilities through configuration, version locks, run manifests, and result indexes. Move a capability back to the corresponding `research-workspace` project only when the competition work creates a reusable capability. Do not create a second execution engine or data platform here.
 
-## 推荐目录
+## Suggested directories
 
 ```text
-config/       比赛专属参数
-docs/         规则、策略和操作文档
-experiments/  比赛实验配置与结果索引
-runs/         frozen run 元数据；大数据放在外部数据湖
-.env.example  可提交的环境变量模板
-.env.local    本机私有环境变量，不提交
+config/       competition-specific parameters
+docs/         rules, strategy, and operating guides
+experiments/  competition experiment configuration and result indexes
+runs/         frozen-run metadata; large data stays in an external data lake
+.env.example  committable environment-variable template
+.env.local    private local environment variables; never commit
 ```

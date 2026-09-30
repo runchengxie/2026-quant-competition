@@ -1,4 +1,4 @@
-# Windows runner runbook
+# Windows Runner Runbook
 
 The Windows machine has four logical processors, 16 GB RAM and no usable GPU.
 Run only the light international strategy there, with the default budget of

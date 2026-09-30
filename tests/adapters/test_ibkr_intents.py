@@ -1,6 +1,4 @@
 from decimal import Decimal
-from types import SimpleNamespace
-
 from adapters.ibkr.events import IBKRAdapter
 from packages.contracts.orders import OrderIntent
 

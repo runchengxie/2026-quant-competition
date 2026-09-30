@@ -1,33 +1,35 @@
-# Competition MVP status
+# Competition Execution MVP Status
 
-更新时间：2026-09-10
+Last updated: 2026-09-30
 
-## 已完成
+> This execution MVP still uses Hong Kong equities as a test candidate. It does not mean the competition strategy has been selected or registered. The team is also comparing an AIVIX-driven U.S. ETF candidate. Current competition dates follow the organizer's 2026-09-23 public rules; historical backtest snapshot dates remain unchanged.
 
-- 项目协作要求已写入根目录 `AGENTS.md`：独立 worktree、功能分支、PR、合并和清理。
-- 已建立 Paper-safe 的比赛配置：`config/competition-2026-hk.json`。
-- 已支持基础港股市场契约：`HK / SEHK / HKD`。
-- 已支持目标持仓与当前持仓之间的 BUY/SELL 差额规划。
-- `run_target_rebalance_pipeline` 已将目标交接、差额规划和 Paper/dry-run 执行串起来。
-- 已支持 frozen run 的 targets、lineage、resolved config、metrics 和 evidence 文件。
-- 已补充 IBKR 港股合约映射和 intent 方向提交接口。
-- 已增加 Paper-safe preflight：可验证 Paper/dry-run、目标交接、单票权重、dry-run rebalance 和可选 Gateway TCP 可达性；详见 `docs/operations/paper-preflight.md`。
-- 已建立港股低频动量 + 波动率控制基线回测，比较 2800 买入持有、纯动量和动量+波动率组合；结果见 `docs/operations/hk-strategy-baseline-2026-09-10.md`。
-- 基线使用当前 20 只港股日线快照，月度调仓、10 只持仓、2%现金、单票上限12%，只使用调仓日前收盘数据。
+## Completed
 
-## 尚未完成
+- Collaboration requirements are recorded in the root `AGENTS.md`: isolated worktree, feature branch, pull request, merge, and cleanup.
+- A Paper-safe competition configuration is available at `config/competition-2026-hk.json`.
+- Basic Hong Kong market contracts support `HK / SEHK / HKD`.
+- The system plans BUY/SELL deltas between target holdings and current positions.
+- `run_target_rebalance_pipeline` connects target handoff, delta planning, and Paper/dry-run execution.
+- Frozen runs support targets, lineage, resolved configuration, metrics, and evidence files.
+- IBKR Hong Kong contract mapping and intent-direction submission are implemented.
+- Paper-safe preflight checks Paper/dry-run mode, target handoff, single-name weights, dry-run rebalancing, and optional Gateway TCP reachability. See [Paper preflight](paper-preflight.md).
+- A low-frequency Hong Kong momentum and volatility baseline compares 2800 buy-and-hold, pure momentum, and momentum with volatility control. Results are recorded in [the 2026-09-10 baseline](hk-strategy-baseline-2026-09-10.md).
+- That historical baseline used daily snapshots for 20 Hong Kong stocks, monthly rebalancing, 10 holdings, 2% cash, a 12% single-name cap, and only data available before each rebalance close.
 
-- 尚未完成真实 Paper Gateway smoke：连接、逐只合约 qualification、订单回报、撤单、断线重连和 reconciliation。
-- preflight 的 Gateway 检查仅为 TCP 前置探测，不替代真实 Paper Gateway API smoke，也不证明行情权限或订单成交。
-- 港股每只股票的真实 lot size、交易时段、最小价格和流动性门槛仍需以 IBKR/组委会确认结果覆盖配置中的 baseline。
-- 尚未从研究系统导入真实比赛版 `targets.json`、`lineage.json` 和冻结 OOS 绩效结果。
-- 基准、持仓率、换手率和稳定性指标的赛事计算口径仍待组委会书面确认。
-- 尚未运行连续 Paper shadow；真实运行证据和每日绩效报告尚未生成。
-- 基线回测不是完整比赛宇宙，也不代表已经具备港股实时行情权限；港股当前仍以历史 + 延迟行情为已确认状态。
-- NautilusTrader 常驻运行时和 Gateway 回调 wiring 仍是后续集成工作，不属于本次 broker-neutral MVP。
+## Incomplete
 
-## 运行约束
+- No full Paper Gateway smoke test has been completed for connection, contract qualification, order acknowledgments, cancellation, reconnect, or reconciliation.
+- The preflight Gateway check is only a TCP probe; it is not a Paper API smoke test and does not confirm market-data permission or fills.
+- Per-stock board lots, trading sessions, price bands, and liquidity limits still need confirmation from IBKR and the organizer; the configuration currently contains baseline assumptions.
+- Competition `targets.json`, `lineage.json`, and a frozen out-of-sample performance run have not been imported from the research system.
+- The organizer's calculation conventions for benchmark, position rate, turnover, and stability still need written confirmation.
+- Continuous Paper shadow operation and daily reproducible performance reports have not been completed.
+- The historical baseline is not a complete competition universe and does not prove Hong Kong real-time market-data permission. Historical and delayed data are the confirmed state.
+- A resident NautilusTrader runtime and Gateway callback wiring remain follow-up integration work outside this broker-neutral MVP.
 
-- 当前配置固定为 `environment=paper`、`dry_run=true`。
-- 不得将 `.env.local`、凭据、账户信息、订单日志或运行产物提交到 Git。
-- 在 Paper smoke 完成前，不得启用 live guard 或把测试结果表述为真实券商验证。
+## Operating constraints
+
+- Keep `environment=paper` and `dry_run=true`.
+- Never commit `.env.local`, credentials, account information, order logs, or run artifacts.
+- Until the Paper smoke test is complete, do not enable a live guard or describe results as verified broker execution.

@@ -1,14 +1,14 @@
-# 比赛执行平台架构设计
+# Competition Execution Platform Design
 
-## 目标
+## Goal
 
-建立一个轻量、可审计、支持国际市场的比赛执行平台：Linux/Nira 生成目标，Windows 上的 NautilusTrader 执行运行时通过 IBKR Gateway 连接 Paper 或经人工批准的 Live 账户。
+Build a lightweight, auditable execution platform for international markets. Linux/Nira produces target files; a NautilusTrader runtime on Windows connects through IBKR Gateway to a Paper account or a separately approved live account.
 
-## 边界
+## Boundaries
 
-本项目不复制 `research-workspace`、Nira 或其数据资产。研究侧只输出版本化的 `targets.json`、`lineage.json` 和必要的信号元数据。本项目消费这些产物，负责执行前检查、订单生命周期、券商事实、恢复和比赛报告。
+The project does not copy `research-workspace`, Nira, or their data assets. Research emits versioned `targets.json`, `lineage.json`, and necessary signal metadata. This repository consumes those artifacts and handles pre-trade validation, order lifecycle, broker facts, recovery, and competition reporting.
 
-## 组件
+## Components
 
 ```text
 Nira / research-workspace
@@ -19,48 +19,45 @@ contracts + market_model + risk
 NautilusTrader execution runner
         ▼
 IBKR adapter → Windows IB Gateway → IBKR account
-        │
-        ├── OrderEvent / Fill event journal
+        ├── OrderEvent / Fill journal
         ├── Rebuildable order projection
         └── Reconciliation and audit evidence
 ```
 
 ### Contracts
 
-目标文件描述研究侧希望达到的组合，不直接描述券商 SDK 对象。`OrderIntent` 表达经过风险批准的单笔意图。`OrderEvent` 和 `Fill` 使用稳定的 JSON schema，时间统一为 UTC，数量和价格保留十进制定点语义。
+Target files describe the desired portfolio without embedding broker SDK objects. `OrderIntent` represents one risk-approved order intent. `OrderEvent` and `Fill` use stable JSON schemas, UTC timestamps, and decimal quantity/price semantics.
 
 ### Market model
 
-市场模型负责把标准代码解析为交易所合约，并维护交易所、币种、最小手数、交易时段、费用和汇率规则。日本代码例如 `1321.T`、`7203.T` 不得按美股 `.US` 规则处理。
+The market model resolves normalized symbols to exchange contracts and maintains exchange, currency, lot size, trading sessions, fees, and FX rules. Japan symbols such as `1321.T` and `7203.T` must not be handled using U.S. `.US` rules.
 
 ### Execution runner
 
-Windows runner 保持到 Gateway 的常驻连接，消费目标命令，监听订单状态、成交、错误、连接变化和账户事件。提交结果只表示 Gateway 已接受提交动作；最终状态必须由事件或对账确认。
+The Windows runner maintains a Gateway connection, consumes target commands, and listens for order status, fills, errors, connection changes, and account events. A successful submission response means only that Gateway accepted the request; final status comes from events or reconciliation.
 
 ### State and recovery
 
-事件日志是追加写入的事实记录。当前订单、持仓和运行摘要是可由事件重建的 projection。启动时先加载本地事件，再查询 Gateway 做 reconcile。连接中断、重复事件和未知提交结果必须保持幂等。
+The append-only event log is the factual record. Current orders, positions, and run summaries are projections that can be rebuilt from events. On startup, load local events and reconcile with Gateway. Handle disconnections, duplicate events, and unknown submission results idempotently.
 
 ### Execution policies
 
-第一阶段只支持安全的单笔限价/市价订单和撤单。TWAP、VWAP、POV 等算法作为独立的执行策略层接入，不能写入 IBKR adapter。算法必须接收统一的订单意图并输出子订单计划。
+The first stage supports safe single-order limit/market orders and cancellation. TWAP, VWAP, POV, and other algorithms belong in a separate execution-policy layer, not the IBKR adapter. They receive a common order intent and produce child-order plans.
 
-## 仓库策略
+## Repository and environment
 
-采用局部 monorepo：比赛执行、契约、市场模型、风险和审计放在本仓库；研究仓库和 Nira 保持独立。稳定共享代码只通过小型版本化 package 或标准文件契约复用。
+Use a local monorepo for competition execution, contracts, market model, risk, and audit. Keep the research repository and Nira independent; share stable code only through small versioned packages or file contracts.
 
-## 环境策略
+- Paper Gateway defaults to Windows `127.0.0.1:4002`.
+- Do not put live-account configuration in project `.env` files.
+- Inject RQData and Cryptoracle credentials only through the local environment; never write them to event logs.
+- Linux does not hold the IBKR API connection; the Windows runner is the only Gateway client.
 
-- Paper Gateway 默认使用 Windows `127.0.0.1:4002`。
-- 实盘配置不得放入项目 `.env` 文件。
-- RQData 和 Cryptoracle 凭证只由本地环境注入，并且不进入事件日志。
-- Linux 不直接持有 IBKR API 连接；Windows runner 是唯一的 Gateway 客户端。
+## Acceptance criteria
 
-## 验收标准
-
-1. Paper 账户可以识别美股、日本股票和日本 ETF 合约。
-2. 事件流能够记录提交、接受、部分成交、成交、撤单、拒单、错误和断线。
-3. runner 重启后不会重复报单，并能通过 reconcile 恢复未知状态。
-4. `targets.json` 能从 Nira 导出并经过 schema、市场和风险验证。
-5. 订单和成交证据可导出给比赛方，同时不泄露凭证。
-6. Paper 和 Live 配置在代码和运行时上明确隔离。
+1. A Paper account can qualify U.S. stocks, Japanese stocks, and Japanese ETFs.
+2. Events capture submission, acceptance, partial fills, fills, cancellation, rejection, errors, and disconnections.
+3. Restart does not duplicate orders and reconciliation restores unknown states.
+4. Nira can export `targets.json` that passes schema, market, and risk validation.
+5. Order/fill evidence can be exported for competition review without revealing credentials.
+6. Paper and live configurations remain clearly separated in code and at runtime.
