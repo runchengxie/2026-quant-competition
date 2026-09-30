@@ -56,7 +56,11 @@ def contract_for_symbol(symbol: str) -> Any:
         from ib_insync import Stock
     except ImportError:
         return _ContractShape(
-            symbol=instrument.symbol.removesuffix(".T").removesuffix(".US"),
+            symbol=(
+                instrument.symbol.removesuffix(".T")
+                .removesuffix(".HK")
+                .removesuffix(".US")
+            ),
             exchange="SMART",
             currency=instrument.currency.value,
             primaryExchange=primary_exchange,
