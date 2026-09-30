@@ -1,160 +1,115 @@
-# 2026 FundConnectHK 量化大赛策略适配分析
+# Strategy Fit for the 2026 FundConnectHK Quant Competition
 
-## 1. 文档目的
+## 1. Purpose and status
 
-本文用于补充团队现有量化项目分析，重点评估 GitHub 中的非 A 股策略哪些适合参加 FundConnectHK 2026 香港量化大赛，并为已确定的「多头 / 指数增强策略」报名方向提供统一的对外表述。
+This document translates and updates historical research written in early September 2026 about the competition fit of non-A-share strategies in the team's GitHub projects. The current schedule follows the organizer's 2026-09-23 public rules. The team has not selected or registered its competition strategy. The Hong Kong equity candidate and the AIVIX-driven U.S. ETF candidate remain under review.
 
-## 2. 赛事背景与策略选择
+The earlier version favored a long-only/index-enhancement strategy. That was a research recommendation, not a submitted registration decision. Compare the Hong Kong Point-in-Time (PIT) stock candidate and the U.S. ETF candidate on data availability, out-of-sample performance, competition eligibility, and supervised IBKR Paper execution before selecting one.
 
-FundConnectHK 官方信息显示，2026 香港量化大赛支持 IBKR 账户连接，并设置模拟组和实盘组；正式比赛时间为 2026 年 9 月 28 日至 12 月 29 日。赛事页面还提到，优秀团队可能进入后续资产管理合作候选池，但参赛本身不保证获得资金配置。
+## 2. Project fit (historical assessment)
 
-因此，参赛版本需要同时满足以下要求：
-
-- 策略分类与报名选项一致；
-- 有明确的可交易市场和基准；
-- 能够从信号转换为真实组合和订单；
-- 能够说明样本外验证、交易成本和风险控制；
-- 可以进一步适配 IBKR 模拟或实盘账户。
-
-本次报名已确定选择「多头 / 指数增强策略」。因此，港股 Point-in-Time 横截面选股策略应作为主策略；全球期货、BTC、配对交易和交易系统项目作为能力证明或研究储备，不应与主策略混为一谈。
-
-## 3. GitHub 项目适配排序
-
-| 优先级 | 项目 / 策略 | 市场 | 赛事用途 | 判断 |
+| Historical priority | Project / strategy | Market | Potential competition role | Assessment |
 |---|---|---|---|---|
-| S | 港股 Monthly PIT + XGB Ranker | 港股 | 主报名策略 | 最符合多头 / 指数增强分类 |
-| A | `hk-stock-allocation` | 港股 | 组合实施附件 | 证明信号到真实持仓的转换能力 |
-| A- | CNN Walk-Forward Rank | 港股 | 机器学习能力附件 | 证明深度学习、校准和样本外验证能力 |
-| B+ | Global Futures | 全球期货 | 团队能力附件 | 系统化建模和风险配置完整，但不是指数增强主线 |
-| B | Intraday Trader | 美股 / 港股 | 工程能力附件 | 证明回测、Paper Trading、多券商和风控基础设施 |
-| B- | KO/PEP Pairs | 美股 | 研究储备 | 市场中性方向，当前 hedge ratio 与 P&L 口径需先统一 |
-| B- | US PE Sector Alpha | 美股 | 研究能力附件 | 可证明 PIT、交易约束和组合评估能力，但需明确 reference alpha 属性 |
-| C+ | BTC 多模型共识 | 加密资产 | 技术能力附件 | 技术含量高，但执行环境与本次 IBKR 指数增强赛道差异较大 |
-| 排除 | A/H Pairs、CDS Basket、含 A 股 ETF 的配置策略 | A 股或混合市场 | 不建议提交 | 与非 A 股筛选或报名策略口径不一致 |
+| S | Monthly PIT Hong Kong stocks with XGBoost Ranker | Hong Kong | Candidate | Original fit assessment; compare against the new AIVIX candidate. |
+| A | `hk-stock-allocation` | Hong Kong | Portfolio implementation evidence | Demonstrates conversion of signals into holdings and orders. |
+| A- | CNN walk-forward ranker | Hong Kong | Machine-learning research evidence | Demonstrates deep learning, calibration, and out-of-sample validation. |
+| B+ | Global futures | Global futures | Team capability evidence | Systematic modeling and risk allocation, but not a long-only equity-index strategy. |
+| B | Intraday trader | U.S. / Hong Kong | Engineering evidence | Backtesting, Paper trading, multiple data and broker adapters, and risk controls. |
+| B- | KO/PEP pairs | U.S. | Research reserve | Reconcile hedge ratios and P&L definitions before use. |
+| B- | U.S. private-equity sector alpha | U.S. | Research capability evidence | Clarify Point-in-Time, trading constraints, and whether the alpha is external reference material. |
+| C+ | Multi-model BTC strategy | Crypto | Technical capability evidence | Its edge depends on OKX spot/perpetual execution, which differs from the IBKR competition setup. |
+| Exclude | A/H pairs, CDS basket, and portfolios with A-share ETFs | A-share or mixed | Not recommended for this entry | Does not fit the non-A-share scope or a single consistent strategy category. |
 
-## 4. 主报名策略定位
+## 3. Hong Kong candidate positioning (historical draft)
 
-建议统一使用以下名称：
+Potential descriptive names:
 
-> 基于 Point-in-Time 基本面与横截面排序模型的港股指数增强策略
+> Hong Kong index-enhancement strategy using Point-in-Time fundamentals and cross-sectional ranking.
 
-也可以使用更简短的对外名称：
+> Low-turnover, fundamental-led, machine-learning index enhancement for Hong Kong equities.
 
-> 低换手港股基本面机器学习指数增强策略
+Avoid describing the strategy only as an “XGBoost stock-picking strategy” or “deep-learning prediction of Hong Kong stock prices.” That hides the benchmark, active risk, portfolio construction, and trading constraints.
 
-不建议使用「XGBoost 选股策略」或「深度学习预测港股涨跌」作为主标题。这类名称过度突出模型，无法说明基准、主动风险、组合构建和交易可执行性。
+## 4. Candidate strategy logic
 
-## 5. 主策略逻辑
+### 4.1 Alpha sources
 
-### 5.1 Alpha 来源
+Build PIT historical fundamentals and equity-universe data using information that was available at each historical decision point. This reduces look-ahead caused by restated financials, mismatched publication dates, or later data revisions. Candidate feature families include earnings quality, financial strength, valuation, and other economically interpretable market and fundamental characteristics.
 
-策略遵循 Point-in-Time 原则构建历史基本面和股票池数据，仅使用每个历史决策时点已经公开且可获得的信息，降低财务数据修订、发布日期错配及未来信息泄漏带来的影响。
+The model ranks stocks relative to one another at each decision time. It does not rely only on predicting the absolute direction of each stock.
 
-主要信号来源包括：
+### 4.2 Portfolio construction
 
-- 盈利质量；
-- 财务稳健性；
-- 估值；
-- 其他具有横截面解释力的基本面和市场特征。
+Model scores should not map mechanically to orders. The portfolio layer should include:
 
-模型不以预测单只股票的绝对涨跌为唯一目标，而是对同一时点的股票进行相对收益排序，识别预期相对基准表现较优的股票。
+- Top-K holdings and entry/exit buffers.
+- Sector concentration and single-name weight limits.
+- Liquidity, turnover, and transaction-cost constraints.
+- Hong Kong board-lot sizes, cash buffers, and tradability checks.
 
-### 5.2 组合构建
+These rules turn a research signal into an executable index-enhancement portfolio and reduce unnecessary trades caused by small ranking changes near a cutoff.
 
-模型评分不会直接机械转换为交易指令。组合层采用以下机制：
+### 4.3 Validation
 
-- Top-K 持仓；
-- 进入与退出缓冲区；
-- 行业集中度上限；
-- 个股权重约束；
-- 流动性约束；
-- 换手和交易成本约束；
-- 港股每手交易单位、现金缓冲和可交易状态检查。
+Keep signal research, portfolio construction, parameter selection, final out-of-sample evaluation, and execution-cost evaluation separate. Use rolling training, walk-forward evaluation, and a holdout period. Freeze the data version, universe, evaluation period, and configuration. Submission metrics should come from one frozen competition run rather than a mixture of notebooks and data versions.
 
-这使策略从「预测模型」转变为可执行的指数增强组合，并降低临界排名变化造成的无效交易。
+## 5. Metrics for the Hong Kong index candidate
 
-### 5.3 验证方法
-
-研究和回测流程应明确区分：
-
-1. 信号研究；
-2. 组合构造；
-3. 参数选择；
-4. 最终样本外评估；
-5. 交易成本和执行评估。
-
-建议继续使用滚动训练、Walk-Forward 和独立 OOS 评估，并固定数据版本、股票池和评估区间。最终报名材料中的净值、回撤和风险指标应全部来自一套 frozen competition run，避免混用不同 Notebook 或不同数据版本的结果。
-
-## 6. 指数增强必须展示的指标
-
-报名材料和 Strategy Deck 不应只展示 Sharpe Ratio。建议主表优先展示：
-
-| 指标 | 作用 |
+| Metric | Purpose |
 |---|---|
-| Annualized Excess Return / Alpha | 说明相对于基准增强了多少 |
-| Tracking Error | 说明为超额收益承担了多少主动风险 |
-| Information Ratio | 指数增强的核心效率指标 |
-| Maximum Drawdown | 绝对风险 |
-| Active Drawdown | 相对基准的最差阶段 |
-| Turnover | 交易可实现性 |
-| Monthly Hit Rate vs Benchmark | 稳定性 |
-| Sector Active Exposure | 行业主动暴露 |
-| Size / Value / Momentum Exposure | 识别隐藏的风格 Beta |
+| Annualized excess return / alpha | Measures return above the benchmark. |
+| Tracking error | Measures active risk taken to seek excess return. |
+| Information ratio | Measures excess return relative to tracking error. |
+| Maximum drawdown | Measures absolute portfolio downside. |
+| Active drawdown | Measures the worst relative period against the benchmark. |
+| Turnover | Helps assess trading feasibility and costs. |
+| Monthly hit rate versus benchmark | Shows consistency across months. |
+| Sector active exposure | Reveals sector tilts relative to the benchmark. |
+| Size, value, and momentum exposure | Identifies hidden style bets. |
 
-Benchmark 必须和实际股票池匹配。候选包括恒生指数、恒生综合指数或其他港股宽基指数，最终选择应基于股票池覆盖范围、流动性和实际可交易性确定。
+The benchmark should match the stock universe. The Hang Seng Index, Hang Seng Composite Index, or another broad Hong Kong equity index may be appropriate depending on coverage, liquidity, and actual tradability. Confirm the choice with the organizer.
 
-## 7. 其他项目如何放入赛事材料
+## 6. How other projects may support the presentation
 
-### Global Futures
+### Global futures
 
-作为团队具备多资产系统化建模、风险平价、动态风险预算和组合优化能力的证明。它不应作为本次「多头 / 指数增强」主策略，因为其核心是全球期货择时和跨资产配置。
+Use it as evidence of systematic modeling across assets, risk parity, dynamic risk budgets, and portfolio optimization. Its core is global-futures timing and cross-asset allocation, so it should not be presented as the selected long-only/index-enhancement strategy.
 
 ### `hk-stock-allocation`
 
-作为主策略的重要补充，重点展示如何考虑港股 round lot、现金缓冲、交易费用、价格分层和持仓限制，把研究信号转化为实际订单和持仓。
+Use it to explain how research signals can become orders while accounting for Hong Kong board lots, cash buffers, fees, price bands, and holding limits.
 
-### CNN Walk-Forward Rank
+### CNN walk-forward ranker
 
-作为机器学习研究能力附件，展示滚动训练、purge / embargo、概率校准、横截面排名和 OOS 评估。不要让它取代主策略叙事。
+Use it to demonstrate rolling training, purge/embargo methods, probability calibration, cross-sectional ranking, and out-of-sample evaluation. It should support, not replace, the primary strategy explanation.
 
-### Intraday Trader
+### Intraday trader
 
-作为交易基础设施附件，展示事件驱动回测、Paper Trading、多行情源、多券商接入、风控和订单执行能力。重点描述工程能力，不要把 EMA 或 Z-score 本身包装成核心 Alpha。
+Use it to demonstrate event-driven backtesting, Paper trading, market-data and broker adapters, risk checks, and order execution. Describe the engineering; do not present EMA or Z-score rules alone as the main alpha source.
 
-### KO/PEP Pairs
+### KO/PEP pairs
 
-暂时只作为市场中性研究储备。正式使用前，需要统一协整 beta、hedge ratio、dollar neutrality、交易成本、借券成本和执行延迟的 P&L 口径。
+Keep it as market-neutral research until cointegration beta, hedge ratio, dollar neutrality, transaction costs, borrow costs, execution delay, and P&L accounting are consistent.
 
-### US PE Sector Alpha
+### U.S. private-equity sector alpha
 
-可用于证明团队具备 PIT 数据处理、行业中性化、流动性筛选、TCA 和组合评估能力，但必须明确区分外部参考 Alpha 与团队自行开发的部分，避免造成原创策略表述不准确。
+It can demonstrate PIT data handling, sector neutralization, liquidity filters, transaction-cost analysis, and portfolio evaluation. Clearly distinguish external reference alpha from work developed by the team.
 
-### BTC 多模型策略
+### BTC multi-model strategy
 
-可作为高频和微观结构机器学习能力证明，但由于其 edge 依赖 OKX 现货 / 永续市场和加密资产执行环境，不建议作为本次比赛的主报名策略。
+It can demonstrate high-frequency and microstructure machine learning. The original assessment did not prioritize it because its execution depends on OKX spot/perpetual markets. That assessment predates the AIVIX-driven U.S. ETF candidate and should not decide the current entry by itself.
 
-## 8. 报名页策略介绍（正式版）
+## 7. Historical application-text drafts
 
-本策略是一套面向香港股票市场的系统化多头指数增强策略。策略遵循 Point-in-Time 原则构建历史基本面和股票池数据，结合盈利质量、财务稳健性、估值及其他横截面特征，通过机器学习排序模型识别预期相对表现较优的股票。
+The text below records a historical Hong Kong candidate description. It is not approved application language and must not be treated as a selected or registered strategy.
 
-组合采用 Top-K 持仓及进入 / 退出缓冲机制，并对行业集中度、个股权重、换手率、流动性和交易成本进行约束，在保留选股 Alpha 的同时控制相对于基准的主动风险。模型研究采用滚动训练、Walk-Forward 和独立样本外评估，严格区分训练、验证和最终测试区间。
+> This is a systematic long-only index-enhancement strategy for the Hong Kong equity market. It follows Point-in-Time principles when constructing historical fundamentals and the investable universe, and combines earnings quality, financial strength, valuation, and other cross-sectional features in a machine-learning ranking model. The portfolio uses Top-K holdings and entry/exit buffers, with limits on sector concentration, individual weights, turnover, liquidity, and transaction costs. Research uses rolling training, walk-forward analysis, and independent out-of-sample evaluation. The objective is to maintain long-term equity exposure while seeking risk-adjusted excess return over a broad Hong Kong equity benchmark.
 
-策略保持长期股票市场敞口，主要收益目标来自系统化选股产生的基准超额收益，并通过组合约束、低换手执行和实际交易可行性检查，提高策略在真实市场环境中的可实施性。
+## 8. Strategy deck
 
-## 9. 报名页短版
+The proposed slide structure is in [strategy-deck-outline.md](strategy-deck-outline.md).
 
-本策略是一套面向香港股票市场的系统化多头指数增强策略。策略遵循 Point-in-Time 原则构建历史基本面和股票池数据，结合盈利质量、财务稳健性、估值及其他横截面特征，通过机器学习排序模型识别预期相对表现较优的股票。组合采用 Top-K 持仓及进入 / 退出缓冲机制，并对行业集中度、个股权重、换手率、流动性和交易成本进行约束。模型研究采用滚动训练、Walk-Forward 和独立样本外评估，目标是在保持长期股票市场敞口的同时，持续获取相对于港股宽基基准的风险调整后超额收益。
+## Sources
 
-## 10. Strategy Deck
-
-Strategy Deck 的页结构已单独整理为 [Strategy Deck 建议结构](strategy-deck-outline.md)。
-
-## 11. 最终对外定位
-
-> 低换手、基本面主导、Point-in-Time 数据、横截面机器学习排序驱动的港股多头指数增强策略。
-
-该定位能够同时覆盖团队的研究优势、组合构建能力和 2026 赛事的报名分类，并避免将尚未完成实盘验证的研究结果表述为成熟长期业绩。
-
----
-
-资料来源：FundConnectHK 官方网站及 2026 香港量化大赛公开赛事信息。比赛规则、账户连接要求、Benchmark 认定和最终评审口径，以赛事方后续确认的信息为准。
+- [FundConnectHK official public rules](https://fundconnecthk.com/quant-league/legal/competition-rules/)
+- The team's historical research materials and project records.

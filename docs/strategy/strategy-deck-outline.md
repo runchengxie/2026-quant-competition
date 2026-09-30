@@ -1,16 +1,16 @@
-# Strategy Deck 建议结构
+# Suggested Strategy Deck Outline
 
-建议控制在 8—12 页，具体数据应来自同一套 frozen competition run。
+Keep the deck to 8–12 slides. All figures should come from the same frozen competition run.
 
-1. 团队与策略概览
-2. 投资目标和 Benchmark
-3. 股票池与 Point-in-Time 数据
-4. Alpha 特征和横截面 Ranker
-5. 组合构建、行业约束和缓冲换仓
-6. Walk-Forward / OOS 验证
-7. 超额收益、Tracking Error 和 Information Ratio
-8. 换手、交易成本和流动性分析
-9. 回撤、压力测试和风险管理
-10. IBKR 模拟 / 实盘执行架构
-11. 团队其他项目作为研究与工程能力补充
-12. 风险披露和下一步验证计划
+1. Team and strategy overview.
+2. Investment objective and benchmark.
+3. Investable universe and Point-in-Time data.
+4. Alpha features and cross-sectional ranker.
+5. Portfolio construction, sector constraints, and turnover buffers.
+6. Walk-forward and out-of-sample validation.
+7. Excess return, tracking error, and information ratio.
+8. Turnover, transaction costs, and liquidity analysis.
+9. Drawdowns, stress tests, and risk management.
+10. IBKR simulated/live execution architecture.
+11. Other team projects as supporting research and engineering evidence.
+12. Risk disclosures and next validation steps.

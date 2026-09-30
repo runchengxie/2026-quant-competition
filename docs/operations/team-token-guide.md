@@ -1,56 +1,47 @@
-# 香港资管通团队 Token 获取指引
+# FundConnectHK Team Token Setup Guide
 
-> 来源：[下载原始 PDF](https://github.com/runchengxie/2026-hk-quant-trading-competition/releases/download/reference-pdfs-2026-09/team-token-guide.pdf)
-> 说明：以下内容根据 PDF 文本和页面顺序整理；截图页面仍需结合原 PDF 查看。
+This English guide was prepared with the organizer's permission from the team reference material. The original PDF is not distributed in this repository. Follow the latest instructions in the team portal if the workflow changes.
 
-## 一、Token 是什么
+## What is an IBKR Flex Token?
 
-IBKR Flex Token 是授权第三方系统读取 IBKR 账户报表数据的安全凭证，可用于同步账户资产、持仓、交易记录、资金流水和账户报表。
+An IBKR Flex Token authorizes an external system to retrieve account statement data, such as account values, positions, trades, cash activity, and reports. It is for report retrieval only; it does not grant trading, transfer, or withdrawal permission.
 
-Flex Token 仅用于读取报表数据，不具备交易权限，不会直接产生下单、转账或提款权限。
+## Before you start
 
-## 二、获取前准备
+- Your IBKR account is open.
+- You can sign in to the IBKR Client Portal.
+- Sign in with the account's primary user. Some linked accounts may require Master Account access.
 
-- 已完成 IBKR 账户开户。
-- 可以正常登录 IBKR Client Portal。
-- 使用账户主账号登录；部分关联账户可能需要 Master Account 权限。
+## Create a token
 
-## 三、获取 Token
+1. Sign in to the [IBKR website](https://www.interactivebrokers.com.hk/cn/home.php).
+2. Open report settings.
+3. Configure the Flex Web Service.
+4. Select the option to generate a new token.
+5. Set the expiry period to `1 Year`.
+6. Create the token and copy it to your local secret manager.
 
-1. 登录 [IBKR 官网](https://www.interactivebrokers.com.hk/cn/home.php)。
-2. 进入报表设置。
-3. 配置“自主网络服务”。
-4. 点击“生成新的验证口令”。
-5. 到期倒计时选择 `1 Year`。
-6. 点击“创建”查看 Token。
+Creating a new token replaces the previous token. Do not put the token in source control or send it through an unverified channel.
 
-> 注意：新创建的 Token 会覆盖旧 Token。
+## Create a Query ID
 
-第 4、6—10 页含有操作截图或版式信息，具体按钮位置以[原始 PDF](https://github.com/runchengxie/2026-hk-quant-trading-competition/releases/download/reference-pdfs-2026-09/team-token-guide.pdf) 为准。
+1. Open the option to create an Activity Flex Query.
+2. Enter a query name using English characters.
+3. Select the required query sections. The original team instructions suggested selecting all sections; apply least privilege if the organizer specifies a narrower field set.
+4. Set the send period to the past 365 calendar days if that remains the organizer's requirement.
+5. Continue to review the Activity Flex Query.
+6. Create the query and copy its Query ID.
 
-## 四、获取 Query ID
+## Submit to the team portal
 
-1. 进入“创建活动自主查询”。
-2. 填写查询名称；查询名称仅支持英文。
-3. 设置查询区段；原指引建议全选。
-4. 发送配置的时段选择过去 365 个日历日。
-5. 点击“继续”，查看活动自助查询。
-6. 点击“创建”，获取 Query ID。
+Sign in to the [FundConnectHK team portal](https://team.fundconnecthk.com/login) and submit the Flex Token and Query ID through the approved form. Never submit an IBKR login password.
 
-第 12—17 页主要为操作截图，建议对照[原始 PDF](https://github.com/runchengxie/2026-hk-quant-trading-competition/releases/download/reference-pdfs-2026-09/team-token-guide.pdf) 操作。
+## First completed trade
 
-## 五、提交团队系统
+After the token and Query ID are linked, the account may need at least one completed buy or sell transaction. An unfilled order does not count as a completed trade. If the account has no completed trades, the system may validate the IBKR credentials but the latest Flex report may contain no trade data. After a completed transaction, later automatic synchronization should update the performance record without linking the token again.
 
-登录 [香港资管通团队端](https://team.fundconnecthk.com/login)，提交 IBKR Token 和 Query ID。
+## Security
 
-## 六、首次成交要求
-
-Token 和 Query ID 绑定后，还需要在该账户中成功成交至少一笔实际买卖订单。仅提交未成交的委托不算完成交易。
-
-如果账户没有已完成的成交记录，系统可以验证 IBKR 凭据，但最新 Flex 报表中可能没有交易数据，后台会提示。成交后，系统会在后续自动同步中更新策略业绩，通常无需重复绑定 Token。
-
-## 七、安全提醒
-
-- 不要把 Token、Query ID 或账户密码提交到公开代码仓库。
-- 仅向确认过的团队系统提交凭据。
-- Token 虽然没有交易权限，仍属于账户敏感授权信息，应按密钥管理。
+- Do not commit the token, Query ID, or account password to a public repository.
+- Submit credentials only through a verified team system.
+- Although a Flex Token cannot place trades, it is sensitive account authorization data and must be handled like a secret.
