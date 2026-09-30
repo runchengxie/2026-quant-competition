@@ -1,17 +1,12 @@
-# 全球 ETF 多资产轮动基线
+# Global Multi-Asset ETF Rotation Baseline
 
-- 快照：2026-09-10
-- 共同样本：2024-11-01 至 2026-09-03，421 个交易日
+- Snapshot date: 2026-09-10.
+- Common sample: 2024-11-01 to 2026-09-03, 421 trading days.
 
-| 策略 | 累计收益 | Sharpe | 最大回撤 | 平均换手 |
+| Strategy | Cumulative return | Sharpe | Maximum drawdown | Average turnover |
 |---|---:|---:|---:|---:|
-| equal_weight_common_dates | 35.81% | 1.74 | 12.69% | 0.00% |
-| pure_momentum | 32.07% | 1.46 | 12.98% | 48.26% |
-| defended_rotation | 32.74% | 1.50 | 12.98% | 35.22% |
+| Equal weight on common dates | 35.81% | 1.74 | 12.69% | 0.00% |
+| Pure momentum | 32.07% | 1.46 | 12.98% | 48.26% |
+| Defended rotation | 32.74% | 1.50 | 12.98% | 35.22% |
 
-## 限制
-
-- Six ETF sample is not a complete global asset universe.
-- No FX conversion or hedging is applied; native-currency equal weighting is not investable portfolio accounting.
-- No realtime, bid/ask, depth or order-level data is used.
-- This research strategy is separate from the HK competition strategy and does not establish competition eligibility.
+See the [interpretation and limitations](../docs/operations/global-etf-rotation-baseline-2026-09-10.md).

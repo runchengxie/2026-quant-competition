@@ -1,32 +1,32 @@
-# 港股基线策略 Paper shadow 清单
+# Hong Kong Baseline Strategy: Paper Shadow Checklist
 
-适用策略：`momentum_volatility` 低频港股基线。当前只允许 Paper、dry-run 和只读验证。
+Applies to the low-frequency `momentum_volatility` Hong Kong baseline. Only Paper, dry-run, and read-only validation are currently allowed.
 
-## 数据与信号
+## Data and signals
 
-- [ ] 确认每日输入是已完成交易日的收盘数据，不把 IBKR 延迟 Last 当作实时成交价。
-- [ ] 确认 20 只股票及 `2800` 的日期、币种、复权/分红口径一致。
-- [ ] 信号时间戳早于下一交易日执行时间；不得读取执行日收盘价生成同日信号。
-- [ ] 每月只生成一次目标组合；缺少历史或合约资格的股票进入排除清单。
+- [ ] Confirm each daily input is a completed trading-day close; do not treat IBKR delayed Last as a real-time fill price.
+- [ ] Confirm the dates, currency, and adjustment/dividend conventions match across the 20 stocks and `2800`.
+- [ ] Signal timestamps must precede next-session execution; never use the execution-day close to create a same-day signal.
+- [ ] Generate targets only once per month. Put securities with insufficient history or missing contract qualification on an exclusion list.
 
-## 组合与比赛约束
+## Portfolio and competition constraints
 
-- [ ] 默认 10 只持仓、单票不超过 12%、现金 2%。
-- [ ] 记录持仓率、空仓天数、调仓换手和成本假设。
-- [ ] 用 2800 计算相对收益，但不把 2800 混入港股股票 alpha 池。
-- [ ] 书面确认比赛的基准、持仓率、换手率、流动性和价格门槛口径。
+- [ ] Default to 10 holdings, no more than 12% per name, and 2% cash.
+- [ ] Record position rate, flat days, rebalance turnover, and cost assumptions.
+- [ ] Use `2800` to calculate relative return but do not include it in the Hong Kong stock alpha universe.
+- [ ] Obtain written confirmation of benchmark, position-rate, turnover, liquidity, and minimum-price definitions.
 
-## IBKR Paper 运行
+## IBKR Paper operation
 
-- [ ] 使用 Paper IB Gateway `127.0.0.1:4002` 或明确记录的 TWS Paper 端口。
-- [ ] 逐只确认 `SEHK/HKD` 合约 qualification；不能用 socket 连接成功代替行情权限确认。
-- [ ] 记录实时行情错误（如 354/10089）与延迟行情类型（marketDataType=3）并分开标记。
-- [ ] 保持 `environment=paper`、`dry_run=true`，先验证目标生成、订单意图、差额规划和回报落盘。
-- [ ] 一次只保留一个 TWS/Gateway API 会话，避免 10197/2103/2110 干扰诊断。
+- [ ] Use the Paper IB Gateway at `127.0.0.1:4002` or record the configured TWS Paper port.
+- [ ] Qualify each `SEHK/HKD` contract individually; a successful socket connection is not proof of market-data permission.
+- [ ] Record real-time market-data errors (for example, 354/10089) separately from delayed data (`marketDataType=3`).
+- [ ] Keep `environment=paper` and `dry_run=true`. First validate target generation, order intents, delta planning, and response logging.
+- [ ] Keep only one TWS/Gateway API session active at a time to avoid 10197/2103/2110 interference during diagnosis.
 
-## 证据与放行
+## Evidence and release gate
 
-- [ ] 每次运行保存输入快照、resolved config、targets、lineage、订单意图、回报和 reconciliation 结果。
-- [ ] 连续 Paper shadow 至少覆盖一个月度调仓周期，且每日绩效报告可重算。
-- [ ] Flex Query 能提供 trades、cash transactions 和 NAV Summary（Base）。
-- [ ] 在上述证据齐全前，不启用 live guard，不发送实盘订单。
+- [ ] For every run, save an input snapshot, resolved configuration, targets, lineage, order intents, responses, and reconciliation results.
+- [ ] Run continuous Paper shadow across at least one monthly rebalance cycle and ensure daily reports can be reproduced.
+- [ ] Confirm the Flex Query can provide trades, cash transactions, and NAV Summary (Base).
+- [ ] Do not enable a live guard or send live orders before all evidence above is available.

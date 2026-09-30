@@ -1,67 +1,67 @@
 # AGENTS.md
 
-本仓库是香港量化比赛的执行与运行项目。研究、回测和原始数据采集不在本仓库复制维护。
+This repository contains the execution and operations project for the 2026 Hong Kong quantitative trading competition. Research, backtesting, and raw data acquisition are maintained elsewhere and should not be duplicated here.
 
-## 项目边界
+## Project boundaries
 
-- `research-workspace` 和 Nira 负责研究、回测、因子和信号。
-- 本仓库负责目标交接、市场标准化、风险控制、NautilusTrader 执行、IBKR Gateway、对账和比赛审计。
-- AIVIX/Cryptoracle 只用于加密资产指标实验，不能作为港股或日股行情源。
-- RQData 只作为 A 股、ETF 和基金等备用研究数据源，不能作为 Nira 的日本股票数据源。
-- 不通过本地绝对路径 import `research-workspace` 或 Nira 源码。
+- `research-workspace` and Nira own research, backtests, factors, and signals.
+- This repository owns target handoff, market normalization, risk controls, NautilusTrader execution, IBKR Gateway integration, reconciliation, and competition audit evidence.
+- AIVIX/Cryptoracle is used only for crypto-indicator experiments, not as a Hong Kong or Japan market-data source.
+- RQData is a backup research source for A-shares, ETFs, and funds; it is not Nira's Japan equity data source.
+- Never import `research-workspace` or Nira source code through local absolute paths.
 
-## 目标交接
+## Target handoff
 
-研究侧通过版本化的 `targets.json`、`lineage.json` 和 schema 交接。执行侧不得根据目录位置推断策略身份、市场或订单参数。
+The research side hands off versioned `targets.json`, `lineage.json`, and schemas. The execution side must not infer strategy identity, market, or order parameters from a directory name.
 
-订单生命周期采用以下边界：
+Order lifecycle:
 
 ```text
 targets.json → OrderIntent → BrokerCommand → OrderEvent / Fill → Projection
 ```
 
-文件目标是命令和交接证据，订单事件日志是券商事实来源，projection 是可重建的当前状态，对账用于处理漏事件和重启恢复。
+Target files are commands and handoff evidence. The broker event log is the source of truth for order events; a projection is a rebuildable current state; reconciliation handles missing events and restart recovery.
 
-## Agent 协作流程
+## Collaboration workflow
 
-所有代码或文档改动必须遵循以下 worktree-first、PR-first 流程：
+All code and documentation changes follow a worktree-first, PR-first workflow:
 
-1. 先确认当前 checkout 的状态；不得直接在 `main` 上开始任务。
-2. 从 `origin/main` 创建独立 worktree 和功能分支；worktree 放在项目的 `.worktrees/` 下，并确保该目录被 `.gitignore` 忽略。
-3. 一个 Agent 只负责一个清晰、可验收的任务；并行 Agent 必须拥有不同 worktree、分支和不重叠的核心文件集合。
-4. 新功能必须先写失败测试，再写最小实现；共享契约、配置、迁移和执行核心存在依赖时必须串行。
-5. 在功能 worktree 内完成测试、静态检查、安全检查和人工审阅；不得把未验证的改动直接带回 `main`。
-6. 在功能分支提交并推送，创建 PR；PR 必须经过 review 和 CI 检查后，才允许合并到 `main`。
-7. 合并后确认 `main` 测试通过，再删除远端功能分支、本地功能分支和对应 worktree。
-8. 清理完成后检查 `git worktree list`、`git branch -a` 和 `git status --short --branch`，确保没有残留分支、worktree 或未提交改动。
+1. Check the current checkout before starting; do not work directly on `main`.
+2. Create an isolated worktree and feature branch from `origin/main` under `.worktrees/`; make sure the directory is ignored by Git.
+3. Keep each task focused and reviewable. Parallel work, when used, must have separate worktrees, branches, and non-overlapping core files.
+4. For new features, write a failing test before the smallest implementation. Work serially when shared contracts, configuration, migrations, or execution-core dependencies are involved.
+5. Run tests, static checks, security checks, and manual review inside the feature worktree. Do not bring unverified changes to `main`.
+6. Commit and push the feature branch, open a pull request, and wait for review and CI before merging.
+7. After merging, verify `main`, then remove the remote/local feature branch and worktree.
+8. Confirm `git worktree list`, `git branch -a`, and `git status --short --branch` show no unintended residue.
 
-推荐分支命名：`feat/*`、`fix/*`、`chore/*`、`docs/*`。
+Recommended branch prefixes: `feat/*`, `fix/*`, `chore/*`, and `docs/*`.
 
-执行核心、schema、配置和迁移任务存在依赖时必须串行；只读调查、文档和互不重叠的测试任务可以并行。
+Serialize work that depends on execution core, schemas, configuration, or migrations. Read-only research, documentation, and independent tests may run in parallel.
 
-## 执行安全
+## Execution safety
 
-- 默认只允许 Paper 账户和 Paper Gateway。
-- 实盘必须有独立配置、显式保护开关和人工监督。
-- 不提交 `.env`、`.env.*`、API key、账户信息、订单日志或运行产物。
-- 下单前必须完成账户、合约、价格、数量、市场时段和风险检查。
-- 未确认的订单状态不得推断为拒绝或成交，必须通过事件或对账确认。
-- 测试默认使用 mock 或 Paper；不使用真实资金做自动化测试。
+- Paper accounts and Paper Gateway are the default.
+- Live trading requires separate configuration, explicit guard switches, and human supervision.
+- Never commit `.env`, `.env.*`, API keys, account information, order logs, or run artifacts.
+- Before an order, validate the account, contract, price, quantity, market session, and risk limits.
+- Do not infer that an unknown order was rejected or filled; confirm through broker events or reconciliation.
+- Tests use mocks or Paper, never real money for automated testing.
 
-## 代码组织
+## Code organization
 
-- `packages/contracts`：目标、订单意图、订单事件和 schema。
-- `packages/market_model`：市场、交易所、币种、手数和交易日历。
-- `packages/risk`：执行前风险检查和 kill switch。
-- `packages/audit`：事件日志、审计和比赛证据。
-- `adapters/ibkr`：IBKR Gateway 合约、行情、订单和回报映射。
-- `apps/execution_runner`：Windows 上的常驻执行进程。
-- `strategies/nira`：读取外部 Nira 信号并导出目标，不复制 Nira 全部源码。
+- `packages/contracts`: targets, order intents, order events, and schemas.
+- `packages/market_model`: markets, exchanges, currencies, lot sizes, and trading calendars.
+- `packages/risk`: pre-trade checks and kill switch.
+- `packages/audit`: event logs, audit records, and competition evidence.
+- `adapters/ibkr`: IBKR Gateway contracts, market data, orders, and response mapping.
+- `apps/execution_runner`: resident execution process on Windows.
+- `strategies/nira`: reads external Nira signals and exports targets; it does not duplicate all Nira source.
 
-研究和执行使用稳定契约连接，不把整个 `research-workspace` 搬进来。
+Connect research and execution through stable contracts. Do not copy the entire `research-workspace` into this repository.
 
-## 验证要求
+## Verification
 
-- 修改契约、订单生命周期或券商适配器时必须运行对应单元测试。
-- 修改执行链时必须额外验证 Paper 账户连接、合约识别、提交、撤单、成交、重启恢复和对账。
-- 任何完成声明必须附真实命令结果，并明确哪些内容尚未经过真实券商验证。
+- Changes to contracts, order lifecycle, or broker adapters require the relevant unit tests.
+- Execution-chain changes additionally require Paper account connection, contract qualification, submission, cancellation, fills, restart recovery, and reconciliation checks.
+- Completion reports must include actual command results and state clearly what has not been verified against a live broker.
