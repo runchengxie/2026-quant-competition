@@ -200,7 +200,6 @@ def run_monthly_backtest(
     turnovers: list[float] = []
     rebalances: list[RebalanceRecord] = []
     previous_date = dates[0]
-    previous_month = previous_date[:7]
     for current_date in dates[1:]:
         prior_month = previous_date[:7]
         if current_date[:7] != prior_month and dates.index(previous_date) >= warmup:
