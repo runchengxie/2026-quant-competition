@@ -1,4 +1,4 @@
-# International-lite strategy direction
+# International-Lite Strategy Direction
 
 The Windows-side strategy is a competition-oriented price/volume baseline,
 not a replacement for the full Linux Nira research model. It uses only daily
