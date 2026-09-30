@@ -89,14 +89,14 @@ Expected: remaining matches are either source-history notes explicitly marked hi
 - [x] **Step 3: Create a pull-request and main-push workflow** pinned to Python 3.12 and using `uv sync --locked --extra test --extra ibkr`; the IBKR adapter suite imports the optional broker package.
 - [x] **Step 4: Add workflow steps** for `ruff check`, targeted `ruff format --check`, `pytest`, `python -m compileall -q adapters apps packages strategies`, and a full-history secret scan. Use read-only workflow permissions and no repository secrets.
 - [x] **Step 5: Validate locally** with the same lint, targeted format, test, and compile commands. Ruff, pytest, compileall, and the Pages content check pass locally.
-- [ ] **Step 6: Commit** with `ci: add locked Python quality checks`.
+- [x] **Step 6: Commit** with `ci: add locked Python quality checks` (`4ea34d0`).
 
 ### Task 4: Create an explicit-allowlist static project site
 
 **Files:**
 - Create: `site/index.html`
 - Create: `site/styles.css`
-- Create: `site/content-check.py` (or an equivalently small build check if the existing workflow/tooling makes a script unnecessary)
+- Create: `scripts/check_pages_content.py`
 - Create: `docs/operations/pages-content-policy.md`
 
 **Interfaces:**
@@ -106,8 +106,8 @@ Expected: remaining matches are either source-history notes explicitly marked hi
 - [x] **Step 1: Write a Pages content policy** enumerating allowed sections and prohibited content from the spec.
 - [x] **Step 2: Create a responsive static project page** with project purpose, high-level strategy/execution architecture, current official competition dates, source links, and repository link.
 - [x] **Step 3: Add only verified, sanitized historical/Paper results**; since no run passed review, the site states that results are not yet available for publication.
-- [x] **Step 4: Add a content check** that fails on secret-like patterns, account/order identifiers, and files outside the allowlist.
-- [x] **Step 5: Review the static site content and content check.**
+- [x] **Step 4: Add a recursive content check** that fails on secret-like patterns, account/order identifiers, symlinks, nested paths, and files outside the allowlist.
+- [x] **Step 5: Review and commit** with `docs: add sanitized competition project site` (`151fbd4`); the recursive checker was tightened after review.
 
 ### Task 5: Configure Pages build and deployment
 
@@ -121,7 +121,7 @@ Expected: remaining matches are either source-history notes explicitly marked hi
 - [x] **Step 1: Add a Pages build job** that runs the content check and uploads only `site/` as the artifact.
 - [x] **Step 2: Add a main-only deployment job** using the official Pages actions, least-privilege job permissions, and a named environment. Deployment waits until the repository is public.
 - [x] **Step 3: Run the content check locally; confirm the artifact source is only `site/`.**
-- [ ] **Step 4: Commit** with `ci: deploy sanitized site to GitHub Pages`.
+- [x] **Step 4: Commit** with `ci: deploy sanitized site to GitHub Pages` (`4fd0447`); the deployment ref gate was tightened after review.
 
 ### Task 6: Review release gates and publish
 
