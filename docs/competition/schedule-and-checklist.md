@@ -1,25 +1,28 @@
-# 赛前时间与确认清单
+# Pre-competition schedule and checklist
 
-> 来源：[`competition-analysis.md`](competition-analysis.md)；规则和日期如有更新，以组委会书面通知为准。
+> Source: [competition-analysis.md](competition-analysis.md). The organizer's written notices take precedence if dates or rules change.
 
-## 时间安排
+## Schedule (organizer rules dated 2026-09-23)
 
-- 正式交易阶段：2026 年 9 月 28 日 00:00 至 12 月 29 日 06:00（香港时间）
-- 答辩评审：2027 年 1 月 1 日至 1 月 15 日
-- 颁奖：2027 年 1 月 18 日至 1 月 22 日
+- Registration deadline: 2026-10-23 23:59 Hong Kong time.
+- Final preparation deadline: 2026-10-25 23:59 Hong Kong time.
+- Trading period: 2026-10-26 00:00 through 2027-01-27 06:00 Hong Kong time.
+- Presentations and awards: expected in February 2027; exact dates have not been announced.
 
-## 赛前向组委会确认
+Source: [organizer's public rules page](https://fundconnecthk.com/quant-league/legal/competition-rules/). Check the team registration system and official channels for updates.
 
-- [ ] 不同市场的低价股票限制如何换算为当地货币
-- [ ] 近 30 日日均成交额门槛如何计算
-- [ ] 各市场交易日历、时区、货币转换和汇率数据如何处理
-- [ ] 全球股票基准如何指定，跨市场超额收益如何计算
-- [ ] 持仓率、换手率及衍生品名义价值的计算口径
-- [ ] 加密资产周末 NAV、收益和 Sharpe 是否计入统计
-- [ ] Flex Token 可以读取哪些字段，数据安全边界是什么
-- [ ] 稳定性指标的定义和计算周期
-- [ ] 策略类别依据报名材料、实际持仓还是主要风险暴露认定
-- [ ] 主办方、协办高校和相关公司的正式合作身份
-- [ ] 如涉及受 SFC 规管的资管业务，确认对应持牌主体、牌照类型和中央编号
-- [ ] 核实官网披露的团队规模、AUM 与收益数据采用什么统计口径
-- [ ] 参赛资金合作候选池的尽调、合规和协议条件
+## Questions to confirm with the organizer
+
+- [ ] How are minimum share-price limits converted into local currencies for different markets?
+- [ ] How is the 30-day average daily turnover threshold calculated?
+- [ ] Which market calendars, time zones, currency conversions, and FX sources apply?
+- [ ] How are global equity benchmarks selected and cross-market excess returns calculated?
+- [ ] How are position rate, turnover, and derivative notional measured?
+- [ ] Are weekend NAV, returns, and Sharpe calculations for crypto assets included?
+- [ ] Which fields can a Flex Token read, and what are the data-security boundaries?
+- [ ] How is the strategy-stability metric defined and over what period?
+- [ ] Is the strategy category determined from the application, actual holdings, or primary risk exposure?
+- [ ] What are the formal relationships among the organizer, co-organizing university, and related companies?
+- [ ] For regulated asset-management activities, which licensed entity, license type, and central number apply?
+- [ ] What methodology supports the website's reported team size, assets under management, and returns?
+- [ ] What due-diligence, compliance, and contractual terms govern the capital-cooperation candidate pool?

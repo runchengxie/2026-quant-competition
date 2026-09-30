@@ -1,329 +1,44 @@
-# 2026 香港量化交易大赛规则
+# 2026 Hong Kong Quant Competition: Rules Summary
 
-主办方：香港资管通 FUND CONNECT HK  
-文件日期：2026 年 8 月 25 日  
-适用地区：中国香港  
-文件状态：原始规则的 Markdown 整理版
+Last updated: 2026-09-30
+Source version: organizer's public rules page dated 2026-09-23
 
-> 原 PDF 标注为：香港資管通 FUNDCONNECT HK LIMITED，保密，仅供已报名团队使用。本文尽量保留原文内容和结构，去除了重复出现在每页的页眉、页脚及保密标记。具体安排以主办方通过官方渠道发布的最新规则和通知为准。
+> This document summarizes information shown on the organizer's public website. The [latest official rules](https://fundconnecthk.com/quant-league/legal/competition-rules/) and notices take precedence. The team has permission to publish this English translation. The original release PDFs are removed from this repository.
 
-本项目经授权公开提供原始规则文件：[下载 PDF](https://github.com/runchengxie/2026-hk-quant-trading-competition/releases/download/reference-pdfs-2026-09/rules.pdf)。
+## Competition and registration
 
-## 一、赛事概述
+- Trading period: 2026-10-26 00:00 through 2027-01-27 06:00 Hong Kong time.
+- Registration deadline: 2026-10-23 23:59 Hong Kong time.
+- Interactive Brokers (IBKR) is the currently supported participating broker. Account, market, product, and data permissions remain subject to IBKR and platform support.
+- The simulated group has a suggested initial capital of USD 1,000,000. The live group generally requires at least USD 50,000 in initial net asset value; live-group gains and losses are borne by the participating team.
+- Each team enters one strategy, uses one platform team account, and trades through one separate official competition account. Multiple strategies must be reported as a combined strategy in the same account.
 
-### 1.1 合作机构
+## Strategy categories and trading universe
 
-截至本规则发布日，比赛发起主办方为香港资管通 FUND CONNECT HK，协办方为香港大学 Web3 研究院。后续如有新增协办方或其他合作伙伴，主办方将通过赛事官方渠道更新。
+Categories include market-neutral/relative-value, systematic directional, long-only/index enhancement, and hybrid/other. Quantitative methods must be central to the strategy. Teams may select instruments and markets supported by their account permissions. External data and third-party services must be legally sourced, properly licensed, and explainable to the judges.
 
-### 1.2 平台与支持券商
+Individual stocks priced below USD 1, or with average daily turnover below USD 3 million over the preceding 30 days, are generally restricted to closing positions. Low-liquidity distant-expiry options and futures must not be used to manufacture abnormal returns.
 
-参赛团队的比赛成绩、排名及相关赛事数据将统一在香港资管通平台进行展示。平台官方网站为：<https://fundconnecthk.com/>。
+## Eligibility and scoring
 
-本规则所称支持券商，是指香港资管通平台已具备相应技术接入能力，可用于读取、验证参赛账户交易及资产数据，并支持赛事成绩核算的券商。目前支持 Interactive Brokers（IBKR）。赛事期间，平台将根据技术接入进展、合作安排及实际运营需要增加或调整支持券商，具体支持范围、接入方式及相关安排以赛事官方最新公布的信息为准。
+To qualify for awards, the team must satisfy at least one of these conditions during the competition:
 
-参赛团队应通过支持券商开立或使用符合要求的参赛账户，并按照赛事要求完成数据授权与平台连接。账户权限、开户资格、交易权限、数据接口及可交易品种等，以对应支持券商的实际规定为准。
+1. Average daily position rate of at least 50% and no more than 10 trading days cumulatively flat; or
+2. Average daily turnover of at least 100%.
 
-### 1.3 参赛对象与团队管理
+The trading-stage score comprises net return (25%), Sharpe ratio (35%), maximum drawdown (25%), and strategy stability (15%). The final score weights the trading-stage result at 70% and the presentation at 30%. The presentation assesses the strategy rationale, data and signals, risk controls, and the team's explanation.
 
-比赛面向高校学生、科研团队、个人研究者、专业量化团队、金融科技团队等，以及具备交易策略或系统开发能力的团队开放。
+## Data permissions and awards
 
-建议每支团队人数控制在 1 至 5 人。每支参赛团队可使用一名已完成赛事实名登记的团队成员名下的支持券商账户报名参赛。参赛账户应由对应团队成员本人实名开立并合法持有，并完成对应券商要求的开户、身份验证及合规审核。账户申请资格、身份文件、审核结果及交易权限，以对应支持券商的实际规定为准。
+The competition account uses an Activity Flex Query and the read-only data permissions required by the competition. Teams should not provide their IBKR login password to the platform. Flex access is intended for competition data retrieval and scoring; it does not grant trading or money-transfer permissions. Confirm the exact fields and setup instructions in the team portal.
 
-每支参赛团队仅可报名一项参赛策略，并应完成报名、资格审核及账户备案，对应一个独立的官方参赛账户。如团队同时运行多个策略，应统一作为混合策略报名，并在同一参赛账户内进行交易和统一核算。
+The AIVIX alternative-data award has eight places. Applicants must apply in the team portal, actually use AIVIX data, and explain how it contributes to the strategy. The official page governs award details and benefits.
 
-参赛期间不得通过注册多个平台团队账号或使用多个参赛账户拆分同一参赛策略，也不得在不同参赛团队或策略之间共用资金、持仓、订单或交易记录。
+## Intellectual property and follow-up cooperation
 
-每个团队应指定一名队长负责与主办方沟通。主办方在与团队沟通时，默认队长已完成团队内部协调，并能够代表团队形成一致意见。团队成员、队长、策略名称或账户信息如发生变化，应及时向主办方更新。
+Teams retain intellectual property in their strategies, code, documents, and related materials. Winning or entering a cooperation candidate pool does not automatically result in capital allocation. Any follow-up remains subject to performance review, risk controls, due diligence, compliance review, and an executed agreement.
 
-### 1.4 比赛组别
+## Official sources
 
-本赛事设模拟盘组与实盘组。
-
-模拟盘组适合学生及新策略团队，账户初始资金原则上为 1,000,000 美元模拟资金。为验证参赛账户能否与赛事平台正常连接及同步交易数据，新模拟盘账户在比赛开始前可能需按要求进行测试下单，因此正式比赛开始时账户净值可能与 1,000,000 美元存在小幅偏差。赛事将以经确认的比赛起始净值作为后续成绩计算基准。
-
-实盘组适合成熟策略团队，账户初始净值原则上不少于 50,000 美元。真实交易损益由团队自行承担，并需完成账户、风控、合规及协议审核。选择实盘组的团队也需要进行测试下单。
-
-### 1.5 策略类别
-
-本次比赛分别设置以下策略类别：
-
-#### 市场中性或相对价值策略类
-
-包括股票多空、统计套利、配对交易等以降低市场方向性暴露为主要特征的策略。
-
-#### 系统化方向策略类
-
-包括趋势跟踪、期货 CTA、多资产择时等具有较明显方向性市场暴露的策略。
-
-#### 多头或指数增强策略类
-
-包括 `Long-only`、多因子选股、指数增强等以多头持仓及相对市场基准表现为主要特征的策略。
-
-#### 混合策略或其他策略类
-
-适用于同时采用多种策略，或无法明确归入上述类别的策略。赛事组委会将根据其主要风险暴露及策略特征确定所属类别。
-
-参赛团队报名时需申报主要策略类别。赛事组委会有权根据实际交易、持仓结构及主要风险暴露对策略类别进行确认或调整。
-
-高频、日内、机器学习、期权、衍生品、波动率等属于策略特征标签，不单独设置策略类别。
-
-## 二、赛程安排（暂定）与材料提交
-
-本节所列时间均以香港时间（HKT）为准。时间安排均为暂定，实际时间以主办方正式通知为准。
-
-### 2.1 报名与资格审核
-
-赛事报名通道自 2026 年 8 月 1 日 00:00 起开放。参赛团队须通过赛事官网（<https://fundconnecthk.com/quant-league/>）或主办方指定的其他渠道提交报名材料。
-
-报名材料包括：
-
-- 团队基本信息
-- 联系信息
-- 成员身份资料
-- 策略 PPT 或策略说明文件
-
-策略 PPT 或策略说明文件在报名阶段可以暂缓提交，在正式比赛前补齐即可。团队还应按照赛事指引完成支持券商账户相关手续及赛事账户备案。
-
-根据参赛团队的账户状况，报名安排分为以下两种路径：
-
-1. 已有符合要求的支持券商账户的团队，应于 2026 年 9 月 18 日 23:59 前完成报名。
-2. 暂无符合要求的支持券商账户、需要新开立账户的团队，应于 2026 年 9 月 14 日 23:59 前完成报名，并于 2026 年 9 月 23 日 23:59 前完成支持券商账户开立及相关手续办理。若不同支持券商的开户及审核周期存在差异，赛事官方可根据实际情况调整相应时间安排。
-
-资格审核及面试将在团队提交报名材料后滚动开展。
-
-所有参赛团队须于 2026 年 9 月 25 日 23:59 前完成支持券商账户与平台的连接。若未在规定时间内完成，可能影响参赛资格认定。
-
-主办方将对团队成员的参赛资格及身份资料、参赛账户的实名开立以及策略材料的完整性和合规性进行审核。主办方有权根据审核需要，要求参赛团队补充材料、说明有关事项或接受进一步核实。
-
-### 2.2 赛前准备与正式比赛
-
-赛前准备阶段自团队完成报名后开始，至 2026 年 9 月 27 日 23:59 结束。期间，参赛团队应按照赛事要求完成支持券商的数据授权、平台连接及必要的赛前测试，并确保参赛支持券商账户在正式比赛开始前正常可用。
-
-正式比赛周期为三个月，自 2026 年 9 月 28 日 00:00 开始，至 2026 年 12 月 29 日 06:00 结束。参赛团队须使用已完成平台连接并经主办方确认的支持券商账户进行比赛交易。
-
-考虑到交易真实性验证、净值及收益计算、持仓与风险指标计算、资金变动识别及比赛成绩复核等需求，平台将在最小必要范围内读取参赛账户的赛事相关数据，包括：
-
-- 账户净值及现金
-- 持仓
-- 成交记录
-- 入金及出金等现金变动
-- 计算赛事指标所必要的其他数据
-
-不同支持券商按照其实际提供的数据接口及授权方式接入。
-
-#### 1. Interactive Brokers（IBKR）的数据授权要求
-
-参赛团队须按赛事要求配置 Activity Flex Query，并提供有效的 Flex Web Service Token 及 Query ID。
-
-赛事所需读取的数据主要包括以下条目的全部子项：
-
-- `Trades`，交易活动
-- `Cash Transactions`，现金交易
-- `Net Asset Value (NAV) Summary in Base`，基础货币净资产值汇总
-
-上述授权仅用于赛事数据读取及成绩核算，无需提供 IBKR 账户登录密码，且不具备下单、资金转移或其他账户操作权限。
-
-#### 2. 其他支持券商的数据授权要求
-
-后续新增支持券商将根据其实际提供的 API、数据授权接口或官方账户数据获取方式进行接入，并在本条规则中同步明确相应的数据授权方式及必要数据范围。
-
-参赛团队应确保比赛期间及成绩复核期间的数据连接和授权持续有效，不得未经确认擅自更换参赛账户或中断赛事所需的数据获取。
-
-如出现数据缺失、延迟或异常，主办方有权要求团队恢复连接，或提供对应支持券商出具的官方账户记录进行核验。若平台数据与支持券商最终官方记录存在差异，以经核实后的支持券商官方记录为准。
-
-### 2.3 答辩评审与赛后总结
-
-答辩评审阶段安排在 2027 年 1 月 1 日至 2027 年 1 月 15 日。
-
-正式比赛结束后，主办方将对各参赛团队的交易数据及比赛记录进行整理、核验和评估，并据此形成答辩评审基础。各比赛组别交易阶段综合评分排名前五的参赛团队应选派代表参加策略答辩。
-
-颁奖阶段安排在 2027 年 1 月 18 日至 2027 年 1 月 22 日。主办方将在此期间公布最终比赛结果，并向获奖团队颁发相应奖项。颁奖活动的具体日期、地点及参与方式由主办方另行通知。
-
-比赛结束后，参赛团队须在主办方规定的期限内提交赛后总结文档。总结文档应包括策略概述、模型构建及优化过程、风险管理措施等内容。
-
-## 三、交易范围与账户规则
-
-### 3.1 交易范围
-
-参赛团队原则上可交易支持 IBKR 以及后续支持的平台提供的各类金融产品及市场品种，具体可交易范围以参赛账户实际交易权限、支持券商规则为准。如赛事后续新增其他合作支持券商，以最新赛事规则文件和官方公告为准。
-
-交易策略中，量化手段应占核心部分。团队使用外部数据、开源工具或第三方服务时，应确保来源合法、授权清晰，并能够向评审说明。
-
-### 3.2 账户唯一与关联账户
-
-每支团队仅限注册并使用一个平台账号参赛。每名参赛者在同一届赛事中仅可加入一支团队，不得通过本人持有的其他账户、关联账户或第三方账户参与比赛。
-
-禁止以下行为：
-
-- 同一实际控制人、同一团队或关联人员注册、控制或使用多个账户参赛
-- 多账户分仓
-- 盈亏拆分
-- 反向对冲
-- 结构化操纵榜单
-- 租借、共享、代打或托管参赛账户
-
-主办方可结合若干因素识别关联账户。发现关联账户协同交易或隐瞒关联关系的，主办方可合并核查相关账户，并作出成绩调整或违规处理。
-
-## 四、交易风控与违规处理细则
-
-### 4.1 流动性与品种限制
-
-为降低低流动性标的、冷门合约和模拟盘机制差异导致的异常收益，赛事可对低价、低成交额、上市时间较短或长期无成交的标的设置禁新开仓、提高模拟滑点、剔除异常绩效或其他风控措施。
-
-具体限制如下：
-
-- 股价低于 1.0 美元的个股，原则上仅允许平仓，不允许新开仓
-- 近 30 日日均成交额低于 300 万美元的个股，原则上仅允许平仓，不允许新开仓
-- 长期无成交或极低流动性的期权、期货远月合约，不应作为刷取异常收益的工具
-
-### 4.2 持仓要求
-
-为确保参赛策略具有实际资金参与度，参赛团队应满足以下任一条件。
-
-#### 1. 持仓要求
-
-比赛期间日均持仓率，即比赛期间各交易日持仓率的算术平均值，不低于 50％。同时，比赛期间累计空仓时间不得超过 10 个交易日。
-
-空仓日是指参赛账户当日无任何持仓且无实际交易记录的交易日。日内交易并于收盘前平仓的，不视为空仓日。
-
-#### 2. 换手率要求
-
-比赛期间日均换手率，即比赛期间各交易日换手率的算术平均值，不低于 100％。
-
-未满足上述任一条件的团队，可以继续参赛及展示成绩，但不参与赛事奖项评选。
-
-### 4.3 异常核查与追溯
-
-主办方有权查询和留存参赛团队在比赛期间产生的数据，并据此核定成绩、排名和合规状态。
-
-发现异常时，主办方可对相关绩效进行核查和调整。发现作弊、材料造假或其他严重违规行为的，主办方可取消团队成绩、参赛资格、奖项权益和后续合作候选资格。
-
-赛后复盘发现违规线索的，主办方可追溯核查并调整相关结果。
-
-## 五、评审标准
-
-### 5.1 交易阶段综合评分
-
-本节评分用于计算参赛团队的交易阶段综合评分，满分为 100 分。
-
-| 评分项目 | 权重 | 主要指标 |
-|---|---:|---|
-| 收益表现 | 25％ | 比赛期间累计净收益率 |
-| 风险调整收益 | 35％ | 夏普比率，衡量单位风险下的收益能力 |
-| 最大回撤控制 | 25％ | 比赛期间最大回撤幅度和修复情况 |
-| 策略稳定性 | 15％ | 正收益周期占比、收益波动率及收益持续性 |
-
-各项指标原则上在同一策略组别内进行标准化评分，转换为 0 至 100 分后按上述权重加总，得到交易阶段综合评分。
-
-交易阶段综合评分计算公式为：
-
-```text
-交易阶段综合评分
-= 收益表现得分 × 25％
-  + 风险调整收益得分 × 35％
-  + 最大回撤得分 × 25％
-  + 策略稳定性得分 × 15％
-```
-
-### 5.2 答辩评分
-
-答辩评分满分为 100 分，按 30％权重计入最终成绩。
-
-| 评分项目 | 分值 | 考察内容 |
-|---|---:|---|
-| 策略逻辑 | 40 分 | 策略核心逻辑、研究框架、数据使用方式、信号生成机制及方法论完整性 |
-| 风险管理 | 40 分 | 仓位管理、止损机制、风险敞口控制、极端行情应对及异常交易处理能力 |
-| 现场陈述及问题回答 | 20 分 | 团队对策略的理解程度、表达清晰度、问题回应能力及现场答辩表现 |
-
-进入路演答辩或后续合作候选流程的团队，可能被要求补充策略思路、风险控制等方面的说明材料。
-
-### 5.3 最终成绩
-
-最终成绩计算公式为：
-
-```text
-最终成绩
-= 交易阶段综合评分 × 70％
-  + 答辩评分 × 30％
-```
-
-出现最终成绩相同的，以交易阶段风险调整收益得分较高者优先。仍然相同的，以最大回撤控制得分较高者优先。
-
-## 六、比赛奖励与后续合作
-
-### 6.1 奖项设置
-
-本赛事设模拟盘组和实盘组，两组分别进行成绩评定及奖项评选。奖项主要包括赛事总排名奖、策略类别专项奖及单项表现奖。
-
-#### （一）赛事总排名奖
-
-比赛交易阶段结束后，各组按照交易阶段综合成绩排名，前五名进入最终答辩。答辩结束后，根据赛事规定的最终评分机制形成最终成绩，排名前三的团队分别获得冠军、亚军和季军。
-
-#### （二）策略类别专项奖
-
-根据参赛策略所属类别设置以下专项奖：
-
-- 最佳市场中性策略奖：比赛期收益率高于同期 90-Day Average SOFR，并在该策略类别中最终综合评分第一
-- 最佳系统化方向策略奖：比赛期收益率高于同期 90-Day Average SOFR，并在该策略类别中最终综合评分第一
-- 最佳多头或指数增强策略奖：比赛期收益率高于同期 90-Day Average SOFR，并在该策略类别中最终综合评分第一
-
-每项策略类别专项奖原则上评选 1 名。未达到相应基本获奖要求的，原则上不授予该奖项。如果没有满足条件的参赛队伍，策略类别专项奖可以轮空。
-
-#### （三）单项表现奖
-
-##### 最佳收益奖
-
-1 名，按照比赛期累计净收益率由高至低评定，最高者获得。
-
-##### 最佳夏普奖
-
-1 名，按照完整比赛期间每日净收益率计算的年化夏普比率由高至低评定，最高者获得。
-
-##### AIVIX 另类数据应用奖
-
-共 8 名。参赛策略须于香港资管通团队端申请 AIVIX 另类数据并使用，并能够清晰说明使用方式及其对策略的实际作用。
-
-奖项根据有申请记录的团队的参赛策略综合成绩由高至低评定，具体设置如下：
-
-| 奖项 | 名额 | 奖励 |
-|---|---:|---|
-| 一等奖 | 1 名 | AIVIX Professional 计划 12 个月使用权 |
-| 二等奖 | 2 名 | 每名获得 AIVIX Professional 计划 6 个月使用权 |
-| 三等奖 | 5 名 | 每名获得 AIVIX Professional 计划 3 个月使用权 |
-
-### 6.2 后续合作候选池
-
-赛事将建立后续合作候选池。模拟盘组及实盘组的冠亚季军、策略类别专项奖获得者、单项表现奖获得者及其他具备突出潜力的团队，均有机会进入候选池。
-
-赛事计划为优秀团队探索合计约一亿港币等值管理资金的潜在合作机会。就该整体资金合作机会而言，原则上约 90％面向实盘组候选团队，约 10％面向模拟盘组候选团队。具体资金配置不按名次或奖项机械分配，将根据各候选团队的实际情况综合确定。
-
-进入候选池或获得赛事奖项，不代表自动获得资金配置。后续合作将综合考虑团队持续表现、策略稳定性及可解释性、风险控制能力、账户及运营条件，并经必要的尽职调查、合规审核及合作协议确认后推进。
-
-除管理资金合作外，优秀团队亦有机会参与持牌合作、策略孵化、路演及机构对接、资产管理团队建设等后续合作。
-
-## 七、知识产权
-
-参赛团队保留其策略、代码、文档和相关材料的知识产权。
-
-所有参赛策略须为原创，禁止抄袭。团队使用外部数据、开源工具或第三方服务时，应确保来源合法、授权清晰。
-
-## 八、技术支持与咨询
-
-参赛团队可向主办方申请赛事相关技术支持、平台操作指导、API 接入指导、社群答疑和业内导师交流。
-
-参赛团队仍应自行完成策略研究、代码开发、测试、交易执行和风险管理，不得邀请未注册参赛或未获授权的外部人员代为开发、交易或提交材料。
-
-## 九、规则的解释权
-
-本大赛的最终解释权归主办方所有。
-
-主办方有权依据赛事规则、赛事数据及相关证据，对参赛资格、违规认定、成绩核定、排名确定、奖项评定及其他赛事相关事项作出决定。
-
-赛事规则如有补充或调整，以主办方通过官方渠道发布的最新公告为准。
-
-本页以下无正文，为落款、盖章及签字页。
-
----
-
-香港资管通 FUND CONNECT HK  
-2026 年 8 月 25 日
+- [2026 competition rules (organizer's public page)](https://fundconnecthk.com/quant-league/legal/competition-rules/)
+- [Competition overview and registration](https://fundconnecthk.com/quant-league/)

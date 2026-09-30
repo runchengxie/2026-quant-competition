@@ -2,6 +2,8 @@
 
 Date: 2026-09-30
 
+Repository name: `2026-quant-competition`. The organizer authorized English versions of the team reference guides; the user directed removal of all three release PDFs and approved public publication after review. Keep the repository private until the PR/CI gates pass, then publish the repository and Pages site.
+
 ## Intent and current state
 
 The team wants to evaluate a US-listed ETF competition strategy that uses AIVIX/Cryptoracle data, Index One index calculation, and IB Gateway Paper execution. The team also wants this entire repository to become public, with GitHub CI code checks and a GitHub Pages site limited to project information and sanitized results. The candidate strategy is research, not yet the registered competition strategy.
@@ -12,7 +14,7 @@ The official 2026-09-23 competition rules now state registration closes 2026-10-
 
 ## Workstream A: public repository, CI, and Pages
 
-1. Reconcile competition dates and rule references against the official current rule PDF. Mark historical analyses as such where their conclusions depend on the old schedule.
+1. Reconcile competition dates and rule references against the official current public rules page. Mark historical analyses as such where their conclusions depend on the old schedule.
 2. Audit the full Git history, GitHub release assets, tracked artifacts, and proposed Pages inputs for credentials, account or personal information, licensed raw data, and research that the team does not want to disclose. `.env.local` is ignored and untracked; an initial pattern scan across 42 commits found no matches, but this is not a complete secret or privacy audit. Resolve every finding before the visibility change. Review the public disclosure of historical files, because deleting a file from the current tree does not remove it from Git history.
 3. Add GitHub Actions checks for Python 3.12 dependency installation, unit tests, formatting/lint, compile/import validation, and a secret scan. Tests use mocks and local fixtures; no workflow receives AIVIX, Index One, IBKR, or competition-account credentials. PRs from forks receive no privileged write token. CI runs on pull requests and main pushes.
 4. Build a static GitHub Pages site from a dedicated `site/` source directory. It includes project purpose, high-level architecture, current competition rule links, methodology summary, and explicitly labeled sanitized Paper or historical results only after those results have been independently verified. It excludes positions, live performance, exact model parameters, raw provider data, credentials, and account details. The Pages workflow deploys only after the site build and content checks pass on main.

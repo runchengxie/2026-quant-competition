@@ -1,4 +1,4 @@
-# Competition release checks
+# Competition Release Checks
 
 The Windows runner is Paper-first. Before a run, validate the Nira target
 artifact and keep `targets.json`, `lineage.json`, the resolved non-secret

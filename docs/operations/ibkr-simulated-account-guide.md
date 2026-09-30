@@ -1,48 +1,45 @@
-# 团队 IBKR 模拟账户开通指南
+# IBKR Paper Account Setup Guide
 
-> 来源：[下载原始 PDF](https://github.com/runchengxie/2026-hk-quant-trading-competition/releases/download/reference-pdfs-2026-09/ibkr-simulated-account-guide.pdf)
-> 说明：以下内容根据 PDF 文本和页面顺序整理；截图页面仍需结合原 PDF 查看。
+This English guide was prepared with the organizer's permission from the team reference material. The original PDF is not distributed in this repository. Account eligibility and permissions depend on IBKR and the current application flow.
 
-## 一、选择开通路径
+## Choose an account setup path
 
-| 路径 | 特点 | 适用情况 |
+| Path | Characteristics | Suitable use |
 |---|---|---|
-| 完整实盘账户 → 模拟账户 | 权限更可控，交易权限与实盘账户配置同步 | 需要自定义股票、期权、指数期权、期货等权限 |
-| IBKR Free Trial | 开通更快，但权限由系统预设且不能自行新增 | 只需快速测试平台或策略 |
+| Open a full live account, then enable a Paper account | More control over permissions; Paper permissions follow the live account configuration. | Needed when you require specific stock, option, index-option, or futures permissions. |
+| IBKR Free Trial | Faster setup, but the system presets permissions and may not let you add products. | Quick testing of the platform or a strategy. |
 
-选择建议：交易品种明确且需要跨市场权限，优先选择第一种；只需验证平台和策略，可考虑 Free Trial。
+If the product universe and cross-market permissions are known, consider the first path. For a quick platform test, a Free Trial may be sufficient.
 
-## 二、路径一：完整实盘账户转模拟账户
+## Path 1: Full account with a Paper account
 
-1. 开立 IBKR 实盘账户，基础币种建议选择美元。
-2. 申请所需交易权限，例如股票、期权、指数期权和期货。
-3. 在账户设置中开通模拟交易账户。
-4. 模拟账户初始权益为 100 万美元，权限以实盘账户配置为准。
-5. 使用模拟交易用户名和密码登录 Paper 账户。
+1. Open a live IBKR account. USD is a suggested base currency.
+2. Apply for the required trading permissions, such as stocks, options, index options, or futures.
+3. Enable a Paper trading account in account settings.
+4. The Paper account is initially funded with USD 1 million; its permissions follow the live account settings.
+5. Sign in to the Paper account using its Paper username and password.
 
-操作位置：进入 IBKR 实盘账号，点击右上角头像 → “设置” → “模拟交易账户”，然后设置模拟交易用户名和密码。
+In the live account, open the profile menu, choose **Settings**, then **Paper Trading Account**, and set the Paper username and password. Sign in through [IBKR Login](https://www.interactivebrokers.com.hk/sso/Login) and verify that the account mode shows `Paper`.
 
-登录入口：[IBKR 登录](https://www.interactivebrokers.com.hk/sso/Login)。进入后确认右上角账户类型为 `Paper`。
+If a team has an existing Paper account but needs a fresh USD 1 million simulated balance, it may consider opening a separate eligible IBKR account and creating a new Paper account. Confirm account eligibility and base-currency implications before applying.
 
-> 如果团队此前已经开通过模拟账户，但需要重新获得 100 万美元初始模拟资金，可以考虑另行开立 IBKR 账户并创建新的模拟账户。重新开户前应确认基础币种和账户资格。
+## Path 2: IBKR Free Trial
 
-## 三、路径二：IBKR Free Trial
+Registration: [IBKR Free Trial](https://ndcdyn.interactivebrokers.com/Universal/Application?ft=T&spltst=www&trk=PAPER-COURSE).
 
-注册入口：[IBKR Free Trial](https://ndcdyn.interactivebrokers.com/Universal/Application?ft=T&spltst=www&trk=PAPER-COURSE)。
+The Free Trial does not require completing the full live-account application, but product permissions are preset and may not be changed. Registration region can affect simulated-fund currency and available permissions:
 
-Free Trial 无需完成完整实盘开户流程，但交易权限由系统预设，开通后不能自行新增。注册地区会影响初始资金币种和可用权限：
+| Registration region | Initial simulated funds | Permission notes |
+|---|---:|---|
+| United States | USD 1 million | U.S. policy may restrict non-U.S. stock options and non-U.S. cash index options. |
+| Singapore | SGD 1 million | Permissions and regional rules apply. |
+| Hong Kong | HKD 1 million | The simulated balance is lower in USD terms. |
 
-| 注册地区 | 初始模拟资金 | 权限或注意事项 | 原指引建议 |
-|---|---:|---|---|
-| 美国 | 100 万美元 | 受美国政策限制，不可交易非美股票期权及非美现金指数期权 | 不适合港股期权等产品 |
-| 新加坡 | 100 万新加坡元 | 受新加坡政策和地域监管限制 | 推荐 |
-| 香港 | 100 万港币 | 模拟资金量相对较少 | 按本地需求选择 |
+The original reference guide recommended Singapore for some cases. Confirm the target products before registration; currency and permissions shown in the application and account are authoritative.
 
-> 开通前先测试目标交易品种是否具备权限。实际资金币种与权限以注册页面和账户显示为准。
+## Trading software
 
-## 四、交易软件
+- **Trader Workstation (TWS):** graphical trading interface for manual trading, charts, orders, and portfolio management. [Download TWS](https://www.interactivebrokers.com.hk/en/trading/download-tws.php)
+- **IB Gateway:** lightweight interface suited to APIs and automated strategies. [Download IB Gateway](https://www.interactivebrokers.com.hk/en/trading/ibgateway-latest.php)
 
-- **TWS**：图形化交易端，适合手动交易、图表分析、订单和组合管理。 [下载 TWS](https://www.interactivebrokers.com.hk/en/trading/download-tws.php)
-- **IB Gateway**：程序化交易端，适合 API 和自动化策略，界面更轻量。 [下载 IB Gateway](https://www.interactivebrokers.com.hk/en/trading/ibgateway-latest.php)
-
-使用前检查：确认界面显示 `Paper` / `Simulated`，复核目标品种、市场和交易权限，并按稳定性需求选择 `Latest` 或 `Stable` 版本。
+Before use, verify `Paper` or `Simulated` mode, product and market permissions, and the selected software release channel (`Latest` or `Stable`).
