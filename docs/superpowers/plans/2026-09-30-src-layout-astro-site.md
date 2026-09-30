@@ -73,7 +73,7 @@ Expected: PASS, including the outside-checkout subprocess import.
 Run formatting only on files covered by the existing repository gate, plus the new source-layout test; the repository's other Python files were not previously format-checked:
 
 ```powershell
-uv run --extra test ruff format --check src/adapters/ibkr/events.py src/competition_tools/check_pages_content.py tests/test_source_layout.py tests/test_astro_site.py tests/competition_tools/test_check_pages_content.py
+uv run --extra test ruff format --check src/adapters/ibkr/events.py src/competition_tools/check_pages_content.py tests/test_source_layout.py tests/competition_tools/test_check_pages_content.py
 ```
 
 Run the test suite with the `ibkr` optional dependency enabled and a workspace-local pytest temp root:
@@ -99,20 +99,20 @@ git commit -m "refactor: move Python packages into src layout"
 - Create: `site/src/layouts/SiteLayout.astro`, `site/src/pages/index.astro`, `site/src/pages/zh-CN/index.astro`, and `site/src/styles/global.css`.
 - Move or replace: current `site/index.html` and `site/styles.css` with equivalent Astro components and styles.
 - Ignore: `site/node_modules/`, `site/.astro/`, and `site/dist/` in `.gitignore`.
-- Test: add `tests/test_astro_site.py` to validate built routes, locale links, and base-prefixed assets.
+- Test: validate built routes, locale links, and base-prefixed assets in `tests/competition_tools/test_check_pages_content.py` after Astro builds.
 
 **Interfaces:**
 - Consumes: no runtime API; static copy and approved public links from the existing page.
 - Produces: `site/dist/index.html` (English), `site/dist/zh-CN/index.html` (Simplified Chinese), static CSS/assets, and locale links between equivalent routes.
 
-- [x] **Step 1: Add Astro build-output tests**
+- [x] **Step 1: Add Astro output checks to the Pages checker**
 
-Create `tests/test_astro_site.py` that reads only a built fixture/output directory and asserts English `lang="en"`, Simplified Chinese `lang="zh-CN"`, correct localized copy in each route, matching language-switch destinations, and asset URLs prefixed by `/2026-quant-competition/`.
+The Pages checker tests assert English `lang="en"`, Simplified Chinese `lang="zh-CN"`, matching language-switch destinations, and asset URLs prefixed by `/2026-quant-competition/`. The Pages workflow applies the same checks to actual Astro output after building.
 
-- [x] **Step 2: Run tests to confirm they fail without the Astro output**
+- [x] **Step 2: Run output-check tests to confirm they fail before implementation**
 
-Run: `uv run --extra test pytest tests/test_astro_site.py -q`
-Expected: fail because the required generated route files do not exist.
+Run: `uv run --extra test pytest tests/competition_tools/test_check_pages_content.py -q`
+Expected: fail because the route metadata, locale-switch, and repository-base checks were not implemented yet.
 
 - [x] **Step 3: Add pinned Astro project and localized pages**
 
@@ -123,7 +123,7 @@ Create the site-local npm project and lockfile. Configure Astro with `site: "htt
 Run: `npm --prefix site ci; npm --prefix site run build`
 Expected: Astro emits both locale routes into `site/dist/`.
 
-Run: `uv run --extra test pytest tests/test_astro_site.py -q`
+Run: `uv run --extra test pytest tests/competition_tools/test_check_pages_content.py -q`
 Expected: PASS for locale metadata, route links, and repository base-prefixed assets.
 
 - [x] **Step 5: Review generated content and responsive page**
@@ -169,7 +169,7 @@ Run each command in order, stopping at the first failure:
 ```bash
 uv run --extra test --extra ibkr pytest -q --basetemp=.pytest-tmp-task3-final
 uv run --extra test ruff check .
-uv run --extra test ruff format --check src/adapters/ibkr/events.py src/competition_tools/check_pages_content.py tests/test_source_layout.py tests/test_astro_site.py tests/competition_tools/test_check_pages_content.py
+uv run --extra test ruff format --check src/adapters/ibkr/events.py src/competition_tools/check_pages_content.py tests/test_source_layout.py tests/competition_tools/test_check_pages_content.py
 uv run python -m compileall -q src
 npm --prefix site ci
 npm --prefix site run build
@@ -196,11 +196,11 @@ git commit -m "feat: publish bilingual Astro Pages site"
 - Consumes: completed Tasks 1–3.
 - Produces: review-ready branch with locally verified Python and static-site builds.
 
-- [ ] **Step 1: Run full verification from a clean build state**
+- [x] **Step 1: Run full verification from a clean build state**
 
 Run the Task 3 verification commands after deleting only ignored generated `site/dist/`, `site/.astro/`, and local `site/node_modules/`, then reinstall with `npm ci`. Confirm clean reproducibility and that `git status --short` contains only intentional source changes.
 
-- [ ] **Step 2: Review path references and public output**
+- [x] **Step 2: Review path references and public output**
 
 Run `rg -n "python scripts/|scripts/check_pages_content|Traditional Chinese|zh-Hant" README.md AGENTS.md docs/operations .github site src tests` and resolve stale active references. Inspect both generated HTML pages and verify the disclosure checker.
 

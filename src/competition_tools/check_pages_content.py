@@ -1,8 +1,10 @@
 import argparse
+from html.parser import HTMLParser
 from pathlib import Path, PurePosixPath
 import re
 from typing import Callable
 
+PAGES_BASE_PATH = "/2026-quant-competition"
 
 SENSITIVE = {
     "credential": re.compile(
@@ -38,6 +40,20 @@ PUBLIC_ASSET_SUFFIXES = {
     ".woff2",
 }
 ASSET_SUFFIXES = PUBLIC_ASSET_SUFFIXES | {".css", ".js"}
+
+
+class _PageMetadata(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.language: str | None = None
+        self.hrefs: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        attributes = dict(attrs)
+        if tag == "html":
+            self.language = attributes.get("lang")
+        if tag in {"a", "link"} and attributes.get("href"):
+            self.hrefs.append(attributes["href"])
 
 
 def _allowed_source(relative_path: PurePosixPath) -> bool:
@@ -108,6 +124,44 @@ def _scan_sensitive(files: list[Path], label: str, errors: list[str]) -> None:
                 )
 
 
+def _validate_localized_output(
+    built_dir: Path, output_paths: set[str], errors: list[str]
+) -> None:
+    route_requirements = {
+        "index.html": {
+            "language": "en",
+            "locale_switch": f"{PAGES_BASE_PATH}/zh-CN/",
+        },
+        "zh-CN/index.html": {
+            "language": "zh-CN",
+            "locale_switch": f"{PAGES_BASE_PATH}/",
+        },
+    }
+    for relative_path, requirements in route_requirements.items():
+        if relative_path not in output_paths:
+            continue
+        page_path = built_dir / Path(relative_path)
+        try:
+            page = page_path.read_text(encoding="utf-8")
+        except (OSError, UnicodeError) as error:
+            errors.append(f"cannot read output page {relative_path}: {error}")
+            continue
+
+        metadata = _PageMetadata()
+        metadata.feed(page)
+        if metadata.language != requirements["language"]:
+            errors.append(f"locale metadata mismatch in output page {relative_path}")
+        if requirements["locale_switch"] not in metadata.hrefs:
+            errors.append(f"locale switch path missing in output page {relative_path}")
+        if not any(
+            href.startswith(f"{PAGES_BASE_PATH}/_astro/") and href.endswith(".css")
+            for href in metadata.hrefs
+        ):
+            errors.append(
+                f"stylesheet missing repository base path in output page {relative_path}"
+            )
+
+
 def check_site(source_dir: Path, built_dir: Path) -> list[str]:
     errors: list[str] = []
     source_paths, source_files = _collect_files(
@@ -131,6 +185,7 @@ def check_site(source_dir: Path, built_dir: Path) -> list[str]:
     if missing_output:
         errors.append(f"required output file missing: {sorted(missing_output)}")
 
+    _validate_localized_output(built_dir, output_paths, errors)
     _scan_sensitive(source_files, "source", errors)
     _scan_sensitive(output_files, "output", errors)
     return errors

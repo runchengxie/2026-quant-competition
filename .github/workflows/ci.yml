@@ -24,7 +24,7 @@ jobs:
       - name: Lint
         run: uv run --locked ruff check .
       - name: Check formatting
-        run: uv run --locked ruff format --check src/adapters/ibkr/events.py src/competition_tools/check_pages_content.py tests/test_source_layout.py tests/test_astro_site.py tests/competition_tools/test_check_pages_content.py
+        run: uv run --locked ruff format --check src/adapters/ibkr/events.py src/competition_tools/check_pages_content.py tests/test_source_layout.py tests/competition_tools/test_check_pages_content.py
       - name: Run tests
         run: uv run --locked pytest -q
       - name: Compile Python packages
