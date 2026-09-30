@@ -73,7 +73,7 @@ Expected: PASS, including the outside-checkout subprocess import.
 Run formatting only on files covered by the existing repository gate, plus the new source-layout test; the repository's other Python files were not previously format-checked:
 
 ```powershell
-uv run --extra test ruff format --check src/adapters/ibkr/events.py src/competition_tools/check_pages_content.py tests/test_source_layout.py
+uv run --extra test ruff format --check src/adapters/ibkr/events.py src/competition_tools/check_pages_content.py tests/test_source_layout.py tests/test_astro_site.py tests/competition_tools/test_check_pages_content.py
 ```
 
 Run the test suite with the `ibkr` optional dependency enabled and a workspace-local pytest temp root:
@@ -141,35 +141,35 @@ Inspect `site/dist/index.html` and `site/dist/zh-CN/index.html`; run a local sta
 - Consumes: explicit source and built-site paths.
 - Produces: a zero exit status for an allowlisted, safe site and nonzero for unknown files, symlinks, or sensitive patterns; Pages artifact contains only `site/dist/`.
 
-- [ ] **Step 1: Add checker behavior tests**
+- [x] **Step 1: Add checker behavior tests**
 
 Test that source and generated paths are both scanned; allowed Astro source files and public static assets pass; unknown files and symlinks fail; credential/account/order patterns fail in both locales; and missing required English or Simplified Chinese route files fail.
 
-- [ ] **Step 2: Run the checker tests to confirm failure**
+- [x] **Step 2: Run the checker tests to confirm failure**
 
 Run: `uv run --extra test pytest tests/competition_tools/test_check_pages_content.py -q`
 Expected: fail because the existing checker uses a fixed `site/` root and only allows the legacy HTML/CSS files.
 
-- [ ] **Step 3: Implement explicit source/output checking**
+- [x] **Step 3: Implement explicit source/output checking**
 
 Add required `--source-dir` and `--built-dir` CLI arguments to `competition_tools.check_pages_content`. Source allowlist: `astro.config.mjs`, `package.json`, `package-lock.json`, optional `tsconfig.json`, `src/**/*.astro`, `src/**/*.css`, and `public/**/*` with static image/font formats. Ignore generated/cache directories (`node_modules`, `.astro`, `dist`) during source traversal. Generated output must contain the English and Simplified Chinese route files plus HTML/CSS/JS and static image/font files. Scan file contents in both trees for the existing sensitive patterns. Reject symlinks and unrecognized source/output paths.
 
-- [ ] **Step 4: Update Pages build and deploy workflow**
+- [x] **Step 4: Update Pages build and deploy workflow**
 
 In `pages.yml`, install Python 3.12 and locked tool dependencies, install a Node LTS supported by the locked Astro version, run `npm ci --prefix site`, run the Astro production build, invoke the checker with source and built directories, and upload only `site/dist/`. Retain the current deploy guard: deploy only successful main pushes or explicit manual runs on a public repository; pull requests only build and check.
 
-- [ ] **Step 5: Update ignore rules and local instructions**
+- [x] **Step 5: Update ignore rules and local instructions**
 
 Ignore `site/node_modules/`, `site/.astro/`, and `site/dist/`. Document Python local checks and the `npm --prefix site ci`, `npm --prefix site run build`, and checker commands in `README.md`.
 
-- [ ] **Step 6: Run the complete local verification suite**
+- [x] **Step 6: Run the complete local verification suite**
 
 Run each command in order, stopping at the first failure:
 
 ```bash
-uv run --extra test --extra ibkr pytest -q --basetemp=.pytest-tmp-final
+uv run --extra test --extra ibkr pytest -q --basetemp=.pytest-tmp-task3-final
 uv run --extra test ruff check .
-uv run --extra test ruff format --check src/adapters/ibkr/events.py src/competition_tools/check_pages_content.py tests/test_source_layout.py
+uv run --extra test ruff format --check src/adapters/ibkr/events.py src/competition_tools/check_pages_content.py tests/test_source_layout.py tests/test_astro_site.py tests/competition_tools/test_check_pages_content.py
 uv run python -m compileall -q src
 npm --prefix site ci
 npm --prefix site run build
@@ -178,7 +178,7 @@ uv run python -m competition_tools.check_pages_content --source-dir site --built
 
 Expected: all Python tests/checks pass; both site routes build; content checker passes.
 
-- [ ] **Step 7: Inspect artifact and workflow diff, then commit**
+- [x] **Step 7: Inspect artifact and workflow diff, then commit**
 
 Verify the uploaded artifact path is exactly `site/dist/`, no generated files are tracked, no secrets or results were added, and Pages does not deploy from pull requests. Commit the focused website/workflow change:
 
