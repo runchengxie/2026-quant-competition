@@ -204,6 +204,6 @@ Run the Task 3 verification commands after deleting only ignored generated `site
 
 Run `rg -n "python scripts/|scripts/check_pages_content|Traditional Chinese|zh-Hant" README.md AGENTS.md docs/operations .github site src tests` and resolve stale active references. Inspect both generated HTML pages and verify the disclosure checker.
 
-- [ ] **Step 3: Prepare PR and defer merge/publication to the repository workflow**
+- [x] **Step 3: Prepare PR and defer merge/publication to the repository workflow**
 
 Push the feature branch and open a PR against `main`; wait for CI and review. Do not merge or change repository visibility as part of this source/site migration.

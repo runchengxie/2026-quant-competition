@@ -63,6 +63,19 @@ def test_rejects_unrecognized_source_file(tmp_path):
     assert any("unrecognized source path" in error for error in errors)
 
 
+def test_does_not_ignore_nested_directory_named_dist(tmp_path):
+    source, built = make_site_trees(tmp_path)
+    private_source = source / "src/components/dist/private.astro"
+    private_source.parent.mkdir(parents=True)
+    private_source.write_text(
+        'api_key = "abcdefghijklmnopqrstuvwxyz"', encoding="utf-8"
+    )
+
+    errors = check_site(source, built)
+
+    assert any("sensitive pattern" in error for error in errors)
+
+
 def test_rejects_public_javascript_source(tmp_path):
     source, built = make_site_trees(tmp_path)
     (source / "public/tracker.js").write_text("fetch('/api');", encoding="utf-8")

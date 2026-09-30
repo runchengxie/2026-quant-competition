@@ -92,7 +92,7 @@ def _collect_files(
     files: list[Path] = []
     for path in root.rglob("*"):
         relative_path = PurePosixPath(path.relative_to(root).as_posix())
-        if ignored_directories.intersection(relative_path.parts):
+        if relative_path.parts[0] in ignored_directories:
             continue
         relative_name = relative_path.as_posix()
         if path.is_symlink():
