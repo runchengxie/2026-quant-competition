@@ -8,11 +8,11 @@ The repository is now named `runchengxie/2026-quant-competition`. The user autho
 
 | Surface | Coverage | Finding / disposition |
 |---|---:|---|
-| Reachable Git history | 46 commits; 114 tracked paths at audit start | Screened reachable blobs for GitHub/OpenAI/AWS token shapes, private-key headers, and long credential assignments. No matches. This pattern scan is useful screening, not proof that no sensitive material exists. |
+| Reachable Git history | 46 commits and 114 tracked paths at initial inventory; a later scan covered 51 reachable commits | Screened reachable blobs for GitHub/OpenAI/AWS token shapes, private-key headers, and long credential assignments. No matches. This pattern scan is useful screening, not proof that no sensitive material exists. |
 | Current local secrets | `.env.local` ignored and untracked; `.env.example` is a placeholder template | Keep local environment values outside Git. Recheck current and historical versions before publication. |
 | GitHub release | `reference-pdfs-2026-09`; three PDF assets at audit start | All three assets were removed. A GitHub API verification returned an asset count of zero; the release title and notes now point to the English Markdown guides. |
 | Markdown documentation | 36 Markdown files inventoried; 23 contained Chinese text | Translated to English. The market-data inventory was rewritten as a sanitized summary, removing local absolute paths and detailed account-permission probe data. |
-| Pages source | `site/` allowlist | Contains only project introduction, high-level architecture, public competition dates and links, and a statement that verified results are not yet published. Content check passed locally. |
+| Pages source | `site/` allowlist | Contains only project introduction, high-level architecture, public competition dates and links, and a statement that verified results are not yet published. A recursive checker rejects nested/unlisted files, symlinks, and secret-like content. |
 
 ## Competition date reconciliation
 
