@@ -24,11 +24,11 @@ jobs:
       - name: Lint
         run: uv run --locked ruff check .
       - name: Check formatting
-        run: uv run --locked ruff format --check adapters/ibkr/events.py scripts/check_pages_content.py
+        run: uv run --locked ruff format --check src/adapters/ibkr/events.py src/competition_tools/check_pages_content.py tests/test_source_layout.py
       - name: Run tests
         run: uv run --locked pytest -q
       - name: Compile Python packages
-        run: uv run --locked python -m compileall -q adapters apps packages strategies
+        run: uv run --locked python -m compileall -q src
       - name: Scan full Git history for secrets
         uses: gitleaks/gitleaks-action@v2
         env:

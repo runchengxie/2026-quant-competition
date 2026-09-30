@@ -22,7 +22,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Check Pages content
-        run: python scripts/check_pages_content.py
+        run: uv run python -m competition_tools.check_pages_content
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site

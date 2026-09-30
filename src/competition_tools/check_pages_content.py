@@ -1,7 +1,7 @@
 from pathlib import Path
 import re
 
-SITE = Path(__file__).resolve().parents[1] / "site"
+SITE = Path(__file__).resolve().parents[2] / "site"
 ALLOWED = {"index.html", "styles.css"}
 SENSITIVE = {
     "credential": re.compile(

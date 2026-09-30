@@ -23,10 +23,13 @@ The competition strategy has not been selected or registered. The candidates sti
 2026-quant-competition/
 ├── README.md
 ├── docs/                    # competition, strategy, and operations material
-├── packages/                # contracts, audit, reconciliation, and policies
-├── strategies/nira/         # external targets.json handoff only
-├── adapters/                # Nautilus boundary and IBKR event mapping
-├── apps/execution_runner/   # Paper-first runner configuration
+├── src/
+│   ├── packages/            # contracts, audit, reconciliation, and policies
+│   ├── strategies/nira/     # external targets.json handoff only
+│   ├── adapters/            # Nautilus boundary and IBKR event mapping
+│   ├── apps/execution_runner/ # Paper-first runner configuration
+│   └── competition_tools/   # repository CLI tools
+├── site/                    # bilingual GitHub Pages site
 └── tests/                   # unit and integration tests
 ```
 

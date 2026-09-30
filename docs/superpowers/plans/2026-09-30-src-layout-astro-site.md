@@ -70,7 +70,19 @@ Change the repository tree in `README.md`, package locations in `AGENTS.md`, and
 Run: `uv run --extra test pytest tests/test_source_layout.py -q`
 Expected: PASS, including the outside-checkout subprocess import.
 
-Run: `uv run --extra test ruff check .; uv run --extra test ruff format --check src tests; uv run --extra test pytest -q; uv run python -m compileall -q src`
+Run formatting only on files covered by the existing repository gate, plus the new source-layout test; the repository's other Python files were not previously format-checked:
+
+```powershell
+uv run --extra test ruff format --check src/adapters/ibkr/events.py src/competition_tools/check_pages_content.py tests/test_source_layout.py
+```
+
+Run the test suite with the `ibkr` optional dependency enabled and a workspace-local pytest temp root:
+
+```powershell
+uv run --extra test --extra ibkr pytest -q --basetemp=.pytest-tmp-task1-final
+```
+
+Run: `uv run --extra test ruff check .` and `uv run python -m compileall -q src`.
 Expected: all checks pass. Also run `uv run python -m competition_tools.run_paper_preflight --help` and each moved research CLI with `--help` to verify module invocation without loading input datasets.
 
 - [ ] **Step 7: Commit the Python layout migration**
@@ -155,9 +167,9 @@ Ignore `site/node_modules/`, `site/.astro/`, and `site/dist/`. Document Python l
 Run each command in order, stopping at the first failure:
 
 ```bash
-uv run --extra test pytest -q
+uv run --extra test --extra ibkr pytest -q --basetemp=.pytest-tmp-final
 uv run --extra test ruff check .
-uv run --extra test ruff format --check src tests
+uv run --extra test ruff format --check src/adapters/ibkr/events.py src/competition_tools/check_pages_content.py tests/test_source_layout.py
 uv run python -m compileall -q src
 npm --prefix site ci
 npm --prefix site run build
