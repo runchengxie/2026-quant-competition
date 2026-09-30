@@ -11,12 +11,18 @@ dependencies = []
 
 [project.optional-dependencies]
 nautilus = ["nautilus_trader>=1.0"]
-test = ["pytest>=8.0"]
+test = ["pytest>=8.0", "ruff>=0.11"]
 ibkr = ["ib-insync>=0.9.86", "tzdata>=2024.1"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
 testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]
 
 [tool.setuptools.packages.find]
 include = ["adapters*", "apps*", "packages*", "strategies*"]
