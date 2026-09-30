@@ -44,28 +44,28 @@
 - Consumes: existing packages and CLI flags without changing their public import names or behavior.
 - Produces: installable Python packages under `src/`; CLI modules `competition_tools.check_pages_content`, `competition_tools.run_global_etf_rotation`, `competition_tools.run_hk_baseline_backtest`, and `competition_tools.run_paper_preflight`.
 
-- [ ] **Step 1: Add source-layout regression tests**
+- [x] **Step 1: Add source-layout regression tests**
 
 Add tests asserting that `packages.contracts`, `adapters.ibkr`, `apps.execution_runner`, `strategies.global_etf_rotation`, and `competition_tools` are importable from an editable install. Add a subprocess check that changes its working directory to a temporary directory before importing. Add a resource-path assertion for the Pages checker so it locates the repository's `site/` directory independent of current working directory.
 
-- [ ] **Step 2: Run the new tests and confirm the expected failure**
+- [x] **Step 2: Run the new tests and confirm the expected failure**
 
 Run: `uv run --extra test pytest tests/test_source_layout.py -q`
 Expected: fail because the packages still live outside `src/` and `competition_tools` does not exist.
 
-- [ ] **Step 3: Move packages and CLI tools**
+- [x] **Step 3: Move packages and CLI tools**
 
 Use `git mv` to preserve relative package contents under `src/{adapters,apps,packages,strategies}`. Move each Python file in `scripts/` into `src/competition_tools/`, create its `__init__.py`, and leave no maintained `.py` module in the old top-level paths.
 
-- [ ] **Step 4: Configure packaging, tests, and workflows**
+- [x] **Step 4: Configure packaging, tests, and workflows**
 
 Set pytest `pythonpath = ["src"]`; set setuptools discovery `where = ["src"]` and include the four existing namespaces plus `competition_tools*`. Update Ruff format paths and compile paths. Update Pages workflow invocation to `uv run python -m competition_tools.check_pages_content`. Keep Python CI dependency installation locked and package-aware.
 
-- [ ] **Step 5: Update active documentation and developer commands**
+- [x] **Step 5: Update active documentation and developer commands**
 
 Change the repository tree in `README.md`, package locations in `AGENTS.md`, and current Paper preflight commands to `uv run python -m competition_tools.run_paper_preflight`. Search active docs for `python scripts/` and remove all obsolete executable references. Historical implementation plans may retain their original paths as records.
 
-- [ ] **Step 6: Run source-layout tests and full Python checks**
+- [x] **Step 6: Run source-layout tests and full Python checks**
 
 Run: `uv run --extra test pytest tests/test_source_layout.py -q`
 Expected: PASS, including the outside-checkout subprocess import.
@@ -85,7 +85,7 @@ uv run --extra test --extra ibkr pytest -q --basetemp=.pytest-tmp-task1-final
 Run: `uv run --extra test ruff check .` and `uv run python -m compileall -q src`.
 Expected: all checks pass. Also run `uv run python -m competition_tools.run_paper_preflight --help` and each moved research CLI with `--help` to verify module invocation without loading input datasets.
 
-- [ ] **Step 7: Commit the Python layout migration**
+- [x] **Step 7: Commit the Python layout migration**
 
 ```bash
 git add -A
@@ -105,20 +105,20 @@ git commit -m "refactor: move Python packages into src layout"
 - Consumes: no runtime API; static copy and approved public links from the existing page.
 - Produces: `site/dist/index.html` (English), `site/dist/zh-CN/index.html` (Simplified Chinese), static CSS/assets, and locale links between equivalent routes.
 
-- [ ] **Step 1: Add Astro build-output tests**
+- [x] **Step 1: Add Astro build-output tests**
 
 Create `tests/test_astro_site.py` that reads only a built fixture/output directory and asserts English `lang="en"`, Simplified Chinese `lang="zh-CN"`, correct localized copy in each route, matching language-switch destinations, and asset URLs prefixed by `/2026-quant-competition/`.
 
-- [ ] **Step 2: Run tests to confirm they fail without the Astro output**
+- [x] **Step 2: Run tests to confirm they fail without the Astro output**
 
 Run: `uv run --extra test pytest tests/test_astro_site.py -q`
 Expected: fail because the required generated route files do not exist.
 
-- [ ] **Step 3: Add pinned Astro project and localized pages**
+- [x] **Step 3: Add pinned Astro project and localized pages**
 
 Create the site-local npm project and lockfile. Configure Astro with `site: "https://runchengxie.github.io"`, `base: "/2026-quant-competition"`, static output, locales `en` and `zh-CN`, default locale `en`, and no prefix for the default locale. Implement a shared layout and equivalent English/Simplified Chinese page content with a visible locale switcher. Keep the current rule link, strategy-candidate status, and no-results-yet notice. Do not include live performance or private strategy details.
 
-- [ ] **Step 4: Build and pass route/output tests**
+- [x] **Step 4: Build and pass route/output tests**
 
 Run: `npm --prefix site ci; npm --prefix site run build`
 Expected: Astro emits both locale routes into `site/dist/`.
@@ -126,7 +126,7 @@ Expected: Astro emits both locale routes into `site/dist/`.
 Run: `uv run --extra test pytest tests/test_astro_site.py -q`
 Expected: PASS for locale metadata, route links, and repository base-prefixed assets.
 
-- [ ] **Step 5: Review generated content and responsive page**
+- [x] **Step 5: Review generated content and responsive page**
 
 Inspect `site/dist/index.html` and `site/dist/zh-CN/index.html`; run a local static server from `site/dist/` and verify desktop/mobile layout, direct locale navigation, and language switching. Confirm no API credentials, account details, positions, or performance figures are present.
 

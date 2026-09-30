@@ -50,7 +50,16 @@ See the [public competition rules](https://fundconnecthk.com/quant-league/legal/
 
 ## Development checks
 
-The GitHub Actions workflow uses Python 3.12 and the committed `uv.lock` to run Ruff, the test suite, bytecode compilation, and a full-history secret scan. It does not connect to provider APIs or IB Gateway.
+The GitHub Actions workflow uses Python 3.12 and the committed `uv.lock` to run Ruff, the test suite, bytecode compilation, and a full-history secret scan. It does not connect to provider APIs or IB Gateway. The GitHub Pages site is built with Astro and Node.js 24; English is the default language and Simplified Chinese is available at `/zh-CN/`.
+
+### Build the website locally
+
+```powershell
+npm --prefix site ci
+npm --prefix site run build
+```
+
+The generated static site is in `site/dist/`. The Pages workflow publishes that directory after the content checks pass.
 
 ## Research and safety notes
 
