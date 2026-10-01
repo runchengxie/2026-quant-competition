@@ -15,6 +15,7 @@
 | Stored | U.S. Treasury ETF | TLT through 2026-02-09 | 1-minute OHLCV | Stored with futures research but must be treated as ETF data. |
 | Stored | Vietnam equities | 50-stock pilot through 2026-08-27 | Daily data from VCI and KBS, raw and normalized | Quality report is `PASS_WITH_QUARANTINE`; adjustment semantics remain unresolved and `factor_ready=false`. |
 | Probe only | Selected U.S., Hong Kong, Japan, Singapore, U.K., Australia, Canada, and Germany securities | Short history/contract checks around 2026-09-03/04 | Permission or contract probe | Not complete research datasets. Some exchanges returned no historical-data permission. |
+| Candidate / not yet validated | QuantZone factor library | No factor snapshots validated in this repository | Factor query service and Python SDK are publicly described; account entitlement and project-specific market coverage have not been checked | Do not treat advertised stock/factor counts or a free basic quota as proof of A-share coverage, point-in-time history, or publication rights. |
 
 ## Hong Kong competition data
 
@@ -50,6 +51,7 @@ Historical contract probes help establish that a contract can be identified or t
 - Complete history for most securities used only in permission probes.
 - Vietnam real-time, depth, and tick data.
 - Futures tick, MBO, and order-book data in the described one-minute dataset.
+- QuantZone factor definitions and observations with verified A-share universe, formula/version, point-in-time availability and revision history, survivorship/adjustment treatment, quota/price, and research/publication rights.
 
 ## Usage notes
 
@@ -58,3 +60,6 @@ Historical contract probes help establish that a contract can be identified or t
 3. Distinguish data snapshots and duplicate copies by their manifests and coverage files.
 4. Do not use Vietnam prices as production factors until adjustment semantics are resolved.
 5. External data directories are not version-controlled. Use manifests, input locks, and file hashes to establish provenance.
+6. QuantZone is a candidate A-share factor source only. Before using it, verify the factor formula/version, supported market/universe, point-in-time availability timestamp, revisions, corporate-action and survivorship treatment, quotas/pricing, and rights for research and sanitized publication. For other markets, factor names may inspire hypotheses; reconstruct from regional native data and validate separately. Do not copy A-share values, ranks, or cutoffs to other markets.
+
+Public product references: [QuantZone](https://www.quantzone.tech/) and [QuantZone Python SDK on PyPI](https://pypi.org/project/quantzone/). These describe the product and SDK, not this team's entitlements or data-quality validation.
