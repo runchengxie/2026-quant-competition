@@ -24,6 +24,7 @@ The first round is broad in instrument type. It does not assume that every marke
 - Stocks below USD 1 or with trailing 30-day average daily turnover below USD 3 million are generally restricted to closing positions. Futures must not be used in a way that manufactures abnormal returns through illiquidity.
 - Cryptoracle documents net sentiment (`CO-A-02-03`), standardized sentiment momentum (`CO-S-01-01`), and cross-platform sentiment divergence (`CO-A-02-07/08`). These are candidate research inputs for digital-asset-related exposure, not assumed predictors for unrelated stocks, bonds, or futures.
 - The current public Index One operation catalog exposes securities reference data, stock EOD data, FX data, and index operations. It does not currently advertise an operation specifically for futures. The actual team API permissions, market coverage, and history depth remain to be confirmed.
+- QuantZone publicly describes factor queries, a precomputed factor library, a trading calendar, and a Python SDK, with a free tier described as providing basic daily quota. Its public landing page does not establish the exact market coverage, point-in-time history/revision semantics, or rights to publish derived outputs; those must be verified through account documentation and terms before use. [QuantZone](https://www.quantzone.tech/), [QuantZone SDK on PyPI](https://pypi.org/project/quantzone/).
 - The target handoff is version 1.0 and describes symbols, weights, optional quantities, and a market. Its market schema currently lists `JP` and `US`; the internal market model also contains `HK`. It has no futures contract month, multiplier, tick size, or roll metadata. Futures cannot safely use the current target contract unchanged.
 
 Official sources: [competition rules](https://fundconnecthk.com/quant-league/legal/competition-rules/), [Cryptoracle indicator catalog](https://cryptoracle.gitbook.io/cryptoracle-docs/co-indicator-repository), [Cryptoracle CO-S-01-01](https://cryptoracle.gitbook.io/cryptoracle-docs/cryptoracle-open-api-v2.1/api-list/co-real-time-data/indicators/co-s-01-01), and [Index One operation catalog](https://indexone.io/docs/reference/execution-engine).
@@ -36,6 +37,7 @@ Use one research framework with three isolated asset sleeves and a common evalua
 Provider snapshots
   ├─ IBKR prices, contract metadata, and account permissions
   ├─ Index One supported securities, FX, and index/backtest operations
+  ├─ QuantZone candidate A-share factor values/metadata (only after entitlement and PIT validation)
   └─ AIVIX / Cryptoracle timestamped indicators for digital-asset exposure
           ↓
 Point-in-time instrument and data manifest
@@ -61,6 +63,7 @@ Each observation carries its provider timestamp, retrieval timestamp, period bou
 - **IBKR:** qualify actual contracts, verify account permissions, and provide Paper execution events. Market-data entitlements must be checked separately from TCP/API connectivity. Paper is the only execution environment in this design.
 - **Index One:** first use the live public schema and team permissions to inventory the exact supported operations. Use its prices, FX, index values, weights, or backtest functions only for verified supported instruments. Reconcile results against the same frozen target manifest used by execution. Do not assume its securities EOD operations cover futures. Use documented backtest-only endpoints for experiments; avoid arbitrary workflow execution or persistent index writes until the exact operation and permission are confirmed.
 - **AIVIX / Cryptoracle:** begin with a small, predeclared BTC/ETH sentiment set. Store the indicator ID, asset, provider period, publish/observation time, retrieval time, and response checksum. Test net sentiment, standardized sentiment momentum, and cross-platform divergence separately. A stale, missing, revised, or malformed input disables the AIVIX overlay for that decision and selects the documented baseline allocation; it does not invent a value or stop unrelated sleeves.
+- **QuantZone:** evaluate as a candidate A-share factor source, not as an assumed global data provider. Before use, verify eligible A-share markets/universes, factor definitions and versions, adjustment and survivorship treatment, historical depth, first-available/as-of timestamps, revisions, rate limits, price/terms, and permission to use factors in research and publish sanitized derived results. Preserve factor ID, formula/version, instrument identity, observation period, availability timestamp, retrieval timestamp, and source snapshot. For other markets, use its catalog only to generate hypotheses; reconstruct factors from region-appropriate data and refit/validate them independently. Do not transplant A-share ranks, thresholds, or factor values across markets without evidence.
 
 Provider keys stay in local environment configuration. They must not enter Git, GitHub workflow logs, Pages, run artifacts, or public test fixtures. Do not request or publish raw licensed provider responses.
 
@@ -105,5 +108,6 @@ The execution handoff must be versioned to describe security and futures instrum
 - Live-money orders, unattended trading, or changes to production account permissions.
 - Treating AIVIX sentiment as a universal signal for global equities, bonds, or unrelated futures.
 - Assuming Index One supports every exchange, ETF, equity, futures contract, or historical field before validating the live operation catalog and team entitlements.
-- Adding QuantZone or other paid/provider APIs without a specific missing-data need and confirmed access terms.
+- Adding the QuantZone SDK or making authenticated API calls before confirming account access, actual A-share coverage, point-in-time/revision semantics, quotas, pricing, and use/publication terms.
+- Using A-share QuantZone factor values directly for non-A-share markets; only factor hypotheses may transfer before market-specific reconstruction and validation.
 - Publishing raw market data, credentials, account information, or unverified performance.

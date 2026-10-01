@@ -24,3 +24,17 @@ Recommended progression:
 3. Keep a cash buffer and include FX, commissions and realistic slippage.
 4. Validate at least the complete three-month competition window and multiple
    walk-forward windows before enabling any non-dry-run submission.
+
+## Factor data and QuantZone
+
+QuantZone is a candidate source for A-share factor observations and metadata,
+but this repository has not yet validated the account's market coverage,
+point-in-time history, revision behavior, universe construction, or usage and
+publication rights. Treat it as unavailable to backtests until those checks
+are recorded. Keep factor ID, formula version, instrument, observation period,
+provider availability time, retrieval time, and source version with each row.
+
+For U.S., Hong Kong, Japan, or other non-A markets, QuantZone's factor catalog
+can suggest hypotheses only. Rebuild each feature from that market's native
+data, use local market-specific normalization, and validate it out of sample;
+do not reuse A-share factor values, cross-sectional ranks, or thresholds.
