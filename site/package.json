@@ -1,0 +1,13 @@
+{
+  "name": "2026-quant-competition-pages",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "astro build",
+    "dev": "astro dev",
+    "preview": "astro preview"
+  },
+  "devDependencies": {
+    "astro": "7.3.5"
+  }
+}

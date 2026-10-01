@@ -1,0 +1,33 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description: string;
+  locale: "en" | "zh-CN";
+}
+
+const { title, description, locale } = Astro.props;
+const isEnglish = locale === "en";
+const englishUrl = getRelativeLocaleUrl("en");
+const chineseUrl = getRelativeLocaleUrl("zh-CN", "", { normalizeLocale: false });
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="color-scheme" content="light" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <nav class="language" aria-label={isEnglish ? "Language" : "语言选择"}>
+      <a href={englishUrl} aria-current={isEnglish ? "page" : undefined}>English</a>
+      <a href={chineseUrl} aria-current={!isEnglish ? "page" : undefined}>简体中文</a>
+    </nav>
+    <slot />
+  </body>
+</html>

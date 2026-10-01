@@ -5,7 +5,7 @@ The preflight checks execution prerequisites only. It does not place or cancel o
 ## Usage
 
 ```powershell
-uv run --extra test python scripts/run_paper_preflight.py `
+uv run --extra test python -m competition_tools.run_paper_preflight `
   --targets path\to\targets.json `
   --config config\competition-2026-hk.json `
   --output runs\preflight.json
@@ -14,7 +14,7 @@ uv run --extra test python scripts/run_paper_preflight.py `
 To additionally check TCP reachability of the local Paper Gateway, explicitly add:
 
 ```powershell
-uv run python scripts/run_paper_preflight.py `
+uv run python -m competition_tools.run_paper_preflight `
   --targets path\to\targets.json `
   --config config\competition-2026-hk.json `
   --check-gateway

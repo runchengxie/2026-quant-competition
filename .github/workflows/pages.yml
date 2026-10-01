@@ -21,11 +21,23 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - uses: astral-sh/setup-uv@v5
+      - name: Install locked Python dependencies
+        run: uv sync --locked --extra test
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+      - name: Install website dependencies
+        run: npm ci --prefix site
+      - name: Build static website
+        run: npm run build --prefix site
       - name: Check Pages content
-        run: python scripts/check_pages_content.py
+        run: uv run --locked python -m competition_tools.check_pages_content --source-dir site --built-dir site/dist
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: site
+          path: site/dist
 
   deploy:
     if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.event.repository.visibility == 'public'

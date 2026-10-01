@@ -1,0 +1,152 @@
+:root {
+  color-scheme: light;
+  --ink: #172522;
+  --muted: #53645f;
+  --line: #dce5df;
+  --green: #215f4a;
+  --wash: #f3f7f3;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  color: var(--ink);
+  background: #fff;
+  font: 16px/1.65 "Segoe UI", "Microsoft YaHei", sans-serif;
+}
+
+.language {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem 0;
+}
+
+.language a[aria-current="page"] {
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.2em;
+}
+
+.hero {
+  padding: 5rem max(1.5rem, calc((100vw - 1080px) / 2));
+  border-bottom: 1px solid var(--line);
+  background: var(--wash);
+}
+
+.eyebrow {
+  color: var(--green);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  max-width: 780px;
+  margin-bottom: 1rem;
+  font-size: clamp(2.2rem, 6vw, 4.3rem);
+  line-height: 1.15;
+  letter-spacing: -0.04em;
+}
+
+.intro {
+  max-width: 650px;
+  margin-bottom: 1.75rem;
+  color: var(--muted);
+  font-size: 1.15rem;
+}
+
+.button {
+  display: inline-block;
+  padding: 0.7rem 1rem;
+  border-radius: 5px;
+  color: white;
+  background: var(--green);
+  text-decoration: none;
+}
+
+main {
+  max-width: 1080px;
+  margin: auto;
+  padding: 3rem 1.5rem;
+}
+
+section {
+  margin-bottom: 3rem;
+}
+
+h2 {
+  margin-bottom: 0.8rem;
+  font-size: 1.8rem;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.cards article {
+  padding: 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.cards h3 {
+  margin-bottom: 0.45rem;
+}
+
+.cards p,
+.schedule p,
+.notice {
+  color: var(--muted);
+}
+
+.schedule {
+  padding: 1.5rem;
+  border-radius: 8px;
+  background: var(--wash);
+}
+
+a {
+  color: var(--green);
+}
+
+footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem max(1.5rem, calc((100vw - 1080px) / 2));
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 700px) {
+  .hero {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+
+  .cards {
+    grid-template-columns: 1fr;
+  }
+
+  footer {
+    flex-direction: column;
+  }
+}

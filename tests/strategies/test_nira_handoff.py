@@ -274,9 +274,12 @@ def test_write_target_artifact_does_not_overwrite_lineage_by_default(
 def test_source_tree_is_not_a_runtime_dependency() -> None:
     import ast
 
-    source = Path(__file__).parents[2] / "strategies" / "nira"
+    source = Path(__file__).parents[2] / "src" / "strategies" / "nira"
+    assert source.is_dir()
+    source_files = list(source.rglob("*.py"))
+    assert source_files
     imported_modules: list[str] = []
-    for path in source.rglob("*.py"):
+    for path in source_files:
         tree = ast.parse(path.read_text(encoding="utf-8"))
         imported_modules.extend(
             node.module or ""

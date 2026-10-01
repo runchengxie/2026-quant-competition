@@ -1,0 +1,77 @@
+---
+import SiteLayout from "../../layouts/SiteLayout.astro";
+---
+
+<SiteLayout
+  locale="zh-CN"
+  title="2026 量化竞赛 | 项目介绍"
+  description="2026 年香港量化竞赛的研究与模拟执行工程项目。"
+>
+  <header class="hero">
+    <p class="eyebrow">2026 · 系统化研究与执行</p>
+    <h1>从策略研究到可审计执行。</h1>
+    <p class="intro">
+      面向香港量化竞赛的研究与执行工程项目，关注数据时点、组合风险、券商接口和模拟验证。
+    </p>
+    <a class="button" href="https://github.com/runchengxie/2026-quant-competition">
+      查看项目仓库
+    </a>
+  </header>
+
+  <main>
+    <section>
+      <p class="eyebrow">项目</p>
+      <h2>研究与执行保持清晰边界</h2>
+      <p>
+        研究系统生成带版本记录的目标组合和数据沿袭记录。执行系统校验目标、计算调仓差异，
+        并通过 IB Gateway 模拟账户进行受控测试。默认启用人工复核和模拟运行。
+      </p>
+      <div class="cards">
+        <article>
+          <h3>策略候选</h3>
+          <p>
+            团队正在比较港股时点基本面选股组合与使用 AIVIX 信号的美国 ETF 组合。竞赛策略尚未选定或登记。
+          </p>
+        </article>
+        <article>
+          <h3>数据与计算</h3>
+          <p>
+            项目正在评估如何结合 AIVIX 另类数据与 Index One 指数计算。数据权限、时间戳、权重核对和信号贡献仍需验证。
+          </p>
+        </article>
+        <article>
+          <h3>模拟执行</h3>
+          <p>
+            执行适配器将目标组合转换为订单意图，并保留审计和对账边界。本网站不展示真实账户或交易信息。
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="schedule">
+      <p class="eyebrow">竞赛</p>
+      <h2>竞赛日期</h2>
+      <p>根据主办方于 2026 年 9 月 23 日发布的公开规则。以下时间均为香港时间。</p>
+      <ul>
+        <li>报名截止：2026 年 10 月 23 日 23:59</li>
+        <li>交易期间：2026 年 10 月 26 日 00:00 至 2027 年 1 月 27 日 06:00</li>
+      </ul>
+      <a href="https://fundconnecthk.com/quant-league/legal/competition-rules/">
+        阅读主办方公开规则
+      </a>
+    </section>
+
+    <section>
+      <p class="eyebrow">证据</p>
+      <h2>公开状态</h2>
+      <p class="notice">
+        目前还没有竞赛或模拟交易表现通过数据来源、费用、基准和执行状态审查，因此本网站暂不展示收益数据。
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <span>研究项目 · 模拟优先</span>
+    <span>本项目不构成投资建议或交易邀约。</span>
+  </footer>
+</SiteLayout>
