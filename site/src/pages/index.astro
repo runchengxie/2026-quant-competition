@@ -21,40 +21,51 @@ import SiteLayout from "../layouts/SiteLayout.astro";
 
   <main>
     <section>
-      <p class="eyebrow">PROJECT</p>
-      <h2>Separate research from execution</h2>
+      <p class="eyebrow">WHAT THE CODE DOES</p>
+      <h2>A concrete handoff, safety, and audit path</h2>
       <p>
-        The research system produces versioned target portfolios and lineage records.
-        The execution system validates targets, calculates rebalance differences, and
-        supports controlled testing through IB Gateway Paper. Manual review and dry-run
-        remain the default safeguards.
+        Research and execution connect through versioned target and lineage files. The
+        repository validates that handoff, plans portfolio changes, and keeps broker
+        activity behind Paper-first safety checks.
       </p>
       <div class="cards">
         <article>
-          <h3>Strategy candidates</h3>
+          <h3>1. Validate the handoff</h3>
           <p>
-            The team is comparing Hong Kong Point-in-Time equity selection with a U.S.
-            ETF portfolio using AIVIX signals. No competition strategy has been selected
-            or registered.
+            The execution runner reads <code>targets.json</code> and its lineage record,
+            validates the market and portfolio, and calculates rebalance intents against
+            supplied holdings.
           </p>
         </article>
         <article>
-          <h3>Data and calculation</h3>
+          <h3>2. Apply Paper safeguards</h3>
           <p>
-            The project is evaluating how AIVIX alternative data and Index One index
-            calculation may work together. Entitlements, timestamps, weight
-            reconciliation, and contribution still require validation.
+            Preflight checks require Paper and dry-run settings and check target weights
+            against the configured single-name limit. IBKR event mapping is covered by local tests; a complete
+            supervised Paper order lifecycle has not yet been verified.
           </p>
         </article>
         <article>
-          <h3>Paper execution</h3>
+          <h3>3. Keep an audit trail</h3>
           <p>
-            Execution adapters convert target portfolios into order intents and preserve
-            audit and reconciliation boundaries. This site does not show live account or
-            trading information.
+            An append-only event journal supports duplicate protection and projection
+            rebuilds, while reconciliation compares journaled orders with broker state.
+            Tests and GitHub Actions run without provider credentials or a live broker.
           </p>
         </article>
       </div>
+    </section>
+
+    <section>
+      <p class="eyebrow">CURRENT STATUS</p>
+      <h2>Implemented foundations; validation still in progress</h2>
+      <p>
+        The codebase also contains experimental Hong Kong and international ETF research
+        baselines. The team has not selected or registered a competition strategy.
+        AIVIX and Index One permissions, point-in-time data coverage, and their role in a
+        reproducible strategy comparison remain under evaluation. No performance result
+        is presented as verified.
+      </p>
     </section>
 
     <section class="schedule">
@@ -74,9 +85,11 @@ import SiteLayout from "../layouts/SiteLayout.astro";
       <p class="eyebrow">EVIDENCE</p>
       <h2>Publication status</h2>
       <p class="notice">
-        No competition or Paper performance results have yet passed source, fee,
-        benchmark, and execution-status review for publication. This site therefore
-        does not display return figures.
+        Unit tests and repository CI cover the local validation and safety code. Paper
+        Gateway connectivity, contract qualification, order submission, cancellation,
+        fills, restart recovery, and reconciliation still need a supervised end-to-end
+        run. No competition or Paper performance results have passed review for
+        publication, so this site displays no return figures.
       </p>
     </section>
   </main>

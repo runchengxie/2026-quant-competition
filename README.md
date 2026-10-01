@@ -1,5 +1,7 @@
 # 2026 Quant Competition
 
+[Project site / 项目网站](https://runchengxie.github.io/2026-quant-competition/)
+
 Research and execution infrastructure for the 2026 Hong Kong quantitative trading competition.
 
 ## Project scope
