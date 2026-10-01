@@ -50,13 +50,14 @@ Serialize work that depends on execution core, schemas, configuration, or migrat
 
 ## Code organization
 
-- `packages/contracts`: targets, order intents, order events, and schemas.
-- `packages/market_model`: markets, exchanges, currencies, lot sizes, and trading calendars.
-- `packages/risk`: pre-trade checks and kill switch.
-- `packages/audit`: event logs, audit records, and competition evidence.
-- `adapters/ibkr`: IBKR Gateway contracts, market data, orders, and response mapping.
-- `apps/execution_runner`: resident execution process on Windows.
-- `strategies/nira`: reads external Nira signals and exports targets; it does not duplicate all Nira source.
+- `src/packages/contracts`: targets, order intents, order events, and schemas.
+- `src/packages/market_model`: markets, exchanges, currencies, lot sizes, and trading calendars.
+- `src/packages/risk`: pre-trade checks and kill switch.
+- `src/packages/audit`: event logs, audit records, and competition evidence.
+- `src/adapters/ibkr`: IBKR Gateway contracts, market data, orders, and response mapping.
+- `src/apps/execution_runner`: resident execution process on Windows.
+- `src/strategies/nira`: reads external Nira signals and exports targets; it does not duplicate all Nira source.
+- `src/competition_tools`: local command-line utilities; do not place research datasets or artifacts here.
 
 Connect research and execution through stable contracts. Do not copy the entire `research-workspace` into this repository.
 
