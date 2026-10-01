@@ -57,10 +57,18 @@ def factor_eligibility(
         reasons.append(reason)
 
     market_code = market.upper()
-    market_scope = {entry.strip().upper() for entry in definition.market_scope.split(",") if entry.strip()}
-    if market_scope and market_code not in market_scope:
+    market_scope = {
+        entry.strip().upper()
+        for entry in definition.market_scope.split(",")
+        if entry.strip()
+    }
+    if not market_scope and definition.market_scope.strip():
+        reasons.append("invalid_market_scope")
+    elif market_scope and market_code not in market_scope:
         reasons.append("market_scope_mismatch")
-    elif market_code not in {entry.upper() for entry in definition.validated_markets}:
+    elif market_scope and market_code not in {
+        entry.upper() for entry in definition.validated_markets
+    }:
         reasons.append("market_not_validated")
 
     return not reasons, tuple(reasons)
