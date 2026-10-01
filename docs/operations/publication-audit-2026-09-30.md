@@ -32,3 +32,19 @@ Source: [FundConnectHK public competition rules](https://fundconnecthk.com/quant
 5. Merge the reviewed PR, then change the repository to public and enable Pages; verify both URLs and workflow permissions.
 
 No credential value, account identifier, raw holding, or raw provider response is recorded here.
+
+## 2026-10-01 historical PDF rewrite
+
+The user authorized removing the original team reference PDFs from the repository's Git history. A private backup was created outside the repository before rewriting.
+
+| Check | Result |
+|---|---|
+| Rewritten `main` | `7ab35b4d00b702e2d0d07247a94649e4f9d01c3a` |
+| Rewritten `reference-pdfs-2026-09` tag | `0a4f145c839455698868a6111fb5386001090f65` |
+| History validation | Compared all 63 original commits with their rewritten trees, excluding only the four PDF path spellings; one root commit containing only `rules.pdf` became empty. No non-PDF tree differences were found. |
+| PDF path scan | No matching PDF paths in the rewritten mirror's `main`, tag, or locally rewritten pull-request refs. |
+| Release assets | Zero. |
+| Default-branch raw URLs | All four previously used PDF paths return HTTP 404. |
+| GitHub pull-request refs | 16 protected `refs/pull/*/head` refs remain at their old GitHub-managed commits; 10 PR head trees still contain at least one PDF. These refs cannot be updated by the repository force-push. |
+
+The rewritten `main` and tag are live. Full GitHub-side removal is not yet confirmed because the protected pull-request refs and cached views remain. A Support request should include the 16 affected PR refs, first changed commit `7efe57b95fe634be93e4467e0d64701435182a3f`, and the result of the raw URL checks. Do not claim complete removal until GitHub Support confirms what it can remove. Forks and old local clones remain outside repository control.
