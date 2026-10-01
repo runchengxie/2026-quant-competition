@@ -17,6 +17,10 @@ from apps.execution_runner.runner import ExecutionCandidate
 from decimal import Decimal
 
 
+def _fake_market_order(action: str, quantity: Decimal) -> SimpleNamespace:
+    return SimpleNamespace(action=action, totalQuantity=quantity)
+
+
 def test_japanese_symbol_maps_to_ibkr_stock_contract() -> None:
     contract = contract_for_symbol("1321.T")
     assert contract.symbol == "1321"
@@ -28,7 +32,7 @@ def test_japanese_symbol_maps_to_ibkr_stock_contract() -> None:
 def test_us_symbol_maps_to_usd_stock_contract() -> None:
     contract = contract_for_symbol("SGOV.US")
     assert contract.symbol == "SGOV"
-    assert contract.primaryExchange == "ARCA"
+    assert contract.exchange == "SMART"
     assert contract.currency == "USD"
 
 
@@ -70,3 +74,50 @@ def test_adapter_submit_is_disabled_without_explicit_port() -> None:
     candidate = ExecutionCandidate("1321.T", Decimal("1"), Decimal("1"))
     with pytest.raises(RuntimeError, match="submission is disabled"):
         adapter.submit((candidate,))
+
+
+def test_submit_qualifies_contract_before_placing_order() -> None:
+    class QualifiedIB:
+        def __init__(self):
+            self.qualified = []
+            self.placed = []
+
+        def qualifyContracts(self, contract):
+            self.qualified.append(contract)
+            return [SimpleNamespace(
+                symbol=contract.symbol,
+                exchange=contract.exchange,
+                currency=contract.currency,
+                primaryExchange=contract.primaryExchange,
+                conId=123,
+            )]
+
+        def placeOrder(self, contract, order):
+            self.placed.append((contract, order))
+
+    ib = QualifiedIB()
+    adapter = IBKRAdapter(ib, allow_submission=True)
+    adapter._market_order = _fake_market_order
+    adapter.submit((ExecutionCandidate("SGOV.US", Decimal("1"), Decimal("100")),))
+
+    assert len(ib.qualified) == 1
+    assert ib.placed[0][0].conId == 123
+
+
+@pytest.mark.parametrize(
+    "matches",
+    [[], [SimpleNamespace(), SimpleNamespace()]],
+    ids=["no-match", "ambiguous-match"],
+)
+def test_submit_refuses_unqualified_contract(matches) -> None:
+    class UnqualifiedIB:
+        def qualifyContracts(self, contract):
+            return matches
+
+        def placeOrder(self, contract, order):
+            raise AssertionError("must not place an order")
+
+    adapter = IBKRAdapter(UnqualifiedIB(), allow_submission=True)
+    adapter._market_order = _fake_market_order
+    with pytest.raises(RuntimeError, match="could not qualify contract"):
+        adapter.submit((ExecutionCandidate("SGOV.US", Decimal("1"), Decimal("100")),))
