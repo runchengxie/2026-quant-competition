@@ -50,7 +50,7 @@ def contract_for_symbol(symbol: str) -> Any:
     primary_exchange = {
         "HK": "SEHK",
         "JP": "TSEJ",
-        "US": "ARCA",
+        "US": "",
     }[instrument.market.value]
     try:
         from ib_insync import Stock
@@ -123,6 +123,7 @@ class IBKRAdapter:
             if candidate.quantity is None:
                 raise ValueError(f"quantity is required for {candidate.symbol}")
             contract = contract_for_symbol(candidate.symbol)
+            contract = self._qualify_contract(contract)
             order = self._market_order("BUY", candidate.quantity)
             self.ib.placeOrder(contract, order)
 
@@ -132,8 +133,17 @@ class IBKRAdapter:
             raise RuntimeError("IBKR submission is disabled")
         for intent in intents:
             contract = contract_for_symbol(intent.symbol)
+            contract = self._qualify_contract(contract)
             order = self._market_order(intent.side, intent.quantity)
             self.ib.placeOrder(contract, order)
+
+    def _qualify_contract(self, contract: Any) -> Any:
+        qualified = self.ib.qualifyContracts(contract)
+        if len(qualified) != 1:
+            raise RuntimeError(
+                f"IBKR could not qualify contract: expected one match, got {len(qualified)}"
+            )
+        return qualified[0]
 
     @staticmethod
     def _market_order(action: str, quantity: Decimal) -> Any:
