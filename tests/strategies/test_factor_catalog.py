@@ -44,6 +44,15 @@ def test_declared_cross_market_scope_requires_market_specific_validation() -> No
     assert reasons == ("market_not_validated",)
 
 
+def test_delimiter_only_market_scope_is_rejected() -> None:
+    candidate = definition(market_scope=" , , ", validated_markets=("US",))
+
+    eligible, reasons = factor_eligibility(candidate, market="US", purpose="research")
+
+    assert not eligible
+    assert reasons == ("invalid_market_scope",)
+
+
 def test_validated_cross_market_definition_is_eligible_for_research() -> None:
     candidate = definition(market_scope="CN,US", validated_markets=("CN", "US"))
 
