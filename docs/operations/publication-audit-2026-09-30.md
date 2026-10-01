@@ -46,5 +46,6 @@ The user authorized removing the original team reference PDFs from the repositor
 | Release assets | Zero. |
 | Default-branch raw URLs | All four previously used PDF paths return HTTP 404. |
 | GitHub pull-request refs | 16 protected `refs/pull/*/head` refs remain at their old GitHub-managed commits; 10 PR head trees still contain at least one PDF. These refs cannot be updated by the repository force-push. |
+| Pull-request raw URLs | Direct raw URLs under representative pull refs (PRs 1–11) still return HTTP 200 for retained PDF paths. |
 
-The rewritten `main` and tag are live. Full GitHub-side removal is not yet confirmed because the protected pull-request refs and cached views remain. A Support request should include the 16 affected PR refs, first changed commit `7efe57b95fe634be93e4467e0d64701435182a3f`, and the result of the raw URL checks. Do not claim complete removal until GitHub Support confirms what it can remove. Forks and old local clones remain outside repository control.
+The rewritten `main` and tag are live. The PDFs remain publicly retrievable through pull-request refs, so full GitHub-side removal is not complete. A Support request should include the 16 affected PR refs, first changed commit `7efe57b95fe634be93e4467e0d64701435182a3f`, and the raw URL checks. Do not claim complete removal until GitHub Support confirms what it can remove. Forks and old local clones remain outside repository control.
