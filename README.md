@@ -73,3 +73,5 @@ Competition statements and strategy material are research notes, not investment,
 ## Local environment configuration
 
 Copy `.env.example` to `.env` and fill in your private values. Keep `.env` outside Git; `.env.example` contains public placeholders only. Use a single `.env` file rather than a separate `.env.local`. The runner reads process environment variables and does not automatically load dotenv files; load the required values into the process environment before starting it.
+
+QuantZone is optional: fill `QUANTZONE_API_KEY` in your local `.env` when access is available. `QUANTZONE_API_BASE_URL` records the candidate service URL; no QuantZone adapter or authentication flow is implemented yet. These entries do not validate account entitlement or factor coverage.
