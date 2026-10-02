@@ -4,7 +4,7 @@ Baseline: main at `a5f5720`. This is a local software check, not a strategy perf
 
 ## Results
 
-- Relevant strategy, preflight and rebalance tests: **14 passed**.
+- Full main test suite: **142 passed**; Ruff passed. The focused strategy, preflight and rebalance subset passed all **14 tests**.
 - Real global ETF baseline: blocked because the expected historical CSV files are unavailable on this machine. No real-market performance result was produced.
 - Six synthetic ETF series successfully exercised the existing backtest CLI. Synthetic performance metrics must not be presented as market evidence.
 - A separate synthetic v1 Hong Kong target artifact passed target validation, weight limits and dry-run rebalancing: 10 intents, no broker submission attempted.
