@@ -1,0 +1,208 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://competition.local/schemas/targets.v2.schema.json",
+  "title": "International target manifest v2",
+  "description": "Interchange only. Python validation additionally enforces aggregate weight, compound instrument uniqueness and expiry later than the as-of UTC date. Enable format checking for dates and timestamps.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "strategy_id",
+    "as_of",
+    "reporting_currency",
+    "targets"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "2.0"
+    },
+    "strategy_id": {
+      "$ref": "#/$defs/text"
+    },
+    "as_of": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{1,6})?(?:Z|\\+00:00)(?![\\s\\S])"
+    },
+    "reporting_currency": {
+      "$ref": "#/$defs/currency"
+    },
+    "targets": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/securityTarget"
+          },
+          {
+            "$ref": "#/$defs/futureTarget"
+          }
+        ]
+      }
+    }
+  },
+  "$defs": {
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "\\S"
+    },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}(?![\\s\\S])"
+    },
+    "market": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9_-]*(?![\\s\\S])"
+    },
+    "mic": {
+      "type": "string",
+      "pattern": "^[A-Z0-9]{4}(?![\\s\\S])"
+    },
+    "weight": {
+      "type": "string",
+      "pattern": "^(?:0|0\\.[0-9]+|1(?:\\.0+)?)(?![\\s\\S])"
+    },
+    "positiveDecimal": {
+      "type": "string",
+      "pattern": "^(?:0*[1-9][0-9]*(?:\\.[0-9]+)?|0+\\.[0-9]*[1-9][0-9]*)(?![\\s\\S])"
+    },
+    "contractCount": {
+      "type": "string",
+      "pattern": "^0*[1-9][0-9]*(?:\\.0+)?(?![\\s\\S])"
+    },
+    "securityInstrument": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "asset_type",
+        "symbol",
+        "market",
+        "exchange_mic",
+        "currency"
+      ],
+      "properties": {
+        "asset_type": {
+          "enum": [
+            "equity",
+            "etf"
+          ]
+        },
+        "symbol": {
+          "$ref": "#/$defs/text"
+        },
+        "market": {
+          "$ref": "#/$defs/market"
+        },
+        "exchange_mic": {
+          "$ref": "#/$defs/mic"
+        },
+        "currency": {
+          "$ref": "#/$defs/currency"
+        }
+      }
+    },
+    "futureInstrument": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "asset_type",
+        "symbol",
+        "market",
+        "exchange_mic",
+        "currency",
+        "contract_month",
+        "expiry_date",
+        "multiplier",
+        "tick_size",
+        "roll_rule_id",
+        "settlement_type",
+        "margin_model_id"
+      ],
+      "properties": {
+        "asset_type": {
+          "const": "future"
+        },
+        "symbol": {
+          "$ref": "#/$defs/text"
+        },
+        "market": {
+          "$ref": "#/$defs/market"
+        },
+        "exchange_mic": {
+          "$ref": "#/$defs/mic"
+        },
+        "currency": {
+          "$ref": "#/$defs/currency"
+        },
+        "contract_month": {
+          "type": "string",
+          "pattern": "^(?!0000)[0-9]{4}(?:0[1-9]|1[0-2])(?![\\s\\S])"
+        },
+        "expiry_date": {
+          "type": "string",
+          "format": "date",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}(?![\\s\\S])"
+        },
+        "multiplier": {
+          "$ref": "#/$defs/positiveDecimal"
+        },
+        "tick_size": {
+          "$ref": "#/$defs/positiveDecimal"
+        },
+        "roll_rule_id": {
+          "$ref": "#/$defs/text"
+        },
+        "settlement_type": {
+          "enum": [
+            "cash",
+            "physical"
+          ]
+        },
+        "margin_model_id": {
+          "$ref": "#/$defs/text"
+        }
+      }
+    },
+    "securityTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "instrument",
+        "weight"
+      ],
+      "properties": {
+        "instrument": {
+          "$ref": "#/$defs/securityInstrument"
+        },
+        "weight": {
+          "$ref": "#/$defs/weight"
+        },
+        "quantity": {
+          "$ref": "#/$defs/positiveDecimal"
+        }
+      }
+    },
+    "futureTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "instrument",
+        "weight",
+        "quantity"
+      ],
+      "properties": {
+        "instrument": {
+          "$ref": "#/$defs/futureInstrument"
+        },
+        "weight": {
+          "$ref": "#/$defs/weight"
+        },
+        "quantity": {
+          "$ref": "#/$defs/contractCount"
+        }
+      }
+    }
+  }
+}

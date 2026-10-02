@@ -11,7 +11,7 @@ from collections.abc import Mapping
 
 from packages.audit import EventJournal
 from .safety import KillSwitch
-from packages.contracts import TargetSet
+from packages.contracts import TargetSet, TargetValidationError
 
 from .config import RunnerSettings
 
@@ -43,6 +43,11 @@ class SubmissionPort(Protocol):
     def submit(self, candidates: tuple[ExecutionCandidate, ...]) -> None: ...
 
 
+def _require_v1(target_set: TargetSet) -> None:
+    if not isinstance(target_set, TargetSet) or target_set.schema_version != "1.0":
+        raise TargetValidationError("execution requires a v1 TargetSet")
+
+
 class ExecutionRunner:
     """Prepare contract targets without coupling the runner to a broker SDK.
 
@@ -69,6 +74,7 @@ class ExecutionRunner:
     def run(self, target_set: TargetSet) -> ExecutionRunResult:
         """Prepare execution candidates and return a safe, observable result."""
 
+        _require_v1(target_set)
         candidates = tuple(
             ExecutionCandidate(
                 symbol=target.symbol,
@@ -123,6 +129,7 @@ class ExecutionRunner:
         self, target_set: TargetSet, positions: Mapping[str, Decimal]
     ) -> ExecutionRunResult:
         """Plan target deltas, then optionally submit them through an adapter."""
+        _require_v1(target_set)
         from packages.execution_policies.rebalance import plan_rebalance
 
         candidates = tuple(
