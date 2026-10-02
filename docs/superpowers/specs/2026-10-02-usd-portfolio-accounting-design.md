@@ -1,7 +1,7 @@
 # USD portfolio accounting integration design
 
 Date: 2026-10-02
-Status: proposed for review; not implemented
+Status: design approved by the user on 2026-10-02; implementation plan awaiting review
 
 ## Intent
 
