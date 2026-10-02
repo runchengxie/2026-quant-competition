@@ -68,4 +68,8 @@ The generated static site is in `site/dist/`. The Pages workflow publishes that 
 
 ## Research and safety notes
 
-Competition statements and strategy material are research notes, not investment, legal, or compliance advice. No strategy result should be described as verified broker execution without supporting Paper evidence. Never commit `.env.local`, credentials, account information, order logs, raw provider responses, or run artifacts.
+Competition statements and strategy material are research notes, not investment, legal, or compliance advice. No strategy result should be described as verified broker execution without supporting Paper evidence. Never commit `.env`, credentials, account information, order logs, raw provider responses, or run artifacts.
+
+## Local environment configuration
+
+Copy `.env.example` to `.env` and fill in your private values. Keep `.env` outside Git; `.env.example` contains public placeholders only. Use a single `.env` file rather than a separate `.env.local`. The runner reads process environment variables and does not automatically load dotenv files; load the required values into the process environment before starting it.

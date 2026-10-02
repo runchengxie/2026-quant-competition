@@ -28,5 +28,5 @@ docs/         rules, strategy, and operating guides
 experiments/  competition experiment configuration and result indexes
 runs/         frozen-run metadata; large data stays in an external data lake
 .env.example  committable environment-variable template
-.env.local    private local environment variables; never commit
+.env          private local environment variables; never commit
 ```
