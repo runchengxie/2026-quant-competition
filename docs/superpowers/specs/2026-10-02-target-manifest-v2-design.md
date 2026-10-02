@@ -34,7 +34,7 @@ Add an explicit `TargetManifestV2` type alongside `TargetSet`. It has no root-le
 }
 ```
 
-Root fields are exact and reject unknown properties. `as_of` is a timezone-aware UTC timestamp. `reporting_currency` uses the uppercase three-letter format of ISO 4217; instrument/account qualification must verify that the code is a recognized currency. Weights and quantities use decimal strings; their JSON numeric form is rejected to preserve precision.
+The root illustration omits target contents; a real manifest requires at least one target. Root fields are exact and reject unknown properties. `as_of` is a timezone-aware UTC timestamp. `reporting_currency` uses the uppercase three-letter format of ISO 4217; instrument/account qualification must verify that the code is a recognized currency. Weights and quantities use decimal strings; their JSON numeric form is rejected to preserve precision.
 
 ### Common target fields
 
@@ -79,6 +79,7 @@ The manifest records a specific listed contract. `roll_rule_id` preserves lineag
 ## Safety and compatibility boundary
 
 - The v2 manifest is an interchange contract only. It must not be accepted by `TargetSet`, `NiraHandoff`, preflight, `ExecutionRunner`, or the current IBKR adapter.
+- `ExecutionRunner.run` and `run_rebalance` require a v1 `TargetSet` at runtime before reading targets, writing order events, or calling a broker port. Python annotations alone do not enforce this boundary.
 - No helper may down-convert v2 to v1 because doing so would discard venue, currency, contract month, multiplier, expiry, and roll identity.
 - A later execution change must add account-market routing, per-contract IBKR qualification, market-data entitlement checks, margin/risk controls, futures lifecycle events, and explicit operator approval before submitting v2 orders.
 - Public examples use synthetic identifiers and contain no licensed provider responses, account values, or live holdings.
