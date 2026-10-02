@@ -10,6 +10,8 @@ This repository brings together competition research, data and account guidance,
 
 The execution path validates target portfolios, calculates the differences from current holdings, and supports IBKR Paper execution. Defaults remain `environment=paper` and `dry_run=true`.
 
+The independent [international v2 target contract](docs/strategy/target-manifest-v2.md) describes ETF, equity and futures identity. Current execution remains v1-only. See the [latest integration status](docs/operations/integration-readiness-2026-10-02.md) for actual provider, historical-data and local validation evidence.
+
 ## Strategy candidates
 
 The team is comparing two research directions:
