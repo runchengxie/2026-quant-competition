@@ -1,7 +1,7 @@
 # USD portfolio accounting integration design
 
 Date: 2026-10-02
-Status: design approved by the user on 2026-10-02; implementation plan awaiting review
+Status: design and Stage A plan approved; Stage A provider merged on 2026-10-03 (Asia/Shanghai). Research consumer, total returns and futures remain follow-up work.
 
 ## Intent
 
