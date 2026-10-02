@@ -1,6 +1,6 @@
 # Competition Execution MVP Status
 
-Last updated: 2026-09-30
+Last updated: 2026-10-02
 
 > This execution MVP still uses Hong Kong equities as a test candidate. It does not mean the competition strategy has been selected or registered. The team is also comparing an AIVIX-driven U.S. ETF candidate. Current competition dates follow the organizer's 2026-09-23 public rules; historical backtest snapshot dates remain unchanged.
 
@@ -16,6 +16,9 @@ Last updated: 2026-09-30
 - Paper-safe preflight checks Paper/dry-run mode, target handoff, single-name weights, dry-run rebalancing, and optional Gateway TCP reachability. See [Paper preflight](paper-preflight.md).
 - A low-frequency Hong Kong momentum and volatility baseline compares 2800 buy-and-hold, pure momentum, and momentum with volatility control. Results are recorded in [the 2026-09-10 baseline](hk-strategy-baseline-2026-09-10.md).
 - That historical baseline used daily snapshots for 20 Hong Kong stocks, monthly rebalancing, 10 holdings, 2% cash, a 12% single-name cap, and only data available before each rebalance close.
+
+- The international target manifest v2 is merged as an interchange-only contract; v1 execution rejects it before side effects.
+- Read-only IBKR API connection, selected ETF contract qualification and historical requests now have local evidence. A five-ETF real-data research baseline and QuantZone authentication/catalog query completed; see [the integration update](integration-readiness-2026-10-02.md). These are partial checks, not a complete Paper lifecycle or final competition strategy.
 
 ## Incomplete
 

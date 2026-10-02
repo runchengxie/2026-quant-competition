@@ -99,7 +99,7 @@
 - [x] Document that MIC is instrument identity rather than an IBKR routing exchange; later qualification must map it explicitly. Currency syntax and metadata do not establish current permissions or broker margin.
 - [x] Run `uv run --locked ruff check src tests`, `uv run --locked python -m pytest -q --basetemp .pytest-tmp`, `uv run --locked python -m compileall -q src`, and `git diff --check`.
 - [x] Review the entire diff for unexpected v1 changes, installed runtime dependencies, raw provider data, and any v2-to-v1 coercion. Obtain a fresh contract/execution-boundary review and fix consequential findings with regression tests.
-- [ ] Commit the verified work, then follow the user's PR → merge main → delete feature branch/worktree workflow. Recheck main after merge; keep unrelated branches and stashes intact.
+- [x] Commit the verified work, then follow the user's PR → merge main → delete feature branch/worktree workflow. Recheck main after merge; keep unrelated branches and stashes intact.
 
 ## Self-review
 
@@ -112,3 +112,5 @@
 ## Implementation verification
 
 Implemented in the isolated feature worktree. Full suite: 277 passed; Ruff, compileall and diff checks passed. An independent whole-branch reviewer found no Critical, Important or Minor issues. The reviewer independently ran 135 new tests and exercised 624 malformed-type substitutions. PR integration and cleanup are recorded in GitHub and the session after this commit. No v2 broker execution was added.
+
+Integration completed through [PR #21](https://github.com/runchengxie/2026-quant-competition/pull/21). Main passed 277 tests, Ruff and compileall. The feature branch and worktree were removed.
