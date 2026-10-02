@@ -6,7 +6,7 @@
 
 **Architecture:** Add a distinct `TargetManifestV2` and instrument variants in the contracts package. Keep the existing v1 wire reader unchanged; guard the runner's two execution entry points at runtime. Publish a separate v2 JSON Schema and explain which portfolio-level checks require Python validation.
 
-**Tech Stack:** Python 3.12, standard-library dataclasses/Decimal/datetime, pytest, Ruff; JSON Schema validation through a test-only `jsonschema>=4.23,<5` dependency.
+**Tech Stack:** Python 3.12, standard-library dataclasses/Decimal/datetime, pytest, Ruff; JSON Schema validation through a test-only `jsonschema[format-nongpl]>=4.23,<5` dependency.
 
 **Spec:** `docs/superpowers/specs/2026-10-02-target-manifest-v2-design.md`
 
@@ -54,16 +54,16 @@
 - `TargetManifestV2(schema_version: str, strategy_id: str, as_of: datetime, reporting_currency: str, targets: tuple[TargetV2, ...])` with `from_dict(payload: Mapping[str, Any]) -> TargetManifestV2` and `to_dict() -> dict[str, Any]`.
 - Use the existing public `TargetValidationError` for all malformed input; do not import private v1 parsing helpers.
 
-- [ ] Write the shared fixture with version `2.0`, strategy ID `synthetic-international`, USD reporting currency, and as-of `2026-10-02T08:00:00Z`: US/USD ETF `ETF_TEST` at `XNYS`, JP/JPY equity `EQUITY_TEST` at `XTKS`, and US/USD future `FUT_TEST` at `XCME`. Future metadata: month `202612`, expiry `2026-12-18`, multiplier `50`, tick `0.25`, cash settlement, roll ID `synthetic-roll.v1`, margin model ID `synthetic-margin.v1`, quantity `2`; target weights `0.30`, `0.20`, `0.10`.
-- [ ] Test typed values and JSON round trip; assert decimal precision and exact v2 fields, including absence of root `market`.
-- [ ] Test `TargetSet.from_dict(v2_payload)` rejects with unsupported version, and the existing v1 fixture still round-trips unchanged.
-- [ ] Test missing fields at each nesting level, non-object containers, empty targets, unsupported versions/asset types, unknown root/target/instrument keys, and non-string decimal values.
-- [ ] Test nonpositive quantity/multiplier/tick, fractional futures count, invalid month (`202600`, `202613`), invalid calendar date, expiry equal to or before as-of date, naive/non-UTC as-of, lowercase/malformed currency and MIC.
-- [ ] Test total weight greater than one, duplicate security identity, duplicate future identity with conflicting multiplier, and acceptance of two distinct future contract months.
-- [ ] Run `uv run --locked python -m pytest tests/contracts/test_targets_v2.py -q --basetemp .pytest-tmp` and observe failure before implementation.
-- [ ] Implement parsing in `targets_v2.py` using exact property allowlists and strict string/type checks. Require as-of form `YYYY-MM-DDTHH:MM:SS[.fraction](Z|+00:00)` and validate the resulting calendar/time. Validate date/month shapes before calendar parsing; parse only decimal strings with unsigned plain-decimal syntax. Futures counts must have positive integral value. Require nonblank symbols/identifiers and an uppercase market code matching `[A-Z][A-Z0-9_-]*`.
-- [ ] Serialize Decimal fields as strings and UTC time as ISO format with `Z`; preserve instrument identity and variant metadata. Reject duplicate keys `(asset_type, market, exchange_mic, symbol[, contract_month])` and validate total weight after individual targets.
-- [ ] Export new types; rerun focused tests and existing `tests/contracts/test_targets.py` to green.
+- [x] Write the shared fixture with version `2.0`, strategy ID `synthetic-international`, USD reporting currency, and as-of `2026-10-02T08:00:00Z`: US/USD ETF `ETF_TEST` at `XNYS`, JP/JPY equity `EQUITY_TEST` at `XTKS`, and US/USD future `FUT_TEST` at `XCME`. Future metadata: month `202612`, expiry `2026-12-18`, multiplier `50`, tick `0.25`, cash settlement, roll ID `synthetic-roll.v1`, margin model ID `synthetic-margin.v1`, quantity `2`; target weights `0.30`, `0.20`, `0.10`.
+- [x] Test typed values and JSON round trip; assert decimal precision and exact v2 fields, including absence of root `market`.
+- [x] Test `TargetSet.from_dict(v2_payload)` rejects with TargetValidationError, and the existing v1 fixture still round-trips unchanged.
+- [x] Test missing fields at each nesting level, non-object containers, empty targets, unsupported versions/asset types, unknown root/target/instrument keys, and non-string decimal values.
+- [x] Test nonpositive quantity/multiplier/tick, fractional futures count, invalid month (`202600`, `202613`), invalid calendar date, expiry equal to or before as-of date, naive/non-UTC as-of, lowercase/malformed currency and MIC.
+- [x] Test total weight greater than one, duplicate security identity, duplicate future identity with conflicting multiplier, and acceptance of two distinct future contract months.
+- [x] Run `uv run --locked python -m pytest tests/contracts/test_targets_v2.py -q --basetemp .pytest-tmp` and observe failure before implementation.
+- [x] Implement parsing in `targets_v2.py` using exact property allowlists and strict string/type checks. Require as-of form `YYYY-MM-DDTHH:MM:SS[.1–6 fractional digits](Z|+00:00)` and validate the resulting calendar/time. Validate date/month shapes before calendar parsing; parse only decimal strings with unsigned plain-decimal syntax. Futures counts must have positive integral value. Require nonblank symbols/identifiers and an uppercase market code matching `[A-Z][A-Z0-9_-]*`.
+- [x] Serialize Decimal fields as strings and UTC time as ISO format with `Z`; preserve instrument identity and variant metadata. Reject duplicate keys `(asset_type, market, exchange_mic, symbol[, contract_month])` and validate total weight after individual targets.
+- [x] Export new types; rerun focused tests and existing `tests/contracts/test_targets.py` to green.
 
 ## Task 2: Enforce v1 at execution entry points
 
@@ -71,12 +71,12 @@
 - An internal runner guard requires `isinstance(value, TargetSet)` and `value.schema_version == "1.0"`, otherwise raises `TargetValidationError("execution requires a v1 TargetSet")`.
 - Keep `run` and `run_rebalance` public signatures accepting `TargetSet`; callers must not rely on annotations for runtime protection.
 
-- [ ] Write parameterized tests for both runner methods with dry-run enabled and disabled, using an actual parsed v2 manifest and a submission spy. Assert rejection, zero `submit`/`submit_intents` calls, and no journal file/order event.
-- [ ] Add a duck-typed fake exposing `.targets` with valid legacy-style target fields to prove the check occurs before candidate preparation; add a directly constructed `TargetSet` carrying a non-v1 version.
-- [ ] Test the existing Nira wire loader rejects a v2 payload without changing loader behavior.
-- [ ] Run `uv run --locked python -m pytest tests/execution/test_manifest_version_boundary.py -q --basetemp .pytest-tmp` and observe failure before the guard.
-- [ ] Add the shared guard as the first operation in both runner methods, before target inspection or rebalance planning; do not add futures routing.
-- [ ] Rerun boundary tests and the existing execution/handoff tests to green.
+- [x] Write parameterized tests for both runner methods with dry-run enabled and disabled, using an actual parsed v2 manifest and a submission spy. Assert rejection, zero `submit`/`submit_intents` calls, and no journal file/order event.
+- [x] Add a duck-typed fake exposing `.targets` with valid legacy-style target fields to prove the check occurs before candidate preparation; add a directly constructed `TargetSet` carrying a non-v1 version.
+- [x] Test the existing Nira wire loader rejects a v2 payload without changing loader behavior.
+- [x] Run `uv run --locked python -m pytest tests/execution/test_manifest_version_boundary.py -q --basetemp .pytest-tmp` and observe failure before the guard.
+- [x] Add the shared guard as the first operation in both runner methods, before target inspection or rebalance planning; do not add futures routing.
+- [x] Rerun boundary tests and the existing execution/handoff tests to green.
 
 ## Task 3: Publish and verify the v2 JSON Schema
 
@@ -84,12 +84,12 @@
 - `schemas/targets.v2.schema.json` is Draft 2020-12 with const version `2.0`, strict root/target/instrument properties, and discriminated security/futures variants.
 - `Draft202012Validator(schema, format_checker=FormatChecker())` validates shared wire fixtures in tests.
 
-- [ ] Add `jsonschema>=4.23,<5` to the `test` extra and run `uv lock`, then `uv sync --locked --extra test`. It must not enter runtime dependencies.
-- [ ] Write schema tests that first require the new schema file, validate schema correctness, accept the mixed fixture and each security type, and reject missing futures fields, extra fields, numeric decimal values, malformed dates/months/currency/MIC, and zero/fractional future quantity.
-- [ ] Run schema tests and observe failure from the missing schema.
-- [ ] Create the schema: root targets `minItems: 1`; `oneOf` instrument variants; `additionalProperties: false` throughout. Security quantity is a positive decimal string; future quantity is required and positive integral decimal string (allow trailing zero fractional digits if the numeric value is integral). Match Python wire patterns and require nonblank text.
-- [ ] Include a schema description explaining that Python validation also enforces aggregate weights, compound identities, and expiry relative to the manifest date. JSON Schema `format` checking is required for timestamps/calendar dates.
-- [ ] Rerun parser and schema tests on the shared syntactic cases; keep semantic-only negative cases in Python tests.
+- [x] Add `jsonschema[format-nongpl]>=4.23,<5` to the `test` extra and run `uv lock`, then `uv sync --locked --extra test`. It must not enter runtime dependencies.
+- [x] Write schema tests that first require the new schema file, validate schema correctness, accept the mixed fixture and each security type, and reject missing futures fields, extra fields, numeric decimal values, malformed dates/months/currency/MIC, and zero/fractional future quantity.
+- [x] Run schema tests and observe failure from the missing schema.
+- [x] Create the schema: root targets `minItems: 1`; `oneOf` instrument variants; `additionalProperties: false` throughout. Security quantity is a positive decimal string; future quantity is required and positive integral decimal string (allow trailing zero fractional digits if the numeric value is integral). Match Python wire patterns and require nonblank text.
+- [x] Include a schema description explaining that Python validation also enforces aggregate weights, compound identities, and expiry relative to the manifest date. JSON Schema `format` checking is required for timestamps/calendar dates.
+- [x] Rerun parser and schema tests on the shared syntactic cases; keep semantic-only negative cases in Python tests.
 
 ## Task 4: Documentation, local verification, and review
 
