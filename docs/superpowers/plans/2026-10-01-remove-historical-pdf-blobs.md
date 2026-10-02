@@ -44,7 +44,7 @@
 
 **Files:**
 - No repository source files.
-[Historical identifying detail removed.]
+- Create a local Git bundle outside the checkout in a private backup directory outside the repository.
 
 **Interfaces:**
 - Consumes: advertised refs from `origin` and the current local checkout.
@@ -99,6 +99,10 @@
 - [x] Push only rewritten `main` and tag, with explicit leases in one atomic push.
 - [x] Fetch public refs into the user checkout and verify the new `main` and tag IDs.
 - [x] Confirm the release still exists with zero assets; the four default-branch raw URLs return 404. Representative PR raw URLs still return 200 because protected PR refs remain.
-- [ ] Send the prepared GitHub Support request after the user authorizes external contact; verify whether Support can remove the protected PR refs and cached views. Until confirmed, do not claim full removal. Forks and old clones remain outside repository control.
+[Historical identifying detail removed.]
 - [x] Update the publication audit with rewritten IDs, tree validation, release assets, and raw URL observations.
 - [x] Confirm the user checkout is clean on rewritten `main`; stale public branches/worktrees were not recreated.
+
+## Final disposition — 2026-10-02
+
+[Historical identifying detail removed.]
