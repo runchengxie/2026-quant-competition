@@ -31,5 +31,5 @@ Last updated: 2026-09-30
 ## Operating constraints
 
 - Keep `environment=paper` and `dry_run=true`.
-- Never commit `.env.local`, credentials, account information, order logs, or run artifacts.
+- Never commit `.env`, credentials, account information, order logs, or run artifacts.
 - Until the Paper smoke test is complete, do not enable a live guard or describe results as verified broker execution.
