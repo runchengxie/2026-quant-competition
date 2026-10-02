@@ -66,6 +66,15 @@ import SiteLayout from "../layouts/SiteLayout.astro";
         reproducible strategy comparison remain under evaluation. No performance result
         is presented as verified.
       </p>
+      <p>
+        Reusable USD accounting for cash equities and ETFs is implemented in quant-platform,
+        with fixed quantities, cash, FX and transaction costs checked by synthetic tests.
+        Connecting it to released historical data is the next research integration step;
+        total returns and futures settlement remain separate work.
+        <a href="https://github.com/runchengxie/2026-quant-competition/blob/main/docs/operations/usd-ledger-delivery-2026-10-03.md">
+          Read the accounting delivery update
+        </a>.
+      </p>
     </section>
 
     <section class="schedule">
@@ -86,9 +95,10 @@ import SiteLayout from "../layouts/SiteLayout.astro";
       <h2>Publication status</h2>
       <p class="notice">
         Unit tests and repository CI cover the local validation and safety code. Paper
-        Gateway connectivity, contract qualification, order submission, cancellation,
-        fills, restart recovery, and reconciliation still need a supervised end-to-end
-        run. No competition or Paper performance results have passed review for
+        read-only IBKR API connectivity, selected contract qualification and daily history
+        requests have local evidence. Order submission, cancellation, fills, restart
+        recovery and reconciliation still need a supervised end-to-end run.
+        No competition or Paper performance results have passed review for
         publication, so this site displays no return figures.
       </p>
     </section>

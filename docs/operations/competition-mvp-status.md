@@ -1,6 +1,6 @@
 # Competition Execution MVP Status
 
-Last updated: 2026-10-02
+Last updated: 2026-10-03
 
 > This execution MVP still uses Hong Kong equities as a test candidate. It does not mean the competition strategy has been selected or registered. The team is also comparing an AIVIX-driven U.S. ETF candidate. Current competition dates follow the organizer's 2026-09-23 public rules; historical backtest snapshot dates remain unchanged.
 
@@ -21,6 +21,8 @@ Last updated: 2026-10-02
 - Read-only IBKR API connection, selected ETF contract qualification and historical requests now have local evidence. A five-ETF real-data research baseline and QuantZone authentication/catalog query completed; see [the integration update](integration-readiness-2026-10-02.md). These are partial checks, not a complete Paper lifecycle or final competition strategy.
 
 ## Incomplete
+
+- Generic USD price-NAV accounting is implemented in quant-platform with synthetic reconciliation evidence; see [the delivery update](usd-ledger-delivery-2026-10-03.md). The real-data research consumer, dividend/split accounting and futures settlement are still incomplete. The competition baseline remains unchanged.
 
 - No full Paper Gateway smoke test has been completed for connection, contract qualification, order acknowledgments, cancellation, reconnect, or reconciliation.
 - The preflight Gateway check is only a TCP probe; it is not a Paper API smoke test and does not confirm market-data permission or fills.

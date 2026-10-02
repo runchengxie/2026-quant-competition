@@ -80,4 +80,4 @@ QuantZone is optional: fill both `QUANTZONE_ACCESS_KEY` and `QUANTZONE_SECRET_KE
 
 See the [official QuantZone documentation](https://www.quantzone.tech/docs) for the paired credentials and SDK initialization. Use the service URL shown in your console.
 
-Read-only provider and FX checks are recorded in the [2026-10-02 validation update](docs/operations/provider-fx-validation-2026-10-02.md). The [USD accounting design](docs/superpowers/specs/2026-10-02-usd-portfolio-accounting-design.md) is proposed for review; it has not changed the runner or baseline calculation.
+Read-only provider and FX checks are recorded in the [2026-10-02 validation update](docs/operations/provider-fx-validation-2026-10-02.md). The approved USD price ledger is implemented in quant-platform; see the [2026-10-03 delivery and remaining integration](docs/operations/usd-ledger-delivery-2026-10-03.md) for its reviewed revision, public interfaces and synthetic evidence. The research consumer, legacy baseline calculation and broker execution have not changed.
