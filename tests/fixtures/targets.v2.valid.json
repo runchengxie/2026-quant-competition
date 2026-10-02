@@ -1,0 +1,11 @@
+{
+  "schema_version": "2.0",
+  "strategy_id": "synthetic-international",
+  "as_of": "2026-10-02T08:00:00Z",
+  "reporting_currency": "USD",
+  "targets": [
+    {"instrument": {"asset_type": "etf", "symbol": "ETF_TEST", "market": "US", "exchange_mic": "XNYS", "currency": "USD"}, "weight": "0.30"},
+    {"instrument": {"asset_type": "equity", "symbol": "EQUITY_TEST", "market": "JP", "exchange_mic": "XTKS", "currency": "JPY"}, "weight": "0.20", "quantity": "100"},
+    {"instrument": {"asset_type": "future", "symbol": "FUT_TEST", "market": "US", "exchange_mic": "XCME", "currency": "USD", "contract_month": "202612", "expiry_date": "2026-12-18", "multiplier": "50", "tick_size": "0.25", "roll_rule_id": "synthetic-roll.v1", "settlement_type": "cash", "margin_model_id": "synthetic-margin.v1"}, "weight": "0.10", "quantity": "2"}
+  ]
+}

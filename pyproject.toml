@@ -11,7 +11,11 @@ dependencies = []
 
 [project.optional-dependencies]
 nautilus = ["nautilus_trader>=1.0"]
-test = ["pytest>=8.0", "ruff>=0.11"]
+test = [
+    "jsonschema[format-nongpl]>=4.23,<5",
+    "pytest>=8.0",
+    "ruff>=0.11",
+]
 ibkr = ["ib-insync>=0.9.86", "tzdata>=2024.1"]
 
 [tool.pytest.ini_options]

@@ -34,7 +34,7 @@ Add an explicit `TargetManifestV2` type alongside `TargetSet`. It has no root-le
 }
 ```
 
-The root illustration omits target contents; a real manifest requires at least one target. Root fields are exact and reject unknown properties. `as_of` is a timezone-aware UTC timestamp. `reporting_currency` uses the uppercase three-letter format of ISO 4217; instrument/account qualification must verify that the code is a recognized currency. Weights and quantities use decimal strings; their JSON numeric form is rejected to preserve precision.
+The root illustration omits target contents; a real manifest requires at least one target. Root fields are exact and reject unknown properties. `as_of` is a timezone-aware UTC timestamp (`Z` or `+00:00`) with at most six fractional digits; finer precision is rejected rather than truncated. `reporting_currency` uses the uppercase three-letter format of ISO 4217; instrument/account qualification must verify that the code is a recognized currency. Weights and quantities use decimal strings; their JSON numeric form is rejected to preserve precision.
 
 ### Common target fields
 
