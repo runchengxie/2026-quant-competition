@@ -82,7 +82,7 @@
 
 **Interfaces:**
 - `schemas/targets.v2.schema.json` is Draft 2020-12 with const version `2.0`, strict root/target/instrument properties, and discriminated security/futures variants.
-- `Draft202012Validator(schema, format_checker=FormatChecker())` validates shared wire fixtures in tests.
+- `Draft202012Validator(schema, format_checker=FormatChecker(formats=["date", "date-time"]))` validates shared wire fixtures in tests.
 
 - [x] Add `jsonschema[format-nongpl]>=4.23,<5` to the `test` extra and run `uv lock`, then `uv sync --locked --extra test`. It must not enter runtime dependencies.
 - [x] Write schema tests that first require the new schema file, validate schema correctness, accept the mixed fixture and each security type, and reject missing futures fields, extra fields, numeric decimal values, malformed dates/months/currency/MIC, and zero/fractional future quantity.
@@ -95,10 +95,10 @@
 
 **Files:** `docs/strategy/target-manifest-v2.md`, implementation plan status.
 
-- [ ] Document the complete synthetic payload, type/API usage, decimal preservation, conservative expiry rule, and schema versus Python validation scope. State that explicit v2 parsing does not enable execution.
-- [ ] Document that MIC is instrument identity rather than an IBKR routing exchange; later qualification must map it explicitly. Currency syntax and metadata do not establish current permissions or broker margin.
-- [ ] Run `uv run --locked ruff check src tests`, `uv run --locked python -m pytest -q --basetemp .pytest-tmp`, `uv run --locked python -m compileall -q src`, and `git diff --check`.
-- [ ] Review the entire diff for unexpected v1 changes, installed runtime dependencies, raw provider data, and any v2-to-v1 coercion. Obtain a fresh contract/execution-boundary review and fix consequential findings with regression tests.
+- [x] Document the complete synthetic payload, type/API usage, decimal preservation, conservative expiry rule, and schema versus Python validation scope. State that explicit v2 parsing does not enable execution.
+- [x] Document that MIC is instrument identity rather than an IBKR routing exchange; later qualification must map it explicitly. Currency syntax and metadata do not establish current permissions or broker margin.
+- [x] Run `uv run --locked ruff check src tests`, `uv run --locked python -m pytest -q --basetemp .pytest-tmp`, `uv run --locked python -m compileall -q src`, and `git diff --check`.
+- [x] Review the entire diff for unexpected v1 changes, installed runtime dependencies, raw provider data, and any v2-to-v1 coercion. Obtain a fresh contract/execution-boundary review and fix consequential findings with regression tests.
 - [ ] Commit the verified work, then follow the user's PR → merge main → delete feature branch/worktree workflow. Recheck main after merge; keep unrelated branches and stashes intact.
 
 ## Self-review
@@ -108,3 +108,7 @@
 - Review Focus coverage: type/side-effect cases are owned by Task 2; malformed containers, dates, decimals, expiry and compound identity by Task 1; schema agreement and semantic limits by Task 3.
 - Runtime checks supplement the approved boundary rather than adding v2 execution. The root's empty-array illustration is explicitly illustrative; real manifests require targets.
 - The JSON Schema cannot express cross-row sum/compound identity or relative expiry in standard Draft 2020-12, so the plan tests and documents those as Python-only checks rather than claiming full equivalence.
+
+## Implementation verification
+
+Implemented in the isolated feature worktree. Full suite: 277 passed; Ruff, compileall and diff checks passed. An independent whole-branch reviewer found no Critical, Important or Minor issues. The reviewer independently ran 135 new tests and exercised 624 malformed-type substitutions. PR integration and cleanup are recorded in GitHub and the session after this commit. No v2 broker execution was added.
