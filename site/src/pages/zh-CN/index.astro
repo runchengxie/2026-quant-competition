@@ -55,6 +55,13 @@ import SiteLayout from "../../layouts/SiteLayout.astro";
         代码库还包含港股和国际 ETF 的实验性研究基线。团队尚未选定或登记竞赛策略。
         AIVIX 与 Index One 的数据权限、时点数据覆盖，以及它们在可复现策略对比中的作用仍待评估；目前没有把任何收益结果作为已验证结果发布。
       </p>
+      <p>
+        ETF 与现金个股的通用 USD 账本已在 quant-platform 实现，股数、现金、FX 和交易成本已有合成测试覆盖。
+        下一步是接入已发布历史数据的研究流程；分红总回报和期货结算仍需分别实现。
+        <a href="https://github.com/runchengxie/2026-quant-competition/blob/main/docs/operations/usd-ledger-delivery-2026-10-03.md">
+          阅读账本交付更新
+        </a>。
+      </p>
     </section>
 
     <section class="schedule">
@@ -74,7 +81,7 @@ import SiteLayout from "../../layouts/SiteLayout.astro";
       <p class="eyebrow">证据</p>
       <h2>公开状态</h2>
       <p class="notice">
-        本地校验与安全代码已有单元测试和仓库 CI 覆盖。Paper Gateway 连接、合约资格确认、订单提交与撤销、成交、重启恢复及对账仍需人工监督的端到端验证。尚无竞赛或 Paper 收益结果通过发布审查，因此本网站不展示收益数据。
+        本地校验与安全代码已有单元测试和仓库 CI 覆盖。IBKR API 只读连接、部分合约资格确认和日线历史请求已有本地证据；订单提交与撤销、成交、重启恢复及对账仍需人工监督的端到端验证。尚无竞赛或 Paper 收益结果通过发布审查，因此本网站不展示收益数据。
       </p>
     </section>
   </main>
