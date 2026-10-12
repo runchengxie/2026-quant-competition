@@ -76,6 +76,24 @@ Competition statements and strategy material are research notes, not investment,
 
 Copy `.env.example` to `.env` and fill in your private values. Keep `.env` outside Git; `.env.example` contains public placeholders only. Use a single `.env` file rather than a separate `.env.local`. The runner reads process environment variables and does not automatically load dotenv files; load the required values into the process environment before starting it.
 
+### AIVIX / Cryptoracle backup key
+
+Set `CRYPTORACLE_API_KEY` and optionally `CRYPTORACLE_API_KEY_BACKUP` in `.env`, then load them into the process environment. The [Cryptoracle client](src/adapters/cryptoracle/client.py) reads both keys and `CRYPTORACLE_API_BASE_URL`:
+
+```python
+from adapters.cryptoracle import CryptoracleClient
+
+client = CryptoracleClient.from_environment(timeout=15.0)
+# Supply the endpoint path and JSON query confirmed by the provider.
+data = client.post(provider_confirmed_path, indicator_query)
+```
+
+Each call tries the primary key first. HTTP 401, 403 or 429 triggers one attempt with the backup key and the same query. Empty values, example placeholders and duplicate keys are skipped; a backup key can also be used alone. Other HTTP failures, network errors and invalid JSON do not trigger a key change. `CryptoracleAPIError.status_code` carries the final HTTP status when available; error messages and settings representations omit credentials and provider error bodies. The client uses HTTPS and rejects redirects rather than forwarding keys to another host.
+
+The client does not automatically load `.env`, select indicator endpoints or interpret business errors inside HTTP 200 responses. See the [official authentication documentation](https://cryptoracle.gitbook.io/cryptoracle-docs/cryptoracle-open-api-v2.1/authentication). Provider-confirmed endpoints and indicator entitlement remain necessary; the previously documented token-list paths returned 404 in the [provider validation](docs/operations/provider-fx-validation-2026-10-02.md).
+
+### Other providers
+
 QuantZone is optional: fill both `QUANTZONE_ACCESS_KEY` and `QUANTZONE_SECRET_KEY` in your local `.env` when access is available. The SDK requires `access_key` and `sign_secret` respectively; a single `QUANTZONE_API_KEY` is insufficient. `QUANTZONE_API_BASE_URL` records the candidate service URL; no QuantZone adapter or authentication flow is implemented yet. These entries do not validate account entitlement or factor coverage.
 
 See the [official QuantZone documentation](https://www.quantzone.tech/docs) for the paired credentials and SDK initialization. Use the service URL shown in your console.
