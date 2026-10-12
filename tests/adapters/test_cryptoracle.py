@@ -138,6 +138,78 @@ def test_exhausted_keys_report_final_status_without_secret_response(provider):
     assert BACKUP_KEY not in str(failure.value)
 
 
+def test_http_200_invalid_key_business_code_retries_with_backup(provider):
+    client = make_client()
+    success = {"code": 200, "msg": "success", "data": RESULT}
+    provider.replies.extend(
+        [
+            (200, json.dumps({"code": 202, "msg": "APIKEY \u65e0\u6548"}).encode()),
+            (200, json.dumps(success).encode()),
+        ]
+    )
+
+    assert client.post("/v2.1/coin/list", {"timeType": "1h"}) == success
+    assert [request.get_header("X-api-key") for request in provider.requests] == [
+        PRIMARY_KEY,
+        BACKUP_KEY,
+    ]
+    assert provider.requests[0].data == provider.requests[1].data
+
+
+@pytest.mark.parametrize("backup", ["", PRIMARY_KEY])
+def test_business_auth_failure_without_distinct_backup_raises_safe_error(
+    provider, backup
+):
+    client = make_client(backup=backup)
+    from adapters.cryptoracle import CryptoracleAPIError
+
+    provider.replies.append(
+        (200, json.dumps({"code": 202, "msg": PRIMARY_KEY}).encode())
+    )
+
+    with pytest.raises(CryptoracleAPIError) as failure:
+        client.post("/v2.1/coin/list", {})
+
+    assert failure.value.status_code == 200
+    assert failure.value.business_code == 202
+    assert PRIMARY_KEY not in str(failure.value)
+    assert len(provider.requests) == 1
+
+
+def test_both_keys_rejected_with_business_code_do_not_retry_again(provider):
+    client = make_client()
+    from adapters.cryptoracle import CryptoracleAPIError
+
+    provider.replies.extend(
+        [
+            (200, json.dumps({"code": 202, "msg": PRIMARY_KEY}).encode()),
+            (200, json.dumps({"code": 202, "msg": BACKUP_KEY}).encode()),
+        ]
+    )
+
+    with pytest.raises(CryptoracleAPIError) as failure:
+        client.post("/v2.1/coin/list", {})
+
+    assert failure.value.business_code == 202
+    assert BACKUP_KEY not in str(failure.value)
+    assert len(provider.requests) == 2
+
+
+@pytest.mark.parametrize("code", [201, 400, 500])
+def test_other_business_failures_are_reported_without_rotating_keys(provider, code):
+    client = make_client()
+    from adapters.cryptoracle import CryptoracleAPIError
+
+    provider.replies.append((200, json.dumps({"code": code, "msg": "error"}).encode()))
+
+    with pytest.raises(CryptoracleAPIError) as failure:
+        client.post("/v2.1/coin/list", {})
+
+    assert failure.value.status_code == 200
+    assert failure.value.business_code == code
+    assert len(provider.requests) == 1
+
+
 @pytest.mark.parametrize("status", [400, 404, 500, 503])
 def test_endpoint_or_server_errors_do_not_trigger_key_rotation(provider, status):
     client = make_client()
@@ -225,7 +297,7 @@ def test_environment_settings_trim_keys_and_hide_them_in_repr(monkeypatch, provi
     assert client.post("/indicators", {}) == {}
     assert (
         provider.requests[0].full_url
-        == "https://service.cryptoracle.network/indicators"
+        == "https://service.cryptoracle.network/openapi/indicators"
     )
     assert provider.requests[0].get_header("X-api-key") == PRIMARY_KEY
     for representation in (repr(settings), repr(client)):
@@ -240,6 +312,24 @@ def test_no_usable_key_raises_clear_configuration_error():
         CryptoracleSettings.from_environment(
             {"CRYPTORACLE_API_KEY": "replace-with-your-access-key"}
         )
+
+
+def test_legacy_official_host_gets_documented_openapi_prefix(provider):
+    from adapters.cryptoracle import CryptoracleClient
+
+    client = CryptoracleClient.from_environment(
+        {
+            "CRYPTORACLE_API_BASE_URL": "https://service.cryptoracle.network/",
+            "CRYPTORACLE_API_KEY_BACKUP": BACKUP_KEY,
+        }
+    )
+    provider.replies.append((200, b'{"code": 200, "msg": "success", "data": {}}'))
+
+    assert client.post("/v2.1/coin/list", {"timeType": "1h"})["code"] == 200
+    assert (
+        provider.requests[0].full_url
+        == "https://service.cryptoracle.network/openapi/v2.1/coin/list"
+    )
 
 
 @pytest.mark.parametrize("field", ["api_key", "backup_api_key"])
