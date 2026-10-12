@@ -80,17 +80,19 @@ Copy `.env.example` to `.env` and fill in your private values. Keep `.env` outsi
 
 Set `CRYPTORACLE_API_KEY` and optionally `CRYPTORACLE_API_KEY_BACKUP` in `.env`, then load them into the process environment. The [Cryptoracle client](src/adapters/cryptoracle/client.py) reads both keys and `CRYPTORACLE_API_BASE_URL`:
 
+Use `CRYPTORACLE_API_BASE_URL=https://service.cryptoracle.network/openapi`. The client also adds `/openapi` when an older configuration contains only the official service host; custom URLs keep their configured paths.
+
 ```python
 from adapters.cryptoracle import CryptoracleClient
 
 client = CryptoracleClient.from_environment(timeout=15.0)
-# Supply the endpoint path and JSON query confirmed by the provider.
-data = client.post(provider_confirmed_path, indicator_query)
+# Read-only token discovery, verified against the service on 2026-10-12.
+data = client.post("/v2.1/coin/list", {"timeType": "1h"})
 ```
 
-Each call tries the primary key first. HTTP 401, 403 or 429 triggers one attempt with the backup key and the same query. Empty values, example placeholders and duplicate keys are skipped; a backup key can also be used alone. Other HTTP failures, network errors and invalid JSON do not trigger a key change. `CryptoracleAPIError.status_code` carries the final HTTP status when available; error messages and settings representations omit credentials and provider error bodies. The client uses HTTPS and rejects redirects rather than forwarding keys to another host.
+Each call tries the primary key first. HTTP 401, 403 or 429, or JSON business code `202` (invalid API key), triggers one attempt with the backup key and the same query. Empty values, example placeholders and duplicate keys are skipped; a backup key can also be used alone. Other HTTP failures, network errors and invalid JSON do not trigger a key change. A non-200 integer JSON business code raises `CryptoracleAPIError`; its `status_code` and `business_code` distinguish HTTP status from provider errors, which can arrive inside HTTP 200 responses. Error messages and settings representations omit credentials and provider error bodies. The client uses HTTPS and rejects redirects rather than forwarding keys to another host.
 
-The client does not automatically load `.env`, select indicator endpoints or interpret business errors inside HTTP 200 responses. See the [official authentication documentation](https://cryptoracle.gitbook.io/cryptoracle-docs/cryptoracle-open-api-v2.1/authentication). Provider-confirmed endpoints and indicator entitlement remain necessary; the previously documented token-list paths returned 404 in the [provider validation](docs/operations/provider-fx-validation-2026-10-02.md).
+The client does not automatically load `.env` or select indicator endpoints. The [official API overview](https://cryptoracle.gitbook.io/cryptoracle-docs/cryptoracle-open-api-v2.1) specifies the `/openapi` root, and the [authentication documentation](https://cryptoracle.gitbook.io/cryptoracle-docs/cryptoracle-open-api-v2.1/authentication) specifies the `X-API-KEY` header. The [2026-10-12 validation](docs/operations/cryptoracle-validation-2026-10-12.md) confirms backup-key token discovery through both the configured proxy and direct networking, and invalid-key failover. Indicator/history entitlements and coverage remain unverified.
 
 ### Other providers
 

@@ -11,6 +11,9 @@ from urllib.parse import urlsplit
 from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 
+_DEFAULT_BASE_URL = "https://service.cryptoracle.network/openapi"
+
+
 class CryptoracleConfigurationError(ValueError):
     """Raised for missing credentials or an unsafe request configuration."""
 
@@ -18,19 +21,29 @@ class CryptoracleConfigurationError(ValueError):
 class CryptoracleAPIError(RuntimeError):
     """Provider failure with safe diagnostics, without headers or response bodies."""
 
-    def __init__(self, message: str, *, status_code: int | None = None):
+    def __init__(
+        self,
+        message: str,
+        *,
+        status_code: int | None = None,
+        business_code: int | None = None,
+    ):
         super().__init__(message)
         self.status_code = status_code
+        self.business_code = business_code
 
 
 @dataclass(frozen=True, slots=True)
 class CryptoracleSettings:
-    base_url: str = "https://service.cryptoracle.network"
+    base_url: str = _DEFAULT_BASE_URL
     api_key: str = field(default="", repr=False)
     backup_api_key: str = field(default="", repr=False)
 
     def __post_init__(self) -> None:
         base_url = self.base_url.strip().rstrip("/")
+        if base_url == "https://service.cryptoracle.network":
+            # Older environment examples omitted the API's /openapi prefix.
+            base_url = _DEFAULT_BASE_URL
         try:
             parsed = urlsplit(base_url)
             valid_url = (
@@ -76,9 +89,7 @@ class CryptoracleSettings:
     ) -> "CryptoracleSettings":
         environment = os.environ if environment is None else environment
         return cls(
-            base_url=environment.get(
-                "CRYPTORACLE_API_BASE_URL", "https://service.cryptoracle.network"
-            ),
+            base_url=environment.get("CRYPTORACLE_API_BASE_URL", _DEFAULT_BASE_URL),
             api_key=environment.get("CRYPTORACLE_API_KEY", ""),
             backup_api_key=environment.get("CRYPTORACLE_API_KEY_BACKUP", ""),
         )
@@ -93,9 +104,9 @@ class _NoRedirects(HTTPRedirectHandler):
 class CryptoracleClient:
     """POST JSON with a maximum of one request per distinct configured key.
 
-    Only HTTP 401, 403 and 429 trigger a backup attempt. Each new call starts
-    with the primary key. This client does not load dotenv files or interpret
-    provider-specific business errors returned inside a successful JSON response.
+    HTTP 401, 403, 429 and JSON business code 202 (invalid API key) trigger a
+    backup attempt. Each new call starts with the primary key. This client does
+    not load dotenv files. Other non-200 integer business codes raise API errors.
     """
 
     def __init__(self, settings: CryptoracleSettings, *, timeout: float = 15.0):
@@ -145,6 +156,7 @@ class CryptoracleClient:
             )
             try:
                 with self._opener.open(request, timeout=self.timeout) as response:
+                    http_status = response.code
                     raw = response.read()
             except HTTPError as error:
                 status = error.code
@@ -159,11 +171,21 @@ class CryptoracleClient:
                     "Cryptoracle request failed during transport"
                 ) from None
             try:
-                return json.loads(raw)
+                result = json.loads(raw)
             except (ValueError, UnicodeError):
                 raise CryptoracleAPIError(
                     "Cryptoracle response is not valid JSON"
                 ) from None
+            code = result.get("code") if isinstance(result, dict) else None
+            if isinstance(code, int) and not isinstance(code, bool) and code != 200:
+                if code == 202 and index + 1 < len(keys):
+                    continue
+                raise CryptoracleAPIError(
+                    f"Cryptoracle request failed (business code {code})",
+                    status_code=http_status,
+                    business_code=code,
+                )
+            return result
         raise AssertionError(
             "Cryptoracle settings must contain at least one usable key"
         )
