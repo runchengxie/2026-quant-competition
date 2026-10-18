@@ -80,7 +80,7 @@ def common_audit(path: Path) -> tuple[pl.LazyFrame, dict[str, Any]]:
             / 1_000_000_000
         ).alias("gap_seconds")
     ).filter(pl.col("gap_seconds").is_not_null())
-    
+
     gap_quantiles = quantiles(gap_frame, "gap_seconds")
 
     rows = int(scalar(summary, "audit_row_count") or 0)
