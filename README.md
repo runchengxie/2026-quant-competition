@@ -39,7 +39,7 @@ The competition strategy has not been selected or registered. The candidates sti
 
 ## Competition dates
 
-According to the organizer's public rules published on 2026-09-23, all times below are Hong Kong time:
+According to the organizer's public rules dated 2026-10-13, checked on 2026-10-18, all times below are Hong Kong time:
 
 - Registration closes: 2026-10-23 at 23:59.
 - Trading period: 2026-10-26 at 00:00 through 2027-01-27 at 06:00.

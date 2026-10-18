@@ -113,3 +113,7 @@ The proposed slide structure is in [strategy-deck-outline.md](strategy-deck-outl
 
 - [FundConnectHK official public rules](https://fundconnecthk.com/quant-league/legal/competition-rules/)
 - The team's historical research materials and project records.
+
+## Rule-aware research gate
+
+Use the [current public rules summary](../competition/rules.md) when comparing candidates. Measure daily position/turnover eligibility rather than treating every flat closing position as an inactive day. A crypto backtest is research evidence only until the supported participating broker, account and product are confirmed. If several components are selected, they must form one registered combined strategy in one official account. Preserve Paper-first validation and the existing execution contract boundary.
