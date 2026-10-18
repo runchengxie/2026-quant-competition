@@ -15,7 +15,7 @@ SENSITIVE = {
         r"(?i)(?:api[_-]?key|secret|token|password)[\"']?\s*[:=]\s*[\"']?[A-Za-z0-9/_+=.-]{24,}"
     ),
     "account_or_order_identifier": re.compile(
-        r"(?i)\b(?:account[_ -]?id|account[_ -]?number|order[_ -]?id)\s*[:=]\s*[A-Z0-9-]{5,}"
+        r"(?i)\b(?:account[_ -]?id|account[_ -]?number|order[_ -]?id)[\"']?\s*[:=]\s*[\"']?[A-Z0-9-]{5,}"
     ),
 }
 

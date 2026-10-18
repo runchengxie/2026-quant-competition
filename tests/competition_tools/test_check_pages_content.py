@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import pytest
@@ -85,6 +86,19 @@ def test_scans_locale_catalog_for_secrets(tmp_path):
         '{"api_key": "abcdefghijklmnopqrstuvwxyz"}', encoding="utf-8"
     )
     assert any("sensitive pattern" in error for error in check_site(source, built))
+
+
+@pytest.mark.parametrize("key", ["account_id", "account_number", "order_id"])
+def test_rejects_quoted_json_account_and_order_identifiers(tmp_path, key):
+    source, built = make_site_trees(tmp_path)
+    catalogs = source / "src/i18n"
+    catalogs.mkdir()
+    (catalogs / "en.json").write_text(
+        json.dumps({key: "EXAMPLE00001"}), encoding="utf-8"
+    )
+    assert any(
+        "account_or_order_identifier" in error for error in check_site(source, built)
+    )
 
 
 def test_does_not_ignore_nested_directory_named_dist(tmp_path):
