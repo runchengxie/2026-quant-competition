@@ -21,11 +21,14 @@ jobs:
       run:
         working-directory: research/${{ matrix.project }}
     env:
-      DATA_ROOT: ${{ runner.temp }}/research-data
-      UV_PROJECT_ENVIRONMENT: ${{ runner.temp }}/research-env-${{ matrix.project }}
       MPLBACKEND: Agg
     steps:
       - uses: actions/checkout@v4
+      - name: Configure external research paths
+        shell: bash
+        run: |
+          echo "DATA_ROOT=$RUNNER_TEMP/research-data" >> "$GITHUB_ENV"
+          echo "UV_PROJECT_ENVIRONMENT=$RUNNER_TEMP/research-env-${{ matrix.project }}" >> "$GITHUB_ENV"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
