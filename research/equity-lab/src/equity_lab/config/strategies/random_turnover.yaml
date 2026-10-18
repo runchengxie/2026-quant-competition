@@ -1,0 +1,7 @@
+name: random_turnover
+universe: demo_hk
+max_positions: 8
+position_sizing: equal_weight
+signal:
+  random_seed: 12345
+  selection_top_n: 8

@@ -12,6 +12,10 @@ The execution path validates target portfolios, calculates the differences from 
 
 The independent [international v2 target contract](docs/strategy/target-manifest-v2.md) describes ETF, equity and futures identity. Current execution remains v1-only. See the [latest integration status](docs/operations/integration-readiness-2026-10-02.md) for actual provider, historical-data and local validation evidence.
 
+## Offline research
+
+Two independent [offline research packages](research/README.md) provide synthetic crypto market-making and daily equity backtest experiments. They have separate dependencies, tests and MIT licenses. Their results are not execution commands, verified live trading, or evidence of competition eligibility.
+
 ## Strategy candidates
 
 The team is comparing two research directions:
@@ -33,6 +37,7 @@ The competition strategy has not been selected or registered. The candidates sti
 │   ├── adapters/            # Nautilus boundary and IBKR event mapping
 │   ├── apps/execution_runner/ # Paper-first runner configuration
 │   └── competition_tools/   # repository CLI tools
+├── research/                # independent offline experiments, own locks/tests/licenses
 ├── site/                    # bilingual GitHub Pages site
 └── tests/                   # unit and integration tests
 ```
