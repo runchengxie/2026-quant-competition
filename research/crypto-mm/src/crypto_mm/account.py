@@ -137,7 +137,7 @@ class Account:
         """Return authoritative cash-plus-marked-inventory account equity."""
         if self.inventory != 0 and self.mark_price is None:
             return None
-        marked_inventory = self.inventory * (self.mark_price or 0.0)   
+        marked_inventory = self.inventory * (self.mark_price or 0.0)
         # self.mark_price = None or 0.0 that converts the missing mark price into a usable zero
         return (
             self.cash

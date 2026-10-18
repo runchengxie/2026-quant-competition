@@ -76,9 +76,3 @@ def test_simple_yaml_parser_strips_inline_comments_from_scalars() -> None:
     cfg = _simple_yaml_load("fee_bps: 0.206  # fractional\nmax_positions: 8 # comment\n")
     assert cfg["fee_bps"] == 0.206
     assert cfg["max_positions"] == 8
-
-
-
-
-
-
