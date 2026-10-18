@@ -1,9 +1,9 @@
 # 2026 Hong Kong Quant Competition: Rules Summary
 
-Last updated: 2026-09-30
-Source version: organizer's public rules page dated 2026-09-23
+Last checked: 2026-10-18
+Source version: organizer's public rules and formal PDF dated 2026-10-13
 
-[Historical identifying detail removed.]
+> This document summarizes information shown on the organizer's public website. The [latest official rules](https://fundconnecthk.com/quant-league/legal/competition-rules/) and notices take precedence. This English summary cites the public version. Restricted team copies, personal registration records, and access credentials must remain outside the public repository.
 
 ## Competition and registration
 
@@ -23,22 +23,27 @@ Individual stocks priced below USD 1, or with average daily turnover below USD 3
 
 To qualify for awards, the team must satisfy at least one of these conditions during the competition:
 
-1. Average daily position rate of at least 50% and no more than 10 trading days cumulatively flat; or
-2. Average daily turnover of at least 100%.
+1. Arithmetic mean of daily position rates of at least 50%, with no more than 10 cumulative flat trading days; or
+2. Arithmetic mean of daily turnover of at least 100%.
+
+A flat day has neither any holdings nor actual trades. Intraday trading followed by closing before the end of the day does not count as a flat day. Teams missing both eligibility routes may continue competing and display results, but cannot enter the defense or award candidate list. Eligible teams advance in score order.
 
 The trading-stage score comprises net return (25%), Sharpe ratio (35%), maximum drawdown (25%), and strategy stability (15%). The final score weights the trading-stage result at 70% and the presentation at 30%. The presentation assesses the strategy rationale, data and signals, risk controls, and the team's explanation.
 
 ## Data permissions and awards
 
-The competition account uses an Activity Flex Query and the read-only data permissions required by the competition. Teams should not provide their IBKR login password to the platform. Flex access is intended for competition data retrieval and scoring; it does not grant trading or money-transfer permissions. Confirm the exact fields and setup instructions in the team portal.
+The competition account uses an Activity Flex Query and the read-only data permissions required by the competition. Teams should not provide their IBKR login password to the platform. Flex access is intended for competition data retrieval and scoring; it does not grant trading or money-transfer permissions. The query must include all subitems of Trades, Cash Transactions, and Net Asset Value (NAV) Summary in Base. Keep authorization valid through verification and retain official broker records for reconciliation.
 
 The AIVIX alternative-data award has eight places. Applicants must apply in the team portal, actually use AIVIX data, and explain how it contributes to the strategy. The official page governs award details and benefits.
 
 ## Intellectual property and follow-up cooperation
 
+Supported products depend on the participating account and broker permissions. Crypto research code or an exchange API connection does not establish competition eligibility for that exchange or product. Confirm the actual participating venue and account before execution.
+
 Teams retain intellectual property in their strategies, code, documents, and related materials. Winning or entering a cooperation candidate pool does not automatically result in capital allocation. Any follow-up remains subject to performance review, risk controls, due diligence, compliance review, and an executed agreement.
 
 ## Official sources
 
+- [Formal public rules PDF, 2026-10-13](https://fundconnecthk.com/docs/quant-competition-rules-2026-10-13.pdf)
 - [2026 competition rules (organizer's public page)](https://fundconnecthk.com/quant-league/legal/competition-rules/)
 - [Competition overview and registration](https://fundconnecthk.com/quant-league/)
