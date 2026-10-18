@@ -63,6 +63,30 @@ def test_rejects_unrecognized_source_file(tmp_path):
     assert any("unrecognized source path" in error for error in errors)
 
 
+def test_allows_reviewed_locale_catalogs_but_rejects_other_json(tmp_path):
+    source, built = make_site_trees(tmp_path)
+    catalogs = source / "src/i18n"
+    catalogs.mkdir()
+    for name in ("en.json", "zh-CN.json"):
+        (catalogs / name).write_text('{"demo": "Synthetic example"}', encoding="utf-8")
+    assert check_site(source, built) == []
+
+    (catalogs / "account.json").write_text("{}", encoding="utf-8")
+    assert any(
+        "unrecognized source path" in error for error in check_site(source, built)
+    )
+
+
+def test_scans_locale_catalog_for_secrets(tmp_path):
+    source, built = make_site_trees(tmp_path)
+    catalogs = source / "src/i18n"
+    catalogs.mkdir()
+    (catalogs / "en.json").write_text(
+        '{"api_key": "abcdefghijklmnopqrstuvwxyz"}', encoding="utf-8"
+    )
+    assert any("sensitive pattern" in error for error in check_site(source, built))
+
+
 def test_does_not_ignore_nested_directory_named_dist(tmp_path):
     source, built = make_site_trees(tmp_path)
     private_source = source / "src/components/dist/private.astro"

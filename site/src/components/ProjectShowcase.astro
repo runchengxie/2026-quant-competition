@@ -1,0 +1,80 @@
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+import en from "../i18n/en.json";
+import zh from "../i18n/zh-CN.json";
+interface Props { locale?: string }
+const locale = Astro.props.locale === "zh-CN" ? "zh-CN" : "en";
+const t = locale === "zh-CN" ? zh : en;
+const repository = "https://github.com/runchengxie/2026-quant-competition";
+const file = (path: string) => `${repository}/blob/main/${path}`;
+const numbers = new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const closes = [100.0, 100.3, 100.6, 100.9, 101.2, 101.5, 101.8];
+const points = closes.map((value, index) => `${20 + index * 50},${140 - (value - 100) * 55}`).join(" ");
+const paths = [
+  { id: "stock", directory: "equity-lab", text: t.stock, commands: "cd research/equity-lab\nuv sync --locked --group dev\nuv run --locked python -m equity_lab.cli demo\nuv run --locked python -m equity_lab.cli backtest --strategy equal_weight" },
+  { id: "crypto", directory: "crypto-mm", text: t.crypto, commands: "cd research/crypto-mm\nuv sync --locked --group dev\nuv run --locked python -m crypto_mm.demo\nuv run --locked python -m crypto_mm.commands.backtest_cli --strategy B0 --days 2026-03-19" },
+];
+const guide = (directory: string) => file(`research/${directory}/README${locale === "zh-CN" ? ".zh-CN" : ""}.md`);
+---
+<SiteLayout locale={locale} title={t.meta.title} description={t.meta.description}>
+  <nav class="project-nav" aria-label={t.nav.demo}>
+    <a class="wordmark" href="#">QUANT / LAB</a>
+    <div><a href="#demo">{t.nav.demo}</a><a href="#research">{t.nav.research}</a><a href="#engineering">{t.nav.engineering}</a></div>
+    <a class="repo-link" href={repository}>{t.nav.repo}<span aria-hidden="true"> ↗</span></a>
+  </nav>
+  <header class="showcase-hero">
+    <div>
+      <p class="eyebrow">{t.hero.eyebrow}</p>
+      <h1>{t.hero.title}</h1>
+      <p class="intro">{t.hero.intro}</p>
+      <div class="hero-actions"><a class="button" href="#demo">{t.hero.primary}<span aria-hidden="true"> ↓</span></a><a class="text-link" href={repository}>{t.hero.secondary} ↗</a></div>
+      <p class="hero-note">{t.hero.note}</p>
+    </div>
+    <div class="lab-window" aria-label={t.demo.pipeline}>
+      <div class="window-bar"><span class="window-dots" aria-hidden="true">● ● ●</span><span>research / offline</span></div>
+      <div class="window-body">
+        <p class="terminal-label">{t.demo.synthetic}</p>
+        <div class="terminal-row"><span>01</span><code>synthetic_input</code><b aria-hidden="true">→</b></div>
+        <div class="terminal-row"><span>02</span><code>strategy_signal</code><b aria-hidden="true">→</b></div>
+        <div class="terminal-row"><span>03</span><code>simulation</code><b aria-hidden="true">→</b></div>
+        <div class="terminal-row last"><span>04</span><code>inspectable_report</code><span class="terminal-check" aria-hidden="true">✓</span></div>
+      </div>
+    </div>
+  </header>
+  <main>
+    <section id="demo" class="demo-section">
+      <div class="section-heading"><p class="eyebrow">{t.demo.eyebrow}</p><h2>{t.demo.title}</h2><p>{t.demo.intro}</p></div>
+      <div class="demo-switcher">
+        <fieldset class="path-picker"><legend class="visually-hidden">{t.demo.legend}</legend>
+          <input type="radio" name="research-path" id="path-stock" value="stock" checked /><label for="path-stock">{t.demo.stock}</label>
+          <input type="radio" name="research-path" id="path-crypto" value="crypto" /><label for="path-crypto">{t.demo.crypto}</label>
+        </fieldset>
+        {paths.map((path) => <article class={`demo-panel panel-${path.id}`} aria-labelledby={`title-${path.id}`}>
+          <div class="demo-overview">
+            <div><p class="pill">{t.demo.synthetic}</p><h3 id={`title-${path.id}`}>{path.text.title}</h3><p>{path.text.description}</p><p class="detail">{path.text.sampleDetail}</p></div>
+            <figure class="sample-figure"><figcaption>{path.text.sample}</figcaption>
+              {path.id === "stock" ? <>
+                <svg viewBox="0 0 340 170" role="img" aria-label={`${t.stock.sample}: ${closes.map(v => numbers.format(v)).join(", ")}`}>
+                  <path class="chart-grid" d="M20 40H320 M20 90H320 M20 140H320" />
+                  <polyline class="sample-line" points={points} />
+                  {closes.map((value,index) => <circle cx={20+index*50} cy={140-(value-100)*55} r="4" />)}
+                </svg><div class="sample-values"><span>{numbers.format(closes[0])}</span><span>{t.labels.price}</span><span>{numbers.format(closes[6])}</span></div>
+              </> : <div class="order-book"><div class="book-side bid"><span>{t.labels.bid}</span><strong>{numbers.format(99.9)}</strong><span class="book-depth" /></div><div class="book-divider">{t.labels.level}</div><div class="book-side ask"><span>{t.labels.ask}</span><strong>{numbers.format(100.1)}</strong><span class="book-depth" /></div></div>}
+              <p class="sample-caption">{t.demo.sampleNote}</p>
+            </figure>
+          </div>
+          <h4>{t.demo.pipeline}</h4><ol class="flow">{path.text.steps.map((step,index) => <li><span class="step-number">0{index+1}</span>{step}</li>)}</ol>
+          <div class="demo-bottom"><div><h4>{t.demo.outputs}</h4><ul class="artifact-list">{path.text.artifacts.map(item => <li>{item}</li>)}</ul><p class="assumption-label">{t.labels.assumptions}</p><p class="detail">{path.text.limit}</p></div>
+          <div class="run-card"><h4>{t.demo.run}</h4><p>{t.demo.setup}</p><pre><code>{path.commands}</code></pre><div class="resource-links"><a href={guide(path.directory)}>{t.demo.guide} ↗</a><a href={`${repository}/tree/main/research/${path.directory}/src`}>{t.demo.source} ↗</a></div></div></div>
+        </article>)}
+      </div>
+    </section>
+    <section id="research">
+      <div class="section-heading"><p class="eyebrow">{t.research.eyebrow}</p><h2>{t.research.title}</h2><p>{t.research.intro}</p></div>
+      <div class="research-grid"><article class="research-card"><span class="status">{t.research.stockStatus}</span><h3>{t.research.stockTitle}</h3><p>{t.research.stockBody}</p><a href={file("docs/strategy/strategy-analysis.md")}>{t.research.stockLink} ↗</a></article><article class="research-card"><span class="status implemented">{t.research.cryptoStatus}</span><h3>{t.research.cryptoTitle}</h3><p>{t.research.cryptoBody}</p><a href={file(`research/crypto-mm/docs/assumptions${locale === "zh-CN" ? ".zh-CN" : ""}.md`)}>{t.research.cryptoLink} ↗</a></article></div>
+    </section>
+    <section id="engineering" class="engineering-section"><p class="eyebrow">{t.engineering.eyebrow}</p><h2>{t.engineering.title}</h2><p>{t.engineering.body}</p><ol class="flow execution-flow">{t.engineering.stages.map((step,index) => <li><span class="step-number">0{index+1}</span>{step}</li>)}</ol><p class="detail">{t.engineering.warning}</p><a href={file("docs/operations/integration-readiness-2026-10-02.md")}>{t.engineering.link} ↗</a></section>
+    <aside class="competition-note"><div><h3>{t.rules.title}</h3><p>{t.rules.body}</p></div><a href={file("docs/competition/schedule-and-checklist.md")}>{t.rules.link} ↗</a></aside>
+  </main>
+  <footer><span>{t.footer.project}</span><span>{t.footer.note}</span></footer>
+</SiteLayout>

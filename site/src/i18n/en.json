@@ -1,0 +1,116 @@
+{
+  "meta": {
+    "title": "Quant research, made inspectable | 2026 Quant Competition",
+    "description": "Explore offline equity backtesting and crypto market-making demos, strategy ideas, reproducible commands and the execution boundary."
+  },
+  "nav": {
+    "demo": "Explore demos",
+    "research": "Strategy ideas",
+    "engineering": "Execution boundary",
+    "repo": "Source code"
+  },
+  "hero": {
+    "eyebrow": "RESEARCH LAB / PROJECT SHOWCASE",
+    "title": "See the strategy.\nFollow the experiment.",
+    "intro": "Two offline research paths, from a small fictional dataset to an inspectable report. Explore the models, see what they produce, and run the same demo locally.",
+    "primary": "Explore the demos",
+    "secondary": "Browse the code",
+    "note": "Synthetic examples · Open research code · No broker connection"
+  },
+  "demo": {
+    "eyebrow": "01 / EXPLORE",
+    "title": "Choose a research path",
+    "intro": "This is a presentation of the offline tools. Switching paths changes the walkthrough; it does not run Python or place an order in your browser.",
+    "legend": "Research path",
+    "stock": "Equity backtesting",
+    "crypto": "Crypto market-making",
+    "synthetic": "SYNTHETIC FIXTURE",
+    "input": "Input preview",
+    "pipeline": "Inside the experiment",
+    "outputs": "What to inspect",
+    "run": "Run it locally",
+    "setup": "From the repository root, set an absolute DATA_ROOT and an external UV_PROJECT_ENVIRONMENT first. The guide explains configuration. Demo generation refuses to overwrite existing data.",
+    "guide": "Configuration & guide",
+    "source": "Read the implementation",
+    "sampleNote": "Values below come from the deterministic demo generators. They are input examples, not market observations or performance results."
+  },
+  "stock": {
+    "title": "From daily bars to portfolio diagnostics",
+    "description": "Compare simple allocation rules and experimental CNN signals using a shared daily backtest. Start with equal weights, then inspect the assumptions behind each model.",
+    "sample": "First seven fictional closes · HK.DEMO_A",
+    "sampleDetail": "The bundled example uses fictional HK symbols. U.S. ETF strategy ideas are a separate research candidate, not a validated U.S. trading demo.",
+    "steps": [
+      "Daily OHLCV bars",
+      "Strategy signal",
+      "Lagged fractional weights",
+      "Costs & diagnostics"
+    ],
+    "artifacts": [
+      "Portfolio path and daily positions",
+      "Run status, assumptions and metrics",
+      "Monthly returns and drawdown diagnostics"
+    ],
+    "limit": "Daily fractional-weight approximation. No board-lot handling, auction simulation, minimum commissions or FX conversion. Check run_status: a signal failure is marked as strategy_fallback, not a successful zero-return strategy."
+  },
+  "crypto": {
+    "title": "From an order book to simulated maker fills",
+    "description": "Trace visible queues, public trades and order latency. Compare four quoting variants while keeping the simulator and measurement assumptions explicit.",
+    "sample": "Fictional L1 book · first snapshot",
+    "sampleDetail": "Bid 99.9, ask 100.1. The fixture contains 20 levels and 121 snapshots per date, across three fixed date labels.",
+    "steps": [
+      "Book, trades & funding signals",
+      "Quote & inventory policy",
+      "Latency and queue model",
+      "PnL & inventory diagnostics"
+    ],
+    "artifacts": [
+      "Printed backtest and signal diagnostics",
+      "Cumulative PnL and inventory-path figures",
+      "Four-variant comparison figures"
+    ],
+    "limit": "Visible-queue simulation, not an exchange matching engine. Funding is a signal rather than settlement. Custom sampling can mislabel horizons, the audit has incomplete non-finite checks, and plotting ignores CLI arguments."
+  },
+  "research": {
+    "eyebrow": "02 / STRATEGY IDEAS",
+    "title": "Separate an idea from its evidence",
+    "intro": "The research framework and the competition strategy are different stages. No competition strategy has been selected or registered.",
+    "stockTitle": "U.S. equities & ETF allocation",
+    "stockBody": "A candidate uses crypto sentiment to inform a U.S. ETF portfolio. Data permissions, point-in-time coverage and reproducible out-of-sample comparison remain open. The equity lab supplies offline baseline experiments; it is not that completed strategy.",
+    "stockStatus": "RESEARCH CANDIDATE",
+    "stockLink": "Read the candidate analysis",
+    "cryptoTitle": "Inventory-aware maker quotes",
+    "cryptoBody": "B0 starts from mid-price and inventory skew. B1 uses L1 microprice, B2 adapts spread to volatility, and B3 changes the inventory target using funding signals. Compare the models before drawing conclusions about their edge.",
+    "cryptoStatus": "OFFLINE IMPLEMENTATION",
+    "cryptoLink": "Read the simulation assumptions"
+  },
+  "engineering": {
+    "eyebrow": "03 / ENGINEERING",
+    "title": "Research ends at an explicit boundary",
+    "body": "The execution project separately validates versioned targets and lineage, applies Paper-first safeguards, and journals broker events. Demo reports are not executable target files.",
+    "stages": [
+      "Research report",
+      "Reviewed target handoff",
+      "Paper safeguards",
+      "Event journal & reconciliation"
+    ],
+    "warning": "A complete supervised order lifecycle remains unverified. The published v1 target schema lists JP/US while runtime normalization also recognizes HK; this existing mismatch needs resolution before relying on an HK handoff.",
+    "link": "Explore execution readiness"
+  },
+  "rules": {
+    "title": "Competition context",
+    "body": "Built around the 2026 Hong Kong Quant Competition. Product eligibility and account permissions require separate confirmation.",
+    "link": "Rules, dates & participation checklist"
+  },
+  "footer": {
+    "project": "Offline research · Paper-first engineering",
+    "note": "Synthetic demonstrations do not establish real-market profitability."
+  },
+  "labels": {
+    "price": "Close",
+    "bid": "Bid",
+    "ask": "Ask",
+    "level": "L1",
+    "snapshot": "Input sample",
+    "assumptions": "Model assumptions"
+  }
+}
