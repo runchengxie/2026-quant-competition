@@ -1,6 +1,6 @@
 # 2026 Hong Kong Quant Competition: Analysis and Strategy Notes
 
-> Originally drafted on 2026-08-26 from the rules then available. The schedule below follows the organizer's public rules dated 2026-09-23. This is research material, not investment, legal, or compliance advice. No strategy has been selected or registered.
+> Originally drafted on 2026-08-26 from the rules then available. The schedule below follows the organizer's public rules dated 2026-10-13, checked 2026-10-18. This is research material, not investment, legal, or compliance advice. No strategy has been selected or registered.
 
 ## 1. Competition overview
 
@@ -23,7 +23,7 @@ Potential categories include market-neutral/relative-value, systematic direction
 
 Both require data-entitlement checks, out-of-sample validation, transaction-cost analysis, and Paper execution before a selection. Only one strategy may be registered for the team account. AIVIX award eligibility requires application through the team portal, actual use of the data, and a clear explanation of its contribution.
 
-To qualify for awards, a strategy must maintain either an average daily position rate of at least 50% with no more than 10 cumulative flat trading days, or average daily turnover of at least 100%. The official rules do not fully specify all calculation details; confirm them with the organizer.
+To qualify for awards, a strategy must maintain either an average daily position rate of at least 50% with no more than 10 cumulative flat trading days, or average daily turnover of at least 100%. The current rules specify arithmetic daily averages. Intraday trading followed by a close-out is not a flat day. Teams failing both eligibility routes may keep participating but do not advance to defense/award candidacy. Confirm the remaining exposure, turnover and calendar details with the organizer.
 
 ## 3. Accounts and data security
 

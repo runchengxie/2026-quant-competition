@@ -66,3 +66,7 @@ Connect research and execution through stable contracts. Do not copy the entire 
 - Changes to contracts, order lifecycle, or broker adapters require the relevant unit tests.
 - Execution-chain changes additionally require Paper account connection, contract qualification, submission, cancellation, fills, restart recovery, and reconciliation checks.
 - Completion reports must include actual command results and state clearly what has not been verified against a live broker.
+
+## Rule and publication guidance
+
+Use the public organizer rules dated 2026-10-13 and later official notices for publicly cited guidance. Keep restricted team rule copies, personal registration material and account authorizations outside public Git. Intraday close-out is not automatically a flat day. Position/turnover eligibility affects defense/award candidacy, not continued participation. Research involving crypto does not authorize a venue/product or expand the execution target schema. Confirm the actual account, supported broker and products separately.
