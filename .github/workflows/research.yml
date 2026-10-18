@@ -1,0 +1,47 @@
+name: Offline research
+
+on:
+  pull_request:
+    paths: ["research/**", ".github/workflows/research.yml"]
+  push:
+    branches: [main]
+    paths: ["research/**", ".github/workflows/research.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project: [crypto-mm, equity-lab]
+    defaults:
+      run:
+        working-directory: research/${{ matrix.project }}
+    env:
+      DATA_ROOT: ${{ runner.temp }}/research-data
+      UV_PROJECT_ENVIRONMENT: ${{ runner.temp }}/research-env-${{ matrix.project }}
+      MPLBACKEND: Agg
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --locked --group dev
+      - run: uv run --locked ruff check .
+      - run: uv run --locked pytest -q
+      - name: Synthetic demo and smoke backtest
+        shell: bash
+        run: |
+          if [ "${{ matrix.project }}" = crypto-mm ]; then
+            uv run --locked python -m crypto_mm.demo
+            uv run --locked python -m crypto_mm.commands.audit_data --json
+            uv run --locked python -m crypto_mm.commands.backtest_cli --strategy B0 --days 2026-03-19
+          else
+            uv run --locked python -m equity_lab.cli demo
+            uv run --locked python -m equity_lab.cli backtest --strategy equal_weight
+          fi
+      - run: uv build --out-dir "${{ runner.temp }}/wheels-${{ matrix.project }}"

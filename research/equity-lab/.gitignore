@@ -1,0 +1,6 @@
+build/
+dist/
+artifacts/
+raw_data/
+figures/
+*.parquet

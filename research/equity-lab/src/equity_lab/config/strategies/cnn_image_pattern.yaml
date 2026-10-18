@@ -1,0 +1,29 @@
+name: cnn_image_pattern
+universe: demo_hk
+max_positions: 8
+position_sizing: equal_weight
+signal:
+  window_size: 20
+  horizon: 5
+  positive_return_threshold: 0.005
+  probability_threshold: 0.50
+  train_ratio: 0.7
+  image_size: 20
+  image_style: candlestick
+  include_volume: true
+  include_moving_average: false
+  filters: 2
+  kernel_size: 3
+  epochs: 6
+  learning_rate: 0.03
+  l2: 0.0001
+  random_state: 17
+  max_train_samples: 600
+  prediction_batch_size: 4096
+  # export_image_samples_dir: artifacts/reports/backtests/cnn_image_samples
+  # export_image_sample_count: 20
+  # export_image_scale: 8
+risk_limits:
+  max_single_name_weight: 0.2
+  max_gross_exposure: 1.0
+  max_daily_turnover: 0.3

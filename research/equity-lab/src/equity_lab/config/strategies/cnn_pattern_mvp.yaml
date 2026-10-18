@@ -1,0 +1,20 @@
+name: cnn_pattern_mvp
+universe: demo_hk
+max_positions: 8
+position_sizing: equal_weight
+signal:
+  window_size: 20
+  horizon: 5
+  positive_return_threshold: 0.005
+  probability_threshold: 0.50
+  train_ratio: 0.7
+  filters: 8
+  kernel_size: 3
+  epochs: 40
+  learning_rate: 0.03
+  l2: 0.0001
+  random_state: 7
+risk_limits:
+  max_single_name_weight: 0.2
+  max_gross_exposure: 1.0
+  max_daily_turnover: 0.3
