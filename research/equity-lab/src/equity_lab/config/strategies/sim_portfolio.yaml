@@ -1,0 +1,11 @@
+name: sim_portfolio
+universe: demo_hk
+max_positions: 8
+position_sizing: equal_weight
+signal:
+  short_window: 20
+  long_window: 60
+risk_limits:
+  max_single_name_weight: 0.2
+  max_gross_exposure: 1.0
+  max_daily_turnover: 0.3

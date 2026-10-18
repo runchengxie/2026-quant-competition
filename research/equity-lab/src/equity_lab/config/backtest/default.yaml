@@ -1,0 +1,12 @@
+name: synthetic-hk-demo
+initial_capital: 100000
+rebalance: daily
+# Illustrative costs, not current exchange or broker fees.
+commission_bps: 8
+slippage_bps: 12
+regulation_bps: 10
+trading_calendar_mode: union
+benchmark: HK.DEMO_A
+benchmark_strategies: [sma_cross, momentum_20d, equal_weight, random_turnover]
+price_path: artifacts/data/processed/market
+report_path: artifacts/reports/backtests

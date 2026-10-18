@@ -1,0 +1,32 @@
+name: cnn_walk_forward_rank
+universe: demo_hk
+max_positions: 5
+position_sizing: equal_weight
+signal:
+  window_size: 20
+  horizon: 5
+  label_top_quantile: 0.3
+  min_target_zscore: 0.0
+  train_window_days: 1260
+  validation_window_days: 252
+  test_window_days: 252
+  first_test_date: 2015-01-01
+  purge_days: 5
+  embargo_days: 5
+  min_train_samples: 400
+  min_validation_samples: 80
+  selection_top_n: 5
+  min_calibrated_probability: 0.0
+  filters: 8
+  kernel_size: 3
+  epochs: 40
+  learning_rate: 0.03
+  l2: 0.0001
+  random_state: 7
+  calibrator_epochs: 200
+  calibrator_learning_rate: 0.05
+  calibrator_l2: 0.001
+risk_limits:
+  max_single_name_weight: 0.2
+  max_gross_exposure: 1.0
+  max_daily_turnover: 0.3

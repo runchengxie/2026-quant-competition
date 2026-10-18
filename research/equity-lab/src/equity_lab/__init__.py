@@ -1,0 +1,1 @@
+"""Offline daily equity research."""

@@ -1,0 +1,5 @@
+name: equal_weight
+universe: demo_hk
+max_positions: null
+position_sizing: equal_weight
+signal: {}
