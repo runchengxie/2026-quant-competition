@@ -92,7 +92,7 @@ def load_yaml(path: Path) -> dict:  # path is a Path object
     with path.open("r", encoding="utf-8") as f:
         text = f.read()
     data = (yaml.safe_load(text) if yaml is not None else _simple_yaml_load(text)) or {}
-        
+
     if not isinstance(data, dict):   # isinstance(data, type)
         raise ValueError(f"Expected mapping in {path}")
     return data

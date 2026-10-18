@@ -85,7 +85,7 @@ class OrderManager:
         timestamp_ns: int,
     ) -> tuple[OrderAction, ...]:
         """
-        A new strategy decision produces a DesiredQuote, which triggers the current reconciliation. 
+        A new strategy decision produces a DesiredQuote, which triggers the current reconciliation.
         The OrderManager then generates the required order actions.
         """
         scheduled: list[OrderAction] = []
@@ -192,7 +192,7 @@ class OrderManager:
         """Return the next deterministic order identifier."""
         order_id = f"order-{self._next_order_number:08d}"  # 08d formats the value as a decimal integer
         #  with a width of eight digits, padding it with leading zeros if necessary.
-        
+
         self._next_order_number += 1
         return order_id
 
