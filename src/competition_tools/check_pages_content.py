@@ -12,7 +12,7 @@ SENSITIVE = {
         r"sk-[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----)"
     ),
     "credential_assignment": re.compile(
-        r"(?i)(?:api[_-]?key|secret|token|password)\s*[:=]\s*[\"']?[A-Za-z0-9/_+=.-]{24,}"
+        r"(?i)(?:api[_-]?key|secret|token|password)[\"']?\s*[:=]\s*[\"']?[A-Za-z0-9/_+=.-]{24,}"
     ),
     "account_or_order_identifier": re.compile(
         r"(?i)\b(?:account[_ -]?id|account[_ -]?number|order[_ -]?id)\s*[:=]\s*[A-Z0-9-]{5,}"
@@ -63,6 +63,8 @@ def _allowed_source(relative_path: PurePosixPath) -> bool:
         "package.json",
         "package-lock.json",
         "tsconfig.json",
+        "src/i18n/en.json",
+        "src/i18n/zh-CN.json",
     }:
         return True
     if path.startswith("src/"):

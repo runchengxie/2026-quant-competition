@@ -65,6 +65,8 @@ Run the Python checks locally with `uv sync --locked --extra test --extra ibkr`,
 
 ### Build the website locally
 
+The bilingual homepage showcases the equity and crypto research paths with synthetic input previews, local demo commands, strategy context and the execution boundary. Its path switch changes the walkthrough without running backtests in the browser. Shared rendering keeps commands and sample values the same across locales; translated text lives in `site/src/i18n/`. Competition guidance remains linked as supporting context.
+
 ```powershell
 npm --prefix site ci
 npm --prefix site run build
