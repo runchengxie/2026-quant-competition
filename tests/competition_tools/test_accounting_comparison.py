@@ -265,3 +265,69 @@ def test_monthly_export_makes_implicit_zero_targets_explicit():
         initial_cash="100",
     )
     assert out["decisions"][0]["weights"]["HK.DEMO_B"] == "0"
+
+
+def test_float_residue_is_bounded_and_reported_without_changing_raw_weights():
+    from decimal import Decimal
+
+    value = legacy()
+    weights = {"US.DEMO_" + str(i): str(1 / 11) for i in range(11)}
+    value["decisions"][0]["weights"] = weights
+    cm = clocks(value)
+    cm["decisions"]["2026-02-01"]["execution_times"] = {
+        code: "2026-02-01T09:00:00Z" for code in weights
+    }
+    original = deepcopy(value)
+    bound = bind_clocks(value, cm)
+    assert sum(map(Decimal, bound[0]["weights"].values())) == 1
+    assert value == original
+    owner = projection(value, cm)
+    result = compare_verified(value, cm, owner)
+    assert (
+        result["weight_mapping_adjustments"][0]["removed_weight"]
+        == "0.00000000000000001"
+    )
+    value["decisions"][0]["weights"]["US.DEMO_0"] = "0.5"
+    with pytest.raises(ValueError, match="EXCESS_GROSS_WEIGHT"):
+        bind_clocks(value, cm)
+
+
+@pytest.mark.parametrize("problem", ["request_array", "invalid_commission"])
+def test_malformed_root_files_return_only_redacted_json(tmp_path, problem):
+    from competition_tools.accounting_comparison import PROVIDER
+
+    value = legacy()
+    cm = clocks(value)
+    if problem == "invalid_commission":
+        value["legacy_config"]["commission_bps"] = "not-a-number"
+        value["legacy_config_fingerprint"] = digest(value["legacy_config"])
+        cm["legacy_config_fingerprint"] = value["legacy_config_fingerprint"]
+    for name, data in [
+        ("legacy", value),
+        ("clocks", cm),
+        ("request", [] if problem == "request_array" else {"provider": PROVIDER}),
+    ]:
+        (tmp_path / (name + ".json")).write_text(json.dumps(data))
+    command = [
+        sys.executable,
+        "-m",
+        "competition_tools.accounting_comparison",
+        "--legacy",
+        str(tmp_path / "legacy.json"),
+        "--clocks",
+        str(tmp_path / "clocks.json"),
+        "--provider-python",
+        sys.executable,
+        "--request",
+        str(tmp_path / "request.json"),
+        "--dataset-root",
+        str(tmp_path),
+        "--bundle",
+        str(tmp_path / "PRIVATE_SENTINEL"),
+    ]
+    result = subprocess.run(command, capture_output=True, text=True)
+    assert result.returncode == 2
+    assert result.stderr == ""
+    assert json.loads(result.stdout)["status"] == "blocked"
+    assert str(tmp_path) not in result.stdout
+    assert "PRIVATE_SENTINEL" not in result.stdout

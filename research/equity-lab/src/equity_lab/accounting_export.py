@@ -22,6 +22,13 @@ def _decimal(value):
     return format(value.normalize(), "f")
 
 
+def _session_date(value):
+    timestamp = pd.Timestamp(value)
+    if not isinstance(timestamp, pd.Timestamp):
+        raise ValueError("INVALID_SESSION_DATE")
+    return timestamp.strftime("%Y-%m-%d")
+
+
 def export_decisions(
     signal_df, config, *, strategy_id, market, synthetic, input_fingerprint
 ):
@@ -73,8 +80,8 @@ def export_decisions(
         group = detail[detail["date"] == current]
         decisions.append(
             {
-                "source_date": pd.Timestamp(previous).strftime("%Y-%m-%d"),
-                "execution_date": pd.Timestamp(current).strftime("%Y-%m-%d"),
+                "source_date": _session_date(previous),
+                "execution_date": _session_date(current),
                 "weights": {
                     str(row.code): _decimal(row.target_weight)
                     for row in group.itertuples()

@@ -3,6 +3,7 @@
 import importlib.metadata
 import json
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from platform_compare.contracts import (
     PIN,
     PROVIDER,
@@ -60,10 +61,14 @@ def owner_decimal(value):
     return result
 
 
-def run_request(path: Path, dataset_root: Path, output: Path) -> dict:
-    request, asset, source = load_request(path, dataset_root)
-    if output.exists():
-        raise ValueError("OUTPUT_EXISTS")
+def external_output(output):
+    output = Path(output).resolve()
+    if any((parent / ".git").exists() for parent in (output, *output.parents)):
+        raise ValueError("OUTPUT_IN_SOURCE")
+    return output
+
+
+def _publish(output, request, asset, source):
     verify_provider()
     from portfolio_backtester.usd_ledger import run_usd_price_replay
     from portfolio_backtester.usd_ledger_bundle import write_usd_price_replay_bundle
@@ -90,6 +95,14 @@ def run_request(path: Path, dataset_root: Path, output: Path) -> dict:
             }
         ],
     )
+
+
+def run_request(path: Path, dataset_root: Path, output: Path) -> dict:
+    output = external_output(output)
+    request, asset, source = load_request(path, dataset_root)
+    if output.exists():
+        raise ValueError("OUTPUT_EXISTS")
+    _publish(output, request, asset, source)
     return verify_result(path, dataset_root, output)
 
 
@@ -101,6 +114,7 @@ def verify_result(path: Path, dataset_root: Path, output: Path) -> dict:
 
     money = owner_decimal
 
+    output = external_output(output)
     request, asset, source = load_request(path, dataset_root)
     manifest = verify_bundle(output)
     expected_refs = (
@@ -123,6 +137,20 @@ def verify_result(path: Path, dataset_root: Path, output: Path) -> dict:
     diagnostics = json.loads(
         (output / "diagnostics.json").read_text(encoding="utf-8"), parse_float=Decimal
     )
+    # Hashes establish integrity, not that a mutable manifest describes the actual
+    # calculation. Reproduce the entire request with the public owner APIs and its
+    # independent publisher. Temporary files stay in the explicitly supplied data
+    # directory and are never written to a source checkout.
+    with TemporaryDirectory(prefix=".owner-verify-", dir=output.parent) as temporary:
+        expected = Path(temporary) / "bundle"
+        _publish(expected, request, asset, source)
+        verify_bundle(expected)
+        replayed = json.loads(
+            (expected / "diagnostics.json").read_text(encoding="utf-8"),
+            parse_float=Decimal,
+        )
+        if replayed != diagnostics:
+            raise ValueError("BUNDLE_REPLAY_MISMATCH")
     daily = diagnostics["daily"]
     if not daily or diagnostics["summary"]["orders_submitted"] is not False:
         raise ValueError("INVALID_DIAGNOSTIC_BUNDLE")

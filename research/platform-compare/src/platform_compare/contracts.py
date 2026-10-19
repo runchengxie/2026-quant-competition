@@ -123,6 +123,10 @@ def load_request(path, dataset_root):
         or request["evidence"] != "software_diagnostic"
     ):
         raise ValueError("INVALID_EVIDENCE")
+    if request["synthetic"] is not True:
+        # This version has no independent real-input provenance/timing adapter.
+        # Matching caller booleans cannot certify synthetic fixtures as real data.
+        raise ValueError("REAL_INPUT_EVIDENCE_UNVERIFIED")
     if (
         re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}", text(request["run_id"]))
         is None

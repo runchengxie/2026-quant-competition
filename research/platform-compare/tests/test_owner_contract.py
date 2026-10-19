@@ -337,3 +337,52 @@ def test_verified_owner_decimal_output_can_use_exponents(value, expected):
 
     with pytest.raises(ValueError):
         money(value)
+
+
+@pytest.mark.parametrize("changed", ["cost", "schedule", "source"])
+def test_manifest_relabeling_cannot_substitute_replay_inputs(tmp_path, changed):
+    from platform_compare.owner_adapter import verify_result
+
+    req, value, asset = fixture(tmp_path)
+    output = tmp_path / "bundle"
+    run_request(req, tmp_path, output)
+    if changed == "cost":
+        value["config"]["commission_bps"] = "100"
+    if changed == "schedule":
+        asset["decisions"][0]["weights"]["US.DEMO_A"] = "0.25"
+    if changed == "source":
+        asset["prices"][-1]["price"] = "30"
+    rewrite(tmp_path, value, asset)
+    manifest_path = output / "manifest.json"
+    manifest = json.loads(manifest_path.read_text())
+    manifest["artifact_envelope"]["configuration_sha256"] = value["config_fingerprint"]
+    for ref in manifest["input_refs"]:
+        ref["sha256"] = value["input_fingerprint"]
+    manifest_path.write_text(json.dumps(manifest))
+    with pytest.raises(ValueError):
+        verify_result(req, tmp_path, output)
+
+
+def test_false_synthetic_flag_does_not_certify_fixture_as_real(tmp_path):
+    req, value, asset = fixture(tmp_path)
+    value["synthetic"] = False
+    asset["synthetic"] = False
+    rewrite(tmp_path, value, asset)
+    with pytest.raises(ValueError, match="REAL_INPUT_EVIDENCE_UNVERIFIED"):
+        run_request(req, tmp_path, tmp_path / "out")
+    assert not (tmp_path / "out").exists()
+
+
+@pytest.mark.parametrize("git_marker", ["directory", "file"])
+def test_source_output_rejected_before_any_bundle_write(tmp_path, git_marker):
+    req, value, asset = fixture(tmp_path)
+    repo = tmp_path / "source"
+    repo.mkdir()
+    if git_marker == "directory":
+        (repo / ".git").mkdir()
+    else:
+        (repo / ".git").write_text("gitdir: elsewhere")
+    output = repo / "docs/accounting-output"
+    with pytest.raises(ValueError, match="OUTPUT_IN_SOURCE"):
+        run_request(req, tmp_path, output)
+    assert not output.exists()
