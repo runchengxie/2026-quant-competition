@@ -20,3 +20,11 @@ The first Paper Gateway smoke should only connect and qualify the intended
 contract. An order submission is a separate, supervised action. Unknown order
 outcomes remain unknown until an IBKR event or reconnect reconciliation
 resolves them.
+
+## Current execution limitations
+
+Before each rebalance adapter call, the runner durably records every planned client intent. These `order_submitted` entries record attempts, not broker acceptance. A journal write failure prevents submission. Client intent IDs are not yet mapped end to end to IBKR order/permId/clientId callback identities; do not treat current reconciliation tests as verified broker restart recovery. No automatic retry is safe after an unknown outcome.
+
+The baseline TWAP planner supports whole-unit quantities only and rejects fractional units instead of increasing the requested total. Instrument-specific fractional or lot-size slicing requires an explicit quantity quantum. Handoff target and lineage destinations must resolve to different files.
+
+The schema/runtime HK discrepancy and external producer field/lineage naming differences still require a reviewed compatibility adapter. This audit did not change target versions or initialize external repositories. Supervised Paper order, cancellation, fill, restart and reconciliation verification remains required before operational use.

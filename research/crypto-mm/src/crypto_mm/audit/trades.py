@@ -9,10 +9,13 @@ from crypto_mm.audit.common import common_audit, quantiles, scalar
 
 def _trade_summary(lazy_frame: pl.LazyFrame) -> pl.DataFrame:
     """Aggregate trade-quality counts and daily volume statistics."""
+    side = pl.col("is_maker_ask")
+    if lazy_frame.collect_schema()["is_maker_ask"] == pl.Boolean:
+        side = side.cast(pl.Int8)
     return lazy_frame.select(
         (pl.col("size") <= 0).sum().alias("nonpositive_size"),
         (pl.col("price") <= 0).sum().alias("nonpositive_price"),
-        (~pl.col("is_maker_ask").is_in([0, 1])).sum().alias("invalid_side"),
+        (~side.is_in([0, 1])).sum().alias("invalid_side"),
         (pl.col("is_maker_ask") == 1).sum().alias("buyer_aggressor_count"),
         (pl.col("is_maker_ask") == 0).sum().alias("seller_aggressor_count"),
         pl.col("size").sum().alias("total_base_volume"),

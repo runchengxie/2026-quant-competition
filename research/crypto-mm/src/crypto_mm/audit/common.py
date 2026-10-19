@@ -70,6 +70,12 @@ def common_audit(path: Path) -> tuple[pl.LazyFrame, dict[str, Any]]:
         pl.col(name).null_count().alias(f"audit_null_{name}")
         for name in schema.names()
     )
+    numeric_columns = [name for name, dtype in schema.items() if dtype.is_numeric()]
+    summary_expressions.append(
+        pl.sum_horizontal([(~pl.col(name).is_finite()).sum() for name in numeric_columns])
+        .alias("audit_nonfinite_values")
+        if numeric_columns else pl.lit(0).alias("audit_nonfinite_values")
+    )
     summary = lazy_frame.select(summary_expressions).collect()
 
     # 3. Calculate the timestamp-gap distribution.
@@ -115,6 +121,7 @@ def common_audit(path: Path) -> tuple[pl.LazyFrame, dict[str, Any]]:
         ),
         "gap_seconds": gap_quantiles,
         "quality": {
+            "nonfinite_values": int(scalar(summary, "audit_nonfinite_values") or 0),
             "datetime_nulls": datetime_nulls,
             "non_datetime_nulls": non_datetime_nulls,
             "out_of_order_rows": int(

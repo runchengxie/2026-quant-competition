@@ -42,6 +42,8 @@ def plan_single_order(intent: OrderIntent) -> tuple[OrderIntent, ...]:
 
 
 def plan_twap(intent: OrderIntent, *, slices: int) -> tuple[PlannedOrder, ...]:
+    if not intent.quantity.is_finite() or intent.quantity != intent.quantity.to_integral_value():
+        raise ValueError("TWAP requires a finite whole-unit quantity")
     if slices < 1:
         raise ValueError("slices must be positive")
     plan_single_order(intent)

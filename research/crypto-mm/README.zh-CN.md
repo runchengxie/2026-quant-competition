@@ -8,13 +8,15 @@
 
 进入本目录，先配置外部 `DATA_ROOT` 和 `UV_PROJECT_ENVIRONMENT`，再执行英文 README 中的可复制命令。`uv sync --locked --group dev` 安装锁定依赖，`python -m crypto_mm.demo` 生成演示数据，随后可运行审计、B0 回测、信号分析、绘图和测试。
 
-演示在 `raw_data/{orderbook,trades,fundings}/` 下生成九个 Parquet 文件，并在同级写入 `demo-manifest.json`。文件名是 `YYYY-MM-DD.parquet`。当前读取器固定要求 `2026-03-19` 至 `2026-03-21` 三个日期标签，它们不代表提供了真实历史行情。字段包括纳秒 `datetime`、20 档 `bid_price_N`/`ask_price_N`/`bid_qty_N`/`ask_qty_N`、成交 `price`/`size`/`is_maker_ask` 和 `funding_rate`，类型和生成示例见 `market_data.py` 与 `demo.py`。
+演示在 `raw_data/{orderbook,trades,fundings}/` 下生成九个 Parquet 文件，并在同级写入 `demo-manifest.json`。文件名是 `YYYY-MM-DD.parquet`。当前读取器固定要求 `2026-03-19` 至 `2026-03-21` 三个日期标签，它们不代表提供了真实历史行情。读取器将 datetime 的存储单位转换成纳秒事件。字段包括 `datetime`、20 档 `bid_price_N`/`ask_price_N`/`bid_qty_N`/`ask_qty_N`、成交 `price`/`size`/`is_maker_ask` 和 `funding_rate`，类型和生成示例见 `market_data.py` 与 `demo.py`。
 
-回测和分析打印到 stdout。绘图默认运行四个策略，写入外部项目目录的 `figures/`。绘图没有参数解析器，任何参数都会被忽略，`--help` 也可能触发绘图。敏感性扫描用于探索，不保证得到最优参数。程序化配置及校验见 `config.py` 的 `StrategyConfig` 和 `SimulationConfig`。
+回测和分析打印到 stdout。绘图默认运行四个策略，写入外部项目目录的 `figures/`。绘图支持 `--help`，并在绘图前拒绝未知参数。没有其他绘图 CLI 选项；自定义目录请使用 `generate_figures(output_directory=...)`。敏感性扫描用于探索，不保证得到最优参数。程序化配置及校验见 `config.py` 的 `StrategyConfig` 和 `SimulationConfig`。
 
 ## 已知限制
 
-自定义信号采样间隔可能导致期限标签错误，因为期限被用作样本偏移。数据审计没有全面拒绝 NaN 或无穷值，通过审计不代表数值全部有效。这些已知问题仍保留，没有修改测试预期来掩盖。本次没有复现完整历史回测或参数扫描。
+信号期限按实际秒数计算。采样间隔必须能整除 1、5、30 秒期限，无法表示的网格会抛出 `ValueError`。为兼容旧字段，`one_second_log_return` 保留名称，但非一秒采样时表示相邻网格的对数收益。时间和窗口配置必须为整数。
+
+审计质量字段增加 `nonfinite_values` 和盘口 `nonpositive_price_rows` 计数，空值仍单独统计。审计报告用于诊断无效输入，不证明交易所数据有效性。库存峰值统计包含同一时间戳内每次成交。本次没有复现完整历史回测或参数扫描。重叠挂单的共享可见队列和交易所成交真实性仍存在模型限制。
 
 ## 配置与输出
 

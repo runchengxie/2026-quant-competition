@@ -20,6 +20,9 @@
 
 信号生成抛出异常后，服务保留全现金回退行为。`summary.json` 明确给出 `run_status=strategy_fallback` 和 `fallback_reasons`，CLI 打印原因并以状态码 2 退出。这是策略运行失败，不能当作成功的零收益策略。普通运行标记为 `run_status=completed`，仍不证明研究有效性。元信息中的相对路径在各平台统一使用 `/`。
 
+
+前向填充之前会保留数据来源标记：`is_missing_bar` 表示原始开盘价或收盘价缺失，`is_interpolated` 标记已填充的收盘价，`is_halt` 仍是零成交量代理，不代表已确认的交易所停牌状态。成本优先使用策略的显式 `market`，其次是回测 `market`，最后按基准或股票池推断。比较基线目录会生成摘要声明的组合与持仓 CSV。`max_positions` 限制目标选股数量，渐进换手期间实际持仓数可能暂时超过它。非滚动验证 CNN 可能包含样本内预测，不能当作样本外证据。
+
 ## 配置与输出
 
 使用 Python 3.12。导入模块前，将 `DATA_ROOT` 设置为共享数据目录的绝对路径，项目数据目录为 `DATA_ROOT/2026-quant-competition/research/equity-lab/`。也可以将 `WORKSPACE_CONFIG` 指向包含绝对路径 `data_root` 的 TOML 文件。默认查找 `CONFIG_ROOT/shared/workspace.toml`，或 `XDG_CONFIG_HOME/quant-competition/shared/workspace.toml`，后者默认是 `~/.config/quant-competition/shared/workspace.toml`。显式 `DATA_ROOT` 优先。配置缺失或无效会报错，包括解析 `--help` 前已导入配置的命令。

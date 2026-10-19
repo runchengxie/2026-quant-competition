@@ -68,7 +68,7 @@
       "Cumulative PnL and inventory-path figures",
       "Four-variant comparison figures"
     ],
-    "limit": "Visible-queue simulation, not an exchange matching engine. Funding is a signal rather than settlement. Custom sampling can mislabel horizons, the audit has incomplete non-finite checks, and plotting ignores CLI arguments."
+    "limit": "Visible-queue simulation, not an exchange matching engine. Funding is a signal rather than settlement. Signal horizons require an exactly representable sampling grid; audit quality reports invalid numeric values. Commands importing configuration still require data settings before help. Overlapping-order queue realism remains unverified."
   },
   "research": {
     "eyebrow": "02 / STRATEGY IDEAS",

@@ -145,7 +145,10 @@ def write_target_artifact(
     lineage_file = Path(lineage_path) if lineage_path is not None else None
     if lineage_file is None and handoff.lineage:
         lineage_file = target_file.with_name("lineage.json")
-    if lineage_file is not None and lineage_file == target_file:
+    if lineage_file is not None and (
+        lineage_file.resolve() == target_file.resolve()
+        or (lineage_file.exists() and target_file.exists() and lineage_file.samefile(target_file))
+    ):
         raise HandoffValidationError("target and lineage paths must be different")
     if lineage_file is not None and not handoff.lineage:
         raise HandoffValidationError(

@@ -358,6 +358,8 @@ def _run_single_strategy(
 
     report_dir = report_root / report_subdir
     report_dir.mkdir(parents=True, exist_ok=True)
+    portfolio.to_csv(report_dir / "portfolio_daily.csv", index=False)
+    positions.to_csv(report_dir / "positions_daily.csv", index=False)
 
     artifact_bundle = write_backtest_artifacts(
         report_dir,
@@ -440,7 +442,10 @@ def run_backtest_service(
         project_root=project_root,
     )
     market_df = prepare_market_panel(raw_market_df, trading_dates=trading_dates)
-    market_code = _infer_market_code(benchmark_code)
+    market_code = str(
+        strategy_cfg.get("market") or backtest_cfg.get("market")
+        or _infer_market_code(benchmark_code, *codes)
+    ).strip().upper()
 
     run_metadata, benchmark_returns, benchmark_code = _collect_market_metadata(
         market_df,
@@ -547,8 +552,6 @@ def run_backtest_service(
 
     portfolio_path = report_root / "portfolio_daily.csv"
     positions_path = report_root / "positions_daily.csv"
-    target_portfolio.to_csv(portfolio_path, index=False)
-    target_positions.to_csv(positions_path, index=False)
 
     return BacktestRunResult(
         strategy_name=strategy_spec.name,

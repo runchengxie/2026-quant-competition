@@ -8,7 +8,7 @@ Research and execution infrastructure for the 2026 Hong Kong quantitative tradin
 
 This repository brings together competition research, data and account guidance, strategy candidates, and a Paper-first execution service. Research hands off versioned `targets.json` and `lineage.json` artifacts to the execution boundary; the runner does not import the separate `research-workspace` or Nira source code.
 
-The execution path validates target portfolios, calculates the differences from current holdings, and supports IBKR Paper execution. Defaults remain `environment=paper` and `dry_run=true`.
+The execution path validates target portfolios, calculates the differences from current holdings, and supports IBKR Paper execution. Paper is the default environment. The programmatic `RunnerSettings` and resolver default to `dry_run=false`; explicitly set `dry_run=true` for validation without submission. Preflight requires both Paper and dry-run.
 
 The independent [international v2 target contract](docs/strategy/target-manifest-v2.md) describes ETF, equity and futures identity. Current execution remains v1-only. See the [latest integration status](docs/operations/integration-readiness-2026-10-02.md) for actual provider, historical-data and local validation evidence.
 

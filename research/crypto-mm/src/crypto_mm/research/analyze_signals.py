@@ -37,6 +37,9 @@ def build_signal_samples(
         raise ValueError("at least one day is required")
 
     config = feature_config or FeatureEngineConfig()
+    if any(horizon * 1_000_000_000 % config.volatility_sample_interval_ns
+           for horizon in HORIZONS_SECONDS):
+        raise ValueError("sampling interval must divide every signal horizon exactly")
     daily_samples = [
         _build_daily_samples(day, data_root, config)
         for day in days
@@ -53,7 +56,7 @@ def _build_daily_samples(
     books = (
         pl.scan_parquet(daily_file("orderbook", day, data_root))
         .select(
-            pl.col("datetime").cast(pl.Int64).alias("timestamp_ns"),
+            pl.col("datetime").cast(pl.Datetime("ns")).cast(pl.Int64).alias("timestamp_ns"),
             pl.col("bid_price_1").cast(pl.Float64).alias("best_bid"),
             pl.col("ask_price_1").cast(pl.Float64).alias("best_ask"),
             pl.col("bid_qty_1").cast(pl.Float64).alias("bid_quantity"),
@@ -132,7 +135,7 @@ def _add_signal_columns(
     future_expressions: list[pl.Expr] = []
     for horizon in HORIZONS_SECONDS:
         future_return = (
-            pl.col("mid_price").shift(-horizon)
+            pl.col("mid_price").shift(-(horizon * 1_000_000_000 // config.volatility_sample_interval_ns))
             / pl.col("mid_price")
         ).log() * 10_000
         future_expressions.extend(

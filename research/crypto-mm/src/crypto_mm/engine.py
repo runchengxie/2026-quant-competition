@@ -123,6 +123,7 @@ class BacktestEngine:
                     self.performance_tracker.record_fill(
                         fill,
                         self.market_state.mid_price,
+                        inventory=self.account.inventory,
                     )
 
         # 2. Cancellations and then placements become effective.
