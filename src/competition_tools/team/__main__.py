@@ -31,6 +31,10 @@ def main(argv: list[str] | None = None) -> int:
         "doctor", help="Check local environment readiness without network access"
     )
     doctor.add_argument("--config", type=Path, required=True)
+    demo = commands.add_parser("demo", help="Run explicitly synthetic offline examples")
+    demo.add_argument("project", choices=["equity", "crypto"])
+    demo.add_argument("--config", type=Path, required=True)
+    demo.add_argument("--output-root", type=Path, required=True)
     args = parser.parse_args(argv)
     try:
         if args.action == "init":
@@ -42,10 +46,14 @@ def main(argv: list[str] | None = None) -> int:
                 from .setup import setup
 
                 value = setup(config, args.repository_root, args.profile)
-            else:
+            elif args.action == "doctor":
                 from .doctor import diagnose
 
                 value = diagnose(config)
+            else:
+                from .demo import run_demo
+
+                value = run_demo(args.project, config, args.output_root)
     except ValueError:
         value = envelope(args.action, issues=["INVALID_CONFIGURATION"])
     print(json.dumps(value))
