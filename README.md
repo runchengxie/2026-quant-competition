@@ -4,6 +4,9 @@
 
 Research and execution infrastructure for the 2026 Hong Kong quantitative trading competition.
 
+
+[International offline experiments](docs/research/international-experiments.md)
+
 ## Project scope
 
 This repository brings together competition research, data and account guidance, strategy candidates, and a Paper-first execution service. Research hands off versioned `targets.json` and `lineage.json` artifacts to the execution boundary; the runner does not import the separate `research-workspace` or Nira source code.

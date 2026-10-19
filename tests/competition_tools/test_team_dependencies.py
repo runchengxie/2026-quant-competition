@@ -48,3 +48,28 @@ def test_default_ci_exercises_team_delivery():
     text = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
     assert "check_team_delivery" in text
     assert "team.py setup" in text
+
+
+def test_core_lockfiles_exclude_framework_distributions():
+    for relative in (".", "research/equity-lab", "research/crypto-mm"):
+        lock = tomllib.loads((ROOT / relative / "uv.lock").read_text(encoding="utf-8"))
+        assert not any(
+            package["name"].startswith(
+                ("quant-", "research-contracts", "portfolio-backtester")
+            )
+            for package in lock["package"]
+        )
+
+
+def test_framework_imports_remain_confined_to_optional_package():
+    forbidden = {"portfolio_backtester", "research_contracts", "quant_execution_engine"}
+    for folder in ("src", "research/equity-lab/src", "research/crypto-mm/src"):
+        for path in (ROOT / folder).rglob("*.py"):
+            for node in ast.walk(ast.parse(path.read_text(encoding="utf-8-sig"))):
+                if isinstance(node, ast.ImportFrom):
+                    assert (node.module or "").split(".")[0] not in forbidden, path
+                elif isinstance(node, ast.Import):
+                    assert (
+                        not {alias.name.split(".")[0] for alias in node.names}
+                        & forbidden
+                    ), path

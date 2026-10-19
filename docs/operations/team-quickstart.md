@@ -30,3 +30,5 @@ Commands emit `competition.team_result.v1` JSON with `action`, `status`, `issue_
 Default CI tests root and both leaves and runs team demos without framework dependencies. Separate `platform-comparison.yml` validates adapter/accounting changes and supports manual runs. See [development checks](../../README.md#development-checks). Input acceptance, provenance limits and execution safety rules still apply. This entry does not download full-market datasets, register strategies, connect research to orders or activate Gateway automation. The historical public result snapshot is unchanged.
 
 New code under `src/competition_tools/team/` uses its scoped MIT `LICENSE`. Existing root code and third-party packages retain their licensing.
+
+Use the explicit `run international` or optional `run next-open` command for [international experiments](../research/international-experiments.md).

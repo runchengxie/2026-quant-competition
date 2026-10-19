@@ -4,6 +4,9 @@
 
 参见[团队快速开始](../docs/operations/team-quickstart.zh-CN.md)，从同一仓库安装独立环境并运行合成演示。默认流程不安装 quant 框架包，记账对照仍为可选功能。
 
+
+[国际市场离线实验](../docs/research/international-experiments.zh-CN.md)
+
 - [加密做市](crypto-mm/README.zh-CN.md)：事件驱动的可见队列模拟，使用合成 Parquet 演示数据。
 - [股票实验室](equity-lab/README.zh-CN.md)：基于每日 CSV/YAML 的分数权重回测，使用虚构港股代码演示数据。
 

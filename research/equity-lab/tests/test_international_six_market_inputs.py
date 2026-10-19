@@ -12,6 +12,38 @@ from equity_lab.international.six_market_inputs import (
 )
 
 
+@pytest.mark.parametrize(
+    "column,value",
+    [
+        ("close", float("nan")),
+        ("close", float("inf")),
+        ("volume", float("inf")),
+        ("date", ""),
+    ],
+)
+def test_asset_rejects_nonfinite_values_and_empty_dates(tmp_path, column, value):
+    import pandas as pd
+
+    frame = pd.DataFrame({"date": ["2024-01-01"], "close": [10.0], "volume": [100.0]})
+    frame[column] = value
+    path = tmp_path / "asset.csv"
+    frame.to_csv(path, index=False)
+    with pytest.raises(ValueError):
+        load_daily_asset(path, "US")
+
+
+@pytest.mark.parametrize("value", [float("nan"), float("inf")])
+def test_fx_rejects_nonfinite_rates(tmp_path, value):
+    import pandas as pd
+
+    path = tmp_path / "fx.csv"
+    pd.DataFrame({"date": ["2024-01-01"], "usd_per_local": [value]}).to_csv(
+        path, index=False
+    )
+    with pytest.raises(ValueError):
+        load_fx_series(path, "HKD")
+
+
 def test_loaders_normalize_valid_inputs(tmp_path: Path) -> None:
     asset = tmp_path / "asset.csv"
     asset.write_text(

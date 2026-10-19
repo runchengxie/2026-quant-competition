@@ -35,6 +35,13 @@ def main(argv: list[str] | None = None) -> int:
     demo.add_argument("project", choices=["equity", "crypto"])
     demo.add_argument("--config", type=Path, required=True)
     demo.add_argument("--output-root", type=Path, required=True)
+    run = commands.add_parser(
+        "run", help="Run an explicitly configured international experiment"
+    )
+    run.add_argument("project", choices=["international", "next-open"])
+    run.add_argument("--config", type=Path, required=True)
+    run.add_argument("--experiment-config", type=Path, required=True)
+    run.add_argument("--output-root", type=Path, required=True)
     args = parser.parse_args(argv)
     try:
         if args.action == "init":
@@ -50,10 +57,16 @@ def main(argv: list[str] | None = None) -> int:
                 from .doctor import diagnose
 
                 value = diagnose(config)
-            else:
+            elif args.action == "demo":
                 from .demo import run_demo
 
                 value = run_demo(args.project, config, args.output_root)
+            else:
+                from .run import run_experiment
+
+                value = run_experiment(
+                    args.project, config, args.experiment_config, args.output_root
+                )
     except ValueError:
         value = envelope(
             args.action,

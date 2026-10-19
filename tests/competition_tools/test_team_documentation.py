@@ -4,12 +4,17 @@ from pathlib import Path
 import re
 import tomllib
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_localized_quickstarts_share_commands_and_valid_links():
+@pytest.mark.parametrize(
+    "document", ["operations/team-quickstart", "research/international-experiments"]
+)
+def test_localized_quickstarts_share_commands_and_valid_links(document):
     for locale in ("", ".zh-CN"):
-        path = ROOT / f"docs/operations/team-quickstart{locale}.md"
+        path = ROOT / f"docs/{document}{locale}.md"
         content = path.read_text(encoding="utf-8")
         commands = re.findall(r"```sh\n(.*?)```", content, re.S)
         if not locale:

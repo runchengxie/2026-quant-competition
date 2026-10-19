@@ -24,9 +24,13 @@ def load_daily_asset(path: Path, market: str) -> pd.DataFrame:
     result["date"] = pd.to_datetime(result["date"], errors="raise").dt.normalize()
     result["close"] = pd.to_numeric(result["close"], errors="raise")
     result["volume"] = pd.to_numeric(result["volume"], errors="raise")
-    if result["date"].duplicated().any():
+    if result["date"].isna().any() or result["date"].duplicated().any():
         raise ValueError(f"asset input has duplicate dates: {path}")
-    if (result["close"] <= 0).any() or (result["volume"] < 0).any():
+    if (
+        not np.isfinite(result[["close", "volume"]]).all().all()
+        or (result["close"] <= 0).any()
+        or (result["volume"] < 0).any()
+    ):
         raise ValueError(f"asset input has invalid close or volume: {path}")
     result = result.sort_values("date").reset_index(drop=True)
     result["market"] = str(market)
@@ -47,9 +51,12 @@ def load_fx_series(path: Path, currency: str) -> pd.DataFrame:
     result = frame.loc[:, ["date", "usd_per_local"]].copy()
     result["date"] = pd.to_datetime(result["date"], errors="raise").dt.normalize()
     result["usd_per_local"] = pd.to_numeric(result["usd_per_local"], errors="raise")
-    if result["date"].duplicated().any():
+    if result["date"].isna().any() or result["date"].duplicated().any():
         raise ValueError(f"FX input has duplicate dates: {path}")
-    if (result["usd_per_local"] <= 0).any():
+    if (
+        not np.isfinite(result["usd_per_local"]).all()
+        or (result["usd_per_local"] <= 0).any()
+    ):
         raise ValueError(f"FX input has non-positive rates: {path}")
     result = result.sort_values("date").reset_index(drop=True)
     result["currency"] = str(currency)
@@ -65,7 +72,7 @@ def load_distributions(path: Path, market: str, currency: str) -> pd.DataFrame:
     result = frame.loc[:, ["date", "cash_per_share", "currency", "source"]].copy()
     result["date"] = pd.to_datetime(result["date"], errors="raise").dt.normalize()
     result["cash_per_share"] = pd.to_numeric(result["cash_per_share"], errors="raise")
-    if result["date"].duplicated().any():
+    if result["date"].isna().any() or result["date"].duplicated().any():
         raise ValueError(f"distribution input has duplicate dates: {path}")
     if (
         result["cash_per_share"].isna().any()

@@ -30,3 +30,5 @@ python team.py demo crypto --config /absolute/private/team.toml --output-root /a
 默认 CI 检查根包和两个研究包，并在无框架依赖的环境中运行团队演示。独立的 `platform-comparison.yml` 检查适配器及记账相关改动，也支持手动运行。参见[开发检查](../../README.md#development-checks)。原有输入验收、来源限制和执行安全规则仍然适用。这个入口不下载全市场数据、不登记策略、不将研究接入下单，也不启用 Gateway 自动化。历史公开结果快照保持不变。
 
 新增的 `src/competition_tools/team/` 代码使用目录内 MIT `LICENSE`，根目录已有代码和第三方包保留原许可。
+
+使用显式 `run international` 或可选 `run next-open` 命令运行[国际实验](../research/international-experiments.zh-CN.md).

@@ -22,6 +22,8 @@ Competition-specific offline research and data preparation belong to this reposi
 
 Execution code does not import any research package. Root acceptance tools consume JSON/CSV and CLI outputs, not leaf Python objects. A successful research report is not an execution command. The published execution v1 target schema supports JP/US; runtime normalization also recognizes HK. That existing mismatch is unresolved. Crypto research does not expand the execution contract.
 
+The equity package also owns the distinct six-market international diagnostic. Five-market next-open replay belongs only to the optional framework package. See [international experiments](docs/research/international-experiments.md) for exact contracts and model limits. Neither replaces the default rotation or execution handoff.
+
 ## Data flow and identity
 
 ```text
