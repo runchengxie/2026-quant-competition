@@ -1,4 +1,10 @@
 {
+  "appearance": {
+    "label": "Appearance",
+    "system": "System",
+    "light": "Light",
+    "dark": "Dark"
+  },
   "meta": {
     "title": "Quant research, made inspectable | 2026 Quant Competition",
     "description": "Explore offline equity backtesting and crypto market-making demos, strategy ideas, reproducible commands and the execution boundary."
