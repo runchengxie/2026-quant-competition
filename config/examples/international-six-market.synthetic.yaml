@@ -1,0 +1,9 @@
+# Fictional demonstration allocation, not a recommendation or private strategy default.
+experiment_id: fictional-six-market-demo
+data_root: /absolute/external/synthetic-inputs
+production_eligible: false
+target_weights: {US: 0.25, HK: 0.125, UK: 0.125, AU: 0.125, CA: 0.125, SG: 0.25}
+costs_bps: {US: 5, HK: 5, UK: 5, AU: 5, CA: 5, SG: 5}
+asset_files: {US: assets/US.csv, HK: assets/HK.csv, UK: assets/UK.csv, AU: assets/AU.csv, CA: assets/CA.csv, SG: assets/SG.csv}
+fx_files: {HKD: fx/HKD.csv, GBP: fx/GBP.csv, AUD: fx/AUD.csv, CAD: fx/CAD.csv, SGD: fx/SGD.csv}
+paper_shadow_complete: false
