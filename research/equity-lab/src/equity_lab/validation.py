@@ -158,6 +158,8 @@ def _inspect(path: Path, market: str) -> tuple[int, set[tuple[str, str]]]:
     if frame.empty:
         raise ValueError("EMPTY_MARKET_DATA")
     columns = ["open", "high", "low", "close", "volume"]
+    if any(pd.api.types.is_bool_dtype(frame[column]) for column in columns):
+        raise ValueError("INVALID_NUMERIC_DATA")
     values = frame[columns].apply(pd.to_numeric, errors="coerce")
     if (
         not np.isfinite(values.to_numpy()).all()
@@ -221,8 +223,17 @@ def validate_inputs(manifest_path: Path) -> dict:
     return value
 
 
+class _SafeParser(argparse.ArgumentParser):
+    def error(self, message):
+        self.exit(
+            2,
+            json.dumps({"status": "blocked", "issue_codes": ["INVALID_ARGUMENTS"]})
+            + "\n",
+        )
+
+
 def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = _SafeParser(description=__doc__)
     parser.add_argument("--manifest", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
     args = parser.parse_args()

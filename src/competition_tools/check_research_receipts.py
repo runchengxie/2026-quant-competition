@@ -10,8 +10,17 @@ import sys
 from competition_tools.research_acceptance import sha256_file
 
 
+class _SafeParser(argparse.ArgumentParser):
+    def error(self, message):
+        self.exit(
+            2,
+            json.dumps({"status": "blocked", "issue_codes": ["INVALID_ARGUMENTS"]})
+            + "\n",
+        )
+
+
 def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = _SafeParser(description=__doc__)
     parser.add_argument("--project", choices=("equity-lab", "crypto-mm"), required=True)
     parser.add_argument("--leaf-python", type=Path, required=True)
     parser.add_argument("--output-root", type=Path, required=True)
