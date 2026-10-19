@@ -18,6 +18,8 @@ Two independent [offline research packages](research/README.md) provide syntheti
 
 The [2026-10-19 strategy inventory and validation](docs/research/strategy-validation-2026-10-19.md) records 24 fixed-input diagnostics, current provider probes, limited stock coverage and archived crypto replay results. The [Chinese version](docs/research/strategy-validation-2026-10-19.zh-CN.md) and Pages use the same reviewed aggregate facts. These experiments do not establish a complete data-to-order system.
 
+The opt-in [input and experiment acceptance guide](docs/research/research-acceptance.md) explains exact-byte receipts, diagnostic checks and blocked research promotion. It adds no engine replacement, broker wiring or new public result snapshot.
+
 ## Strategy candidates
 
 The team is comparing two research directions:

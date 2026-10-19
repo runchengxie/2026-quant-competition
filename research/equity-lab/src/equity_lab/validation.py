@@ -1,6 +1,7 @@
 """Inspect an explicit daily-data manifest without modifying its inputs."""
 
 import argparse
+import csv
 import hashlib
 import json
 from pathlib import Path, PurePosixPath
@@ -142,14 +143,17 @@ def _inspect(path: Path, market: str) -> tuple[int, set[tuple[str, str]]]:
 
     from equity_lab.data.market_data import load_symbol_bars
 
-    dates = pd.read_csv(path, usecols=["date"], dtype={"date": str})["date"]
-    if not dates.map(
-        lambda value: (
-            isinstance(value, str)
-            and re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", value) is not None
-        )
-    ).all():
-        raise ValueError("INVALID_DAILY_DATE")
+    with path.open(encoding="utf-8-sig", newline="") as stream:
+        reader = csv.DictReader(stream)
+        if not reader.fieldnames or "date" not in reader.fieldnames:
+            raise ValueError("INVALID_DAILY_DATE")
+        for row in reader:
+            value = row.get("date")
+            if (
+                not isinstance(value, str)
+                or re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", value) is None
+            ):
+                raise ValueError("INVALID_DAILY_DATE")
     frame = load_symbol_bars(path)
     if frame.empty:
         raise ValueError("EMPTY_MARKET_DATA")

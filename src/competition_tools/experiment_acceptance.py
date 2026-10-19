@@ -365,7 +365,12 @@ def public_acceptance_summary(receipt: dict) -> dict:
 
 def _observations(path: Path) -> list[dict]:
     if path.suffix.lower() != ".csv":
-        return read_json(path)
+        value = read_json(path)
+        if not isinstance(value, list) or not all(
+            isinstance(row, dict) for row in value
+        ):
+            raise ValueError("INVALID_OBSERVATIONS")
+        return value
     with path.open(encoding="utf-8-sig", newline="") as stream:
         rows = list(csv.DictReader(stream))
     for row in rows:
@@ -389,10 +394,13 @@ def main() -> int:
     args = parser.parse_args()
     try:
         source = validate_input_receipt(read_json(args.input_receipt))
+        plan, summary = read_json(args.plan), read_json(args.summary)
+        if not isinstance(plan, dict) or not isinstance(summary, dict):
+            raise ValueError("INVALID_EXPERIMENT_OUTPUT")
         result = assess_experiment(
-            read_json(args.plan),
+            plan,
             source,
-            read_json(args.summary),
+            summary,
             _observations(args.observations),
         )
         changed = check_receipt_files(source, args.dataset_root)

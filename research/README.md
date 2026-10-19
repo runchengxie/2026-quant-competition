@@ -10,3 +10,7 @@ Each directory is an independent Python 3.12 project with its own `uv.lock`, tes
 Generated data and reports belong under the configured external `DATA_ROOT/2026-quant-competition/research/` owner directory. Neither package connects to a broker. Their artifacts are not executable target handoffs. The published v1 JSON schema accepts JP/US, while runtime market normalization also recognizes HK. This existing mismatch remains unresolved; crypto is unsupported. Competition eligibility and live-market validity require separate checks. See each package's limitations before interpreting results.
 
 MIT applies only to the new subproject code. This addition does not license existing root code or third-party dependencies.
+
+## Input and experiment acceptance
+
+The opt-in [research acceptance tools](../docs/research/research-acceptance.md) inspect explicit manifests and issue input receipts. These new entry points do not require global data configuration. Successful software checks do not establish research eligibility; owner provenance and holdout protocol validation remain unavailable. Default strategies and existing reports are preserved.
