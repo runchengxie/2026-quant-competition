@@ -47,9 +47,18 @@ class _PageMetadata(HTMLParser):
         super().__init__()
         self.language: str | None = None
         self.hrefs: list[str] = []
+        self.validation_facts: list[tuple[str, str | None, str | None]] = []
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         attributes = dict(attrs)
+        if result_id := attributes.get("data-result-id"):
+            self.validation_facts.append(
+                (
+                    result_id,
+                    attributes.get("data-metrics"),
+                    attributes.get("data-evidence"),
+                )
+            )
         if tag == "html":
             self.language = attributes.get("lang")
         if tag in {"a", "link"} and attributes.get("href"):
@@ -65,6 +74,7 @@ def _allowed_source(relative_path: PurePosixPath) -> bool:
         "tsconfig.json",
         "src/i18n/en.json",
         "src/i18n/zh-CN.json",
+        "src/data/strategy-validation.json",
     }:
         return True
     if path.startswith("src/"):
@@ -139,6 +149,7 @@ def _validate_localized_output(
             "locale_switch": f"{PAGES_BASE_PATH}/",
         },
     }
+    validation_facts: list[list[tuple[str, str | None, str | None]]] = []
     for relative_path, requirements in route_requirements.items():
         if relative_path not in output_paths:
             continue
@@ -151,6 +162,7 @@ def _validate_localized_output(
 
         metadata = _PageMetadata()
         metadata.feed(page)
+        validation_facts.append(sorted(metadata.validation_facts))
         if metadata.language != requirements["language"]:
             errors.append(f"locale metadata mismatch in output page {relative_path}")
         if requirements["locale_switch"] not in metadata.hrefs:
@@ -162,6 +174,9 @@ def _validate_localized_output(
             errors.append(
                 f"stylesheet missing repository base path in output page {relative_path}"
             )
+
+    if len(validation_facts) == 2 and validation_facts[0] != validation_facts[1]:
+        errors.append("validation facts differ between localized output pages")
 
 
 def check_site(source_dir: Path, built_dir: Path) -> list[str]:

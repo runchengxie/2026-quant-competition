@@ -7,7 +7,8 @@
     "demo": "Explore demos",
     "research": "Strategy ideas",
     "engineering": "Execution boundary",
-    "repo": "Source code"
+    "repo": "Source code",
+    "validation": "Validation results"
   },
   "hero": {
     "eyebrow": "RESEARCH LAB / PROJECT SHOWCASE",
@@ -84,7 +85,7 @@
     "cryptoLink": "Read the simulation assumptions"
   },
   "engineering": {
-    "eyebrow": "03 / ENGINEERING",
+    "eyebrow": "04 / ENGINEERING",
     "title": "Research ends at an explicit boundary",
     "body": "The execution project separately validates versioned targets and lineage, applies Paper-first safeguards, and journals broker events. Demo reports are not executable target files.",
     "stages": [
@@ -112,5 +113,55 @@
     "level": "L1",
     "snapshot": "Input sample",
     "assumptions": "Model assumptions"
+  },
+  "validation": {
+    "eyebrow": "03 / VALIDATION SNAPSHOT",
+    "title": "What ran, with which data",
+    "intro": "Fixed-input diagnostics checked on 19 October 2026. These samples do not establish deployable performance. Different universes, windows and accounting models cannot be ranked together.",
+    "strategy": "Strategy",
+    "period": "Sample",
+    "return": "Return",
+    "sharpe": "Sharpe",
+    "drawdown": "Drawdown",
+    "evidenceLabel": "Evidence",
+    "pnl": "PnL in source quote units",
+    "fills": "Fills",
+    "inventory": "Peak absolute inventory",
+    "provider": "Source",
+    "status": "Current evidence",
+    "history": "Stored observations",
+    "hk": "Hong Kong",
+    "us": "U.S. equity / ETF",
+    "multi": "Regional ETF price proxies",
+    "crypto": "Crypto maker replay",
+    "limited": "HK equity-lab runs use one stock; US runs use SPY only. They cannot validate stock selection or cross-sectional ranking. Fixed costs are 30 bps for HK and 20 bps for US, per traded notional.",
+    "cnn": "Image/CNN results can include in-sample predictions. No eligible walk-forward fold existed under the unchanged 1,260-day training window. A zero-position model is not a successful strategy.",
+    "rootLimit": "Monthly HK diagnostics use the same one-stock subset at 10 bps. Regional rotation uses five ETFs at 10 bps, native-currency prices and a common calendar. FX, dividends, self-financing drift and point-in-time universes are not fully represented.",
+    "cryptoLimit": "Archived 19–21 March 2026 events passed the recorded checks. Venue/product provenance and timezone are unverified. Maker fee is zero and latency is 100 ms. This is neither CoinPaprika L2 data nor verified live execution. Absolute PnL/drawdown have no funded-capital return denominator.",
+    "gateway": "The read-only Gateway handshake and one HK history request succeeded, then error 1100 interrupted collection. One reconnect was refused. No order method was called.",
+    "details": "Full methodology, input/config fingerprints and limitations",
+    "providerNote": "A successful discovery request does not establish historical entitlement, point-in-time availability or a trading interface. Raw provider data and account details are excluded.",
+    "blockedTitle": "What still cannot run as claimed",
+    "evidence": {
+      "limited_universe": "Limited universe",
+      "no_trades": "No positions",
+      "no_eligible_folds": "No eligible folds",
+      "in_sample_diagnostic": "Includes in-sample risk",
+      "archived_diagnostic": "Unverified-source replay",
+      "native_currency_proxy": "Native-currency proxy"
+    },
+    "providers": {
+      "aivix": "Discovery works; historical PIT unknown",
+      "index_one": "Schema works; equity coverage unverified",
+      "algoseek": "No authorized configuration verified",
+      "coinpaprika": "Latest OHLCV works; daily price history stored",
+      "ib_gateway": "Partial history, then disconnected"
+    },
+    "blocked": {
+      "aivix_us_overlay": "AIVIX-driven US allocation is an idea, not an implemented end-to-end strategy. Historical publication timing remains unknown.",
+      "hk_ranker": "The full external HK XGBoost/PIT ranker is not implemented here. A complete licensed historical stock universe was not obtained.",
+      "crypto_four_sources": "The four named providers do not supply a verified venue/product L2 + trades + funding snapshot for this maker simulator.",
+      "execution": "Research packages have no broker wiring. HK v1 schema alignment, order identity mapping and the supervised Paper lifecycle remain unresolved."
+    }
   }
 }

@@ -16,6 +16,8 @@ The independent [international v2 target contract](docs/strategy/target-manifest
 
 Two independent [offline research packages](research/README.md) provide synthetic crypto market-making and daily equity backtest experiments. They have separate dependencies, tests and MIT licenses. Their results are not execution commands, verified live trading, or evidence of competition eligibility.
 
+The [2026-10-19 strategy inventory and validation](docs/research/strategy-validation-2026-10-19.md) records 24 fixed-input diagnostics, current provider probes, limited stock coverage and archived crypto replay results. The [Chinese version](docs/research/strategy-validation-2026-10-19.zh-CN.md) and Pages use the same reviewed aggregate facts. These experiments do not establish a complete data-to-order system.
+
 ## Strategy candidates
 
 The team is comparing two research directions:

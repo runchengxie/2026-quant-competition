@@ -55,6 +55,24 @@ def test_allows_bilingual_astro_sources_assets_and_build_output(tmp_path):
     assert check_site(source, built) == []
 
 
+def test_allows_only_reviewed_validation_snapshot_and_scans_its_content(tmp_path):
+    source, built = make_site_trees(tmp_path)
+    data = source / "src/data"
+    data.mkdir()
+    snapshot = data / "strategy-validation.json"
+    snapshot.write_text('{"schema_version": 1}', encoding="utf-8")
+    assert check_site(source, built) == []
+    snapshot.write_text(
+        json.dumps({"api_key": "synthetic-private-value-1234567890"}), encoding="utf-8"
+    )
+    assert any("credential_assignment" in error for error in check_site(source, built))
+    snapshot.write_text('{"schema_version": 1}', encoding="utf-8")
+    (data / "raw-response.json").write_text("{}", encoding="utf-8")
+    assert any(
+        "unrecognized source path" in error for error in check_site(source, built)
+    )
+
+
 def test_rejects_unrecognized_source_file(tmp_path):
     source, built = make_site_trees(tmp_path)
     (source / "src/pages/unreviewed.ts").write_text("export {};", encoding="utf-8")
@@ -216,3 +234,19 @@ def test_rejects_symlinks_in_source_or_output(tmp_path, tree):
     errors = check_site(source, built)
 
     assert any("symlink" in error for error in errors)
+
+
+@pytest.mark.parametrize("translated_return", ["0.1", "0.2"])
+def test_locales_preserve_validation_machine_facts(tmp_path, translated_return):
+    source, built = make_site_trees(tmp_path)
+    for path, value in (
+        (built / "index.html", "0.1"),
+        (built / "zh-CN/index.html", translated_return),
+    ):
+        html = path.read_text(encoding="utf-8")
+        row = f'<tr data-result-id="US-sma" data-metrics="{value}" data-evidence="limited_universe"></tr>'
+        path.write_text(html.replace("</body>", row + "</body>"), encoding="utf-8")
+    errors = check_site(source, built)
+    assert any("validation facts differ" in error for error in errors) == (
+        translated_return != "0.1"
+    )
