@@ -326,3 +326,14 @@ def test_verified_projection_binds_request_and_reads_owner_inventory(tmp_path):
     rewrite(tmp_path, value, asset)
     with pytest.raises(ValueError):
         verify_result(req, tmp_path, tmp_path / "out")
+
+
+@pytest.mark.parametrize("value,expected", [("0E-8", "0"), ("1.25E+2", "125")])
+def test_verified_owner_decimal_output_can_use_exponents(value, expected):
+    from platform_compare.owner_adapter import owner_decimal, decimal_text
+
+    assert decimal_text(owner_decimal(value)) == expected
+    from platform_compare.contracts import money
+
+    with pytest.raises(ValueError):
+        money(value)

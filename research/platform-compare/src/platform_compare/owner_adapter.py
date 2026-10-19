@@ -44,6 +44,22 @@ def decimal_text(value):
     return value.rstrip("0").rstrip(".") if "." in value else value
 
 
+def owner_decimal(value):
+    """Read finite Decimal strings from an already hash-verified owner inventory."""
+    from decimal import Decimal
+    import re
+
+    if (
+        not isinstance(value, str)
+        or re.fullmatch(r"-?[0-9]+(?:\.[0-9]+)?(?:[Ee][+-]?[0-9]+)?", value) is None
+    ):
+        raise ValueError("INVALID_OWNER_DECIMAL")
+    result = Decimal(value)
+    if not result.is_finite():
+        raise ValueError("INVALID_OWNER_DECIMAL")
+    return result
+
+
 def run_request(path: Path, dataset_root: Path, output: Path) -> dict:
     request, asset, source = load_request(path, dataset_root)
     if output.exists():
@@ -81,7 +97,9 @@ def verify_result(path: Path, dataset_root: Path, output: Path) -> dict:
     """Derive a projection from hashed owner diagnostics, never an extra sidecar."""
     from decimal import Decimal, localcontext
     import hashlib
-    from platform_compare.contracts import digest, money
+    from platform_compare.contracts import digest
+
+    money = owner_decimal
 
     request, asset, source = load_request(path, dataset_root)
     manifest = verify_bundle(output)
