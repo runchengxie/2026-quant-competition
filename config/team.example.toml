@@ -1,0 +1,4 @@
+# Use team.py init to create a private configuration with your absolute paths.
+schema_version = "competition.team.v1"
+data_root = "/absolute/external/data"
+environment_root = "/absolute/external/environments"
