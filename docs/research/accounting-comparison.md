@@ -46,7 +46,9 @@ The optional package can run or independently reverify its owner bundle. See its
 
 Each source date must precede execution; cutoff, signal, decision, order, execution and valuation times must be causal. These daily HK/US adapters require UTC clock dates matching the supplied session labels, so overnight/date-crossing policies need a separate adapter. Real session dates alone are insufficient. Clock maps and report schedules cannot contradict one another.
 
-Owner request input/config/schedule/manifest identities, original capital and commission/slippage assumptions must match. Owner financial tables are independently reconciled by its publisher and hash-verified by its reader. Owner-produced finite Decimal exponent strings are normalized only after inventory verification; request monetary strings retain their stricter grammar. Extra unlisted sidecars are not proof of owner results.
+Owner request input/config/schedule/manifest identities, original capital and commission/slippage assumptions must match. Owner financial tables are independently reconciled by its publisher and hash-verified by its reader. Verification additionally replays the full request through the public owner APIs and publisher and compares all diagnostics, so mutable manifest labels cannot substitute a different calculation. Owner-produced finite Decimal exponent strings are normalized only after inventory verification; request monetary strings retain their stricter grammar. Extra unlisted sidecars are not proof of owner results.
+
+Raw legacy weights and NAV remain unchanged. When decimal serialization of floating-point targets exceeds a gross weight of one by at most `0.000000000001`, mapping subtracts only that residue from the largest target, breaking ties by instrument ID. Larger excess is rejected. `weight_mapping_policy=decimal_budget_residue.v1` and `weight_mapping_adjustments` record every adjustment, including its execution date, instrument, original gross weight and removed weight.
 
 The comparison reports both NAV values and their difference, owner cash/positions, costs, traded notional, sizing, FX assumptions and observation counts. It explicitly identifies cash/share settlement, quantity drift, lot sizing, FX, turnover/cost basis and timing differences. Equal PnL is not an acceptance criterion. The fractional-weight proxy does not drift quantities like the cash/share model. Owner sizing also scales purchases to available cash after fees. Monthly proxy summaries omit warmup cash observations while the owner retains the full synthetic valuation grid. These are distinct models, not parity failures.
 
@@ -68,6 +70,8 @@ The final eight-case rerun executed on 2026-10-19 produced the following values,
 | US | momentum_volatility | 10812.3879 | 10832.9826 | 3998.2000 | 1.8000 | 20.5947 |
 
 ## Real inputs and privacy
+
+This adapter version accepts synthetic inputs only. `synthetic=false` is blocked with `REAL_INPUT_EVIDENCE_UNVERIFIED` until an independent real-source and timing evidence adapter exists. Hashes and caller flags do not authenticate provenance.
 
 Existing located historical daily files provide session labels without the required verified availability/execution clocks, complete lots or causal FX. They remain blocked. A historical 20-stock inventory document is not an immutable dataset receipt. No synthetic clock is attached to real data, and no missing dataset is replaced with a fixture.
 

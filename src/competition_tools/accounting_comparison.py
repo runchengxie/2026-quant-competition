@@ -68,6 +68,39 @@ def _text_decimal(value):
     return value.rstrip("0").rstrip(".") if "." in value else value
 
 
+def _config_number(config, key):
+    value = config[key]
+    if type(value) not in (int, float):
+        raise ValueError("INVALID_CONFIG_NUMBER")
+    result = Decimal(str(value))
+    if not result.is_finite() or result < 0:
+        raise ValueError("INVALID_CONFIG_NUMBER")
+    return result
+
+
+def _weight_mapping(raw):
+    """Reconcile only bounded float serialization residue; keep raw evidence."""
+    with localcontext() as context:
+        context.prec = 80
+        weights = {code: _money(weight) for code, weight in raw.items()}
+        total = sum(weights.values(), Decimal(0))
+        residue = max(total - 1, Decimal(0))
+        if residue > Decimal("0.000000000001"):
+            raise ValueError("EXCESS_GROSS_WEIGHT")
+        adjustment = None
+        if residue:
+            code = max(sorted(weights), key=lambda key: weights[key])
+            weights[code] -= residue
+            adjustment = {
+                "instrument_id": code,
+                "raw_gross_weight": _text_decimal(total),
+                "removed_weight": _text_decimal(residue),
+            }
+        return {
+            code: _text_decimal(weight) for code, weight in weights.items()
+        }, adjustment
+
+
 def _time(value):
     if (
         not isinstance(value, str)
@@ -106,7 +139,7 @@ def _legacy(value):
             or config.get("mode") != value["strategy_id"]
         ):
             raise ValueError("UNSUPPORTED_LEGACY_PROFILE")
-        commission = Decimal(str(config["commission_bps"]))
+        commission = _config_number(config, "commission_bps")
         basis = "monthly_constant_weight_price_proxy"
     elif value["producer"] == "equity-lab":
         if value["frequency"] != "daily" or value["strategy_id"] not in {
@@ -116,7 +149,7 @@ def _legacy(value):
             raise ValueError("UNSUPPORTED_LEGACY_PROFILE")
         commission = sum(
             (
-                Decimal(str(config[k]))
+                _config_number(config, k)
                 for k in ("commission_bps", "regulation_bps", "sec_fee_bps")
             ),
             Decimal(0),
@@ -144,7 +177,7 @@ def _legacy(value):
     _money(summary["final_nav"])
     if _money(summary["commission_bps"]) != commission or _money(
         summary["slippage_bps"]
-    ) != Decimal(str(config["slippage_bps"])):
+    ) != _config_number(config, "slippage_bps"):
         raise ValueError("LEGACY_COST_MISMATCH")
     if not isinstance(value["decisions"], list):
         raise ValueError("INVALID_DECISIONS")
@@ -165,16 +198,13 @@ def _legacy(value):
         previous = record["execution_date"]
         if not isinstance(record["weights"], dict):
             raise ValueError("INVALID_WEIGHTS")
-        total = Decimal(0)
         for code, weight in record["weights"].items():
             if not isinstance(code, str) or not code.startswith(value["market"] + "."):
                 raise ValueError("INSTRUMENT_MARKET_MISMATCH")
             amount = _money(weight)
             if amount < 0:
                 raise ValueError("UNSUPPORTED_SHORT_WEIGHT")
-            total += amount
-        if total > 1:
-            raise ValueError("EXCESS_GROSS_WEIGHT")
+        _weight_mapping(record["weights"])
 
 
 def bind_clocks(legacy, clock_map):
@@ -246,10 +276,7 @@ def bind_clocks(legacy, clock_map):
             {
                 "decision_id": legacy["strategy_id"] + "-" + record["execution_date"],
                 "clock": dict(clock),
-                "weights": {
-                    code: _text_decimal(_money(weight))
-                    for code, weight in record["weights"].items()
-                },
+                "weights": _weight_mapping(record["weights"])[0],
                 "execution_times": dict(executions),
             }
         )
@@ -373,6 +400,12 @@ def compare_verified(legacy, clock_map, owner):
         "legacy": dict(summary),
         "owner": dict(owner),
         "nav_difference_usd": _text_decimal(delta),
+        "weight_mapping_policy": "decimal_budget_residue.v1",
+        "weight_mapping_adjustments": [
+            {"execution_date": record["execution_date"], **adjustment}
+            for record in legacy["decisions"]
+            if (adjustment := _weight_mapping(record["weights"])[1]) is not None
+        ],
         "model_differences": [
             "cash_share_settlement",
             "quantity_drift",
@@ -417,6 +450,10 @@ def verify_and_compare(
         legacy, clock_map
     )  # Refuse date-only or mismatched legacy evidence before spawning.
     request = _read(request_path)
+    _fields(
+        request,
+        "schema_version provider run_id market synthetic evidence input_ref input_fingerprint config config_fingerprint",
+    )
     if request.get("provider") != PROVIDER:
         raise ValueError("PROVIDER_PIN_MISMATCH")
     process = subprocess.run(
@@ -441,6 +478,7 @@ def verify_and_compare(
     if process.returncode != 0:
         raise ValueError("OWNER_VERIFICATION_FAILED")
     owner = json.loads(process.stdout)
+    _fields(owner, OWNER_FIELDS)
     if owner.get("config_fingerprint") != request.get(
         "config_fingerprint"
     ) or owner.get("input_fingerprint") != request.get("input_fingerprint"):
@@ -476,7 +514,14 @@ def main():
         )
         print(json.dumps(result, allow_nan=False))
         return 0
-    except (OSError, ValueError, TypeError, KeyError, subprocess.SubprocessError):
+    except (
+        OSError,
+        ValueError,
+        TypeError,
+        KeyError,
+        ArithmeticError,
+        subprocess.SubprocessError,
+    ):
         print(
             json.dumps(
                 {
