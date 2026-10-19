@@ -112,3 +112,39 @@ Export-PaperGatewayTask -OutputPath '{artifact}' -WrapperPath '{wrapper}' -Pytho
         assert element.text == expected
     assert root.find(".//t:RestartOnFailure", ns) is None
     assert "Password" not in artifact.read_text()
+
+
+def test_concurrent_starts_and_timeout_hold_launch_lease(tmp_path):
+    child = tmp_path / "slow.bat"
+    marker = tmp_path / "children.txt"
+    child.write_text(
+        f'@echo child>>"{marker}"\n@ping -n 5 127.0.0.1 >nul\n@exit /b 0\n'
+    )
+    script = f"""
+Import-Module '{MODULE}' -Force
+$probe={{param($action) @{{config=@{{configured_launcher='{child}';log_directory='{tmp_path}';timeout_seconds=1;activation_authorized=$true}};launcher_sha256=(Get-FileHash -LiteralPath '{child}').Hash.ToLowerInvariant()}}}}
+Invoke-PaperGateway -Action start -SpecProbe $probe -InteractiveProbe {{$true}} | ConvertTo-Json -Compress
+"""
+    path = tmp_path / "concurrent.ps1"
+    path.write_text(script)
+    args = ["pwsh", "-NoLogo", "-NoProfile", "-NonInteractive", "-File", str(path)]
+    first = subprocess.Popen(
+        args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+    )
+    second = subprocess.Popen(
+        args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+    )
+    outputs = [p.communicate(timeout=15) for p in (first, second)]
+    values = [json.loads(out) for out, err in outputs]
+    assert sorted(v["state"] for v in values) == ["blocked", "observation_timeout"]
+    assert (
+        next(v for v in values if v["state"] == "blocked")["code"]
+        == "START_LEASE_PRESENT"
+    )
+    again = subprocess.run(args, capture_output=True, text=True, timeout=15)
+    assert json.loads(again.stdout)["code"] == "START_LEASE_PRESENT"
+    assert marker.read_text().splitlines() == ["child"]
+    # Let the fake finish normally; never terminate/kill a child in this test.
+    import time
+
+    time.sleep(4)
