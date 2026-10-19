@@ -123,50 +123,54 @@ def gateway_processes():
 
 
 def _ini(path, timeout):
-    # Credentials are ignored; the parser never returns or logs their values.
+    # Constrain Java Properties syntax rather than interpreting a different INI grammar.
+    required = {
+        "TradingMode": "paper",
+        "ReadOnlyApi": "yes",
+        "ReadOnlyLogin": "no",
+        "ExistingSessionDetectedAction": {"manual", "secondary"},
+        "ReloginAfterSecondFactorAuthenticationTimeout": "no",
+        "FIX": "no",
+    }
+    credentials = {"IbLoginId", "IbPassword", "FIXLoginId", "FIXPassword"}
+    allowed = (
+        set(required)
+        | credentials
+        | {"SecondFactorAuthenticationExitInterval", "CommandServerPort"}
+    )
     values = {}
+    seen = set()
     for row in path.read_text(encoding="utf-8-sig").splitlines():
-        row = row.strip()
-        if not row or row.startswith(("#", ";")):
+        row = row.lstrip(" \t\f")
+        if not row or row.startswith(("#", "!")):
             continue
-        if "=" not in row:
+        if "=" not in row or (len(row) - len(row.rstrip("\\"))) % 2:
             fail("UNSAFE_IBC_CONFIGURATION")
         key, value = row.split("=", 1)
-        key = key.strip().casefold()
-        if key in values:
+        if key not in allowed:
+            fail("UNSAFE_IBC_CONFIGURATION")
+        if key in seen:
             fail("DUPLICATE_KEY")
-        values[key] = value.strip().casefold()
-    required = dict(
-        tradingmode="paper",
-        readonlyapi="yes",
-        readonlylogin="no",
-        existingsessiondetectedaction={"manual", "secondary"},
-        reloginaftersecondfactorauthenticationtimeout="no",
-        fix="no",
-    )
+        seen.add(key)
+        # Only these exact four names are masked by upstream logging. Never retain
+        # their values in our parsed configuration or accept unknown properties.
+        if key not in credentials:
+            if value != value.strip() or "\\" in value:
+                fail("UNSAFE_IBC_CONFIGURATION")
+            values[key] = value
     for key, expected in required.items():
         if values.get(key) not in (
             expected if isinstance(expected, set) else {expected}
         ):
             fail("UNSAFE_IBC_CONFIGURATION")
-    interval = values.get("secondfactorauthenticationexitinterval", "")
+    interval = values.get("SecondFactorAuthenticationExitInterval", "")
     if (
         not interval.isascii()
         or not interval.isdecimal()
         or not 1 <= int(interval) <= timeout
     ):
         fail("UNSAFE_IBC_CONFIGURATION")
-    # No restarts, remote command server, trusted-IP changes or automatic API acknowledgement.
-    for key in (
-        "autorestarttime",
-        "coldrestarttime",
-        "closedowntime",
-        "ibdir",
-        "trustedtwsapi clientips".replace(" ", ""),
-    ):
-        if values.get(key):
-            fail("UNSAFE_IBC_CONFIGURATION")
-    if values.get("commandserverport", "0") not in {"", "0"}:
+    if values.get("CommandServerPort", "0") != "0":
         fail("UNSAFE_IBC_CONFIGURATION")
 
 
@@ -437,7 +441,10 @@ def main(argv=None):
         args = parser.parse_args(argv)
         spec = build_launch_spec(args.config, args.workspace)
         if args.action == "prepare":
-            prepare_launcher(spec)
+            try:
+                prepare_launcher(spec)
+            except OSError:
+                fail("PREPARATION_FAILED")
         if args.action == "launch-spec":
             if not spec["status"]["activation_authorized"]:
                 fail("ACTIVATION_NOT_AUTHORIZED")

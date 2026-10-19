@@ -253,3 +253,62 @@ def test_private_runtime_removes_upstream_retry_and_install_rename(
     generated.write_text("@echo tampered")
     with pytest.raises(gl.LauncherError, match="RUNTIME_INTEGRITY_FAILED"):
         build(path, workspace)
+
+
+@pytest.mark.parametrize(
+    "addition",
+    [
+        r"ReadOnly\u0041pi=no",
+        r"ExistingSessionDetected\u0041ction=primaryoverride",
+        "OverrideTwsApiPort=7496",
+        "AcceptIncomingConnectionAction=accept",
+        "AccessToken=SYNTHETIC_SECRET_SENTINEL",
+        "IbPasswrod=SYNTHETIC_SECRET_SENTINEL",
+        ";AccessToken=SYNTHETIC_SECRET_SENTINEL",
+        "\u00a0IbPassword=SYNTHETIC_SECRET_SENTINEL",
+    ],
+)
+def test_unreviewed_properties_never_reach_ibc_logs(tmp_path, monkeypatch, addition):
+    path, workspace, cfg = fixture(tmp_path, monkeypatch)
+    with Path(cfg["ini_path"]).open("a", encoding="utf-8") as stream:
+        stream.write("\n" + addition + "\n")
+    with pytest.raises(gl.LauncherError, match="UNSAFE_IBC_CONFIGURATION"):
+        build(path, workspace)
+
+
+def test_properties_case_and_credential_continuation_rejected(tmp_path, monkeypatch):
+    path, workspace, cfg = fixture(tmp_path, monkeypatch)
+    ini = Path(cfg["ini_path"])
+    original = ini.read_text()
+    for content in (
+        original.replace("ReadOnlyApi=yes", "readonlyapi=yes"),
+        original.replace(
+            "ReadOnlyApi=yes", "IbPassword=SENTINEL\\\nReadOnlyApi=yes"
+        ).replace("IbPassword=PRIVATE_SECRET\n", ""),
+    ):
+        ini.write_text(content)
+        with pytest.raises(gl.LauncherError, match="UNSAFE_IBC_CONFIGURATION"):
+            build(path, workspace)
+
+
+def test_prepare_filesystem_failures_are_redacted(tmp_path, monkeypatch, capsys):
+    path, workspace, cfg = fixture(tmp_path, monkeypatch)
+    monkeypatch.setattr(gl, "owner_only_acl", lambda p: True)
+    monkeypatch.setattr(gl, "gateway_processes", lambda: [])
+    args = ["prepare", "--config", str(path), "--workspace", str(workspace)]
+    assert gl.main(args) == 0
+    capsys.readouterr()
+    assert gl.main(args) == 2
+    output = capsys.readouterr()
+    assert json.loads(output.out)["code"] == "PREPARATION_FAILED"
+    assert str(tmp_path) not in output.out + output.err
+    # A blocked write must use the same public error boundary.
+    cached_spec = build(path, workspace)
+    monkeypatch.setattr(gl, "build_launch_spec", lambda *a: cached_spec)
+    monkeypatch.setattr(
+        gl,
+        "prepare_launcher",
+        lambda spec: (_ for _ in ()).throw(PermissionError("PRIVATE_SECRET")),
+    )
+    assert gl.main(args) == 2
+    assert "PRIVATE_SECRET" not in str(capsys.readouterr())
