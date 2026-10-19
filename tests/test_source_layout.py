@@ -11,6 +11,11 @@ MODULES = (
     "apps.execution_runner",
     "strategies.global_etf_rotation",
     "competition_tools",
+    "competition_tools.team",
+    "competition_tools.team.config",
+    "competition_tools.team.demo",
+    "competition_tools.team.doctor",
+    "competition_tools.team.setup",
 )
 
 

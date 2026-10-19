@@ -33,3 +33,23 @@ jobs:
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ github.token }}
+
+  team-delivery:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v5
+      - name: Install and exercise standalone team profile
+        shell: bash
+        run: |
+          python team.py init --config "$RUNNER_TEMP/team.toml" --data-root "$RUNNER_TEMP/team-data" --environment-root "$RUNNER_TEMP/team-envs"
+          python team.py setup --config "$RUNNER_TEMP/team.toml" --profile offline
+          python team.py doctor --config "$RUNNER_TEMP/team.toml"
+          "$RUNNER_TEMP/team-envs/root/bin/python" -m competition_tools.check_team_delivery --config "$RUNNER_TEMP/team.toml"
+          cd "$RUNNER_TEMP"
+          export HOME="$RUNNER_TEMP/empty-home"
+          "$RUNNER_TEMP/team-envs/root/bin/python" -m competition_tools.team demo equity --config "$RUNNER_TEMP/team.toml" --output-root "$RUNNER_TEMP/equity-demo"
+          "$RUNNER_TEMP/team-envs/root/bin/python" -m competition_tools.team demo crypto --config "$RUNNER_TEMP/team.toml" --output-root "$RUNNER_TEMP/crypto-demo"
