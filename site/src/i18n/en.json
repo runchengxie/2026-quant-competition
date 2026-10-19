@@ -162,6 +162,7 @@
       "hk_ranker": "The full external HK XGBoost/PIT ranker is not implemented here. A complete licensed historical stock universe was not obtained.",
       "crypto_four_sources": "The four named providers do not supply a verified venue/product L2 + trades + funding snapshot for this maker simulator.",
       "execution": "Research packages have no broker wiring. HK v1 schema alignment, order identity mapping and the supervised Paper lifecycle remain unresolved."
-    }
+    },
+    "acceptanceGuide": "Input receipts, experiment acceptance and remaining integration work"
   }
 }

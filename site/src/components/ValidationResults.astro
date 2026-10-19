@@ -12,6 +12,7 @@ const evidence = t.evidence as Record<string, string>;
 const providers = t.providers as Record<string, string>;
 const blocked = t.blocked as Record<string, string>;
 const groups = [{ id: "HK", title: t.hk }, { id: "US", title: t.us }, { id: "MULTI", title: t.multi }];
+const acceptanceGuide = `https://github.com/runchengxie/2026-quant-competition/blob/main/docs/research/research-acceptance${locale === "zh-CN" ? ".zh-CN" : ""}.md`;
 const report = `https://github.com/runchengxie/2026-quant-competition/blob/main/docs/research/strategy-validation-2026-10-19${locale === "zh-CN" ? ".zh-CN" : ""}.md`;
 ---
 <section id="validation" class="validation-section">
@@ -27,6 +28,7 @@ const report = `https://github.com/runchengxie/2026-quant-competition/blob/main/
   <h3>{t.provider}</h3><p class="detail">{t.providerNote}</p><div class="result-scroll"><table class="results-table"><thead><tr><th>{t.provider}</th><th>{t.status}</th><th>{t.history}</th></tr></thead><tbody>{snapshot.providers.map(provider => <tr><th scope="row"><code>{provider.id}</code></th><td>{providers[provider.id]}</td><td>{show(provider.history_observations)}</td></tr>)}</tbody></table></div>
   <p class="detail">{t.gateway}</p><h3>{t.blockedTitle}</h3><ul class="validation-limits">{snapshot.blocked.map(id => <li>{blocked[id]}</li>)}</ul>
   <a class="text-link" href={report}>{t.details} ↗</a>
+  <p><a class="text-link" href={acceptanceGuide}>{t.acceptanceGuide} ↗</a></p>
 </section>
 <style>
 .validation-section { border-top: 1px solid var(--line, #d9e0e6); padding-top: 4rem; }

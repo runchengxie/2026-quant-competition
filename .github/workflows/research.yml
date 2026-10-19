@@ -2,10 +2,10 @@ name: Offline research
 
 on:
   pull_request:
-    paths: ["research/**", ".github/workflows/research.yml"]
+    paths: ["research/**", "src/competition_tools/*acceptance.py", "src/competition_tools/check_research_receipts.py", "schemas/research/**", "tests/competition_tools/*research*", "tests/competition_tools/test_experiment_acceptance.py", ".github/workflows/research.yml", "pyproject.toml", "uv.lock"]
   push:
     branches: [main]
-    paths: ["research/**", ".github/workflows/research.yml"]
+    paths: ["research/**", "src/competition_tools/*acceptance.py", "src/competition_tools/check_research_receipts.py", "schemas/research/**", "tests/competition_tools/*research*", "tests/competition_tools/test_experiment_acceptance.py", ".github/workflows/research.yml", "pyproject.toml", "uv.lock"]
   workflow_dispatch:
 
 permissions:
@@ -47,4 +47,11 @@ jobs:
             uv run --locked python -m equity_lab.cli demo
             uv run --locked python -m equity_lab.cli backtest --strategy equal_weight
           fi
+      - name: Install separate root contract environment
+        shell: bash
+        run: UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/receipt-root-env" uv sync --project ../.. --locked --extra test
+      - name: Exercise actual producer and root consumer
+        shell: bash
+        run: |
+          UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/receipt-root-env" uv run --project ../.. --locked python -m competition_tools.check_research_receipts --project "${{ matrix.project }}" --leaf-python "$RUNNER_TEMP/research-env-${{ matrix.project }}/bin/python" --output-root "$RUNNER_TEMP/receipt-contract-${{ matrix.project }}"
       - run: uv build --out-dir "${{ runner.temp }}/wheels-${{ matrix.project }}"

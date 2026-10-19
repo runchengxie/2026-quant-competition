@@ -41,3 +41,7 @@ Keep virtual environments, inputs, reports, charts and model outputs outside the
 ## License and execution boundary
 
 Code in this subtree is MIT licensed. This does not change the licensing of the rest of the repository or dependencies. No broker connections or order submission are provided. Research output is not `targets.json` and cannot be submitted directly to the execution runner. The published execution v1 JSON schema accepts JP/US. Runtime market normalization also recognizes HK, an existing schema/runtime inconsistency; crypto is not supported. Neither behavior makes these reports executable targets. A separate reviewed handoff adapter and execution validation would be needed. Competition product eligibility depends on official rules and broker/account permissions.
+
+## Input and experiment acceptance
+
+The opt-in [research acceptance tools](../../docs/research/research-acceptance.md) inspect explicit manifests and issue input receipts. These new entry points do not require global data configuration. Successful software checks do not establish research eligibility; owner provenance and holdout protocol validation remain unavailable. Default strategies and existing reports are preserved.

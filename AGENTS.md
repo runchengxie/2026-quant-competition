@@ -4,7 +4,7 @@ This repository contains the execution and operations project for the 2026 Hong 
 
 ## Project boundaries
 
-- `research-workspace` and Nira own their external research, backtests, factors, and signals.
+- External research providers own their published datasets, models and research protocols. Nira signals are consumed through versioned files. Historical `research-workspace` paths are not the current ownership map; see ARCHITECTURE.md.
 - `research/crypto-mm` and `research/equity-lab` are independently packaged offline experiments with their own dependencies, tests and MIT licenses. They do not supply executable targets or connect to brokers. Do not import them into execution packages. Their report schemas are not the execution handoff contract, whose published v1 JSON schema markets remain JP/US. Runtime market normalization also recognizes HK, an existing schema/runtime discrepancy that this task does not resolve.
 - New research inputs and outputs belong under configured `DATA_ROOT/2026-quant-competition/research/<project>/`, outside source. Keep their English and zh-CN reader documentation synchronized.
 - This repository owns target handoff, market normalization, risk controls, NautilusTrader execution, IBKR Gateway integration, reconciliation, and competition audit evidence.
