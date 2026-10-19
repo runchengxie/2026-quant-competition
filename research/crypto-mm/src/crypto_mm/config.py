@@ -3,6 +3,7 @@
 from dataclasses import dataclass, field
 import math
 
+from crypto_mm.data_contract import AUDIT_QUANTILES as AUDIT_QUANTILES, BOOK_LEVELS as BOOK_LEVELS
 from crypto_mm.paths import load_data_root
 from crypto_mm.validation import require_integer
 
@@ -11,8 +12,6 @@ PROJECT_ROOT = DATA_ROOT.parent
 
 DATASETS = ("orderbook", "trades", "fundings")
 EXPECTED_DATES = ("2026-03-19", "2026-03-20", "2026-03-21")
-BOOK_LEVELS = 20
-AUDIT_QUANTILES = (0.0, 0.01, 0.5, 0.99, 1.0)
 
 
 @dataclass(frozen=True, slots=True)
