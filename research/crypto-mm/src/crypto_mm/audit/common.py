@@ -4,7 +4,7 @@ from typing import Any
 
 import polars as pl
 
-from crypto_mm.config import AUDIT_QUANTILES
+from crypto_mm.data_contract import AUDIT_QUANTILES
 
 
 def scalar(frame: pl.DataFrame, column: str) -> Any:

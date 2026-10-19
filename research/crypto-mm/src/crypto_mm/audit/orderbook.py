@@ -5,7 +5,7 @@ from typing import Any
 import polars as pl
 
 from crypto_mm.audit.common import common_audit, quantiles
-from crypto_mm.config import BOOK_LEVELS
+from crypto_mm.data_contract import BOOK_LEVELS
 
 
 def _book_columns() -> tuple[list[str], list[str], list[str]]:
