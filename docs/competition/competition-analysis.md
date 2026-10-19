@@ -31,11 +31,9 @@ The competition uses IBKR accounts. The organizer states that teams should not p
 
 Potentially sensitive Flex fields can include cash activity, NAV and daily valuation, holdings and market values, cash movements, trades, fees, financing, and account identifiers. Use a minimum-necessary field set and store tokens locally.
 
-[Historical identifying detail removed.]
+## 4. External attribution
 
-[Historical identifying detail removed.]
-
-[Historical identifying detail removed.]
+This repository is an independent implementation. Participation context and links to public rules do not establish organizer endorsement, institutional sponsorship, a commercial relationship or future capital allocation. Keep private correspondence and onboarding material outside public source.
 
 ## 5. Research implications
 

@@ -14,7 +14,7 @@ The independent [international v2 target contract](docs/strategy/target-manifest
 
 ## Offline research
 
-Two independent [offline research packages](research/README.md) provide synthetic crypto market-making and daily equity backtest experiments. They have separate dependencies, tests and MIT licenses. Their results are not execution commands, verified live trading, or evidence of competition eligibility.
+The two baseline [offline research packages](research/README.md) provide synthetic crypto market-making and daily equity backtest experiments. They have separate dependencies, tests and MIT licenses. Their results are not execution commands, verified live trading, or evidence of competition eligibility.
 
 The [2026-10-19 strategy inventory and validation](docs/research/strategy-validation-2026-10-19.md) records 24 fixed-input diagnostics, current provider probes, limited stock coverage and archived crypto replay results. The [Chinese version](docs/research/strategy-validation-2026-10-19.zh-CN.md) and Pages use the same reviewed aggregate facts. These experiments do not establish a complete data-to-order system.
 
@@ -116,3 +116,5 @@ QuantZone is optional: fill both `QUANTZONE_ACCESS_KEY` and `QUANTZONE_SECRET_KE
 See the [official QuantZone documentation](https://www.quantzone.tech/docs) for the paired credentials and SDK initialization. Use the service URL shown in your console.
 
 Read-only provider and FX checks are recorded in the [2026-10-02 validation update](docs/operations/provider-fx-validation-2026-10-02.md). The approved USD price ledger is implemented in quant-platform; see the [2026-10-03 delivery and remaining integration](docs/operations/usd-ledger-delivery-2026-10-03.md) for its reviewed revision, public interfaces and synthetic evidence. The research consumer, legacy baseline calculation and broker execution have not changed.
+
+The optional [fixed-version accounting comparison](docs/research/accounting-comparison.md) ([简体中文](docs/research/accounting-comparison.zh-CN.md)) retains legacy decisions and compares them with a separately installed cash/share ledger on synthetic HK/US inputs. Real daily inputs remain blocked without causal clocks, lots and FX metadata. The existing public snapshot is unchanged.

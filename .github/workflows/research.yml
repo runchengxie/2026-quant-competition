@@ -2,10 +2,10 @@ name: Offline research
 
 on:
   pull_request:
-    paths: ["research/**", "src/competition_tools/*acceptance.py", "src/competition_tools/check_research_receipts.py", "schemas/research/**", "tests/competition_tools/*research*", "tests/competition_tools/test_experiment_acceptance.py", ".github/workflows/research.yml", "pyproject.toml", "uv.lock"]
+    paths: ["research/**", "src/competition_tools/*acceptance.py", "src/competition_tools/check_research_receipts.py", "src/competition_tools/*accounting*", "src/strategies/hk_low_frequency/backtest.py", "tests/competition_tools/*accounting*", "schemas/research/**", "tests/competition_tools/*research*", "tests/competition_tools/test_experiment_acceptance.py", ".github/workflows/research.yml", "pyproject.toml", "uv.lock"]
   push:
     branches: [main]
-    paths: ["research/**", "src/competition_tools/*acceptance.py", "src/competition_tools/check_research_receipts.py", "schemas/research/**", "tests/competition_tools/*research*", "tests/competition_tools/test_experiment_acceptance.py", ".github/workflows/research.yml", "pyproject.toml", "uv.lock"]
+    paths: ["research/**", "src/competition_tools/*acceptance.py", "src/competition_tools/check_research_receipts.py", "src/competition_tools/*accounting*", "src/strategies/hk_low_frequency/backtest.py", "tests/competition_tools/*accounting*", "schemas/research/**", "tests/competition_tools/*research*", "tests/competition_tools/test_experiment_acceptance.py", ".github/workflows/research.yml", "pyproject.toml", "uv.lock"]
   workflow_dispatch:
 
 permissions:
@@ -55,3 +55,30 @@ jobs:
         run: |
           UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/receipt-root-env" uv run --project ../.. --locked python -m competition_tools.check_research_receipts --project "${{ matrix.project }}" --leaf-python "$RUNNER_TEMP/research-env-${{ matrix.project }}/bin/python" --output-root "$RUNNER_TEMP/receipt-contract-${{ matrix.project }}"
       - run: uv build --out-dir "${{ runner.temp }}/wheels-${{ matrix.project }}"
+
+  accounting:
+    runs-on: ubuntu-latest
+    env:
+      MPLBACKEND: Agg
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@v5
+      - name: Install independent locked environments
+        run: |
+          UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/accounting-root" uv sync --locked --extra test
+          UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/accounting-equity" uv sync --project research/equity-lab --locked --group dev
+          UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/accounting-provider" uv sync --project research/platform-compare --locked --group dev
+      - name: Verify pinned provider contracts
+        working-directory: research/platform-compare
+        run: |
+          UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/accounting-provider" uv run --locked ruff check .
+          UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/accounting-provider" uv run --locked pytest -q
+      - name: Exercise retained decisions and second-process bundle verification
+        run: |
+          UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/accounting-root" uv run --locked python -m competition_tools.check_accounting_comparison --output-root "$RUNNER_TEMP/accounting-cases" --leaf-python "$RUNNER_TEMP/accounting-equity/bin/python" --provider-python "$RUNNER_TEMP/accounting-provider/bin/python"
+      - name: Build optional consumer wheel
+        working-directory: research/platform-compare
+        run: uv build --out-dir "$RUNNER_TEMP/accounting-wheels"

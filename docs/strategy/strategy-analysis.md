@@ -1,4 +1,4 @@
-[Historical identifying detail removed.]
+# Strategy Fit for the 2026 Quant Competition
 
 ## 1. Purpose and status
 
@@ -111,7 +111,7 @@ The proposed slide structure is in [strategy-deck-outline.md](strategy-deck-outl
 
 ## Sources
 
-[Historical identifying detail removed.]
+- [Official public rules](https://fundconnecthk.com/quant-league/legal/competition-rules/)
 - The team's historical research materials and project records.
 
 ## Rule-aware research gate
