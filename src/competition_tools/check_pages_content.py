@@ -71,6 +71,8 @@ def _allowed_source(relative_path: PurePosixPath) -> bool:
         "astro.config.mjs",
         "package.json",
         "package-lock.json",
+        "playwright.config.mjs",
+        "tests/theme.spec.mjs",
         "tsconfig.json",
         "src/i18n/en.json",
         "src/i18n/zh-CN.json",

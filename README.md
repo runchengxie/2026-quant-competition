@@ -71,13 +71,17 @@ Run the Python checks locally with `uv sync --locked --extra test --extra ibkr`,
 
 The bilingual homepage showcases the equity and crypto research paths with synthetic input previews, local demo commands, strategy context and the execution boundary. Its path switch changes the walkthrough without running backtests in the browser. Shared rendering keeps commands and sample values the same across locales; translated text lives in `site/src/i18n/`. Competition guidance remains linked as supporting context.
 
+Appearance follows the system by default. The navigation offers Light, Dark and System choices and remembers the choice across both languages when browser storage is available. With JavaScript disabled, the system palette still applies.
+
 ```powershell
 npm --prefix site ci
 npm --prefix site run build
+npx --prefix site playwright install chromium
+npm --prefix site test
 uv run --locked python -m competition_tools.check_pages_content --source-dir site --built-dir site/dist
 ```
 
-The generated static site is in `site/dist/`. The Pages workflow publishes that directory after the content checks pass.
+The browser tests cover saved preferences, system changes, both locales, mobile layout, and text/table/chart contrast. Set `PAGES_TEST_OUTPUT` to a task directory under your configured `DATA_ROOT` to retain browser artifacts; otherwise they go to the system temporary directory. The generated static site is in `site/dist/`. The Pages workflow publishes that directory after the checks pass.
 
 ## Research and safety notes
 
