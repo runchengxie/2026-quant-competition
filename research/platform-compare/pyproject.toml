@@ -9,7 +9,7 @@ description = "Optional fixed-version diagnostic accounting comparison"
 requires-python = ">=3.12,<3.13"
 license = "MIT"
 license-files = ["LICENSE"]
-dependencies = ["quant-platform==0.0.1", "research-contracts==0.1.0"]
+dependencies = ["quant-platform==0.0.1", "research-contracts==0.1.0", "exchange-calendars==4.13.2"]
 
 [dependency-groups]
 dev = ["pytest>=9.1.1", "ruff>=0.11"]
