@@ -60,3 +60,27 @@ def test_ranking_and_target_weights_are_deterministic_and_capped():
     assert [item.symbol for item in ranked] == ["AAA", "BBB"]
     assert sum(targets.values()) == pytest.approx(0.12)
     assert targets["AAA"] == pytest.approx(0.12)
+
+@pytest.mark.parametrize('mode', ['pure_momentum', 'momentum_volatility'])
+def test_observing_actual_monthly_decisions_preserves_default_result(mode):
+    from dataclasses import asdict
+    import json
+    history = {'HK.DEMO_A': _bars([100+i for i in range(90)]),
+               'HK.DEMO_B': _bars([100+0.5*i for i in range(90)])}
+    benchmark = _bars([100+i/10 for i in range(90)])
+    config = HKBacktestConfig(lookbacks=(2,), momentum_weights=(1.0,),
+                             volatility_window=2, top_k=1, max_weight=0.6, mode=mode)
+    baseline = run_monthly_backtest(history, benchmark, config)
+    decisions = []
+    def observe(execution_date, source_date, weights):
+        decisions.append((execution_date, source_date, dict(weights)))
+        with pytest.raises(TypeError):
+            weights['HK.DEMO_A'] = 0
+    observed = run_monthly_backtest(history, benchmark, config, decision_observer=observe)
+    assert json.dumps(asdict(observed), sort_keys=True) == json.dumps(asdict(baseline), sort_keys=True)
+    assert len(decisions) == len(baseline.rebalances)
+    for record, (execution_date, source_date, weights) in zip(baseline.rebalances, decisions, strict=True):
+        assert record.date == execution_date
+        assert record.as_of == source_date < execution_date
+        assert tuple(weights) == record.symbols
+        assert list(weights.values()) == [0.6]
