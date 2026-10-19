@@ -1,6 +1,8 @@
 """Demo failures and destination boundaries must remain explicit."""
 
 import json
+from pathlib import Path
+import subprocess
 import sys
 
 import pytest
@@ -49,3 +51,51 @@ def test_failed_real_interpreter_does_not_succeed(tmp_path):
     assert "Traceback" not in json.dumps(value)
     assert (output / "team-run.json").is_file()
     assert list((output / "logs").iterdir())
+
+
+@pytest.mark.parametrize("fail_at", ["initialize", "finalize"])
+def test_marker_io_failures_are_blocked(tmp_path, monkeypatch, fail_at):
+    import competition_tools.team.demo as demo
+
+    config = TeamConfig(tmp_path, tmp_path / "env")
+    python = interpreter(config, "equity-lab")
+    python.parent.mkdir(parents=True)
+    python.touch()
+    original = Path.write_text
+    attempts = 0
+
+    def failing_write(path, *args, **kwargs):
+        nonlocal attempts
+        if path.name == "team-run.json":
+            attempts += 1
+            if attempts == (1 if fail_at == "initialize" else 2):
+                raise OSError("private-path-and-credential-sentinel")
+        return original(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "write_text", failing_write)
+    monkeypatch.setattr(
+        demo, "run_child", lambda *a, **k: subprocess.CompletedProcess([], 0, "", "")
+    )
+    value = run_demo("equity", config, tmp_path / "output")
+    assert value["issue_codes"] == ["CHILD_IO_FAILED"]
+    assert "sentinel" not in json.dumps(value)
+    assert (tmp_path / "output").is_dir()
+
+
+def test_invalid_demo_configuration_keeps_synthetic_boolean(tmp_path, capsys):
+    from competition_tools.team.__main__ import main
+
+    assert (
+        main(
+            [
+                "demo",
+                "equity",
+                "--config",
+                str(tmp_path / "missing.toml"),
+                "--output-root",
+                str(tmp_path / "output"),
+            ]
+        )
+        == 2
+    )
+    assert json.loads(capsys.readouterr().out)["synthetic"] is True

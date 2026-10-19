@@ -2,6 +2,7 @@
 
 import os
 from pathlib import Path
+import signal
 import subprocess
 
 from .config import TeamConfig
@@ -28,16 +29,44 @@ def interpreter(config: TeamConfig, project: str) -> Path:
 def run_child(
     argv: list[str], *, environment: dict[str, str], timeout: int
 ) -> subprocess.CompletedProcess:
-    return subprocess.run(
+    process = subprocess.Popen(
         argv,
         env=environment,
-        capture_output=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
         text=True,
         encoding="utf-8",
         errors="replace",
-        timeout=timeout,
         shell=False,
+        start_new_session=os.name != "nt",
     )
+    try:
+        stdout, stderr = process.communicate(timeout=timeout)
+    except subprocess.TimeoutExpired:
+        # Kill the tree while its parent still exists, then drain the pipes.
+        if os.name == "nt":
+            killer = (
+                Path(os.environ.get("SystemRoot", "C:/Windows"))
+                / "System32/taskkill.exe"
+            )
+            try:
+                subprocess.run(
+                    [str(killer), "/PID", str(process.pid), "/T", "/F"],
+                    capture_output=True,
+                    timeout=15,
+                    check=False,
+                )
+            finally:
+                if process.poll() is None:
+                    process.kill()
+        else:
+            try:
+                os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+        process.communicate(timeout=15)
+        raise
+    return subprocess.CompletedProcess(argv, process.returncode, stdout, stderr)
 
 
 def envelope(

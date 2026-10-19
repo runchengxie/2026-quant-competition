@@ -82,3 +82,45 @@ def test_failed_child_output_is_not_public(tmp_path):
     )
     assert value["issue_codes"] == ["CHILD_COMMAND_FAILED"]
     assert "credential-sentinel" not in json.dumps(value)
+
+
+def test_setup_refuses_project_environment_symlink_to_source(tmp_path):
+    source = tmp_path / "source"
+    source.mkdir()
+    (source / ".git").mkdir()
+    environments = tmp_path / "environments"
+    environments.mkdir()
+    try:
+        (environments / "root").symlink_to(source, target_is_directory=True)
+    except OSError:
+        pytest.skip("Creating symbolic links is unavailable on this host")
+    value = setup(
+        TeamConfig(tmp_path / "data", environments),
+        ROOT,
+        "offline",
+        uv_executable="no-tool-should-be-started",
+    )
+    assert value["issue_codes"] == ["INVALID_ENVIRONMENT"]
+
+
+def test_timeout_stops_descendants(tmp_path):
+    import subprocess
+    import time
+
+    marker = tmp_path / "unexpected-descendant-write"
+    descendant = (
+        "import pathlib,time;time.sleep(3);pathlib.Path("
+        + repr(str(marker))
+        + ").touch()"
+    )
+    parent = (
+        "import subprocess,sys,time;subprocess.Popen([sys.executable,'-c',"
+        + repr(descendant)
+        + "]);time.sleep(20)"
+    )
+    with pytest.raises(subprocess.TimeoutExpired):
+        run_child(
+            [sys.executable, "-c", parent], environment=os.environ.copy(), timeout=1
+        )
+    time.sleep(3.5)
+    assert not marker.exists(), "Descendant continued writing after timeout"

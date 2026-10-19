@@ -16,7 +16,7 @@ PROJECTS = {
 }
 
 
-def repository_root(path: Path) -> Path:
+def verify_repository(path: Path) -> Path:
     root = path.resolve()
     try:
         metadata = tomllib.loads((root / "pyproject.toml").read_text(encoding="utf-8"))
@@ -34,11 +34,9 @@ def repository_root(path: Path) -> Path:
 def setup(
     config: TeamConfig, repository_root: Path, profile: str, *, uv_executable="uv"
 ) -> dict:
-    from .setup import repository_root as verify_root
-
     projects = []
     try:
-        root = verify_root(repository_root)
+        root = verify_repository(repository_root)
         validate_external(config.data_root)
         validate_external(config.environment_root)
     except ValueError:
@@ -55,9 +53,15 @@ def setup(
         [uv_executable] if isinstance(uv_executable, str) else list(uv_executable)
     )
     try:
+        destinations = {
+            name: validate_external(config.environment_root / name) for name in names
+        }
+    except ValueError:
+        return envelope("setup", issues=["INVALID_ENVIRONMENT"])
+    try:
         for name in names:
             environment = child_environment(config)
-            environment["UV_PROJECT_ENVIRONMENT"] = str(config.environment_root / name)
+            environment["UV_PROJECT_ENVIRONMENT"] = str(destinations[name])
             argv = [
                 *launcher,
                 "sync",

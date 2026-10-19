@@ -55,7 +55,11 @@ def main(argv: list[str] | None = None) -> int:
 
                 value = run_demo(args.project, config, args.output_root)
     except ValueError:
-        value = envelope(args.action, issues=["INVALID_CONFIGURATION"])
+        value = envelope(
+            args.action,
+            issues=["INVALID_CONFIGURATION"],
+            synthetic=True if args.action == "demo" else None,
+        )
     print(json.dumps(value))
     return 0 if value["status"] == "completed" else 2
 
