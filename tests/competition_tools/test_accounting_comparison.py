@@ -265,4 +265,3 @@ def test_monthly_export_makes_implicit_zero_targets_explicit():
         initial_cash="100",
     )
     assert out["decisions"][0]["weights"]["HK.DEMO_B"] == "0"
-

@@ -31,11 +31,9 @@ The competition uses IBKR accounts. The organizer states that teams should not p
 
 Potentially sensitive Flex fields can include cash activity, NAV and daily valuation, holdings and market values, cash movements, trades, fees, financing, and account identifiers. Use a minimum-necessary field set and store tokens locally.
 
-## 4. Organizer and partner claims
+## 4. External attribution
 
-The rules name Fund Connect HK as organizer and the University of Hong Kong Web3 Institute as co-organizer. Do not describe the event as hosted by the University of Hong Kong unless an official university source supports that wording. Public company-name history is not sufficient evidence of ownership, university sponsorship, or a formal commercial relationship; verify those claims against corporate records and official announcements before using them externally.
-
-The rules describe potential asset-management cooperation opportunities of approximately HKD 100 million equivalent in aggregate. This is not a cash prize or a guaranteed allocation. Any future arrangement would require continued performance review, risk assessment, due diligence, compliance approval, and a signed agreement.
+This repository is an independent implementation. Participation context and links to public rules do not establish organizer endorsement, institutional sponsorship, a commercial relationship or future capital allocation. Keep private correspondence and onboarding material outside public source.
 
 ## 5. Research implications
 

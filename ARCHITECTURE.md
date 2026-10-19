@@ -2,7 +2,7 @@
 
 [简体中文](ARCHITECTURE.zh-CN.md)
 
-This repository contains a Paper-first execution boundary, competition operations material, two independent offline research packages and a bilingual project demo. External quantitative providers remain independent repositories. No submodules or provider source imports are required by the offline packages.
+This repository contains a Paper-first execution boundary, competition operations material, three independent offline research packages and a bilingual project demo. External quantitative providers remain independent repositories. No submodules or provider source imports are required by the offline packages.
 
 ## Current ownership
 
@@ -17,7 +17,7 @@ This repository contains a Paper-first execution boundary, competition operation
 | Optional research acceptance | `src/competition_tools/research_acceptance.py`, `experiment_acceptance.py`, `schemas/research/` |
 | Reviewed public aggregates and presentation | `site/src/data/strategy-validation.json`, `site/src/i18n/`, Astro components |
 
-Execution code does not import either research package. Root acceptance tools consume JSON/CSV and CLI outputs, not leaf Python objects. A successful research report is not an execution command. The published execution v1 target schema supports JP/US; runtime normalization also recognizes HK. That existing mismatch is unresolved. Crypto research does not expand the execution contract.
+Execution code does not import any research package. Root acceptance tools consume JSON/CSV and CLI outputs, not leaf Python objects. A successful research report is not an execution command. The published execution v1 target schema supports JP/US; runtime normalization also recognizes HK. That existing mismatch is unresolved. Crypto research does not expand the execution contract.
 
 ## Data flow and identity
 
@@ -42,8 +42,8 @@ The broker event log owns event truth. Paper is the default account environment,
 
 ## External reuse and delivery limits
 
-`quant-platform` is a candidate owner for accounting, simulation and research artifact contracts. `quant-research` and `quant-deep-learning` retain research/model protocols; `quant-intel-platform` retains its reporting environment. These are integration boundaries, not dependencies installed or connected by this change. Incompatible pandas versions and overlapping module namespaces require separate environments and versioned artifacts. No gitlink, lockfile or external repository is upgraded here.
+`research/platform-compare` now consumes public `quant-platform` accounting APIs at fixed revision `28a32ba707ad72d1eb68cde5075663e1b3819ac7` through its own environment. Root tools retain legacy schedules and consume verified CLI aggregates. See the [accounting comparison guide](docs/research/accounting-comparison.md). `quant-research` and `quant-deep-learning` retain research/model protocols; `quant-intel-platform` retains its reporting environment. Other providers remain integration boundaries and are not installed or connected by this change. Incompatible pandas versions and overlapping module namespaces require separate environments and versioned artifacts. No gitlink, lockfile or external repository is upgraded here.
 
 Read-only local verification found the inspected platform default IBKR factory imports an unavailable `quant_execution_engine.broker.ibkr` module. This is separate from this repository's IBKR implementation. The inspected `quant-backtest-runtime` requires Linux and is not enabled on Windows. Passing selected provider tests does not establish an operational provider-to-broker chain.
 
-The current acceptance slice cannot validate owner provenance or governed holdouts, so research promotion is always blocked. Complete study universes, corporate actions, causal FX, verified crypto venue/product/fees, owner model protocols, accounting adapters and supervised Paper lifecycle validation remain follow-up work. Existing visible histories remain retrospective. The public 24-result snapshot remains historical diagnostics rather than evidence of completed integration.
+The current acceptance slice cannot validate owner provenance or governed holdouts, so research promotion is always blocked. Complete study universes, corporate actions, causal FX, verified crypto venue/product/fees, owner model protocols, real-data accounting prerequisites and supervised Paper lifecycle validation remain follow-up work. Existing visible histories remain retrospective. The public 24-result snapshot remains historical diagnostics rather than evidence of completed integration.
