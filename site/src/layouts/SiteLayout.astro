@@ -1,6 +1,8 @@
 ---
 import { getRelativeLocaleUrl } from "astro:i18n";
 import "../styles/global.css";
+import en from "../i18n/en.json";
+import zh from "../i18n/zh-CN.json";
 
 interface Props {
   title: string;
@@ -10,6 +12,7 @@ interface Props {
 
 const { title, description, locale } = Astro.props;
 const isEnglish = locale === "en";
+const appearance = (isEnglish ? en : zh).appearance;
 const englishUrl = getRelativeLocaleUrl("en");
 const chineseUrl = getRelativeLocaleUrl("zh-CN", "", { normalizeLocale: false });
 ---
@@ -20,14 +23,39 @@ const chineseUrl = getRelativeLocaleUrl("zh-CN", "", { normalizeLocale: false })
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
-    <meta name="color-scheme" content="light" />
+    <meta name="color-scheme" content="light dark" />
+    <script is:inline>
+      // Apply a saved override before the body is painted. CSS handles system changes.
+      try {
+        const saved = localStorage.getItem("quant-lab-theme");
+        if (["light", "dark"].includes(saved)) document.documentElement.dataset.theme = saved;
+      } catch { /* Storage may be unavailable; keep following the system. */ }
+    </script>
     <title>{title}</title>
   </head>
   <body>
     <nav class="language" aria-label={isEnglish ? "Language" : "语言选择"}>
       <a href={englishUrl} aria-current={isEnglish ? "page" : undefined}>English</a>
       <a href={chineseUrl} aria-current={!isEnglish ? "page" : undefined}>简体中文</a>
+      <label class="theme-control" hidden>
+        <span>{appearance.label}</span>
+        <select id="theme-preference">
+          <option value="system">{appearance.system}</option>
+          <option value="light">{appearance.light}</option>
+          <option value="dark">{appearance.dark}</option>
+        </select>
+      </label>
     </nav>
+    <script is:inline>
+      const themeSelect = document.getElementById("theme-preference");
+      themeSelect.value = document.documentElement.dataset.theme || "system";
+      themeSelect.addEventListener("change", () => {
+        document.documentElement.dataset.theme = themeSelect.value;
+        try { localStorage.setItem("quant-lab-theme", themeSelect.value); }
+        catch { /* The current page still works when persistence is blocked. */ }
+      });
+      themeSelect.closest("label").hidden = false;
+    </script>
     <slot />
   </body>
 </html>
