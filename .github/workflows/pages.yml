@@ -33,6 +33,10 @@ jobs:
         run: npm ci --prefix site
       - name: Build static website
         run: npm run build --prefix site
+      - name: Install browser for website tests
+        run: npx --prefix site playwright install --with-deps chromium
+      - name: Test website appearance
+        run: npm test --prefix site
       - name: Check Pages content
         run: uv run --locked python -m competition_tools.check_pages_content --source-dir site --built-dir site/dist
       - uses: actions/upload-pages-artifact@v3
