@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "competition-platform-compare"
+version = "0.1.0"
+description = "Optional fixed-version diagnostic accounting comparison"
+requires-python = ">=3.12,<3.13"
+license = "MIT"
+license-files = ["LICENSE"]
+dependencies = ["quant-platform==0.0.1", "research-contracts==0.1.0"]
+
+[dependency-groups]
+dev = ["pytest>=9.1.1", "ruff>=0.11"]
+
+[tool.uv.sources]
+quant-platform = { git = "https://github.com/runchengxie/quant-platform.git", rev = "28a32ba707ad72d1eb68cde5075663e1b3819ac7" }
+research-contracts = { git = "https://github.com/runchengxie/quant-platform.git", rev = "28a32ba707ad72d1eb68cde5075663e1b3819ac7", subdirectory = "packages/research-contracts" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["platform_compare*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]
