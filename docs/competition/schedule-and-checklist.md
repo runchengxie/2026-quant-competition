@@ -22,10 +22,6 @@ Source: [organizer's public rules page](https://fundconnecthk.com/quant-league/l
 - [ ] Configure all subitems of Trades, Cash Transactions, and Net Asset Value (NAV) Summary in Base in the read-only Activity Flex Query. Keep tokens and Query IDs private and verify account reconciliation.
 - [ ] How is the strategy-stability metric defined and over what period?
 - [ ] Is the strategy category determined from the application, actual holdings, or primary risk exposure?
-- [ ] What are the formal relationships among the organizer, co-organizing university, and related companies?
-- [ ] For regulated asset-management activities, which licensed entity, license type, and central number apply?
-- [ ] What methodology supports the website's reported team size, assets under management, and returns?
-- [ ] What due-diligence, compliance, and contractual terms govern the capital-cooperation candidate pool?
 
 ## Strategy and publication gates
 

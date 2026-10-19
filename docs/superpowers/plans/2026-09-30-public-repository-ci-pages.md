@@ -4,7 +4,7 @@
 
 **Goal:** Prepare the current competition repository for public access with reliable GitHub CI and a sanitized GitHub Pages project site.
 
-**Architecture:** Keep Python validation in GitHub Actions, build Pages from a dedicated static `site/` directory, and publish from `main` only. Perform a full history and release asset audit before switching repository visibility; use current official competition dates as the maintained source of truth. Translate all reader-facing documentation into English using the organizer's permission, and remove all original PDF release assets. Strategy research and provider API probes are a separate follow-up plan after this public-repository workstream.
+**Architecture:** Keep Python validation in GitHub Actions, build Pages from a dedicated static `site/` directory, and publish from `main` only. Perform a full history and release asset audit before switching repository visibility; use current official competition dates as the maintained source of truth. Translate all reader-facing documentation into English, and remove all original PDF release assets. Strategy research and provider API probes are a separate follow-up plan after this public-repository workstream.
 
 **Tech Stack:** Python 3.12, uv, pytest, Ruff, GitHub Actions, GitHub Pages artifact deployment, static HTML/CSS.
 

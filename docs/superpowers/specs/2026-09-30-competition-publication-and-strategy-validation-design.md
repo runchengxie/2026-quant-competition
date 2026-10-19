@@ -2,7 +2,7 @@
 
 Date: 2026-09-30
 
-Repository name: `2026-quant-competition`. The organizer authorized English versions of the team reference guides; the user directed removal of all three release PDFs and approved public publication after review. Keep the repository private until the PR/CI gates pass, then publish the repository and Pages site.
+Repository name: `2026-quant-competition`. English team reference guides replace all three release PDFs. Publication follows review. Keep the repository private until the PR/CI gates pass, then publish the repository and Pages site.
 
 ## Intent and current state
 
