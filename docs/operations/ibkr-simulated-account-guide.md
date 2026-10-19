@@ -1,6 +1,6 @@
 # IBKR Paper Account Setup Guide
 
-[Historical identifying detail removed.]
+This English guide was adapted from historical team reference material. The original PDF is not distributed in this repository. Account eligibility and permissions depend on IBKR and the current application flow.
 
 ## Choose an account setup path
 

@@ -1,6 +1,6 @@
 # 2026 Competition Document Architecture Implementation Plan
 
-[Historical identifying detail removed.]
+> Historical plan. The PDF-preservation steps below were superseded on 2026-09-30: English Markdown guides replaced the public release attachments, which were removed at the user's direction.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 

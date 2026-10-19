@@ -1,6 +1,6 @@
 # 2026 Competition Document Architecture Design
 
-[Historical identifying detail removed.]
+> Historical plan. Its original-PDF preservation decision was superseded on 2026-09-30 when English guides replaced the three GitHub Release PDF attachments.
 
 ## Goal
 

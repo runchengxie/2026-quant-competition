@@ -2,7 +2,7 @@
 
 Date: 2026-09-30
 
-[Historical identifying detail removed.]
+Repository name: `2026-quant-competition`. English team reference guides replace all three release PDFs. Publication follows review. Keep the repository private until the PR/CI gates pass, then publish the repository and Pages site.
 
 ## Intent and current state
 

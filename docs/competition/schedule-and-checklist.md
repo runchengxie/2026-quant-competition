@@ -22,10 +22,6 @@ Source: [organizer's public rules page](https://fundconnecthk.com/quant-league/l
 - [ ] Configure all subitems of Trades, Cash Transactions, and Net Asset Value (NAV) Summary in Base in the read-only Activity Flex Query. Keep tokens and Query IDs private and verify account reconciliation.
 - [ ] How is the strategy-stability metric defined and over what period?
 - [ ] Is the strategy category determined from the application, actual holdings, or primary risk exposure?
-[Historical identifying detail removed.]
-[Historical identifying detail removed.]
-[Historical identifying detail removed.]
-[Historical identifying detail removed.]
 
 ## Strategy and publication gates
 

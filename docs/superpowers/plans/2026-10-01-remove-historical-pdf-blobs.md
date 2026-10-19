@@ -99,10 +99,10 @@
 - [x] Push only rewritten `main` and tag, with explicit leases in one atomic push.
 - [x] Fetch public refs into the user checkout and verify the new `main` and tag IDs.
 - [x] Confirm the release still exists with zero assets; the four default-branch raw URLs return 404. Representative PR raw URLs still return 200 because protected PR refs remain.
-[Historical identifying detail removed.]
+- [x] Leave protected PR refs and any cached copies as-is. The historical cleanup scope excluded protected PR refs and caches. No Support request was sent.
 - [x] Update the publication audit with rewritten IDs, tree validation, release assets, and raw URL observations.
 - [x] Confirm the user checkout is clean on rewritten `main`; stale public branches/worktrees were not recreated.
 
 ## Final disposition — 2026-10-02
 
-[Historical identifying detail removed.]
+The requested cleanup of the writable main and release tag is complete. Protected PR refs still contain the PDFs and were outside that historical cleanup scope. The private backup and unsent Support draft are retained outside this repository; no external contact is pending.
