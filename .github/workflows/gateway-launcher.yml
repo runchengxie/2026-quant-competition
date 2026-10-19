@@ -1,0 +1,25 @@
+name: Paper Gateway launcher
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  offline-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@v5
+      - name: Install locked test dependencies
+        run: uv sync --locked --extra test --extra ibkr
+      - name: Check launcher source
+        run: uv run --locked ruff check src/competition_tools/gateway_launcher.py tests/competition_tools/test_gateway_launcher.py tests/operations/test_gateway_powershell.py
+      - name: Run offline Python and native PowerShell tests
+        run: uv run --locked pytest -q tests/competition_tools/test_gateway_launcher.py tests/operations/test_gateway_powershell.py
