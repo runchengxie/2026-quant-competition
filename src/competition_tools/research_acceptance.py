@@ -222,8 +222,17 @@ def read_json(path: Path) -> object:
     )
 
 
+class _SafeParser(argparse.ArgumentParser):
+    def error(self, message):
+        self.exit(
+            2,
+            json.dumps({"status": "blocked", "issue_codes": ["INVALID_ARGUMENTS"]})
+            + "\n",
+        )
+
+
 def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = _SafeParser(description=__doc__)
     parser.add_argument("--receipt", required=True, type=Path)
     parser.add_argument("--dataset-root", required=True, type=Path)
     args = parser.parse_args()

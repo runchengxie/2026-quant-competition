@@ -56,6 +56,8 @@ RETURN_WITHOUT_CAPITAL UNKNOWN_CURRENCY UNVERIFIED_COSTS IN_SAMPLE_MODEL
 OWNER_CONTRACT_VALIDATION_UNAVAILABLE EXPOSED_HISTORY RETROSPECTIVE_EVALUATION
 UNKNOWN_UNIVERSE EMPTY_METRICS FILE_CHANGED FILE_UNAVAILABLE UNSAFE_FILE_REFERENCE
 DATASET_ROOT_UNAVAILABLE
+COST_CONFIG_MISMATCH CONFIG_BINDING_UNVERIFIED FOLD_WINDOWS_MISSING
+FOLD_PLAN_MISMATCH FOLD_PURGE_UNVERIFIED
 """.split()
 )
 
@@ -82,13 +84,22 @@ def _number(value: object) -> float:
     return float(value)
 
 
-def _timestamp(value: object) -> datetime:
+def _timestamp(value: object) -> tuple[datetime, int]:
     if not isinstance(value, str):
         raise ValueError("INVALID_TIMESTAMP")
-    return datetime.fromisoformat(value)
+    match = re.fullmatch(
+        r"[0-9]{4}-[0-9]{2}-[0-9]{2}(?:[T ][0-9]{2}:[0-9]{2}:[0-9]{2}"
+        r"(?:\.([0-9]{1,9}))?(?:Z|[+-][0-9]{2}:[0-9]{2})?)?",
+        value,
+    )
+    if match is None:
+        raise ValueError("INVALID_TIMESTAMP")
+    # datetime preserves the first six digits; retain the final three separately.
+    remainder = int((match[1] or "").ljust(9, "0")[6:])
+    return datetime.fromisoformat(value), remainder
 
 
-def _window(value: object) -> tuple[datetime, datetime]:
+def _window(value: object) -> tuple[tuple[datetime, int], tuple[datetime, int]]:
     if not isinstance(value, dict) or set(value) != {"start", "end"}:
         raise ValueError("INVALID_WINDOW")
     start, end = _timestamp(value["start"]), _timestamp(value["end"])
@@ -161,6 +172,53 @@ def _validate_plan(plan: dict) -> tuple[tuple, dict]:
     return sample, parsed
 
 
+def _fold_issues(
+    row: dict, stamp: tuple, sample: tuple, windows: dict
+) -> tuple[set[str], tuple]:
+    fields = {
+        name: (f"cnn_fold_{prefix}_start", f"cnn_fold_{prefix}_end")
+        for name, prefix in (
+            ("training", "train"),
+            ("validation", "validation"),
+            ("evaluation", "test"),
+        )
+    }
+    if any(row.get(key) in (None, "") for pair in fields.values() for key in pair):
+        return {"FOLD_WINDOWS_MISSING"}, ()
+    actual = {
+        name: _window({"start": row[start], "end": row[end]})
+        for name, (start, end) in fields.items()
+    }
+    issues = set()
+    if not (
+        actual["training"][1] < actual["validation"][0]
+        and actual["validation"][1] < actual["evaluation"][0]
+    ):
+        issues.add("WINDOW_OVERLAP")
+    if not actual["evaluation"][0] <= stamp <= actual["evaluation"][1]:
+        issues.add("FOLD_PLAN_MISMATCH")
+    for name, (start, end) in actual.items():
+        declared = windows.get(name)
+        if (
+            start < sample[0]
+            or end > sample[1]
+            or declared is None
+            or start < declared[0]
+            or end > declared[1]
+        ):
+            issues.add("FOLD_PLAN_MISMATCH")
+    for key in ("cnn_purge_days", "cnn_embargo_days"):
+        if key in row and row[key] not in (None, ""):
+            count = _number(row[key])
+            if count < 0 or not count.is_integer():
+                raise ValueError("INVALID_FOLD_PURGE")
+            # These are trading-observation counts, not calendar-day durations.
+            # Partial evaluation rows cannot verify the required label/calendar gap.
+            if count:
+                issues.add("FOLD_PURGE_UNVERIFIED")
+    return issues, tuple(actual.values())
+
+
 def assess_experiment(
     plan: dict, input_receipt: dict, summary: dict, observations: list[dict]
 ) -> dict:
@@ -189,6 +247,20 @@ def assess_experiment(
     if summary.get("strategy_id", summary.get("strategy")) != plan["strategy_id"]:
         blockers.add("STRATEGY_MISMATCH")
     crypto = source["market"] == "CRYPTO"
+    if crypto:
+        retained_config = summary.get("config")
+        if not isinstance(retained_config, dict):
+            blockers.add("CONFIG_BINDING_UNVERIFIED")
+        else:
+            if canonical_digest(retained_config) != actual_config:
+                blockers.add("CONFIG_FINGERPRINT_MISMATCH")
+            simulation = retained_config.get("simulation")
+            if isinstance(simulation, dict) and "maker_fee_bps" in simulation:
+                if _number(simulation["maker_fee_bps"]) != plan["costs"]["fee_bps"]:
+                    blockers.add("COST_CONFIG_MISMATCH")
+    else:
+        # Legacy equity metadata only names configuration paths, not run bytes.
+        issues.add("CONFIG_BINDING_UNVERIFIED")
     if "positions_rows" in summary and (
         type(summary["positions_rows"]) is not int
         or summary["positions_rows"] != len(observations)
@@ -207,6 +279,7 @@ def assess_experiment(
         blockers.add("WINDOW_OVERLAP")
     evaluation = windows["evaluation"]
     dates, codes, active, folds, seen = set(), set(), 0, set(), set()
+    fold_protocols = {}
     for row in observations:
         stamp = _timestamp(row.get("date", row.get("datetime")))
         if stamp < sample[0] or stamp > sample[1]:
@@ -235,7 +308,13 @@ def assess_experiment(
             value = _number(fold)
             if value < 0 or not value.is_integer():
                 raise ValueError("INVALID_FOLD")
-            folds.add(int(value))
+            fold_issues, protocol = _fold_issues(row, stamp, sample, windows)
+            blockers.update(fold_issues)
+            if int(value) in fold_protocols and fold_protocols[int(value)] != protocol:
+                blockers.add("FOLD_PLAN_MISMATCH")
+            fold_protocols[int(value)] = protocol
+            if not fold_issues:
+                folds.add(int(value))
         if row.get("cnn_fallback_reason") or row.get("cnn_model_status") in (
             "fallback",
             "no_prediction",
@@ -374,14 +453,29 @@ def _observations(path: Path) -> list[dict]:
     with path.open(encoding="utf-8-sig", newline="") as stream:
         rows = list(csv.DictReader(stream))
     for row in rows:
-        for key in ("target_weight", "inventory", "cnn_walk_forward_fold"):
+        for key in (
+            "target_weight",
+            "inventory",
+            "cnn_walk_forward_fold",
+            "cnn_purge_days",
+            "cnn_embargo_days",
+        ):
             if key in row and row[key] != "":
                 row[key] = float(row[key])
     return rows
 
 
+class _SafeParser(argparse.ArgumentParser):
+    def error(self, message):
+        self.exit(
+            2,
+            json.dumps({"status": "blocked", "issue_codes": ["INVALID_ARGUMENTS"]})
+            + "\n",
+        )
+
+
 def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = _SafeParser(description=__doc__)
     for key in (
         "plan",
         "input-receipt",

@@ -150,3 +150,23 @@ def test_missing_daily_group_rejected(tmp_path):
     path.write_text(json.dumps(value))
     with pytest.raises(ValueError, match="MISSING_DATASET_GROUP"):
         validate_inputs(path)
+
+
+def test_parser_error_does_not_echo_private_arguments():
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "crypto_mm.commands.validate_inputs",
+            "--manifest",
+            "dummy.json",
+            "--output",
+            "dummy.json",
+            "D:/private/account-123/data.csv",
+        ],
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 2
+    assert "D:/private" not in result.stdout + result.stderr
+    assert "INVALID_ARGUMENTS" in result.stdout + result.stderr

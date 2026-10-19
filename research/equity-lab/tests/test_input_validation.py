@@ -173,3 +173,35 @@ def test_cli_help_no_data_config_and_exclusive_output(tmp_path):
     assert second.returncode == 2
     assert str(tmp_path) not in second.stdout + second.stderr
     assert output.read_bytes() == before
+
+
+@pytest.mark.parametrize("values", [[True], [True, "invalid"]])
+def test_boolean_ohlcv_never_certified_as_prices(tmp_path, values):
+    frame = pd.DataFrame(
+        {name: values for name in ("open", "high", "low", "close", "volume")}
+    )
+    frame["date"] = "2026-01-02"
+    frame["code"] = "HK.TEST"
+    path, _ = input_manifest(tmp_path, frame)
+    with pytest.raises(ValueError, match="INVALID_NUMERIC_DATA"):
+        validate_inputs(path)
+
+
+def test_parser_error_does_not_echo_private_arguments():
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "equity_lab.validation",
+            "--manifest",
+            "dummy.json",
+            "--output",
+            "dummy.json",
+            "D:/private/account-123/data.csv",
+        ],
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 2
+    assert "D:/private" not in result.stdout + result.stderr
+    assert "INVALID_ARGUMENTS" in result.stdout + result.stderr

@@ -5,11 +5,20 @@ import json
 from pathlib import Path
 
 
+class _SafeParser(argparse.ArgumentParser):
+    def error(self, message):
+        self.exit(
+            2,
+            json.dumps({"status": "blocked", "issue_codes": ["INVALID_ARGUMENTS"]})
+            + "\n",
+        )
+
+
 def main() -> int:
     from crypto_mm.research.input_validation import validate_inputs
     from polars.exceptions import PolarsError
 
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = _SafeParser(description=__doc__)
     parser.add_argument("--manifest", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
     args = parser.parse_args()
