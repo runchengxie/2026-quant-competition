@@ -4,7 +4,8 @@ import csv
 from dataclasses import dataclass
 from pathlib import Path
 from statistics import mean, pstdev
-from typing import Mapping, Sequence
+from typing import Callable, Mapping, Sequence
+from types import MappingProxyType
 
 from strategies.international_lite.evaluation import CompetitionMetrics, evaluate_competition_metrics
 
@@ -182,6 +183,8 @@ def run_monthly_backtest(
     history: Mapping[str, Sequence[DailyBar]],
     benchmark: Sequence[DailyBar],
     config: HKBacktestConfig,
+    *,
+    decision_observer: Callable[[str, str, Mapping[str, float]], None] | None = None,
 ) -> HKBacktestResult:
     if not history:
         raise ValueError("universe must not be empty")
@@ -205,6 +208,8 @@ def run_monthly_backtest(
         if current_date[:7] != prior_month and dates.index(previous_date) >= warmup:
             ranked = _rank(history, previous_date, config)
             target = _target_weights(ranked, config) if ranked else {}
+            if decision_observer is not None:
+                decision_observer(current_date, previous_date, MappingProxyType(dict(target)))
             turnover = sum(abs(target.get(symbol, 0.0) - active.get(symbol, 0.0)) for symbol in set(target) | set(active))
             active = target
             turnovers.append(turnover)
