@@ -5,6 +5,7 @@ from dataclasses import dataclass
 import math
 
 from crypto_mm.market_state import MarketState
+from crypto_mm.validation import require_integer
 
 
 @dataclass(frozen=True, slots=True)
@@ -16,10 +17,8 @@ class FeatureEngineConfig:
 
     def __post_init__(self) -> None:
         """Validate positive sampling and lookback settings."""
-        if self.volatility_sample_interval_ns <= 0:
-            raise ValueError("volatility_sample_interval_ns must be positive")
-        if self.volatility_window <= 0:
-            raise ValueError("volatility_window must be positive")
+        require_integer("volatility_sample_interval_ns", self.volatility_sample_interval_ns, 1)
+        require_integer("volatility_window", self.volatility_window, 1)
 
 
 @dataclass(frozen=True, slots=True)

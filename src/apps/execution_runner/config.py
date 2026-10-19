@@ -23,6 +23,22 @@ class RunnerSettings:
     dry_run: bool = False
     live_enabled: bool = False
 
+    def __post_init__(self) -> None:
+        if self.environment not in {"paper", "live"}:
+            raise ConfigurationError("environment must be either 'paper' or 'live'")
+        if not isinstance(self.dry_run, bool) or not isinstance(self.live_enabled, bool):
+            raise ConfigurationError("dry_run and live_enabled must be booleans")
+        if self.environment == "live" and not self.live_enabled:
+            raise ConfigurationError("live execution requires explicitly enabled live settings")
+        if not isinstance(self.gateway_host, str) or not self.gateway_host.strip():
+            raise ConfigurationError("gateway_host must not be empty")
+        for name, value, minimum, maximum in (
+            ("gateway_port", self.gateway_port, 1, 65535),
+            ("client_id", self.client_id, 0, 2_147_483_647),
+        ):
+            if type(value) is not int or not minimum <= value <= maximum:
+                raise ConfigurationError(f"{name} must be an integer between {minimum} and {maximum}")
+
 
 def resolve_runner_settings(
     *,
@@ -123,7 +139,7 @@ def _integer_value(
     maximum: int,
 ) -> int:
     raw = environment.get(key, default)
-    if isinstance(raw, bool):
+    if isinstance(raw, bool) or not isinstance(raw, (int, str)):
         raise ConfigurationError(f"{field} must be an integer")
     try:
         value = int(raw)
@@ -148,5 +164,3 @@ def _boolean_value(
     if normalized in {"0", "false", "no", "off"}:
         return False
     raise ConfigurationError(f"{key} must be a boolean")
-
-    return RunnerSettings()

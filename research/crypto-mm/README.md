@@ -19,13 +19,15 @@ uv run --locked pytest -q
 uv run --locked ruff check .
 ```
 
-The demo writes nine Parquet files under `raw_data/{orderbook,trades,fundings}/` and a sibling `demo-manifest.json`. Each file is named `YYYY-MM-DD.parquet`. The current reader requires exactly the three configured date labels, `2026-03-19` through `2026-03-21`; they are fixture labels, not supplied historical observations. It reads nanosecond `datetime`, 20 `bid_price_N`/`ask_price_N`/`bid_qty_N`/`ask_qty_N` book levels, trade `price`/`size`/`is_maker_ask`, and `funding_rate`. See `market_data.py` and `demo.py` for types and generated examples.
+The demo writes nine Parquet files under `raw_data/{orderbook,trades,fundings}/` and a sibling `demo-manifest.json`. Each file is named `YYYY-MM-DD.parquet`. The current reader requires exactly the three configured date labels, `2026-03-19` through `2026-03-21`; they are fixture labels, not supplied historical observations. It normalizes datetime storage units to nanosecond events and reads `datetime`, 20 `bid_price_N`/`ask_price_N`/`bid_qty_N`/`ask_qty_N` book levels, trade `price`/`size`/`is_maker_ask`, and `funding_rate`. See `market_data.py` and `demo.py` for types and generated examples.
 
-Backtest and analysis commands print to stdout. Plotting writes to the external project `figures/` directory and runs all four variants. It has no argument parser: arguments, including `--help`, are ignored and can trigger plotting. Sensitivity flags are exploratory reruns, not a parameter optimization guarantee. Inspect `StrategyConfig` and `SimulationConfig` in `config.py` for programmatic configuration and validation.
+Backtest and analysis commands print to stdout. Plotting writes to the external project `figures/` directory and runs all four variants. It supports `--help` and rejects unknown arguments before plotting. No other plotting CLI options are provided; use `generate_figures(output_directory=...)` for an explicit destination. Sensitivity flags are exploratory reruns, not a parameter optimization guarantee. Inspect `StrategyConfig` and `SimulationConfig` in `config.py` for programmatic configuration and validation.
 
 ## Known limitations
 
-Custom signal sampling intervals can produce incorrect horizon labels because horizons are interpreted as sample offsets. The data audit does not comprehensively reject NaN or infinity; an audit pass is not proof of valid numeric data. These inherited issues remain visible and are not repaired by changing test expectations. A full historical backtest or parameter scan has not been reproduced for this snapshot.
+Signal horizons use elapsed seconds. The sampling interval must exactly divide the 1, 5 and 30 second horizons; unrepresentable grids raise `ValueError`. The legacy `one_second_log_return` column retains its name but contains adjacent-grid log returns when the interval differs from one second. Timing and window settings require integers.
+
+Audit quality adds `nonfinite_values` and book `nonpositive_price_rows` counts. Null counts remain separate; audit reports diagnose invalid input rather than certify exchange validity. Peak inventory includes individual fills within a timestamp batch. A full historical backtest or parameter scan has not been reproduced for this snapshot. Shared visible queues across overlapping orders and exchange-specific fill realism remain modeling limitations.
 
 ## Configuration and outputs
 

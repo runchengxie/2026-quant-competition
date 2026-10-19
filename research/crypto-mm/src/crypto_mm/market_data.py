@@ -56,7 +56,7 @@ def iter_trade_events(
     rows = _collect_rows(
         path,
         [
-            pl.col("datetime").cast(pl.Int64).alias("timestamp_ns"),
+            pl.col("datetime").cast(pl.Datetime("ns")).cast(pl.Int64).alias("timestamp_ns"),
             pl.col("price"),
             pl.col("size"),
             pl.col("is_maker_ask"),
@@ -98,7 +98,7 @@ def iter_order_book_events(
     rows = _collect_rows(
         path,
         [
-            pl.col("datetime").cast(pl.Int64).alias("timestamp_ns"),
+            pl.col("datetime").cast(pl.Datetime("ns")).cast(pl.Int64).alias("timestamp_ns"),
             *(pl.col(name) for name in market_columns),
         ],
         row_limit,
@@ -123,7 +123,7 @@ def iter_funding_events(
     rows = _collect_rows(
         path,
         [
-            pl.col("datetime").cast(pl.Int64).alias("timestamp_ns"),
+            pl.col("datetime").cast(pl.Datetime("ns")).cast(pl.Int64).alias("timestamp_ns"),
             pl.col("funding_rate"),
         ],
         row_limit,

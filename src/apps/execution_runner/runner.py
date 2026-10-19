@@ -38,7 +38,7 @@ class ExecutionRunResult:
 
 
 class SubmissionPort(Protocol):
-    """Future broker adapter interface; implemented in Task 4."""
+    """Broker submission boundary, implemented by an optional adapter."""
 
     def submit(self, candidates: tuple[ExecutionCandidate, ...]) -> None: ...
 
@@ -51,9 +51,8 @@ def _require_v1(target_set: TargetSet) -> None:
 class ExecutionRunner:
     """Prepare contract targets without coupling the runner to a broker SDK.
 
-    This task intentionally has no submission implementation.  That prevents
-    a Paper configuration from becoming an accidental external order before
-    the IBKR event adapter, risk checks, and event journal exist.
+    Submission requires an explicitly configured adapter. Journaling records
+    attempts, not broker acknowledgements; uncertain outcomes need reconciliation.
     """
 
     def __init__(
@@ -153,6 +152,12 @@ class ExecutionRunner:
             )
         if self.kill_switch is not None:
             self.kill_switch.assert_clear()
+        for intent in intents:
+            self.journal.append({
+                "event_id": str(uuid4()), "kind": "order_submitted", "run_id": self.run_id,
+                "order_id": intent.order_id, "symbol": intent.symbol,
+                "side": intent.side, "quantity": str(intent.quantity),
+            })
         try:
             submit_intents(intents)
         except Exception as exc:

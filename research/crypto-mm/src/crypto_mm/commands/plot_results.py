@@ -1,6 +1,7 @@
 """Command-line entry point for generating the core report figures."""
 
 from dataclasses import dataclass
+from argparse import ArgumentParser
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -199,8 +200,9 @@ def _format_time_axis(axis: plt.Axes) -> None:
     axis.xaxis.set_major_formatter(mdates.DateFormatter("%m-%d", tz=timezone.utc))
 
 
-def main() -> None:
+def main(argv: list[str] | None = None) -> None:
     """Generate all final-report figures from fresh strategy runs."""
+    ArgumentParser(description=__doc__).parse_args(argv)
     paths = generate_figures()
     for path in paths:
         print(f"Saved {path.relative_to(PROJECT_ROOT)}")

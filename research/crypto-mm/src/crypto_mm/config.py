@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 import math
 
 from crypto_mm.paths import load_data_root
+from crypto_mm.validation import require_integer
 
 DATA_ROOT = load_data_root()
 PROJECT_ROOT = DATA_ROOT.parent
@@ -58,11 +59,8 @@ class StrategyConfig:
                 "inventory_skew_ticks must be finite and non-negative"
             )
 
-        if self.volatility_sample_interval_ns <= 0:
-            raise ValueError("volatility_sample_interval_ns must be positive")
-
-        if self.volatility_window <= 0:
-            raise ValueError("volatility_window must be positive")
+        require_integer("volatility_sample_interval_ns", self.volatility_sample_interval_ns, 1)
+        require_integer("volatility_window", self.volatility_window, 1)
 
         if (
             not math.isfinite(self.funding_target_fraction)
@@ -89,14 +87,13 @@ class SimulationConfig:
 
     def __post_init__(self) -> None:
         """Validate simulator parameters centrally."""
-        if self.placement_latency_ns < 0:
-            raise ValueError("placement_latency_ns must be non-negative")
-        if self.cancellation_latency_ns < 0:
-            raise ValueError("cancellation_latency_ns must be non-negative")
+        require_integer("placement_latency_ns", self.placement_latency_ns, 0)
+        require_integer("cancellation_latency_ns", self.cancellation_latency_ns, 0)
         if not math.isfinite(self.maker_fee_bps):
             raise ValueError("maker_fee_bps must be finite")
-        if self.sample_interval_ns <= 0:
-            raise ValueError("sample_interval_ns must be positive")
+        require_integer("sample_interval_ns", self.sample_interval_ns, 1)
+        for horizon in self.markout_horizons_ns:
+            require_integer("markout horizon", horizon, 1)
         if (
             any(horizon <= 0 for horizon in self.markout_horizons_ns)
             or len(set(self.markout_horizons_ns)) != len(self.markout_horizons_ns)

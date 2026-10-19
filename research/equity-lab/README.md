@@ -29,6 +29,9 @@ This is a daily fractional-weight proxy with lagged exposures and close-to-close
 
 If signal construction raises, the inherited service keeps an all-cash fallback. `summary.json` now exposes `run_status=strategy_fallback` and `fallback_reasons`; the CLI prints them and exits with status 2. Such output is a failed strategy run, not a successful zero-return strategy. Ordinary runs use `run_status=completed`, which does not establish research validity. Relative metadata paths use `/` across platforms.
 
+
+Filled-close provenance is recorded before forward filling: `is_missing_bar` describes missing open/close inputs, `is_interpolated` marks filled closes, and `is_halt` remains a zero-volume proxy rather than confirmed exchange status. Costs prefer explicit strategy `market`, then backtest `market`, then benchmark/universe inference. Baseline comparison directories contain the portfolio and position CSVs declared in their summaries. `max_positions` limits desired selections; gradual turnover transitions can temporarily retain more realized holdings. Non-walk-forward CNN variants can include in-sample predictions and should not be presented as out-of-sample evidence.
+
 ## Configuration and outputs
 
 Use Python 3.12. Set `DATA_ROOT` to an absolute shared data directory before importing the package. It resolves to `DATA_ROOT/2026-quant-competition/research/equity-lab/`. Alternatively set `WORKSPACE_CONFIG` to a TOML file containing an absolute `data_root`. Discovery then checks `CONFIG_ROOT/shared/workspace.toml`, or `XDG_CONFIG_HOME/quant-competition/shared/workspace.toml` (default `~/.config/quant-competition/shared/workspace.toml`). An explicit `DATA_ROOT` takes precedence. Missing or invalid settings raise an error, including for commands that import configuration before parsing `--help`.

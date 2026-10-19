@@ -136,8 +136,10 @@ class PerformanceTracker:
             if order.activated_at_ns == timestamp_ns:
                 self.activated_order_count += 1
 
-    def record_fill(self, fill: Fill, mid_price: float | None) -> None:
+    def record_fill(self, fill: Fill, mid_price: float | None, *, inventory: float | None = None) -> None:
         """Store one fill and identify orders receiving any execution."""
+        if inventory is not None:
+            self._max_absolute_inventory = max(self._max_absolute_inventory, abs(inventory))
         recorded_fill = RecordedFill(fill, mid_price)
         self.fills.append(recorded_fill)
         self._orders_with_fills.add(fill.order_id)

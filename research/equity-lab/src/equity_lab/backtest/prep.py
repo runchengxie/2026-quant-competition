@@ -17,7 +17,7 @@ def _safe_price_bounds(group: pd.DataFrame) -> pd.DataFrame:
 
 def _build_quality_flags(group: pd.DataFrame) -> pd.DataFrame:
     group = group.copy().sort_values("date")
-    group["is_zero_volume"] = group["volume"] <= 0
+    group["is_zero_volume"] = group["volume"].fillna(0.0) <= 0
     group["is_missing_bar"] = group["close"].isna() | group["open"].isna()
 
     close = pd.to_numeric(group["close"], errors="coerce").copy()
@@ -62,6 +62,8 @@ def prepare_market_panel(
         frame = group.sort_values("date").drop_duplicates(subset=["date"], keep="last")
         frame = frame.set_index("date").reindex(master_dates)
         frame["code"] = str(code)
+        missing_before_fill = frame["close"].isna() | frame["open"].isna()
+        close_missing_before_fill = frame["close"].isna()
 
         frame["close"] = frame["close"].ffill()
         valid_close = frame["close"].notna()
@@ -81,7 +83,8 @@ def prepare_market_panel(
         frame["volume"] = frame["volume"].fillna(0.0)
         frame["dividend"] = frame["dividend"].fillna(0.0)
         frame["is_halt"] = frame["is_zero_volume"]
-        frame["is_interpolated"] = frame["close"] != frame["close_filled"]
+        frame["is_missing_bar"] = missing_before_fill.reindex(frame.index)
+        frame["is_interpolated"] = close_missing_before_fill.reindex(frame.index)
         frame = frame.drop(columns=["close_filled"])
 
         aligned_frames.append(frame.reset_index(names="date"))

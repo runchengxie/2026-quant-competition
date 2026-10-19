@@ -36,6 +36,8 @@ def _quality_summary(
         for i in range(BOOK_LEVELS - 1)
     )
     summary = lazy_frame.select(
+        pl.any_horizontal(pl.col(name) <= 0 for name in bid_prices + ask_prices)
+        .sum().alias("nonpositive_price_rows"),
         (pl.col("ask_price_1") <= pl.col("bid_price_1"))
         .sum().alias("crossed_or_locked"),
         bad_bid_order.sum().alias("bad_bid_level_order"),

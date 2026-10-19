@@ -15,6 +15,7 @@ from crypto_mm.orders import (
     PlaceOrderAction,
 )
 from crypto_mm.strategy import DesiredQuote
+from crypto_mm.validation import require_integer
 
 
 @dataclass(frozen=True, slots=True)
@@ -27,10 +28,8 @@ class OrderManagerConfig:
 
     def __post_init__(self) -> None:
         """Validate latency and inventory settings."""
-        if self.placement_latency_ns < 0:
-            raise ValueError("placement_latency_ns must be non-negative")
-        if self.cancellation_latency_ns < 0:
-            raise ValueError("cancellation_latency_ns must be non-negative")
+        require_integer("placement_latency_ns", self.placement_latency_ns, 0)
+        require_integer("cancellation_latency_ns", self.cancellation_latency_ns, 0)
         if not math.isfinite(self.max_inventory) or self.max_inventory <= 0:
             raise ValueError("max_inventory must be finite and positive")
 
@@ -135,8 +134,8 @@ class OrderManager:
             current is not None
             and not current.is_cancel_pending
             and current.status in {OrderStatus.PENDING, OrderStatus.ACTIVE}
-            and math.isclose(current.price, price, abs_tol=1e-12)
-            and math.isclose(current.total_quantity, quantity, abs_tol=1e-12)
+            and math.isclose(current.price, price, rel_tol=0.0, abs_tol=1e-12)
+            and math.isclose(current.total_quantity, quantity, rel_tol=0.0, abs_tol=1e-12)
         ):
             return scheduled
 
@@ -307,12 +306,12 @@ class OrderManager:
             return order.price >= best_ask or math.isclose(
                 order.price,
                 best_ask,
-                abs_tol=1e-12,
+                rel_tol=0.0, abs_tol=1e-12,
             )
         return order.price <= best_bid or math.isclose(
             order.price,
             best_bid,
-            abs_tol=1e-12,
+            rel_tol=0.0, abs_tol=1e-12,
         )
 
     def _available_capacity(
@@ -357,6 +356,6 @@ class OrderManager:
             quantities = market_state.ask_quantities
 
         for price, quantity in zip(prices, quantities, strict=True):
-            if math.isclose(price, order.price, abs_tol=1e-12):
+            if math.isclose(price, order.price, rel_tol=0.0, abs_tol=1e-12):
                 return quantity
         return 0.0
