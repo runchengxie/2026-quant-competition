@@ -1,0 +1,544 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-10-19",
+  "code_revision": "ca6f4bc6f13fa933594cfe3f1823d800b42bb930",
+  "providers": [
+    {
+      "id": "aivix",
+      "status": "discovery_verified_pit_unknown",
+      "history_observations": 2280
+    },
+    {
+      "id": "index_one",
+      "status": "public_schema_verified_equity_unverified",
+      "history_observations": null
+    },
+    {
+      "id": "algoseek",
+      "status": "configuration_missing",
+      "history_observations": null
+    },
+    {
+      "id": "coinpaprika",
+      "status": "latest_verified_price_history_stored",
+      "history_observations": 730
+    },
+    {
+      "id": "ib_gateway",
+      "status": "partial_then_disconnected",
+      "history_observations": 738
+    }
+  ],
+  "results": [
+    {
+      "id": "HK-cnn_image_pattern",
+      "strategy": "cnn_image_pattern",
+      "market": "HK",
+      "start": "2023-10-18",
+      "end": "2026-09-30",
+      "observations": 727,
+      "universe_count": 1,
+      "evidence": "in_sample_diagnostic",
+      "cost_bps": 30,
+      "metrics": {
+        "total_return": 0.227701689950913,
+        "sharpe": 1.538656759435414,
+        "max_drawdown": 0.04652233594560684,
+        "total_pnl": null,
+        "fill_count": null,
+        "max_absolute_inventory": null
+      },
+      "input_fingerprint": "234901d5b6ea74b87dcb64a6dd51bf0142f6bb830a1be2764f094253d711a4a3",
+      "config_fingerprint": "975903a7ee20e392a73a56960e3ed633c743a756e0e79f3f3bddc4c73672dcbf"
+    },
+    {
+      "id": "HK-cnn_pattern",
+      "strategy": "cnn_pattern",
+      "market": "HK",
+      "start": "2023-10-18",
+      "end": "2026-09-30",
+      "observations": 727,
+      "universe_count": 1,
+      "evidence": "no_trades",
+      "cost_bps": 30,
+      "metrics": {
+        "total_return": 0.0,
+        "sharpe": null,
+        "max_drawdown": 0.0,
+        "total_pnl": null,
+        "fill_count": null,
+        "max_absolute_inventory": null
+      },
+      "input_fingerprint": "234901d5b6ea74b87dcb64a6dd51bf0142f6bb830a1be2764f094253d711a4a3",
+      "config_fingerprint": "b5227d9bc80cd8b1c3f52694292e0c01be4e202b54377aa5369c694cece63f9d"
+    },
+    {
+      "id": "HK-cnn_pattern_mvp",
+      "strategy": "cnn_pattern_mvp",
+      "market": "HK",
+      "start": "2023-10-18",
+      "end": "2026-09-30",
+      "observations": 727,
+      "universe_count": 1,
+      "evidence": "in_sample_diagnostic",
+      "cost_bps": 30,
+      "metrics": {
+        "total_return": 0.227701689950913,
+        "sharpe": 1.538656759435414,
+        "max_drawdown": 0.04652233594560684,
+        "total_pnl": null,
+        "fill_count": null,
+        "max_absolute_inventory": null
+      },
+      "input_fingerprint": "234901d5b6ea74b87dcb64a6dd51bf0142f6bb830a1be2764f094253d711a4a3",
+      "config_fingerprint": "203bdeacd5e99f763d04ba382e1603af2e8f5ae94cf8490836734afd91fff2cc"
+    },
+    {
+      "id": "HK-cnn_walk_forward_rank",
+      "strategy": "cnn_walk_forward_rank",
+      "market": "HK",
+      "start": "2023-10-18",
+      "end": "2026-09-30",
+      "observations": 727,
+      "universe_count": 1,
+      "evidence": "no_eligible_folds",
+      "cost_bps": 30,
+      "metrics": {
+        "total_return": null,
+        "sharpe": null,
+        "max_drawdown": null,
+        "total_pnl": null,
+        "fill_count": null,
+        "max_absolute_inventory": null
+      },
+      "input_fingerprint": "234901d5b6ea74b87dcb64a6dd51bf0142f6bb830a1be2764f094253d711a4a3",
+      "config_fingerprint": "379819fc0a15b0cdaec61c96ab849de2517e10e169923bed13c4dd4650287ede"
+    },
+    {
+      "id": "HK-equal_weight",
+      "strategy": "equal_weight",
+      "market": "HK",
+      "start": "2023-10-18",
+      "end": "2026-09-30",
+      "observations": 727,
+      "universe_count": 1,
+      "evidence": "limited_universe",
+      "cost_bps": 30,
+      "metrics": {
+        "total_return": 1.5299437555816762,
+        "sharpe": 1.4792307841549888,
+        "max_drawdown": 0.22116011296980254,
+        "total_pnl": null,
+        "fill_count": null,
+        "max_absolute_inventory": null
+      },
+      "input_fingerprint": "234901d5b6ea74b87dcb64a6dd51bf0142f6bb830a1be2764f094253d711a4a3",
+      "config_fingerprint": "625312ed112a86e343ac41e8d444a9fedf2683015241dc701246b30b8aff68d5"
+    },
+    {
+      "id": "HK-momentum_20d",
+      "strategy": "momentum_20d",
+      "market": "HK",
+      "start": "2023-10-18",
+      "end": "2026-09-30",
+      "observations": 727,
+      "universe_count": 1,
+      "evidence": "limited_universe",
+      "cost_bps": 30,
+      "metrics": {
+        "total_return": 0.0690513105603432,
+        "sharpe": 0.7174340659930935,
+        "max_drawdown": 0.03840225559561339,
+        "total_pnl": null,
+        "fill_count": null,
+        "max_absolute_inventory": null
+      },
+      "input_fingerprint": "234901d5b6ea74b87dcb64a6dd51bf0142f6bb830a1be2764f094253d711a4a3",
+      "config_fingerprint": "f1f0443530e6673d70235539ced136e6c4ea171d80de78e5fba0fe003a757b82"
+    },
+    {
+      "id": "HK-random_turnover",
+      "strategy": "random_turnover",
+      "market": "HK",
+      "start": "2023-10-18",
+      "end": "2026-09-30",
+      "observations": 727,
+      "universe_count": 1,
+      "evidence": "limited_universe",
+      "cost_bps": 30,
+      "metrics": {
+        "total_return": 1.5299437555816762,
+        "sharpe": 1.4792307841549888,
+        "max_drawdown": 0.22116011296980254,
+        "total_pnl": null,
+        "fill_count": null,
+        "max_absolute_inventory": null
+      },
+      "input_fingerprint": "234901d5b6ea74b87dcb64a6dd51bf0142f6bb830a1be2764f094253d711a4a3",
+      "config_fingerprint": "93675faa00d9abbb4bc999a6ca5f6a05e1eeba283eb94af76ef19d79e1c7f24e"
+    },
+    {
+      "id": "HK-sma_cross",
+      "strategy": "sma_cross",
+      "market": "HK",
+      "start": "2023-10-18",
+      "end": "2026-09-30",
+      "observations": 727,
+      "universe_count": 1,
+      "evidence": "limited_universe",
+      "cost_bps": 30,
+      "metrics": {
+        "total_return": 0.13621996058694585,
+        "sharpe": 1.0684565927865552,
+        "max_drawdown": 0.04652233594560684,
+        "total_pnl": null,
+        "fill_count": null,
+        "max_absolute_inventory": null
+      },
+      "input_fingerprint": "234901d5b6ea74b87dcb64a6dd51bf0142f6bb830a1be2764f094253d711a4a3",
+      "config_fingerprint": "294e01ba2027db2d16324aa1c9148a33a432dc9ef99ed8d42f182ac52ecb9077"
+    },
+    {
+      "id": "US-cnn_image_pattern",
+      "strategy": "cnn_image_pattern",
+      "market": "US",
+      "start": "2023-10-03",
+      "end": "2026-09-30",
+      "observations": 751,
+      "universe_count": 1,
+      "evidence": "in_sample_diagnostic",
+      "cost_bps": 20,
+      "metrics": {
+        "total_return": 0.13303302638925452,
+        "sharpe": 1.3952219271039796,
+        "max_drawdown": 0.04043247407359307,
+        "total_pnl": null,
+        "fill_count": null,
+        "max_absolute_inventory": null
+      },
+      "input_fingerprint": "0e850f90b6709040c10ddfa5c9d086b982077bbf2d9f2192cea2455d50fa3d8f",
+      "config_fingerprint": "d4ce3ef88524fbe58ac0dc50520365feed485f92907c1c376de371d942d82f59"
+    },
+    {
+      "id": "US-cnn_pattern",
+      "strategy": "cnn_pattern",
+      "market": "US",
+      "start": "2023-10-03",
+      "end": "2026-09-30",
+      "observations": 751,
+      "universe_count": 1,
+      "evidence": "no_trades",
+      "cost_bps": 20,
+      "metrics": {
+        "total_return": 0.0,
+        "sharpe": null,
+        "max_drawdown": 0.0,
+        "total_pnl": null,
+        "fill_count": null,
+        "max_absolute_inventory": null
+      },
+      "input_fingerprint": "0e850f90b6709040c10ddfa5c9d086b982077bbf2d9f2192cea2455d50fa3d8f",
+      "config_fingerprint": "d99dbdeb7a32f968d600a13a4ad82b18c6bd4d1c1320cb8b8bbe7225809315a9"
+    },
+    {
+      "id": "US-cnn_pattern_mvp",
+      "strategy": "cnn_pattern_mvp",
+      "market": "US",
+      "start": "2023-10-03",
+      "end": "2026-09-30",
+      "observations": 751,
+      "universe_count": 1,
+      "evidence": "in_sample_diagnostic",
+      "cost_bps": 20,
+      "metrics": {
+        "total_return": 0.13303302638925452,
+        "sharpe": 1.3952219271039796,
+        "max_drawdown": 0.04043247407359307,
+        "total_pnl": null,
+        "fill_count": null,
+        "max_absolute_inventory": null
+      },
+      "input_fingerprint": "0e850f90b6709040c10ddfa5c9d086b982077bbf2d9f2192cea2455d50fa3d8f",
+      "config_fingerprint": "7f004ceab3867bfd331a21082302d738044ac5f9702f3c06f7cdee0168fbcae7"
+    },
+    {
+      "id": "US-cnn_walk_forward_rank",
+      "strategy": "cnn_walk_forward_rank",
+      "market": "US",
+      "start": "2023-10-03",
+      "end": "2026-09-30",
+      "observations": 751,
+      "universe_count": 1,
+      "evidence": "no_eligible_folds",
+      "cost_bps": 20,
+      "metrics": {
+        "total_return": null,
+        "sharpe": null,
+        "max_drawdown": null,
+        "total_pnl": null,
+        "fill_count": null,
+        "max_absolute_inventory": null
+      },
+      "input_fingerprint": "0e850f90b6709040c10ddfa5c9d086b982077bbf2d9f2192cea2455d50fa3d8f",
+      "config_fingerprint": "389a0fc4a2fc7373f942c327facef5bec48492324556c558af4e1238aefb3fa2"
+    },
+    {
+      "id": "US-equal_weight",
+      "strategy": "equal_weight",
+      "market": "US",
+      "start": "2023-10-03",
+      "end": "2026-09-30",
+      "observations": 751,
+      "universe_count": 1,
+      "evidence": "limited_universe",
+      "cost_bps": 20,
+      "metrics": {
+        "total_return": 0.8053458729612566,
+        "sharpe": 1.3726877056714106,
+        "max_drawdown": 0.18998906889856892,
+        "total_pnl": null,
+        "fill_count": null,
+        "max_absolute_inventory": null
+      },
+      "input_fingerprint": "0e850f90b6709040c10ddfa5c9d086b982077bbf2d9f2192cea2455d50fa3d8f",
+      "config_fingerprint": "1de055e64df006723f7c8a6608c9f9bc8b3154c1cfd61e39528c6b88868a506a"
+    },
+    {
+      "id": "US-momentum_20d",
+      "strategy": "momentum_20d",
+      "market": "US",
+      "start": "2023-10-03",
+      "end": "2026-09-30",
+      "observations": 751,
+      "universe_count": 1,
+      "evidence": "limited_universe",
+      "cost_bps": 20,
+      "metrics": {
+        "total_return": 0.05625956060062953,
+        "sharpe": 0.9660242773294705,
+        "max_drawdown": 0.01909747478440149,
+        "total_pnl": null,
+        "fill_count": null,
+        "max_absolute_inventory": null
+      },
+      "input_fingerprint": "0e850f90b6709040c10ddfa5c9d086b982077bbf2d9f2192cea2455d50fa3d8f",
+      "config_fingerprint": "5994a3db575b70400adaf30c3b181835c6bf93f9b730d3f5664ab7b18f17c1f9"
+    },
+    {
+      "id": "US-random_turnover",
+      "strategy": "random_turnover",
+      "market": "US",
+      "start": "2023-10-03",
+      "end": "2026-09-30",
+      "observations": 751,
+      "universe_count": 1,
+      "evidence": "limited_universe",
+      "cost_bps": 20,
+      "metrics": {
+        "total_return": 0.8053458729612566,
+        "sharpe": 1.3726877056714106,
+        "max_drawdown": 0.18998906889856892,
+        "total_pnl": null,
+        "fill_count": null,
+        "max_absolute_inventory": null
+      },
+      "input_fingerprint": "0e850f90b6709040c10ddfa5c9d086b982077bbf2d9f2192cea2455d50fa3d8f",
+      "config_fingerprint": "5c6d279427b1bc6ea39d2bbf36dab49354556f1bc82bddde03f2e72835806086"
+    },
+    {
+      "id": "US-sma_cross",
+      "strategy": "sma_cross",
+      "market": "US",
+      "start": "2023-10-03",
+      "end": "2026-09-30",
+      "observations": 751,
+      "universe_count": 1,
+      "evidence": "limited_universe",
+      "cost_bps": 20,
+      "metrics": {
+        "total_return": 0.06002824787360583,
+        "sharpe": 0.9340004506344813,
+        "max_drawdown": 0.02074033468009151,
+        "total_pnl": null,
+        "fill_count": null,
+        "max_absolute_inventory": null
+      },
+      "input_fingerprint": "0e850f90b6709040c10ddfa5c9d086b982077bbf2d9f2192cea2455d50fa3d8f",
+      "config_fingerprint": "b483a61a64d642c43cddb4ab8bb2958bdbbc2c9ab3eb61e02b527a0990da72c7"
+    },
+    {
+      "id": "hk_pure_momentum",
+      "strategy": "hk_pure_momentum",
+      "market": "HK",
+      "start": "2024-11-01",
+      "end": "2026-09-30",
+      "observations": 471,
+      "universe_count": 1,
+      "evidence": "limited_universe",
+      "cost_bps": 10,
+      "metrics": {
+        "total_return": 0.1060431772120165,
+        "sharpe": 1.7579067175808043,
+        "max_drawdown": 0.02805223931169365,
+        "total_pnl": null,
+        "fill_count": null,
+        "max_absolute_inventory": null
+      },
+      "input_fingerprint": "234901d5b6ea74b87dcb64a6dd51bf0142f6bb830a1be2764f094253d711a4a3",
+      "config_fingerprint": "687f8c0fea3f43652c37354da2f28cc35b2c1b22c17021f75e2e0c676b93e3dc"
+    },
+    {
+      "id": "hk_momentum_volatility",
+      "strategy": "hk_momentum_volatility",
+      "market": "HK",
+      "start": "2024-11-01",
+      "end": "2026-09-30",
+      "observations": 471,
+      "universe_count": 1,
+      "evidence": "limited_universe",
+      "cost_bps": 10,
+      "metrics": {
+        "total_return": 0.1060431772120165,
+        "sharpe": 1.7579067175808043,
+        "max_drawdown": 0.02805223931169365,
+        "total_pnl": null,
+        "fill_count": null,
+        "max_absolute_inventory": null
+      },
+      "input_fingerprint": "234901d5b6ea74b87dcb64a6dd51bf0142f6bb830a1be2764f094253d711a4a3",
+      "config_fingerprint": "03e2132fe275dfcd6c97930f2a99d27e5a202a028576f3137b69c4d18d55b1c5"
+    },
+    {
+      "id": "global_pure_momentum",
+      "strategy": "global_pure_momentum",
+      "market": "MULTI",
+      "start": "2024-12-02",
+      "end": "2026-09-30",
+      "observations": 423,
+      "universe_count": 5,
+      "evidence": "native_currency_proxy",
+      "cost_bps": 10,
+      "metrics": {
+        "total_return": 0.31948612297785717,
+        "sharpe": 1.4357125481776718,
+        "max_drawdown": 0.12714046231200316,
+        "total_pnl": null,
+        "fill_count": null,
+        "max_absolute_inventory": null
+      },
+      "input_fingerprint": "45327445b0a7fb7c4b76e1c197bba4124a6a1e741bb35034f1eee115d35f0f1e",
+      "config_fingerprint": "437a63bfd56da94d7f8f14db1c4f33c2b2e462b5fa51a33f272846447dafb301"
+    },
+    {
+      "id": "global_defended_rotation",
+      "strategy": "global_defended_rotation",
+      "market": "MULTI",
+      "start": "2024-12-02",
+      "end": "2026-09-30",
+      "observations": 423,
+      "universe_count": 5,
+      "evidence": "native_currency_proxy",
+      "cost_bps": 10,
+      "metrics": {
+        "total_return": 0.31602269362590274,
+        "sharpe": 1.4698325091694406,
+        "max_drawdown": 0.12714046231200316,
+        "total_pnl": null,
+        "fill_count": null,
+        "max_absolute_inventory": null
+      },
+      "input_fingerprint": "45327445b0a7fb7c4b76e1c197bba4124a6a1e741bb35034f1eee115d35f0f1e",
+      "config_fingerprint": "8d9d0b737aaa5200922680457f4ed1970a3f42e2d1e580e0682f01c96b0e044e"
+    },
+    {
+      "id": "B0",
+      "strategy": "B0",
+      "market": "CRYPTO",
+      "start": "2026-03-19",
+      "end": "2026-03-21",
+      "observations": 3665035,
+      "universe_count": 1,
+      "evidence": "archived_diagnostic",
+      "cost_bps": 0,
+      "metrics": {
+        "total_return": null,
+        "sharpe": null,
+        "max_drawdown": null,
+        "total_pnl": -235.37044999998884,
+        "fill_count": 5400,
+        "max_absolute_inventory": 1.0
+      },
+      "input_fingerprint": "fc6fe84e808cc3f24e05db0acc873f8bcc04dd4797f9be4f45335f51b2fdbc82",
+      "config_fingerprint": "336ddec370b632d441151985fefff0d0f4390307e555a8f730f8d9c73c724b4c"
+    },
+    {
+      "id": "B1",
+      "strategy": "B1",
+      "market": "CRYPTO",
+      "start": "2026-03-19",
+      "end": "2026-03-21",
+      "observations": 3665035,
+      "universe_count": 1,
+      "evidence": "archived_diagnostic",
+      "cost_bps": 0,
+      "metrics": {
+        "total_return": null,
+        "sharpe": null,
+        "max_drawdown": null,
+        "total_pnl": -240.2583999999919,
+        "fill_count": 4939,
+        "max_absolute_inventory": 1.0
+      },
+      "input_fingerprint": "fc6fe84e808cc3f24e05db0acc873f8bcc04dd4797f9be4f45335f51b2fdbc82",
+      "config_fingerprint": "acb7cac1425fe2cada7f4dcdf018701187fb17271af24b2d7f8d1aab9c385113"
+    },
+    {
+      "id": "B2",
+      "strategy": "B2",
+      "market": "CRYPTO",
+      "start": "2026-03-19",
+      "end": "2026-03-21",
+      "observations": 3665035,
+      "universe_count": 1,
+      "evidence": "archived_diagnostic",
+      "cost_bps": 0,
+      "metrics": {
+        "total_return": null,
+        "sharpe": null,
+        "max_drawdown": null,
+        "total_pnl": -6.683750000000128,
+        "fill_count": 463,
+        "max_absolute_inventory": 0.738
+      },
+      "input_fingerprint": "fc6fe84e808cc3f24e05db0acc873f8bcc04dd4797f9be4f45335f51b2fdbc82",
+      "config_fingerprint": "00862cfba54bd10df35b9bb08cee6f00ba038f99a40d589f5980715cc2dd930d"
+    },
+    {
+      "id": "B3",
+      "strategy": "B3",
+      "market": "CRYPTO",
+      "start": "2026-03-19",
+      "end": "2026-03-21",
+      "observations": 3665035,
+      "universe_count": 1,
+      "evidence": "archived_diagnostic",
+      "cost_bps": 0,
+      "metrics": {
+        "total_return": null,
+        "sharpe": null,
+        "max_drawdown": null,
+        "total_pnl": -256.23480000000296,
+        "fill_count": 5386,
+        "max_absolute_inventory": 1.0
+      },
+      "input_fingerprint": "fc6fe84e808cc3f24e05db0acc873f8bcc04dd4797f9be4f45335f51b2fdbc82",
+      "config_fingerprint": "36be2eaed20a6d25a58ceed95b4f2184b7198b0e82b33b3d3df6c5cbfe600624"
+    }
+  ],
+  "blocked": [
+    "aivix_us_overlay",
+    "hk_ranker",
+    "crypto_four_sources",
+    "execution"
+  ]
+}

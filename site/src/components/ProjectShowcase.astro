@@ -1,5 +1,6 @@
 ---
 import SiteLayout from "../layouts/SiteLayout.astro";
+import ValidationResults from "./ValidationResults.astro";
 import en from "../i18n/en.json";
 import zh from "../i18n/zh-CN.json";
 interface Props { locale?: string }
@@ -19,7 +20,7 @@ const guide = (directory: string) => file(`research/${directory}/README${locale 
 <SiteLayout locale={locale} title={t.meta.title} description={t.meta.description}>
   <nav class="project-nav" aria-label={t.nav.demo}>
     <a class="wordmark" href="#">QUANT / LAB</a>
-    <div><a href="#demo">{t.nav.demo}</a><a href="#research">{t.nav.research}</a><a href="#engineering">{t.nav.engineering}</a></div>
+    <div><a href="#demo">{t.nav.demo}</a><a href="#research">{t.nav.research}</a><a href="#validation">{t.nav.validation}</a><a href="#engineering">{t.nav.engineering}</a></div>
     <a class="repo-link" href={repository}>{t.nav.repo}<span aria-hidden="true"> ↗</span></a>
   </nav>
   <header class="showcase-hero">
@@ -73,6 +74,7 @@ const guide = (directory: string) => file(`research/${directory}/README${locale 
       <div class="section-heading"><p class="eyebrow">{t.research.eyebrow}</p><h2>{t.research.title}</h2><p>{t.research.intro}</p></div>
       <div class="research-grid"><article class="research-card"><span class="status">{t.research.stockStatus}</span><h3>{t.research.stockTitle}</h3><p>{t.research.stockBody}</p><a href={file("docs/strategy/strategy-analysis.md")}>{t.research.stockLink} ↗</a></article><article class="research-card"><span class="status implemented">{t.research.cryptoStatus}</span><h3>{t.research.cryptoTitle}</h3><p>{t.research.cryptoBody}</p><a href={file(`research/crypto-mm/docs/assumptions${locale === "zh-CN" ? ".zh-CN" : ""}.md`)}>{t.research.cryptoLink} ↗</a></article></div>
     </section>
+    <ValidationResults locale={locale} />
     <section id="engineering" class="engineering-section"><p class="eyebrow">{t.engineering.eyebrow}</p><h2>{t.engineering.title}</h2><p>{t.engineering.body}</p><ol class="flow execution-flow">{t.engineering.stages.map((step,index) => <li><span class="step-number">0{index+1}</span>{step}</li>)}</ol><p class="detail">{t.engineering.warning}</p><a href={file("docs/operations/integration-readiness-2026-10-02.md")}>{t.engineering.link} ↗</a></section>
     <aside class="competition-note"><div><h3>{t.rules.title}</h3><p>{t.rules.body}</p></div><a href={file("docs/competition/schedule-and-checklist.md")}>{t.rules.link} ↗</a></aside>
   </main>
