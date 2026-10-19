@@ -4,10 +4,13 @@
 
 This repository contains a Paper-first execution boundary, competition operations material, three independent offline research packages and a bilingual project demo. External quantitative providers remain independent repositories. No submodules or provider source imports are required by the offline packages.
 
+Competition-specific offline research and data preparation belong to this repository. Shared production datasets remain with their authoritative external owners. The team entry configures external paths and never discovers sibling source.
+
 ## Current ownership
 
 | Capability | Code or contract |
 | --- | --- |
+| Portable setup, local readiness and synthetic demo orchestration | `team.py`, `src/competition_tools/team`, [team quickstart](docs/operations/team-quickstart.md) |
 | Target handoff and order/event contracts | `src/packages/contracts` |
 | Market normalization, risk, audit and reconciliation | `src/packages/market_model`, `src/packages/risk`, `src/packages/audit`, `src/packages/reconciliation` |
 | IBKR mapping and execution application | `src/adapters/ibkr`, `src/apps/execution_runner` |

@@ -2,6 +2,8 @@
 
 [简体中文](README.zh-CN.md)
 
+Use the [team quickstart](../docs/operations/team-quickstart.md) for isolated setup and synthetic demos from one checkout. Default delivery does not install quant framework packages; accounting comparison remains optional.
+
 - [Crypto market-making](crypto-mm/README.md): event-driven visible-queue simulation and synthetic Parquet fixtures.
 - [Equity lab](equity-lab/README.md): daily CSV/YAML fractional-weight backtests and fictional HK-symbol fixtures.
 

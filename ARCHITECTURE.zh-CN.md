@@ -4,10 +4,13 @@
 
 本仓库包含以 Paper 为默认环境的执行边界、比赛运维材料、三个独立离线研究包及中英文项目 Demo。外部量化能力仍由独立仓库维护，离线研究包不要求 submodule，也不导入这些提供方的源码。
 
+比赛专属的离线研究和数据准备由本仓库维护，共享生产数据仍归外部权威所有者。团队入口只配置外部路径，不搜索相邻仓库源码。
+
 ## 当前职责
 
 | 能力 | 代码或契约 |
 | --- | --- |
+| 独立安装、本地环境检查和合成演示 | `team.py`、`src/competition_tools/team`、[团队快速开始](docs/operations/team-quickstart.zh-CN.md) |
 | 目标交接及订单、事件契约 | `src/packages/contracts` |
 | 市场标准化、风控、审计和对账 | `src/packages/market_model`、`src/packages/risk`、`src/packages/audit`、`src/packages/reconciliation` |
 | IBKR 映射及执行应用 | `src/adapters/ibkr`、`src/apps/execution_runner` |

@@ -14,6 +14,8 @@ The independent [international v2 target contract](docs/strategy/target-manifest
 
 ## Offline research
 
+Start with the [team quickstart](docs/operations/team-quickstart.md) ([简体中文](docs/operations/team-quickstart.zh-CN.md)) for a single-clone setup. `python team.py --help` needs only Python 3.12. Default setup installs isolated core environments and runs synthetic equity/crypto demos without quant framework packages. Accounting comparison remains an optional profile.
+
 The two baseline [offline research packages](research/README.md) provide synthetic crypto market-making and daily equity backtest experiments. They have separate dependencies, tests and MIT licenses. Their results are not execution commands, verified live trading, or evidence of competition eligibility.
 
 The [2026-10-19 strategy inventory and validation](docs/research/strategy-validation-2026-10-19.md) records 24 fixed-input diagnostics, current provider probes, limited stock coverage and archived crypto replay results. The [Chinese version](docs/research/strategy-validation-2026-10-19.zh-CN.md) and Pages use the same reviewed aggregate facts. These experiments do not establish a complete data-to-order system.
