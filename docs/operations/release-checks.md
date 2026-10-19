@@ -28,3 +28,7 @@ Before each rebalance adapter call, the runner durably records every planned cli
 The baseline TWAP planner supports whole-unit quantities only and rejects fractional units instead of increasing the requested total. Instrument-specific fractional or lot-size slicing requires an explicit quantity quantum. Handoff target and lineage destinations must resolve to different files.
 
 The schema/runtime HK discrepancy and external producer field/lineage naming differences still require a reviewed compatibility adapter. This audit did not change target versions or initialize external repositories. Supervised Paper order, cancellation, fill, restart and reconciliation verification remains required before operational use.
+
+## Optional Paper login helper
+
+The [Paper Gateway helper](gateway-login.md) ([简体中文](gateway-login.zh-CN.md)) has separate installation, authentication and activation checks. Its local preflight does not establish API or historical-data readiness, and does not authorize orders.

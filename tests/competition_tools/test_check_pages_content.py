@@ -82,6 +82,19 @@ def test_rejects_unrecognized_source_file(tmp_path):
     assert any("unrecognized source path" in error for error in errors)
 
 
+def test_allows_reviewed_browser_tests_but_still_scans_them(tmp_path):
+    source, built = make_site_trees(tmp_path)
+    (source / "tests").mkdir()
+    browser_test = source / "tests/theme.spec.mjs"
+    browser_test.write_text("export {};", encoding="utf-8")
+    (source / "playwright.config.mjs").write_text("export {};", encoding="utf-8")
+    assert check_site(source, built) == []
+    browser_test.write_text(
+        'const api_key = "synthetic-private-value-1234567890";', encoding="utf-8"
+    )
+    assert any("credential_assignment" in error for error in check_site(source, built))
+
+
 def test_allows_reviewed_locale_catalogs_but_rejects_other_json(tmp_path):
     source, built = make_site_trees(tmp_path)
     catalogs = source / "src/i18n"

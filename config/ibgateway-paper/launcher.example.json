@@ -1,0 +1,16 @@
+{
+  "schema_version": "competition.gateway_launcher.v1",
+  "ibc_version": "3.24.2",
+  "gateway_version": "1050",
+  "release_archive": "REPLACE_WITH_ABSOLUTE_EXTERNAL_RELEASE_ARCHIVE",
+  "ibc_directory": "REPLACE_WITH_ABSOLUTE_UNMODIFIED_RELEASE_DIRECTORY",
+  "gateway_executable": "REPLACE_WITH_ABSOLUTE_OFFLINE_GATEWAY_EXECUTABLE",
+  "gateway_sha256": "REPLACE_WITH_REVIEWED_LOCAL_GATEWAY_SHA256",
+  "ini_path": "REPLACE_WITH_ABSOLUTE_PRIVATE_IBC_INI",
+  "settings_directory": "REPLACE_WITH_ABSOLUTE_PRIVATE_SEPARATE_SETTINGS_DIRECTORY",
+  "log_directory": "REPLACE_WITH_ABSOLUTE_OWNER_DATA_OPERATIONS_DIRECTORY",
+  "configured_launcher": "REPLACE_WITH_ABSOLUTE_PRIVATE_StartGateway.paper.bat",
+  "activation_authorized": false,
+  "timeout_seconds": 120,
+  "retry_limit": 0
+}
