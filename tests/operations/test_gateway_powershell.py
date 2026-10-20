@@ -40,6 +40,57 @@ $result | ConvertTo-Json -Compress
     assert json.loads(result.stdout)["state"] == "preflight_passed"
 
 
+def test_ensure_ready_skips_launch_checks_even_without_desktop(tmp_path):
+    result = run(
+        f"""
+Import-Module '{MODULE}' -Force
+Invoke-PaperGateway -Action ensure -ApiProbe {{@{{state='ready'}}}} -SpecProbe {{throw 'must not launch'}} -InteractiveProbe {{$false}} | ConvertTo-Json -Compress
+""",
+        tmp_path,
+    )
+    assert result.returncode == 0, result.stderr
+    assert json.loads(result.stdout)["state"] == "api_ready"
+    assert not (tmp_path / "launch.lease").exists()
+
+
+def test_ensure_starts_once_then_checks_api_and_releases_known_ready_lease(tmp_path):
+    child = tmp_path / "fake.bat"
+    child.write_text("@echo PRIVATE_SENTINEL\n@ping -n 5 127.0.0.1 >nul\n")
+    result = run(
+        f"""
+Import-Module '{MODULE}' -Force
+$script:checks=0
+$api={{ $script:checks++; if($script:checks -ge 3) {{@{{state='ready'}}}} else {{@{{state='not_ready'}}}} }}
+$probe={{param($action) @{{config=@{{configured_launcher='{child}';log_directory='{tmp_path}';timeout_seconds=5;activation_authorized=$true}};launcher_sha256=(Get-FileHash -LiteralPath '{child}').Hash.ToLowerInvariant()}}}}
+$result=Invoke-PaperGateway -Action ensure -SpecProbe $probe -ApiProbe $api -InteractiveProbe {{$true}}
+$result|ConvertTo-Json -Compress
+""",
+        tmp_path,
+    )
+    assert result.returncode == 0, result.stderr
+    assert json.loads(result.stdout)["state"] == "api_ready"
+    assert len(list(tmp_path.glob("launcher-*.stdout.log"))) == 1
+    assert not (tmp_path / "launch.lease").exists()
+    assert "PRIVATE_SENTINEL" not in result.stdout + result.stderr
+
+
+def test_ensure_timeout_keeps_lease_and_never_relaunches(tmp_path):
+    child = tmp_path / "fake.bat"
+    child.write_text("@ping -n 4 127.0.0.1 >nul\n")
+    value = run(
+        f"""
+Import-Module '{MODULE}' -Force
+$probe={{param($action) @{{config=@{{configured_launcher='{child}';log_directory='{tmp_path}';timeout_seconds=1;activation_authorized=$true}};launcher_sha256=(Get-FileHash -LiteralPath '{child}').Hash.ToLowerInvariant()}}}}
+Invoke-PaperGateway -Action ensure -SpecProbe $probe -ApiProbe {{@{{state='not_ready'}}}} -InteractiveProbe {{$true}} | ConvertTo-Json -Compress
+""",
+        tmp_path,
+    )
+    assert value.returncode == 0, value.stderr
+    assert json.loads(value.stdout)["exit_code"] == 3
+    assert (tmp_path / "launch.lease").exists()
+    assert len(list(tmp_path.glob("launcher-*.stdout.log"))) == 1
+
+
 def test_child_exit_and_private_output(tmp_path):
     child = tmp_path / "fake.bat"
     child.write_text("@echo PRIVATE_SECRET\n@exit /b 7\n")

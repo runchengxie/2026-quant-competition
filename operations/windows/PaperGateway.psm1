@@ -3,8 +3,10 @@ Set-StrictMode -Version Latest
 function Invoke-PaperGateway {
     [CmdletBinding()]
     param(
-        [ValidateSet('check','dry-run','status','prepare','start')][string]$Action,
+        [ValidateSet('check','dry-run','status','prepare','start','ensure')][string]$Action,
         [string]$PythonPath, [string]$ConfigPath, [string]$WorkspacePath,
+        [string]$ApiConnectionPath,
+        [scriptblock]$ApiProbe,
         [scriptblock]$SpecProbe,
         [scriptblock]$InteractiveProbe = { [Environment]::UserInteractive -and (Get-Process -Id $PID).SessionId -gt 0 }
     )
@@ -12,10 +14,22 @@ function Invoke-PaperGateway {
     $leasePath=$null
     $releaseLease=$false
     try {
-        if ($Action -eq 'start' -and -not (& $InteractiveProbe)) {
+        if ($Action -eq 'ensure') {
+            if ($null -eq $ApiProbe) {
+                $ApiProbe={param($seconds)
+                    $raw=& $PythonPath -m competition_tools.team.gateway --connection-file $ApiConnectionPath --timeout $seconds 2>$null
+                    if($LASTEXITCODE -notin @(0,2,3)){return @{state='blocked';code='API_PROBE_FAILED'}}
+                    return (($raw -join "`n")|ConvertFrom-Json -AsHashtable)
+                }
+            }
+            $api=& $ApiProbe 2
+            if($api.state -eq 'ready'){return @{state='api_ready';api='connected';account_identity='not_checked';historical_data='not_checked';exit_code=0}}
+            if($api.state -ne 'not_ready'){return @{state='blocked';code=$api.code;exit_code=2}}
+        }
+        if ($Action -in @('start','ensure') -and -not (& $InteractiveProbe)) {
             return @{state='blocked';code='INTERACTIVE_DESKTOP_REQUIRED';exit_code=2}
         }
-        $query = if ($Action -eq 'start') {'launch-spec'} else {$Action}
+        $query = if ($Action -in @('start','ensure')) {'launch-spec'} else {$Action}
         if ($null -ne $SpecProbe) {
             # Unit-level dependency injection; the public entry script never accepts this.
             $spec = & $SpecProbe $query
@@ -27,7 +41,7 @@ function Invoke-PaperGateway {
             }
             $spec = ($raw -join "`n") | ConvertFrom-Json -AsHashtable
         }
-        if ($Action -ne 'start') {
+        if ($Action -notin @('start','ensure')) {
             if ($null -ne $SpecProbe) { return $spec.status }
             return $spec
         }
@@ -60,6 +74,23 @@ function Invoke-PaperGateway {
         $releaseLease=$false
         $child = Start-Process -FilePath "$env:SystemRoot/System32/cmd.exe" -ArgumentList @('/d','/s','/c', ('""' + $launcher + '" /INLINE"')) -WindowStyle Hidden -PassThru -RedirectStandardOutput ($prefix+'.stdout.log') -RedirectStandardError ($prefix+'.stderr.log')
         try {
+            if($Action -eq 'ensure') {
+                $clock=[Diagnostics.Stopwatch]::StartNew()
+                while($clock.Elapsed.TotalSeconds -lt [int]$spec.config.timeout_seconds) {
+                    $remaining=[int][Math]::Floor([int]$spec.config.timeout_seconds-$clock.Elapsed.TotalSeconds)
+                    if($remaining -lt 1){break}
+                    $api=& $ApiProbe ([Math]::Min(2,$remaining))
+                    if($api.state -eq 'ready') {
+                        $releaseLease=$true
+                        return @{state='api_ready';api='connected';account_identity='not_checked';historical_data='not_checked';exit_code=0}
+                    }
+                    if($api.state -ne 'not_ready'){return @{state='blocked';code=$api.code;exit_code=2}}
+                    if($child.HasExited){$releaseLease=$true;return @{state='child_exited';exit_code=$child.ExitCode;api='not_checked'}}
+                    $remainingMs=[int]([int]$spec.config.timeout_seconds*1000-$clock.Elapsed.TotalMilliseconds)
+                    if($remainingMs -gt 0){Start-Sleep -Milliseconds ([Math]::Min(1000,$remainingMs))}
+                }
+                return @{state='observation_timeout';api='not_ready';historical_data='not_checked';exit_code=3}
+            }
             if (-not $child.WaitForExit([int]$spec.config.timeout_seconds * 1000)) {
                 return @{state='observation_timeout';authentication='not_checked';api='not_checked';historical_data='not_checked';exit_code=3}
             }

@@ -5,7 +5,7 @@ import os
 
 from .config import TeamConfig
 from .paths import validate_external
-from .processes import envelope
+from .processes import envelope, child_environment
 from competition_tools.datasets.spec import load_spec
 from competition_tools.datasets.providers import readiness
 from competition_tools.datasets.quality import inspect_dataset
@@ -13,9 +13,25 @@ from competition_tools.datasets.storage import publish_dataset, write_manifest
 
 
 def execute(
-    action: str, config: TeamConfig, spec_path: Path, manifest_path: Path | None = None
+    action: str,
+    config: TeamConfig,
+    spec_path: Path,
+    manifest_path: Path | None = None,
+    *,
+    ensure_gateway: bool = False,
+    gateway_config: Path | None = None,
+    gateway_workspace: Path | None = None,
+    gateway_wrapper: Path | None = None,
 ) -> dict:
     spec = load_spec(validate_external(spec_path))
+    if ensure_gateway and (action != "acquire" or spec["source"] != "ibkr"):
+        raise ValueError(
+            "Gateway startup is only available for explicit IBKR acquisition"
+        )
+    if not ensure_gateway and any(
+        p is not None for p in (gateway_config, gateway_workspace, gateway_wrapper)
+    ):
+        raise ValueError("Gateway arguments require explicit opt-in")
     capability = readiness(spec)
     if action == "inspect":
         if manifest_path is None:
@@ -42,7 +58,22 @@ def execute(
     except FileExistsError:
         raise ValueError("ACQUISITION_IN_PROGRESS") from None
     staging = destination.with_name(destination.name + ".partial")
+    gateway_status = None
     try:
+        if ensure_gateway:
+            from .gateway import ensure_gateway as ensure
+
+            gateway_status = ensure(
+                Path(spec["credential_file"]),
+                launcher_config=gateway_config,
+                workspace=gateway_workspace,
+                wrapper=gateway_wrapper,
+                environment=child_environment(config),
+            )
+            if gateway_status["state"] != "ready":
+                return envelope(
+                    "data", issues=[gateway_status["code"]], projects=[gateway_status]
+                )
         receipt = acquire(spec, staging)
         # Retain partial acquisition in owned staging so the same spec can resume.
         if receipt["status"] == "acquired":
@@ -57,7 +88,8 @@ def execute(
     return envelope(
         "data",
         issues=[] if receipt["status"] == "acquired" else ["PARTIAL_COVERAGE"],
-        projects=[
+        projects=([gateway_status] if gateway_status is not None else [])
+        + [
             {
                 "status": receipt["status"],
                 "receipt": str(manifest),

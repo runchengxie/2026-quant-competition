@@ -69,6 +69,22 @@ The wrapper acquires an exclusive `launch.lease` in the private log directory an
 
 Rollback is manual: disable only a separately approved scheduled task, stop the helper through the normal UI with user approval, and return to the unchanged manual Gateway startup. Do not remove shared tools, credentials or settings automatically.
 
+## Optional data-task login precondition
+
+`team.py data acquire --ensure-gateway` is an explicit opt-in for `source=ibkr` only. The default remains no startup. `plan`, `inspect`, offline evaluation and other providers reject this flag. A read-only Paper API probe runs first. If API is already connected, no launcher or desktop action is needed. Otherwise Windows, an existing desktop, verified owner-only IBC deployment, prepared runtime and `activation_authorized=true` are required.
+
+```powershell
+& $pythonPath team.py data acquire --config $teamConfig --spec $datasetSpec --ensure-gateway --gateway-config $launcherJson --gateway-workspace $workspaceToml --gateway-wrapper $deployedWrapper
+```
+
+Use a stable external deployment of both `Start-PaperGateway.ps1` and `PaperGateway.psm1`, and an installed root environment with the optional `broker-data` dependencies. Do not point scheduled tasks at a worktree. The helper invokes the existing wrapper once with `-Action ensure`, observes API readiness for the configured 30–300 seconds, then independently probes the API again before data acquisition. A probe failure blocks acquisition. No account identity or historical-data entitlement is certified by API readiness.
+
+The endpoint JSON referenced by the dataset's `credential_file` contains only `host=127.0.0.1`, `port=4002` and a positive integer `client_id`. Despite that field name, it is not a login-password file. Put `IbLoginId` and `IbPassword` only in the private IBC INI, never a repository `.env`, JSON, arguments or task XML. Manual mobile confirmation remains necessary when requested.
+
+The new `ensure` wrapper mode releases its launch lease only after known API readiness or normal child exit. Timeout, failed probe or uncertain startup retains the lease; it does not kill Gateway, retry login or take over a session. An outer 330-second observation timeout can end the wrapper alone on Windows, leaving Gateway and the lease for manual inspection. Existing `start` semantics and non-launching checks remain unchanged. A read-only standalone probe is available as `python -m competition_tools.team.gateway --connection-file <external-json>`; its output contains stable codes, not credential values. SDK absence and invalid endpoints block before startup.
+
+This integrates the approved code path; it does not install IBC, enter credentials, activate a deployment, register a task or demonstrate a successful real login.
+
 ## Verification
 
 Linux CI runs the pure Python contracts. The dedicated Windows job also runs native PowerShell tests with synthetic children, covering non-launching checks, redaction, interactive-session gating, private output and child failures. Tests do not install IBC, authenticate an account or call broker orders. These remain deployment checks. See [release checks](release-checks.md).

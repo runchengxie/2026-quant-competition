@@ -14,7 +14,7 @@ python team.py data acquire --config /absolute/private/team.toml --spec /absolut
 python team.py data inspect --config /absolute/private/team.toml --spec /absolute/private/dataset.json --manifest /absolute/data/2026-quant-competition/datasets/spot-study/v1/manifest.json
 ```
 
-`plan` 和 `inspect` 不发起网络请求。`acquire` 不启动 Gateway、不登录、不购买数据、不下单。输出沿用 `competition.team_result.v1`。部分覆盖返回退出码2及 `PARTIAL_COVERAGE`，不算下载完成。
+`plan` 和 `inspect` 不发起网络请求。`acquire` 默认不启动Gateway或登录。只有显式IBKR取数可通过 `--ensure-gateway` 和已启用的私有部署使用[Paper登录前置步骤](../operations/gateway-login.zh-CN.md#数据任务的可选登录前置步骤)，任何模式均不购买数据或下单。输出沿用 `competition.team_result.v1`。部分覆盖返回退出码2及 `PARTIAL_COVERAGE`，不算下载完成。
 
 数据位于配置的 `DATA_ROOT/2026-quant-competition/datasets/<dataset-id>/<version>/`。成功发布不覆盖已有版本。未完成的任务保留在 `<version>.partial`，包含 manifest、receipt、请求日志和文件断点。相同规格再次运行时校验已完成文件的哈希并补充缺失下载，规格变化不能复用原断点。上游档案修订需建立新版本重新下载，恢复校验只确认本地保留字节，不能证明上游此后没有修订。
 

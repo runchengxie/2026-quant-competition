@@ -14,7 +14,7 @@ python team.py data acquire --config /absolute/private/team.toml --spec /absolut
 python team.py data inspect --config /absolute/private/team.toml --spec /absolute/private/dataset.json --manifest /absolute/data/2026-quant-competition/datasets/spot-study/v1/manifest.json
 ```
 
-`plan` and `inspect` make no network requests. `acquire` never starts Gateway, logs in, purchases data or submits orders. The result uses the existing `competition.team_result.v1` envelope. Partial coverage returns exit2 with `PARTIAL_COVERAGE`; it is not a completed acquisition.
+`plan` and `inspect` make no network requests. By default, `acquire` does not start Gateway or log in. Only explicit IBKR acquisition may use the optional [Paper login precondition](../operations/gateway-login.md#optional-data-task-login-precondition) with `--ensure-gateway` and an activated private deployment. No mode purchases data or submits orders. The result uses the existing `competition.team_result.v1` envelope. Partial coverage returns exit2 with `PARTIAL_COVERAGE`; it is not a completed acquisition.
 
 Data lives below configured `DATA_ROOT/2026-quant-competition/datasets/<dataset-id>/<version>/`. Successful publication is exclusive. Partial runs remain in `<version>.partial` with a manifest, receipt, request ledger and per-file checkpoints. Repeating the identical specification verifies completed hashes and resumes missing downloads. A different specification cannot reuse that staging directory. Existing published versions are never overwritten. A revised upstream archive requires a new version and new acquisition. Resume verifies retained bytes, not whether the upstream publisher has since revised them.
 

@@ -69,6 +69,22 @@ icacls $privateDirectory
 
 回退由人执行：只禁用单独批准的计划任务，经用户同意后通过正常界面退出辅助程序，再恢复未改动的手动 Gateway 启动方式。不要自动删除共享工具、凭据或设置。
 
+## 数据任务的可选登录前置步骤
+
+`team.py data acquire --ensure-gateway` 只对 `source=ibkr` 显式启用，默认仍不启动。`plan`、`inspect`、离线评估和其他来源拒绝这个参数。先用只读客户端检查 Paper API，已连接时不启动工具，也不要求桌面操作。否则需要 Windows、已登录桌面、经过校验且仅所有者可访问的 IBC 部署、已准备运行副本及 `activation_authorized=true`。
+
+```powershell
+& $pythonPath team.py data acquire --config $teamConfig --spec $datasetSpec --ensure-gateway --gateway-config $launcherJson --gateway-workspace $workspaceToml --gateway-wrapper $deployedWrapper
+```
+
+需在稳定外部部署中同时保留 `Start-PaperGateway.ps1`、`PaperGateway.psm1`，根环境安装可选的 `broker-data` 依赖。计划任务不能指向 worktree。工具只调用一次已有包装器的 `-Action ensure`，按配置观察30–300秒内的API状态，并在开始取数据前独立复查一次。检查失败就阻止取数。API就绪不能认证账户身份或历史行情权限。
+
+数据规格的 `credential_file` 在这里仅引用端点JSON，内容为 `host=127.0.0.1`、`port=4002` 和正整数 `client_id`，不保存登录密码。`IbLoginId`、`IbPassword` 只写私有IBC INI，不放仓库 `.env`、JSON、命令行或任务XML。出现手机验证时仍由人确认。
+
+新增 `ensure` 模式只有在确认API就绪或子进程正常退出后才释放启动锁。超时、探测失败或启动状态不明时保留锁，不结束Gateway、不循环登录、不接管会话。外层330秒观察超时在Windows只结束包装器，Gateway及锁保留供人工检查。原 `start` 和非启动检查的语义不变。独立只读检查命令为 `python -m competition_tools.team.gateway --connection-file <external-json>`，只输出稳定代码，不包含凭据值。SDK缺失或端点配置无效时不会启动。
+
+这里交付的是已批准的代码接入，不安装IBC、不填写凭据、不启用部署、不注册任务，也不代表真实登录已验证成功。
+
 ## 验证范围
 
 Linux CI 运行纯 Python 契约测试，专门的 Windows CI 还使用临时假程序测试 PowerShell，覆盖非启动检查、脱敏、桌面会话限制、私有输出和子进程失败。测试不安装 IBC、不认证账户、不下单，这些仍属于部署验证。参见[发布检查](release-checks.md)。
