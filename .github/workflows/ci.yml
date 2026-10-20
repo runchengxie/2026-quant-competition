@@ -45,9 +45,12 @@ jobs:
       - name: Install and exercise standalone team profile
         shell: bash
         run: |
-          python team.py init --config "$RUNNER_TEMP/team.toml" --data-root "$RUNNER_TEMP/team-data" --environment-root "$RUNNER_TEMP/team-envs"
-          python team.py setup --config "$RUNNER_TEMP/team.toml" --profile offline
-          python team.py doctor --config "$RUNNER_TEMP/team.toml"
+          uv venv "$RUNNER_TEMP/team-bootstrap" --python 3.12
+          uv pip install --python "$RUNNER_TEMP/team-bootstrap/bin/python" --no-deps -e .
+          source "$RUNNER_TEMP/team-bootstrap/bin/activate"
+          python -m competition_tools.team init --config "$RUNNER_TEMP/team.toml" --data-root "$RUNNER_TEMP/team-data" --environment-root "$RUNNER_TEMP/team-envs"
+          python -m competition_tools.team setup --config "$RUNNER_TEMP/team.toml" --profile offline
+          python -m competition_tools.team doctor --config "$RUNNER_TEMP/team.toml"
           "$RUNNER_TEMP/team-envs/root/bin/python" -m competition_tools.check_team_delivery --config "$RUNNER_TEMP/team.toml"
           cd "$RUNNER_TEMP"
           export HOME="$RUNNER_TEMP/empty-home"

@@ -11,6 +11,8 @@
 | `research/equity-lab` | 股票日线实验和六市场国际组合诊断 |
 | `research/crypto-mm` | 加密市场日线实验和基于订单簿的做市模拟 |
 | `research/platform-compare` | 本地现金与股数账本、记账对照和五市场下一开盘实验 |
+| `scripts/windows` | Paper Gateway 操作脚本 |
+| `config` 和 `schemas` | 配置模板和数据格式 |
 | `src/competition_tools` | 安装、准备数据、评估和检查报告 |
 | `src/packages` | 目标持仓格式、市场规则、风控、审计和对账 |
 | `src/strategies/nira` | 读取外部生成的 Nira 目标文件 |
@@ -20,6 +22,8 @@
 | `tests` | 根项目测试 |
 
 三个研究包各自管理依赖和锁文件，都不需要安装外部量化框架。从原框架提取的记账代码保留 Apache-2.0 许可和来源清单，研究适配代码保留各自的目录级许可。
+
+安装后通过 `python -m competition_tools.team` 运行团队命令。外部引导环境的安装方法见[快速开始](operations/team-quickstart.zh-CN.md)，完整的代码分工见[架构说明](architecture.zh-CN.md)。
 
 ## 执行交易前要知道的事
 

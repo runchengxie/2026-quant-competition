@@ -70,7 +70,7 @@ Venue, product identity and account currency remain unverified. These PnL figure
 Use the [team quickstart](../operations/team-quickstart.md) and external configuration. An evaluation specification has `schema` equal to `competition.evaluation_spec.v1` and a `manifests` array of absolute dataset-manifest paths:
 
 ```sh
-python team.py evaluate --config /absolute/private/team.toml --spec /absolute/private/evaluation.json --output-root /absolute/data/new-evaluation
+python -m competition_tools.team evaluate --config /absolute/private/team.toml --spec /absolute/private/evaluation.json --output-root /absolute/data/new-evaluation
 ```
 
 This command currently dispatches the two daily crypto strategies at 0 and 10 bps in the separate crypto environment, up to 32 jobs and 1 hour. It does not run the equity or maker matrices. For an explicit BTC/ETH subset, run in the installed crypto environment:

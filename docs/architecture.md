@@ -1,6 +1,6 @@
 # Research and execution boundaries
 
-[简体中文](ARCHITECTURE.zh-CN.md)
+[简体中文](architecture.zh-CN.md)
 
 This repository contains a Paper-first execution boundary, competition operations material, three independent offline research packages and a bilingual project demo. External quantitative providers remain independent repositories. No submodules or provider source imports are required by the offline packages.
 
@@ -8,9 +8,11 @@ Competition-specific offline research and data preparation belong to this reposi
 
 ## Current ownership
 
+Paths in code spans are repository-relative. The CLI implementation lives in `src/competition_tools/team`, available after installation as `python -m competition_tools.team`. Initial setup uses an external bootstrap environment, as described in the team quickstart. Operational wrappers live in `scripts/windows`. `research` contains independently packaged projects, `config` holds runtime settings and templates, and `schemas` defines artifact contracts.
+
 | Capability | Code or contract |
 | --- | --- |
-| Portable setup, local readiness and synthetic demo orchestration | `team.py`, `src/competition_tools/team`, [team quickstart](docs/operations/team-quickstart.md) |
+| Portable setup, local readiness and synthetic demo orchestration | `src/competition_tools/team`, [team quickstart](operations/team-quickstart.md) |
 | Target handoff and order/event contracts | `src/packages/contracts` |
 | Market normalization, risk, audit and reconciliation | `src/packages/market_model`, `src/packages/risk`, `src/packages/audit`, `src/packages/reconciliation` |
 | IBKR mapping and execution application | `src/adapters/ibkr`, `src/apps/execution_runner` |
@@ -22,11 +24,11 @@ Competition-specific offline research and data preparation belong to this reposi
 
 Execution code does not import any research package. Root acceptance tools consume JSON/CSV and CLI outputs, not leaf Python objects. A successful research report is not an execution command. The published execution v1 target schema supports JP/US; runtime normalization also recognizes HK. That existing mismatch is unresolved. Crypto research does not expand the execution contract.
 
-The equity package also owns the distinct six-market international diagnostic. Five-market next-open replay belongs only to the optional accounting package. See [international experiments](docs/research/international-experiments.md) for exact contracts and model limits. Neither replaces the default rotation or execution handoff.
+The equity package also owns the distinct six-market international diagnostic. Five-market next-open replay belongs only to the optional accounting package. See [international experiments](research/international-experiments.md) for exact contracts and model limits. Neither replaces the default rotation or execution handoff.
 
 ## Data flow and identity
 
-Standalone [dataset preparation](docs/research/datasets.md) adds explicit source specifications, bounded downloads and external immutable manifests under `src/competition_tools/datasets`. Root evaluation dispatches the separately installed crypto daily CLI and reads JSON results. It does not import leaf packages or reuse daily candles as event-book inputs. The separate `strategy-expansion.v1.json` Pages projection carries new retrospective aggregates; the original 24-result snapshot stays unchanged.
+Standalone [dataset preparation](research/datasets.md) adds explicit source specifications, bounded downloads and external immutable manifests under `src/competition_tools/datasets`. Root evaluation dispatches the separately installed crypto daily CLI and reads JSON results. It does not import leaf packages or reuse daily candles as event-book inputs. The separate `strategy-expansion.v1.json` Pages projection carries new retrospective aggregates; the original 24-result snapshot stays unchanged.
 
 ```text
 external dataset + explicit manifest
@@ -36,7 +38,7 @@ external dataset + explicit manifest
   → separate review before any public aggregate publication
 ```
 
-Raw inputs, private configuration, receipts, reports, models and figures stay outside source under configured owner data paths. Receipts bind metadata and relative file references to hashes of the original bytes. This is change detection, not independent vendor authentication or atomic snapshot isolation. Input inspection, experiment acceptance and execution handoff are separate contracts. See [the acceptance guide](docs/research/research-acceptance.md).
+Raw inputs, private configuration, receipts, reports, models and figures stay outside source under configured owner data paths. Receipts bind metadata and relative file references to hashes of the original bytes. This is change detection, not independent vendor authentication or atomic snapshot isolation. Input inspection, experiment acceptance and execution handoff are separate contracts. See [the acceptance guide](research/research-acceptance.md).
 
 Execution flow remains:
 
@@ -49,7 +51,7 @@ The broker event log owns event truth. Paper is the default account environment,
 
 ## External reuse and delivery limits
 
-`research/platform-compare` now owns its USD price ledger. Both HK/US comparisons and five-market next-open experiments install/import neither `quant-platform` nor `research-contracts`. See the [accounting comparison guide](docs/research/accounting-comparison.md) for source ancestry, licensing and historical compatibility. External datasets and Nira signals still use explicit file contracts; independent environments retain dependency isolation.
+`research/platform-compare` now owns its USD price ledger. Both HK/US comparisons and five-market next-open experiments install/import neither `quant-platform` nor `research-contracts`. See the [accounting comparison guide](research/accounting-comparison.md) for source ancestry, licensing and historical compatibility. External datasets and Nira signals still use explicit file contracts; independent environments retain dependency isolation.
 
 Read-only local verification found the inspected platform default IBKR factory imports an unavailable `quant_execution_engine.broker.ibkr` module. This is separate from this repository's IBKR implementation. The inspected `quant-backtest-runtime` requires Linux and is not enabled on Windows. Passing selected provider tests does not establish an operational provider-to-broker chain.
 

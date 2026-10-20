@@ -11,6 +11,8 @@ Research prepares data, tests strategy ideas and writes reports. Execution reads
 | `research/equity-lab` | Daily equity experiments and the six-market international diagnostic |
 | `research/crypto-mm` | Crypto daily experiments and order-book market-making simulation |
 | `research/platform-compare` | Local cash/share accounting, comparisons and five-market next-open experiments |
+| `scripts/windows` | Paper Gateway operational wrappers |
+| `config` and `schemas` | Configuration templates and data formats |
 | `src/competition_tools` | Setup, data preparation, evaluation and report checks |
 | `src/packages` | Target definitions, market rules, risk checks, audit and reconciliation |
 | `src/strategies/nira` | Read externally produced Nira target files |
@@ -20,6 +22,8 @@ Research prepares data, tests strategy ideas and writes reports. Execution reads
 | `tests` | Root package checks |
 
 Research packages have separate dependencies and lockfiles. All three run without installing external quant frameworks. Accounting code derived from the former framework retains Apache-2.0 licensing and its source inventory; research adapters keep their scoped licenses.
+
+The installed team CLI runs as `python -m competition_tools.team`. Follow the [quickstart](operations/team-quickstart.md) for its external bootstrap environment. Full package boundaries are in [architecture](architecture.md).
 
 ## Execution details
 

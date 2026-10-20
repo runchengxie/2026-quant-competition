@@ -37,4 +37,3 @@ uv run --locked python -m competition_tools.check_pages_content --source-dir sit
 ```
 
 The browser tests cover saved preferences, system changes, both locales, mobile layout, and text/table/chart contrast. Set `PAGES_TEST_OUTPUT` to a task directory under your configured `DATA_ROOT` to retain browser artifacts; otherwise they go to the system temporary directory. The generated static site is in `site/dist/`. The Pages workflow publishes that directory after the checks pass.
-

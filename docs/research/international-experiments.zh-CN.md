@@ -12,7 +12,7 @@
 先完成[团队环境安装](../operations/team-quickstart.zh-CN.md)，将[虚构六市场配置](../../config/examples/international-six-market.synthetic.yaml)复制到 Git 外，将 `data_root` 改为自己的外部输入绝对路径。模板只有新造的示例权重，没有观测数据，也不能证明数据是合成的或具有使用授权。
 
 ```sh
-python team.py run international --config /absolute/private/team.toml --experiment-config /absolute/private/six-market.yml --output-root /absolute/data/six-market-run-001
+python -m competition_tools.team run international --config /absolute/private/team.toml --experiment-config /absolute/private/six-market.yml --output-root /absolute/data/six-market-run-001
 ```
 
 也可用已安装股票环境运行 `python -m equity_lab.international.six_market_run --config FILE --output-dir NEW_EXTERNAL_DIR --json`。六个资产 CSV 需要 `date,close,volume`，五个汇率 CSV 需要 `date,usd_per_local`。日期是当地日观测，并非日内可用时间戳。基准货币为 USD，资产与汇率必须有 24 个共同日历月。缺少加拿大或其他市场时失败，不缩减实验范围。通过 `distribution_files` 提供的分配 CSV 需要 `date,cash_per_share,currency,source`。
@@ -22,8 +22,8 @@ python team.py run international --config /absolute/private/team.toml --experime
 ## 可选 next-open 回放
 
 ```sh
-python team.py setup --config /absolute/private/team.toml --profile framework
-python team.py run next-open --config /absolute/private/team.toml --experiment-config /absolute/private/next-open.yml --output-root /absolute/data/next-open-run-001
+python -m competition_tools.team setup --config /absolute/private/team.toml --profile framework
+python -m competition_tools.team run next-open --config /absolute/private/team.toml --experiment-config /absolute/private/next-open.yml --output-root /absolute/data/next-open-run-001
 ```
 
 也可用已安装的独立记账环境运行 `python -m platform_compare.next_open.run --config FILE --output-dir NEW_EXTERNAL_DIR --json`。显式配置包括 `experiment_id`、`strategy_id`、`data_root`、`target_schedule_path`、`signal_cutoff`、`initial_cash_usd`、`sizing_mode`、`max_price_age_days`、`max_fx_age_days`、`production_eligible`、`return_basis` 和 `reference_cost_bps`。保留的实验协议要求截止日期 `2026-10-01`、分数持仓、`production_eligible: false`、`return_basis: usd_price_nav` 和参考成本 `{commission: 5, equity_slippage: 5, fx: 0}`。这些是诊断协议限制，不代表已选定交易策略。本项目不分发私有调仓计划或默认配置。

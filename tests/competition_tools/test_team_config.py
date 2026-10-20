@@ -14,16 +14,14 @@ from competition_tools.team.paths import validate_external
 ROOT = Path(__file__).resolve().parents[2]
 
 
-@pytest.mark.parametrize("module", [False, True])
-def test_help_without_personal_config(tmp_path, module):
+def test_help_without_personal_config(tmp_path):
     env = os.environ.copy()
     env.update(
         HOME=str(tmp_path), USERPROFILE=str(tmp_path), PYTHONPATH=str(ROOT / "src")
     )
     env.pop("WORKSPACE_CONFIG", None)
-    command = ["-m", "competition_tools.team"] if module else [str(ROOT / "team.py")]
     result = subprocess.run(
-        [sys.executable, *command, "--help"],
+        [sys.executable, "-m", "competition_tools.team", "--help"],
         env=env,
         cwd=tmp_path,
         capture_output=True,

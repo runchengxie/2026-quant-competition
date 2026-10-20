@@ -42,6 +42,8 @@ icacls $privateDirectory
 
 ## Non-launching checks
 
+Source wrappers are under `scripts/windows` (previously `operations/windows`). Copy both files together when preparing a new stable external deployment. Existing external deployment paths do not change when the source directory moves.
+
 Use an explicit Python executable from a stable installed root environment. Help requires no private configuration:
 
 ```powershell
@@ -65,16 +67,16 @@ Activation requires the user's approval to install IBC, privately enter credenti
 
 The wrapper acquires an exclusive `launch.lease` in the private log directory and revalidates the specification while holding it before starting the hidden console helper. The Gateway UI remains available. Complete mobile authentication manually. Child output stays in owner-protected log files. Exit codes are propagated. An observation timeout returns code 3 without killing or restarting the child, and does not establish whether authentication succeeded. A timeout or uncertain spawn failure retains `launch.lease`, blocking subsequent attempts. Check the private desktop and process state before manually removing that one lease file. A normally exited child releases it. Confirm Paper identity and read-only API locally, then test historical data independently. No orders are authorized.
 
-`Export-PaperGatewayTask` in `operations/windows/PaperGateway.psm1` can write an unregistered, disabled task XML artifact for review. It requires explicit stable absolute paths and an owner SID. It uses `InteractiveToken`, `LeastPrivilege`, a six-minute task limit and no retry policy. It must reference a stable deployed wrapper, never a worktree. It does not register or enable a task. A logged-on desktop is required. Automatic Windows login and stored task passwords are unsupported.
+`Export-PaperGatewayTask` in `scripts/windows/PaperGateway.psm1` can write an unregistered, disabled task XML artifact for review. It requires explicit stable absolute paths and an owner SID. It uses `InteractiveToken`, `LeastPrivilege`, a six-minute task limit and no retry policy. It must reference a stable deployed wrapper, never a worktree. It does not register or enable a task. A logged-on desktop is required. Automatic Windows login and stored task passwords are unsupported.
 
 Rollback is manual: disable only a separately approved scheduled task, stop the helper through the normal UI with user approval, and return to the unchanged manual Gateway startup. Do not remove shared tools, credentials or settings automatically.
 
 ## Optional data-task login precondition
 
-`team.py data acquire --ensure-gateway` is an explicit opt-in for `source=ibkr` only. The default remains no startup. `plan`, `inspect`, offline evaluation and other providers reject this flag. A read-only Paper API probe runs first. If API is already connected, no launcher or desktop action is needed. Otherwise Windows, an existing desktop, verified owner-only IBC deployment, prepared runtime and `activation_authorized=true` are required.
+`python -m competition_tools.team data acquire --ensure-gateway` is an explicit opt-in for `source=ibkr` only. The default remains no startup. `plan`, `inspect`, offline evaluation and other providers reject this flag. A read-only Paper API probe runs first. If API is already connected, no launcher or desktop action is needed. Otherwise Windows, an existing desktop, verified owner-only IBC deployment, prepared runtime and `activation_authorized=true` are required.
 
 ```powershell
-& $pythonPath team.py data acquire --config $teamConfig --spec $datasetSpec --ensure-gateway --gateway-config $launcherJson --gateway-workspace $workspaceToml --gateway-wrapper $deployedWrapper
+& $pythonPath -m competition_tools.team data acquire --config $teamConfig --spec $datasetSpec --ensure-gateway --gateway-config $launcherJson --gateway-workspace $workspaceToml --gateway-wrapper $deployedWrapper
 ```
 
 Use a stable external deployment of both `Start-PaperGateway.ps1` and `PaperGateway.psm1`, and an installed root environment with the optional `broker-data` dependencies. Do not point scheduled tasks at a worktree. The helper invokes the existing wrapper once with `-Action ensure`, observes API readiness for the configured 30–300 seconds, then independently probes the API again before data acquisition. A probe failure blocks acquisition. No account identity or historical-data entitlement is certified by API readiness.

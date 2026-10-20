@@ -9,9 +9,9 @@ The competition repository owns these offline preparation tools. They require no
 Install the locked offline profile using [team quickstart](../operations/team-quickstart.md). Keep `competition.team.v1` unchanged. Create a separate external JSON dataset specification, then run:
 
 ```sh
-python team.py data plan --config /absolute/private/team.toml --spec /absolute/private/dataset.json
-python team.py data acquire --config /absolute/private/team.toml --spec /absolute/private/dataset.json
-python team.py data inspect --config /absolute/private/team.toml --spec /absolute/private/dataset.json --manifest /absolute/data/2026-quant-competition/datasets/spot-study/v1/manifest.json
+python -m competition_tools.team data plan --config /absolute/private/team.toml --spec /absolute/private/dataset.json
+python -m competition_tools.team data acquire --config /absolute/private/team.toml --spec /absolute/private/dataset.json
+python -m competition_tools.team data inspect --config /absolute/private/team.toml --spec /absolute/private/dataset.json --manifest /absolute/data/2026-quant-competition/datasets/spot-study/v1/manifest.json
 ```
 
 `plan` and `inspect` make no network requests. By default, `acquire` does not start Gateway or log in. Only explicit IBKR acquisition may use the optional [Paper login precondition](../operations/gateway-login.md#optional-data-task-login-precondition) with `--ensure-gateway` and an activated private deployment. No mode purchases data or submits orders. The result uses the existing `competition.team_result.v1` envelope. Partial coverage returns exit2 with `PARTIAL_COVERAGE`; it is not a completed acquisition.

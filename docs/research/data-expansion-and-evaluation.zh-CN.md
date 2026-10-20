@@ -70,7 +70,7 @@ B0至B3均在2026-03-19至21的三天归档上重跑，记录输入文件及引�
 先按[团队快速开始](../operations/team-quickstart.zh-CN.md)配置外部环境。评估规格的 `schema` 为 `competition.evaluation_spec.v1`，`manifests` 为数据manifest绝对路径数组：
 
 ```sh
-python team.py evaluate --config /absolute/private/team.toml --spec /absolute/private/evaluation.json --output-root /absolute/data/new-evaluation
+python -m competition_tools.team evaluate --config /absolute/private/team.toml --spec /absolute/private/evaluation.json --output-root /absolute/data/new-evaluation
 python -m crypto_mm.daily --manifest /absolute/data/manifest.json --products BTCUSDT ETHUSDT --strategy momentum_63d --fee-bps 10 --output-root /absolute/data/new-btc-eth-run
 ```
 

@@ -42,6 +42,8 @@ icacls $privateDirectory
 
 ## 不启动进程的检查
 
+源码包装脚本现位于 `scripts/windows`，原路径为 `operations/windows`。准备新的稳定外部部署时，需同时复制这两个文件。源码目录迁移不改变既有外部部署路径。
+
 显式指定稳定安装的根项目环境中的 Python。帮助命令不需要私有配置：
 
 ```powershell
@@ -65,16 +67,16 @@ icacls $privateDirectory
 
 脚本先在私有日志目录独占创建 `launch.lease`，持锁重新检查配置，再启动隐藏的控制台辅助进程，Gateway 自身的界面仍供用户完成验证。子进程输出仅写入受保护的日志，退出码会传递给调用方。观察超时返回代码 3，不结束或重启子进程，也不推断认证成功与否。超时或无法确定启动结果时会保留 `launch.lease`，阻止再次启动。请先人工检查私有桌面和进程状态，再手动删除这一份锁文件。子进程正常退出时会释放锁。请在本地确认 Paper 身份及 API 只读，再分别检查历史行情。这里没有下单授权。
 
-`operations/windows/PaperGateway.psm1` 中的 `Export-PaperGatewayTask` 可生成未注册、默认禁用的任务 XML，供审查使用。需要显式的稳定绝对路径和用户 SID，使用 `InteractiveToken`、`LeastPrivilege`、六分钟任务时限，不设置重试。必须引用稳定部署路径，不能引用 worktree。它不会注册或启用任务，需要已登录的桌面，不支持 Windows 自动登录或保存任务密码。
+`scripts/windows/PaperGateway.psm1` 中的 `Export-PaperGatewayTask` 可生成未注册、默认禁用的任务 XML，供审查使用。需要显式的稳定绝对路径和用户 SID，使用 `InteractiveToken`、`LeastPrivilege`、六分钟任务时限，不设置重试。必须引用稳定部署路径，不能引用 worktree。它不会注册或启用任务，需要已登录的桌面，不支持 Windows 自动登录或保存任务密码。
 
 回退由人执行：只禁用单独批准的计划任务，经用户同意后通过正常界面退出辅助程序，再恢复未改动的手动 Gateway 启动方式。不要自动删除共享工具、凭据或设置。
 
 ## 数据任务的可选登录前置步骤
 
-`team.py data acquire --ensure-gateway` 只对 `source=ibkr` 显式启用，默认仍不启动。`plan`、`inspect`、离线评估和其他来源拒绝这个参数。先用只读客户端检查 Paper API，已连接时不启动工具，也不要求桌面操作。否则需要 Windows、已登录桌面、经过校验且仅所有者可访问的 IBC 部署、已准备运行副本及 `activation_authorized=true`。
+`python -m competition_tools.team data acquire --ensure-gateway` 只对 `source=ibkr` 显式启用，默认仍不启动。`plan`、`inspect`、离线评估和其他来源拒绝这个参数。先用只读客户端检查 Paper API，已连接时不启动工具，也不要求桌面操作。否则需要 Windows、已登录桌面、经过校验且仅所有者可访问的 IBC 部署、已准备运行副本及 `activation_authorized=true`。
 
 ```powershell
-& $pythonPath team.py data acquire --config $teamConfig --spec $datasetSpec --ensure-gateway --gateway-config $launcherJson --gateway-workspace $workspaceToml --gateway-wrapper $deployedWrapper
+& $pythonPath -m competition_tools.team data acquire --config $teamConfig --spec $datasetSpec --ensure-gateway --gateway-config $launcherJson --gateway-workspace $workspaceToml --gateway-wrapper $deployedWrapper
 ```
 
 需在稳定外部部署中同时保留 `Start-PaperGateway.ps1`、`PaperGateway.psm1`，根环境安装可选的 `broker-data` 依赖。计划任务不能指向 worktree。工具只调用一次已有包装器的 `-Action ensure`，按配置观察30–300秒内的API状态，并在开始取数据前独立复查一次。检查失败就阻止取数。API就绪不能认证账户身份或历史行情权限。

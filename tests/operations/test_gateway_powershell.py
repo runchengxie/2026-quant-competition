@@ -11,8 +11,8 @@ pytestmark = pytest.mark.skipif(
     os.name != "nt", reason="Native PowerShell tests run in Windows CI"
 )
 ROOT = Path(__file__).resolve().parents[2]
-MODULE = ROOT / "operations/windows/PaperGateway.psm1"
-WRAPPER = ROOT / "operations/windows/Start-PaperGateway.ps1"
+MODULE = ROOT / "scripts/windows/PaperGateway.psm1"
+WRAPPER = ROOT / "scripts/windows/Start-PaperGateway.ps1"
 
 
 def run(script, tmp_path):
@@ -132,6 +132,29 @@ $result=& (Get-Module PaperGateway) {{param($python,$script)
     assert payload["result"]["code"] == "API_PROBE_TIMEOUT"
     assert payload["elapsed"] < 5
     assert "PRIVATE_SENTINEL" not in value.stdout + value.stderr
+
+
+def test_default_probe_allows_interpreter_startup_before_connect_timeout(tmp_path):
+    import sys
+
+    package = tmp_path / "probe-fixture/competition_tools/team"
+    package.mkdir(parents=True)
+    (package.parent / "__init__.py").write_text("")
+    (package / "__init__.py").write_text("")
+    (package / "gateway.py").write_text(
+        "import time\ntime.sleep(3)\nprint('{\"state\":\"ready\"}')\n"
+    )
+    value = run(
+        f"""
+$env:PYTHONPATH='{tmp_path / 'probe-fixture'}'
+Import-Module '{MODULE}' -Force
+Invoke-PaperGateway -Action ensure -PythonPath '{sys.executable}' -ApiConnectionPath '{tmp_path}/endpoint.json' -SpecProbe {{throw 'must not start'}} -InteractiveProbe {{$false}} | ConvertTo-Json -Compress
+""",
+        tmp_path,
+    )
+    assert value.returncode == 0, value.stderr
+    assert json.loads(value.stdout)["state"] == "api_ready"
+    assert not (tmp_path / "launch.lease").exists()
 
 
 def test_child_exit_and_private_output(tmp_path):
