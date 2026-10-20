@@ -43,11 +43,12 @@ function Invoke-PaperGateway {
     try {
         if ($Action -eq 'ensure') {
             if ($null -eq $ApiProbe) {
-                $ApiProbe={param($seconds)
-                    Invoke-PaperApiProbe -PythonPath $PythonPath -Arguments @('-m','competition_tools.team.gateway','--connection-file',$ApiConnectionPath,'--timeout',"$seconds") -BudgetSeconds $seconds
+                $ApiProbe={param($seconds,$budgetSeconds)
+                    # Include bounded interpreter/SDK startup separately from connect.
+                    Invoke-PaperApiProbe -PythonPath $PythonPath -Arguments @('-m','competition_tools.team.gateway','--connection-file',$ApiConnectionPath,'--timeout',"$seconds") -BudgetSeconds $budgetSeconds
                 }
             }
-            $api=& $ApiProbe 2
+            $api=& $ApiProbe 2 10
             if($api.state -eq 'ready'){return @{state='api_ready';api='connected';account_identity='not_checked';historical_data='not_checked';exit_code=0}}
             if($api.state -ne 'not_ready'){return @{state='blocked';code=$api.code;exit_code=2}}
         }
@@ -104,7 +105,7 @@ function Invoke-PaperGateway {
                 while($clock.Elapsed.TotalSeconds -lt [int]$spec.config.timeout_seconds) {
                     $remaining=[int][Math]::Floor([int]$spec.config.timeout_seconds-$clock.Elapsed.TotalSeconds)
                     if($remaining -lt 1){break}
-                    $api=& $ApiProbe ([Math]::Min(2,$remaining))
+                    $api=& $ApiProbe ([Math]::Min(2,$remaining)) ([Math]::Min(10,$remaining))
                     # Even injected probes must never release a lease on late readiness.
                     if($clock.Elapsed.TotalSeconds -ge [int]$spec.config.timeout_seconds){break}
                     if($api.state -eq 'ready') {
