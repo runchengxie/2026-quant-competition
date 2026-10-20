@@ -31,8 +31,8 @@ def fail(code):
     raise LauncherError(code)
 
 
-def _path(value, *, exists=True):
-    if not isinstance(value, str) or UNSAFE_PATH.search(value):
+def _path(value, *, exists=True, shell_path=True):
+    if not isinstance(value, str) or (shell_path and UNSAFE_PATH.search(value)):
         fail("INVALID_PATH")
     path = Path(value)
     if not path.is_absolute() or ".." in path.parts:
@@ -195,7 +195,9 @@ def _archive(config):
                 fail("IBC_INTEGRITY_FAILED")
             contents[entry.filename] = archive.read(entry)
             # Upstream config.ini is a demo file, never the authoritative private config.
-            actual = _path(str(install.joinpath(*name.parts)))
+            # Pinned archive members are read as bytes, never shell arguments.
+            # The official release includes shortcuts with parentheses in names.
+            actual = _path(str(install.joinpath(*name.parts)), shell_path=False)
             if not actual.is_file() or actual.read_bytes() != contents[entry.filename]:
                 fail("IBC_INTEGRITY_FAILED")
     if (
@@ -359,7 +361,10 @@ def build_launch_spec(
             if not acl_probe(runtime_path):
                 fail("UNSAFE_ACL")
             for name, content in runtime.items():
-                actual = _path(str(runtime_path.joinpath(*PurePosixPath(name).parts)))
+                actual = _path(
+                    str(runtime_path.joinpath(*PurePosixPath(name).parts)),
+                    shell_path=False,
+                )
                 if not actual.is_file() or actual.read_bytes() != content:
                     fail("RUNTIME_INTEGRITY_FAILED")
             if {
