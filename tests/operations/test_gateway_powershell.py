@@ -22,6 +22,7 @@ def run(script, tmp_path):
         ["pwsh", "-NoLogo", "-NoProfile", "-NonInteractive", "-File", str(path)],
         capture_output=True,
         text=True,
+        encoding="utf-8",
         timeout=20,
     )
 
@@ -89,6 +90,48 @@ Invoke-PaperGateway -Action ensure -SpecProbe $probe -ApiProbe {{@{{state='not_r
     assert json.loads(value.stdout)["exit_code"] == 3
     assert (tmp_path / "launch.lease").exists()
     assert len(list(tmp_path.glob("launcher-*.stdout.log"))) == 1
+
+
+def test_ensure_rejects_late_ready_and_retains_lease(tmp_path):
+    child = tmp_path / "fake.bat"
+    child.write_text("@ping -n 6 127.0.0.1 >nul\n")
+    value = run(
+        f"""
+Import-Module '{MODULE}' -Force
+$script:checks=0
+$api={{$script:checks++; if($script:checks -eq 1) {{@{{state='not_ready'}}}} else {{Start-Sleep -Seconds 3; @{{state='ready'}}}}}}
+$probe={{param($action) @{{config=@{{configured_launcher='{child}';log_directory='{tmp_path}';timeout_seconds=2;activation_authorized=$true}};launcher_sha256=(Get-FileHash -LiteralPath '{child}').Hash.ToLowerInvariant()}}}}
+Invoke-PaperGateway -Action ensure -SpecProbe $probe -ApiProbe $api -InteractiveProbe {{$true}} | ConvertTo-Json -Compress
+""",
+        tmp_path,
+    )
+    assert value.returncode == 0, value.stderr
+    assert json.loads(value.stdout)["state"] == "observation_timeout"
+    assert (tmp_path / "launch.lease").exists()
+    assert len(list(tmp_path.glob("launcher-*.stdout.log"))) == 1
+
+
+def test_probe_process_deadline_stops_only_probe(tmp_path):
+    slow = tmp_path / "slow.py"
+    slow.write_text("import time\ntime.sleep(10)\nprint('PRIVATE_SENTINEL')\n")
+    import sys
+
+    value = run(
+        f"""
+Import-Module '{MODULE}' -Force
+$clock=[Diagnostics.Stopwatch]::StartNew()
+$result=& (Get-Module PaperGateway) {{param($python,$script)
+    Invoke-PaperApiProbe -PythonPath $python -Arguments @($script) -BudgetSeconds 1
+}} '{sys.executable}' '{slow}'
+@{{result=$result;elapsed=$clock.Elapsed.TotalSeconds}} | ConvertTo-Json -Compress
+""",
+        tmp_path,
+    )
+    assert value.returncode == 0, value.stderr
+    payload = json.loads(value.stdout)
+    assert payload["result"]["code"] == "API_PROBE_TIMEOUT"
+    assert payload["elapsed"] < 5
+    assert "PRIVATE_SENTINEL" not in value.stdout + value.stderr
 
 
 def test_child_exit_and_private_output(tmp_path):

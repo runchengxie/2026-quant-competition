@@ -1,5 +1,32 @@
 Set-StrictMode -Version Latest
 
+function Invoke-PaperApiProbe {
+    param([string]$PythonPath, [string[]]$Arguments, [double]$BudgetSeconds)
+    $process=[Diagnostics.Process]::new()
+    try {
+        $process.StartInfo.FileName=$PythonPath
+        $process.StartInfo.UseShellExecute=$false
+        $process.StartInfo.CreateNoWindow=$true
+        $process.StartInfo.RedirectStandardOutput=$true
+        $process.StartInfo.RedirectStandardError=$true
+        foreach($argument in $Arguments){$process.StartInfo.ArgumentList.Add($argument)}
+        $clock=[Diagnostics.Stopwatch]::StartNew()
+        if(-not $process.Start()){throw 'Probe failed'}
+        $stdout=$process.StandardOutput.ReadToEndAsync()
+        $stderr=$process.StandardError.ReadToEndAsync()
+        $remaining=[int][Math]::Max(0,($BudgetSeconds*1000-$clock.Elapsed.TotalMilliseconds))
+        if(-not $process.WaitForExit($remaining) -or $clock.Elapsed.TotalSeconds -ge $BudgetSeconds){
+            # This process is the read-only probe, never the Gateway launcher.
+            if(-not $process.HasExited){$process.Kill($false)}
+            return @{state='blocked';code='API_PROBE_TIMEOUT'}
+        }
+        if($process.ExitCode -notin @(0,2,3)){throw 'Probe failed'}
+        return ($stdout.GetAwaiter().GetResult() | ConvertFrom-Json -AsHashtable)
+    } catch {
+        return @{state='blocked';code='API_PROBE_FAILED'}
+    } finally {$process.Dispose()}
+}
+
 function Invoke-PaperGateway {
     [CmdletBinding()]
     param(
@@ -17,9 +44,7 @@ function Invoke-PaperGateway {
         if ($Action -eq 'ensure') {
             if ($null -eq $ApiProbe) {
                 $ApiProbe={param($seconds)
-                    $raw=& $PythonPath -m competition_tools.team.gateway --connection-file $ApiConnectionPath --timeout $seconds 2>$null
-                    if($LASTEXITCODE -notin @(0,2,3)){return @{state='blocked';code='API_PROBE_FAILED'}}
-                    return (($raw -join "`n")|ConvertFrom-Json -AsHashtable)
+                    Invoke-PaperApiProbe -PythonPath $PythonPath -Arguments @('-m','competition_tools.team.gateway','--connection-file',$ApiConnectionPath,'--timeout',"$seconds") -BudgetSeconds $seconds
                 }
             }
             $api=& $ApiProbe 2
@@ -80,6 +105,8 @@ function Invoke-PaperGateway {
                     $remaining=[int][Math]::Floor([int]$spec.config.timeout_seconds-$clock.Elapsed.TotalSeconds)
                     if($remaining -lt 1){break}
                     $api=& $ApiProbe ([Math]::Min(2,$remaining))
+                    # Even injected probes must never release a lease on late readiness.
+                    if($clock.Elapsed.TotalSeconds -ge [int]$spec.config.timeout_seconds){break}
                     if($api.state -eq 'ready') {
                         $releaseLease=$true
                         return @{state='api_ready';api='connected';account_identity='not_checked';historical_data='not_checked';exit_code=0}
