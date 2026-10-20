@@ -1,4 +1,4 @@
-name: Optional platform comparison
+name: Standalone accounting comparison
 
 on:
   pull_request:
@@ -27,7 +27,7 @@ jobs:
           UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/accounting-root" uv sync --locked --extra test
           UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/accounting-equity" uv sync --project research/equity-lab --locked --group dev
           UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/accounting-provider" uv sync --project research/platform-compare --locked --group dev
-      - name: Verify pinned provider contracts
+      - name: Verify standalone accounting contracts
         working-directory: research/platform-compare
         run: |
           UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/accounting-provider" uv run --locked ruff check .
@@ -38,3 +38,12 @@ jobs:
       - name: Build optional consumer wheel
         working-directory: research/platform-compare
         run: uv build --out-dir "$RUNNER_TEMP/accounting-wheels"
+      - name: Exercise installed wheel outside source without frameworks
+        shell: bash
+        run: |
+          uv venv "$RUNNER_TEMP/accounting-installed" --python 3.12
+          uv pip install --python "$RUNNER_TEMP/accounting-installed/bin/python" "$RUNNER_TEMP"/accounting-wheels/*.whl pytest
+          cp -R research/platform-compare/tests "$RUNNER_TEMP/accounting-installed-tests"
+          cd "$RUNNER_TEMP"
+          unset PYTHONPATH PYTHONHOME
+          "$RUNNER_TEMP/accounting-installed/bin/python" -m pytest accounting-installed-tests/test_standalone.py -q

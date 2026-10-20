@@ -1,4 +1,4 @@
-"""Strict competition input mapping; accounting remains owned by quant-platform."""
+"""Strict competition input mapping; accounting is owned by this competition package."""
 
 import hashlib
 import json
@@ -7,8 +7,11 @@ import re
 from datetime import datetime, timedelta
 from decimal import Decimal
 
-PIN = "28a32ba707ad72d1eb68cde5075663e1b3819ac7"
-PROVIDER = {"repository": "quant-platform", "commit": PIN}
+PROVIDER = {
+    "repository": "2026-quant-competition",
+    "engine": "competition.usd_price_ledger",
+    "version": "1",
+}
 
 
 def digest(value):
@@ -93,7 +96,7 @@ def count(value):
 
 
 def clock(value):
-    from research_contracts import ResearchClock
+    from platform_compare.accounting.contracts import ResearchClock
 
     fields(
         value,
@@ -113,7 +116,7 @@ def load_request(path, dataset_root):
         "schema_version provider run_id market synthetic evidence input_ref input_fingerprint config config_fingerprint",
     )
     if (
-        request["schema_version"] != "competition.accounting_request.v1"
+        request["schema_version"] != "competition.accounting_request.v2"
         or request["provider"] != PROVIDER
     ):
         raise ValueError("UNSUPPORTED_PROVIDER_OR_SCHEMA")
@@ -187,8 +190,8 @@ def check_source(path, ref):
 
 
 def owner_request(request, asset):
-    from research_contracts import ArtifactRef
-    from portfolio_backtester.usd_ledger_models import (
+    from platform_compare.accounting.contracts import ArtifactRef
+    from platform_compare.accounting.usd_ledger_models import (
         USDInstrument,
         USDPriceObservation,
         USDFXObservation,

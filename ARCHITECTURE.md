@@ -22,7 +22,7 @@ Competition-specific offline research and data preparation belong to this reposi
 
 Execution code does not import any research package. Root acceptance tools consume JSON/CSV and CLI outputs, not leaf Python objects. A successful research report is not an execution command. The published execution v1 target schema supports JP/US; runtime normalization also recognizes HK. That existing mismatch is unresolved. Crypto research does not expand the execution contract.
 
-The equity package also owns the distinct six-market international diagnostic. Five-market next-open replay belongs only to the optional framework package. See [international experiments](docs/research/international-experiments.md) for exact contracts and model limits. Neither replaces the default rotation or execution handoff.
+The equity package also owns the distinct six-market international diagnostic. Five-market next-open replay belongs only to the optional accounting package. See [international experiments](docs/research/international-experiments.md) for exact contracts and model limits. Neither replaces the default rotation or execution handoff.
 
 ## Data flow and identity
 
@@ -49,7 +49,7 @@ The broker event log owns event truth. Paper is the default account environment,
 
 ## External reuse and delivery limits
 
-`research/platform-compare` now consumes public `quant-platform` accounting APIs at fixed revision `28a32ba707ad72d1eb68cde5075663e1b3819ac7` through its own environment. Root tools retain legacy schedules and consume verified CLI aggregates. See the [accounting comparison guide](docs/research/accounting-comparison.md). `quant-research` and `quant-deep-learning` retain research/model protocols; `quant-intel-platform` retains its reporting environment. Other providers remain integration boundaries and are not installed or connected by this change. Incompatible pandas versions and overlapping module namespaces require separate environments and versioned artifacts. No gitlink, lockfile or external repository is upgraded here.
+`research/platform-compare` now owns its USD price ledger. Both HK/US comparisons and five-market next-open experiments install/import neither `quant-platform` nor `research-contracts`. See the [accounting comparison guide](docs/research/accounting-comparison.md) for source ancestry, licensing and historical compatibility. External datasets and Nira signals still use explicit file contracts; independent environments retain dependency isolation.
 
 Read-only local verification found the inspected platform default IBKR factory imports an unavailable `quant_execution_engine.broker.ibkr` module. This is separate from this repository's IBKR implementation. The inspected `quant-backtest-runtime` requires Linux and is not enabled on Windows. Passing selected provider tests does not establish an operational provider-to-broker chain.
 

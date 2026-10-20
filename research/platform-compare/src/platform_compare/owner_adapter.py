@@ -1,11 +1,9 @@
-"""Call and verify the pinned public owner without copying its accounting."""
+"""Run and verify the competition-owned accounting engine."""
 
-import importlib.metadata
 import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from platform_compare.contracts import (
-    PIN,
     PROVIDER,
     load_request,
     owner_request,
@@ -14,28 +12,8 @@ from platform_compare.contracts import (
 )
 
 
-def verify_provider():
-    for package, subdir in [
-        ("quant-platform", None),
-        ("research-contracts", "packages/research-contracts"),
-    ]:
-        dist = importlib.metadata.distribution(package)
-        direct = json.loads(dist.read_text("direct_url.json") or "{}")
-        if (
-            direct.get("url")
-            not in (
-                "https://github.com/runchengxie/quant-platform.git",
-                "https://github.com/runchengxie/quant-platform",
-            )
-            or direct.get("vcs_info", {}).get("commit_id") != PIN
-            or direct.get("subdirectory") != subdir
-        ):
-            raise ValueError("INSTALLED_PROVIDER_MISMATCH")
-
-
 def verify_bundle(path: Path):
-    verify_provider()
-    from portfolio_backtester.backtest_bundle_io import read_backtest_bundle
+    from platform_compare.accounting.backtest_bundle_io import read_backtest_bundle
 
     return read_backtest_bundle(path, verify_hashes=True)
 
@@ -69,9 +47,8 @@ def external_output(output):
 
 
 def _publish(output, request, asset, source):
-    verify_provider()
-    from portfolio_backtester.usd_ledger import run_usd_price_replay
-    from portfolio_backtester.usd_ledger_bundle import write_usd_price_replay_bundle
+    from platform_compare.accounting.usd_ledger import run_usd_price_replay
+    from platform_compare.accounting.usd_ledger_bundle import write_usd_price_replay_bundle
 
     result = run_usd_price_replay(owner_request(request, asset))
     check_source(source, request["input_ref"])
@@ -82,9 +59,9 @@ def _publish(output, request, asset, source):
         research_clock=clock(asset["research_clock"]),
         producer={
             "repository": "2026-quant-competition",
-            "version": "0.1.0",
+            "version": "0.2.0",
             "commit": "unknown",
-            "backend": "usd.price_ledger",
+            "backend": "competition.usd_price_ledger",
             "backend_version": "1",
         },
         configuration_sha256=request["config_fingerprint"],
@@ -129,7 +106,7 @@ def verify_result(path: Path, dataset_root: Path, output: Path) -> dict:
         or manifest.artifact_envelope["configuration_sha256"]
         != request["config_fingerprint"]
         or manifest.research_clock != clock(asset["research_clock"]).to_mapping()
-        or manifest.backend != {"name": "usd.price_ledger", "version": "1"}
+        or manifest.backend != {"name": "competition.usd_price_ledger", "version": "1"}
         or manifest.evidence_tier.value != "diagnostic"
         or "diagnostics.json" not in {item.path for item in manifest.inventory}
     ):
@@ -163,7 +140,7 @@ def verify_result(path: Path, dataset_root: Path, output: Path) -> dict:
         )
     check_source(source, request["input_ref"])
     return {
-        "schema_version": "competition.accounting_result.v1",
+        "schema_version": "competition.accounting_result.v2",
         "status": "diagnostic",
         "provider": PROVIDER,
         "market": request["market"],

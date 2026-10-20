@@ -94,11 +94,12 @@ def clocks(value=None):
 
 def projection(value, clock_map):
     return dict(
-        schema_version="competition.accounting_result.v1",
+        schema_version="competition.accounting_result.v2",
         status="diagnostic",
         provider=dict(
-            repository="quant-platform",
-            commit="28a32ba707ad72d1eb68cde5075663e1b3819ac7",
+            repository="2026-quant-competition",
+            engine="competition.usd_price_ledger",
+            version="1",
         ),
         market=value["market"],
         synthetic=value["synthetic"],

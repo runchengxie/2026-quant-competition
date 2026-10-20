@@ -7,7 +7,7 @@
 | 实验 | 安装后入口 | 环境 | 市场 |
 | --- | --- | --- | --- |
 | 六市场月度分数权重诊断 | `equity_lab.international.six_market_run` | 默认 `equity-lab`，普通依赖 | US/HK/UK/AU/CA/SG |
-| 冻结调仓计划的 next-open 价格账本诊断 | `platform_compare.next_open.run` | 可选 `platform-compare`，固定框架和 `exchange-calendars==4.13.2` | US/HK/UK/AU/SG |
+| 冻结调仓计划的 next-open 价格账本诊断 | `platform_compare.next_open.run` | 可选 `platform-compare`，本地账本和 `exchange-calendars==4.13.2` | US/HK/UK/AU/SG |
 
 先完成[团队环境安装](../operations/team-quickstart.zh-CN.md)，将[虚构六市场配置](../../config/examples/international-six-market.synthetic.yaml)复制到 Git 外，将 `data_root` 改为自己的外部输入绝对路径。模板只有新造的示例权重，没有观测数据，也不能证明数据是合成的或具有使用授权。
 
@@ -26,10 +26,10 @@ python team.py setup --config /absolute/private/team.toml --profile framework
 python team.py run next-open --config /absolute/private/team.toml --experiment-config /absolute/private/next-open.yml --output-root /absolute/data/next-open-run-001
 ```
 
-也可用已安装框架环境运行 `python -m platform_compare.next_open.run --config FILE --output-dir NEW_EXTERNAL_DIR --json`。显式配置包括 `experiment_id`、`strategy_id`、`data_root`、`target_schedule_path`、`signal_cutoff`、`initial_cash_usd`、`sizing_mode`、`max_price_age_days`、`max_fx_age_days`、`production_eligible`、`return_basis` 和 `reference_cost_bps`。保留的实验协议要求截止日期 `2026-10-01`、分数持仓、`production_eligible: false`、`return_basis: usd_price_nav` 和参考成本 `{commission: 5, equity_slippage: 5, fx: 0}`。这些是诊断协议限制，不代表已选定交易策略。本项目不分发私有调仓计划或默认配置。
+也可用已安装的独立记账环境运行 `python -m platform_compare.next_open.run --config FILE --output-dir NEW_EXTERNAL_DIR --json`。显式配置包括 `experiment_id`、`strategy_id`、`data_root`、`target_schedule_path`、`signal_cutoff`、`initial_cash_usd`、`sizing_mode`、`max_price_age_days`、`max_fx_age_days`、`production_eligible`、`return_basis` 和 `reference_cost_bps`。保留的实验协议要求截止日期 `2026-10-01`、分数持仓、`production_eligible: false`、`return_basis: usd_price_nav` 和参考成本 `{commission: 5, equity_slippage: 5, fx: 0}`。这些是诊断协议限制，不代表已选定交易策略。本项目不分发私有调仓计划或默认配置。
 
-输入包括 `research.target_schedule.v1` 调仓计划、绑定哈希的 `dataset-manifest.json` 以及五个 ETF 文件 `US_SPY.csv`、`HK_2800.csv`、`UK_ISF.csv`、`AU_STW.csv`、`SG_ES3.csv`。还需要五个汇率文件 `FX_AUDUSD.csv`、`FX_GBPUSD.csv`、`FX_USDCAD.csv`、`FX_USDHKD.csv`、`FX_USDSGD.csv`。CAD 只保留为输入证据，不增加加拿大 ETF。文件列为 `date,open,high,low,close,price_semantics,execution_eligible`。清单必须声明匹配的哈希、`execution_eligible: false` 和截止日期。此契约不同于 HK/US 的 `competition.accounting_request.v1` 适配器。
+输入包括 `research.target_schedule.v1` 调仓计划、绑定哈希的 `dataset-manifest.json` 以及五个 ETF 文件 `US_SPY.csv`、`HK_2800.csv`、`UK_ISF.csv`、`AU_STW.csv`、`SG_ES3.csv`。还需要五个汇率文件 `FX_AUDUSD.csv`、`FX_GBPUSD.csv`、`FX_USDCAD.csv`、`FX_USDHKD.csv`、`FX_USDSGD.csv`。CAD 只保留为输入证据，不增加加拿大 ETF。文件列为 `date,open,high,low,close,price_semantics,execution_eligible`。清单必须声明匹配的哈希、`execution_eligible: false` 和截止日期。此契约不同于 HK/US 的 `competition.accounting_request.v2` 适配器。
 
-信号时钟采用各来源交易日最晚的预定 UTC 收盘时间。随后第一个预定开盘必须有来源 bar，否则记录拒绝输入，不改用收盘价兜底。日历为 XNYS/XHKG/XLON/XASX/XSES。收盘数据可用性和同交易日汇率中点时序仍是显式假设。结果为不含股息的 USD 价格 NAV。36 组成本组合仍是诊断，零汇兑成本只是乐观下界。输入锁保留 `global_etf_next_open.input_lock.v1`，记录实际固定框架版本，并核对已安装提供方元数据。
+信号时钟采用各来源交易日最晚的预定 UTC 收盘时间。随后第一个预定开盘必须有来源 bar，否则记录拒绝输入，不改用收盘价兜底。日历为 XNYS/XHKG/XLON/XASX/XSES。收盘数据可用性和同交易日汇率中点时序仍是显式假设。结果为不含股息的 USD 价格 NAV。36 组成本组合仍是诊断，零汇兑成本只是乐观下界。输入锁保留 `global_etf_next_open.input_lock.v2`，通过 `accounting_engine` 记录比赛自有实现身份；历史 v1 输入锁保持原样。
 
-两个入口都拒绝已有输出目录或源码目录。团队入口将子进程日志保存在外部 `<data_root>/2026-quant-competition/team-runs/`，只返回脱敏结果。实验不改变默认五区域轮动、执行契约或历史公开的 24 项结果快照，也不发布新的真实数据收益结论。新增代码使用各子项目已有的目录级 MIT 许可证。
+两个入口都拒绝已有输出目录或源码目录。团队入口将子进程日志保存在外部 `<data_root>/2026-quant-competition/team-runs/`，只返回脱敏结果。实验不改变默认五区域轮动、执行契约或历史公开的 24 项结果快照，也不发布新的真实数据收益结论。适配代码使用目录级 MIT 许可证；迁入的账本及其测试保留 Apache-2.0、来源说明和文件清单。

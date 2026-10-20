@@ -1,8 +1,8 @@
-# Pinned accounting comparison
+# Standalone accounting comparison
 
 [简体中文](accounting-comparison.zh-CN.md)
 
-The optional `research/platform-compare` package now consumes the public `quant-platform` USD price ledger at `28a32ba707ad72d1eb68cde5075663e1b3819ac7`. It compares retained legacy strategy decisions with explicit cash/share accounting. Legacy engines, default settings and the existing 24-result public snapshot remain unchanged. All new results are synthetic software diagnostics. No real-data accounting result or broker lifecycle is certified.
+The optional `research/platform-compare` package uses a competition-owned USD price ledger to compare retained strategy decisions with explicit cash/share accounting. It installs no quant framework packages. Default engines and the historical 24-result public snapshot remain unchanged. Comparisons remain synthetic software diagnostics, not certification of real backtests or broker execution.
 
 ## What is connected
 
@@ -30,7 +30,7 @@ uv sync --project research/platform-compare --locked --group dev
 & $rootPython -m competition_tools.check_accounting_comparison --output-root $newSyntheticDirectory --leaf-python $equityPython --provider-python $providerPython
 ```
 
-This command creates eight cases, invokes the actual legacy producers, runs the installed pinned owner and verifies each published bundle in a second process. The output directory must be new. It writes private full comparisons plus an aggregate `summary.json`; it does not publish them to Pages. Source bytes and existing reports are not modified. The CI accounting job executes this same boundary.
+This command creates eight cases, invokes the actual legacy producers, runs the installed local ledger and verifies each published bundle in a second process. The output directory must be new. It writes private full comparisons plus an aggregate `summary.json`; it does not publish them to Pages. Source bytes and existing reports are not modified. The CI accounting job executes this same boundary.
 
 For retained artifacts with an explicit clock sidecar:
 
@@ -46,7 +46,7 @@ The optional package can run or independently reverify its owner bundle. See its
 
 Each source date must precede execution; cutoff, signal, decision, order, execution and valuation times must be causal. These daily HK/US adapters require UTC clock dates matching the supplied session labels, so overnight/date-crossing policies need a separate adapter. Real session dates alone are insufficient. Clock maps and report schedules cannot contradict one another.
 
-Owner request input/config/schedule/manifest identities, original capital and commission/slippage assumptions must match. Owner financial tables are independently reconciled by its publisher and hash-verified by its reader. Verification additionally replays the full request through the public owner APIs and publisher and compares all diagnostics, so mutable manifest labels cannot substitute a different calculation. Owner-produced finite Decimal exponent strings are normalized only after inventory verification; request monetary strings retain their stricter grammar. Extra unlisted sidecars are not proof of owner results.
+Owner request input/config/schedule/manifest identities, original capital and commission/slippage assumptions must match. Owner financial tables are independently reconciled by its publisher and hash-verified by its reader. Verification additionally replays the full request through the local ledger APIs and publisher and compares all diagnostics, so mutable manifest labels cannot substitute a different calculation. Owner-produced finite Decimal exponent strings are normalized only after inventory verification; request monetary strings retain their stricter grammar. Extra unlisted sidecars are not proof of owner results.
 
 Raw legacy weights and NAV remain unchanged. When decimal serialization of floating-point targets exceeds a gross weight of one by at most `0.000000000001`, mapping subtracts only that residue from the largest target, breaking ties by instrument ID. Larger excess is rejected. `weight_mapping_policy=decimal_budget_residue.v1` and `weight_mapping_adjustments` record every adjustment, including its execution date, instrument, original gross weight and removed weight.
 
@@ -76,3 +76,9 @@ This adapter version accepts synthetic inputs only. `synthetic=false` is blocked
 Existing located historical daily files provide session labels without the required verified availability/execution clocks, complete lots or causal FX. They remain blocked. A historical 20-stock inventory document is not an immutable dataset receipt. No synthetic clock is attached to real data, and no missing dataset is replaced with a fixture.
 
 The public export audit also removes unnecessary organizer/partner marketing descriptions and private onboarding guidance from current reader documents. Public rule-source links and the already-public GitHub repository identity remain for traceability. This is selective disclosure reduction, not complete anonymity. Credentials, personal contacts, account/report data, private paths and licensed raw observations belong outside source. Historical PR refs may retain previously published material; this task does not rewrite history or promise cache removal. A private audit report records that residual scope.
+
+See the [package guide](../../research/platform-compare/README.md) for ledger ancestry and licensing. The table retains the original framework baseline from 2026-10-19; historical files must not be relabeled as local-engine results. New requests/results use v2 and identify the competition engine.
+
+## Decoupling verification (2026-10-20)
+
+All eight aggregate cases, diagnostics and 64 Parquet financial tables exactly match the pre-migration baseline. All 36 five-market next-open scenarios, diagnostics and 288 financial tables also match exactly; the cost-sensitivity CSV is byte-identical. Root tests passed 562 cases and standalone accounting tests passed 173. An installed wheel passed five checks outside source with framework distributions absent and imports blocked. These are software checks and do not add real-data or trading-validity claims.

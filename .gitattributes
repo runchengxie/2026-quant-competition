@@ -1,0 +1,3 @@
+# Provenance inventory hashes cover exact LF source bytes on every platform.
+research/platform-compare/src/platform_compare/accounting/** text eol=lf
+research/platform-compare/tests/accounting/** text eol=lf

@@ -1,0 +1,5 @@
+Competition accounting includes code derived from quant-platform
+https://github.com/runchengxie/quant-platform
+Revision 28a32ba707ad72d1eb68cde5075663e1b3819ac7
+Licensed under Apache License 2.0. See LICENSE-APACHE-2.0.txt and ORIGIN.json.
+Modified for the competition namespace and local engine identity.

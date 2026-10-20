@@ -14,10 +14,10 @@ from typing import Any
 
 import pandas as pd
 import yaml
-from research_contracts import ArtifactRef, ResearchClock
+from platform_compare.accounting.contracts import ArtifactRef, ResearchClock
 
-from portfolio_backtester.usd_ledger import run_usd_price_replay
-from portfolio_backtester.usd_ledger_bundle import write_usd_price_replay_bundle
+from platform_compare.accounting.usd_ledger import run_usd_price_replay
+from platform_compare.accounting.usd_ledger_bundle import write_usd_price_replay_bundle
 
 from .adapter import (
     CALENDAR_PACKAGE,
@@ -28,8 +28,8 @@ from .adapter import (
 )
 from .loader import load_inputs
 
-from platform_compare.contracts import PIN
-from platform_compare.owner_adapter import external_output, verify_provider
+from platform_compare.contracts import PROVIDER
+from platform_compare.owner_adapter import external_output
 
 
 def _sha256(path: Path) -> str:
@@ -79,7 +79,7 @@ def _input_lock(
     config: dict[str, Any], config_path: Path, inputs: Any, schedule_path: Path
 ) -> dict[str, Any]:
     return {
-        "schema_version": "global_etf_next_open.input_lock.v1",
+        "schema_version": "global_etf_next_open.input_lock.v2",
         "experiment_id": config["experiment_id"],
         "strategy_id": config["strategy_id"],
         "signal_cutoff": config["signal_cutoff"],
@@ -96,7 +96,7 @@ def _input_lock(
             "version": CALENDAR_PACKAGE_VERSION,
             "markets": dict(MARKET_CALENDARS),
         },
-        "platform_revision": PIN,
+        "accounting_engine": dict(PROVIDER),
         "dataset_id": inputs.dataset_manifest.get("dataset_id"),
         "assumptions": [
             "daily first regular-hours trade open is a modeled reference price",
@@ -169,7 +169,6 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict[str, Any]:
     """Run all scenarios into a new output directory outside the repository."""
     config_path = Path(config_path).resolve()
     output_dir = external_output(output_dir)
-    verify_provider()
     if output_dir.exists():
         raise ValueError("output directory already exists")
     config = _read_config(config_path)
@@ -235,9 +234,9 @@ def run_experiment(config_path: Path, output_dir: Path) -> dict[str, Any]:
                 research_clock=clock,
                 producer={
                     "repository": "runchengxie/2026-quant-competition",
-                    "version": "0.1.0",
+                    "version": "0.2.0",
                     "commit": "unknown",
-                    "backend": "usd.price_ledger",
+                    "backend": "competition.usd_price_ledger",
                     "backend_version": "1",
                 },
                 configuration_sha256=lock["configuration_sha256"],

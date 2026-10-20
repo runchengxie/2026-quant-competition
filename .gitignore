@@ -12,3 +12,7 @@ site/dist/
 *.env
 runs/*
 .worktrees/
+
+# Rebuildable Python packaging outputs
+build/
+dist/

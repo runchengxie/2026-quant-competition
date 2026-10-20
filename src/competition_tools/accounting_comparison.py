@@ -17,8 +17,11 @@ from pathlib import Path
 import re
 import subprocess
 
-PIN = "28a32ba707ad72d1eb68cde5075663e1b3819ac7"
-PROVIDER = {"repository": "quant-platform", "commit": PIN}
+PROVIDER = {
+    "repository": "2026-quant-competition",
+    "engine": "competition.usd_price_ledger",
+    "version": "1",
+}
 CLOCK_FIELDS = set(
     "schema_version timezone information_cutoff_at signal_at decision_at valuation_at timing_policy_id trading_calendar_ref earliest_order_at execution_window_start_at execution_window_end_at".split()
 )
@@ -337,7 +340,7 @@ def compare_verified(legacy, clock_map, owner):
     decisions = bind_clocks(legacy, clock_map)
     _fields(owner, OWNER_FIELDS)
     if (
-        owner["schema_version"] != "competition.accounting_result.v1"
+        owner["schema_version"] != "competition.accounting_result.v2"
         or owner["status"] != "diagnostic"
         or owner["provider"] != PROVIDER
         or owner["market"] != legacy["market"]

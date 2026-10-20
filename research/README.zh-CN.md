@@ -22,4 +22,4 @@ MIT 仅用于新增子项目代码，不改变根目录已有代码或第三方�
 
 ## 可选记账对照
 
-独立的[固定版本适配器](platform-compare/README.zh-CN.md) 通过单独环境调用公开 `quant-platform` 记账 API。[对照指南](../docs/research/accounting-comparison.zh-CN.md) 说明原策略决策、明确时钟、HK/US 合成诊断和真实输入的阻塞条件，不替换原引擎，也不发布新的结果快照。
+独立的[记账包](platform-compare/README.zh-CN.md) 内置比赛项目自己的现金与股数账本，不安装外部框架；支持记账对照及五市场 next-open 诊断。[对照指南](../docs/research/accounting-comparison.zh-CN.md) 说明模型差异及真实输入限制。

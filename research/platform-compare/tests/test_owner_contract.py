@@ -11,7 +11,7 @@ import pytest
 from platform_compare.contracts import digest
 from platform_compare.owner_adapter import run_request, verify_bundle
 
-PIN = "28a32ba707ad72d1eb68cde5075663e1b3819ac7"
+from platform_compare.contracts import PROVIDER
 
 
 def clock():
@@ -101,8 +101,8 @@ def fixture(tmp_path, *, all_cash=False):
     path.write_text(json.dumps(asset))
     sha = hashlib.sha256(path.read_bytes()).hexdigest()
     request = {
-        "schema_version": "competition.accounting_request.v1",
-        "provider": {"repository": "quant-platform", "commit": PIN},
+        "schema_version": "competition.accounting_request.v2",
+        "provider": dict(PROVIDER),
         "run_id": "synthetic-compare-v1",
         "market": "US",
         "synthetic": True,
@@ -140,7 +140,7 @@ def test_actual_owner_bundle_reconciles_and_hash_reader_rejects_mutation(
     original = (tmp_path / "asset.json").read_bytes()
     value = run_request(req, tmp_path, tmp_path / "output")
     assert value["status"] == "diagnostic"
-    assert value["provider"]["commit"] == PIN
+    assert value["provider"] == PROVIDER
     assert value["final_nav_usd"] == expected
     assert value["orders_submitted"] is False
     verify_bundle(tmp_path / "output")
@@ -155,6 +155,13 @@ def test_actual_owner_bundle_reconciles_and_hash_reader_rejects_mutation(
     "change",
     [
         {"provider": {"repository": "quant-platform", "commit": "0" * 40}},
+        {
+            "provider": {
+                "repository": "quant-platform",
+                "commit": "28a32ba707ad72d1eb68cde5075663e1b3819ac7",
+            }
+        },
+        {"schema_version": "competition.accounting_request.v1"},
         {"config_fingerprint": "0" * 64},
         {"input_fingerprint": "0" * 64},
         {"synthetic": "true"},

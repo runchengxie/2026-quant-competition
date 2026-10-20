@@ -22,7 +22,7 @@
 
 执行代码不导入这些研究包。根验收工具消费 JSON/CSV 和 CLI 输出，不依赖研究包 Python 对象。研究报告成功不代表可执行命令。公开的执行 v1 target schema 支持 JP/US，运行时标准化还识别 HK，这一既有差异尚未解决。加密研究不会扩展执行契约。
 
-股票包还维护独立的六市场国际诊断；五市场 next-open 回放只属于可选框架包。契约与模型限制见[国际实验](docs/research/international-experiments.zh-CN.md)，两者都不替换默认轮动或执行交接。
+股票包还维护独立的六市场国际诊断；五市场 next-open 回放只属于可选记账包。契约与模型限制见[国际实验](docs/research/international-experiments.zh-CN.md)，两者都不替换默认轮动或执行交接。
 
 ## 数据流与身份
 
@@ -49,7 +49,7 @@ targets.json + lineage.json → OrderIntent → BrokerCommand
 
 ## 外部复用与交付边界
 
-`research/platform-compare` 已通过独立环境接入公开 `quant-platform` 提交 `28a32ba707ad72d1eb68cde5075663e1b3819ac7` 的记账 API。根工具保留原决策序列，消费经验证的 CLI 汇总，见[记账对照指南](docs/research/accounting-comparison.zh-CN.md)。`quant-research` 和 `quant-deep-learning` 维护研究、模型协议，`quant-intel-platform` 维护其报告环境。其他提供方仍属于接入边界，本次未安装或接通。pandas 版本及模块命名冲突要求独立环境和版本化 artifact。本次不升级 gitlink、lockfile 或外部仓库。
+`research/platform-compare` 现在包含比赛自有的 USD 价格账本，HK/US 对照与五市场 next-open 均不再安装或导入 `quant-platform`、`research-contracts`。提取来源、许可证及历史兼容见[记账对照指南](docs/research/accounting-comparison.zh-CN.md)。外部数据和 Nira 信号仍按明确文件契约消费，独立环境保留依赖版本隔离。
 
 只读本机核验发现，所检查平台的默认 IBKR factory 导入了不可用的 `quant_execution_engine.broker.ibkr`。这与本仓库自己的 IBKR 实现分开。所检查的 `quant-backtest-runtime` 要求 Linux，未在 Windows 启用。提供方的部分测试通过，不代表提供方到券商的链路可运营。
 

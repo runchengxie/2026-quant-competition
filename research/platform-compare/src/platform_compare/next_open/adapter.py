@@ -10,9 +10,9 @@ from types import MappingProxyType
 
 import pandas as pd
 from exchange_calendars import get_calendar
-from research_contracts import ArtifactRef, ResearchClock
+from platform_compare.accounting.contracts import ArtifactRef, ResearchClock
 
-from portfolio_backtester.usd_ledger_models import (
+from platform_compare.accounting.usd_ledger_models import (
     USDFXObservation,
     USDInstrument,
     USDModeledExecutionPrice,
