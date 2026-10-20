@@ -101,6 +101,24 @@ def test_valid_dry_run_is_read_only(tmp_path, monkeypatch):
     assert before == {p: p.read_bytes() for p in tmp_path.rglob("*") if p.is_file()}
 
 
+def test_verified_archive_shortcut_names_survive_prepare_and_recheck(tmp_path, monkeypatch):
+    path, workspace, cfg = fixture(tmp_path, monkeypatch)
+    archive = Path(cfg["release_archive"])
+    with zipfile.ZipFile(archive, "a") as release:
+        for name in ("IBC (Gateway).lnk", "IBC (TWS).lnk"):
+            release.writestr(name, b"synthetic shortcut, never executed")
+            (Path(cfg["ibc_directory"]) / name).write_bytes(
+                b"synthetic shortcut, never executed"
+            )
+    monkeypatch.setattr(gl, "RELEASE_SHA256", hashlib.sha256(archive.read_bytes()).hexdigest())
+    gl.prepare_launcher(build(path, workspace))
+    assert build(path, workspace)["launcher_ready"]
+    shortcut = Path(cfg["configured_launcher"]).parent / "runtime/IBC (Gateway).lnk"
+    shortcut.write_bytes(b"tampered")
+    with pytest.raises(gl.LauncherError, match="RUNTIME_INTEGRITY_FAILED"):
+        build(path, workspace)
+
+
 @pytest.mark.parametrize(
     "line",
     [
