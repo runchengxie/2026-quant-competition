@@ -198,6 +198,24 @@
       "end": "2025-12-31",
       "rows": 8768,
       "universe_status": "fixed_current"
+    },
+    {
+      "source": "binance_spot",
+      "status": "partial",
+      "products": [
+        "BTCUSDT",
+        "ETHUSDT",
+        "BNBUSDT",
+        "SOLUSDT",
+        "XRPUSDT",
+        "ADAUSDT",
+        "DOGEUSDT",
+        "LINKUSDT"
+      ],
+      "start": "2017-08-17",
+      "end": "2026-09-30",
+      "rows": 23778,
+      "universe_status": "fixed_current"
     }
   ],
   "blockers": [

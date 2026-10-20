@@ -14,6 +14,8 @@ Historical S&P500 membership and compatible price access remain missing. The ins
 
 See [dataset contracts and commands](datasets.md) for import formats, budgets, source support and partial states. The broker adapter currently implements only the bounded one-month read-only pilot; bulk broker expansion and authenticated vendor acquisition are not delivered capabilities.
 
+The broad scan finished with 23,778 observed bars through 2026-09-30 and 256 unavailable/incomplete monthly chunks, so its status remains partial. Observed starts differ by product: BTC/ETH 2017-08-17, BNB 2017-11-06, XRP 2018-05-04, ADA 2018-04-17, LINK 2019-01-16, DOGE 2019-07-05 and SOL 2020-08-11. This larger retained dataset was not used to change the fixed 2023–2025 experiment windows.
+
 ## Daily crypto method and results
 
 Both portfolios start with 63 observed days of warmup. The evaluated holding periods are 2023-03-05 through 2025-12-31, with 365 periods per year. Starting capital is normalized to 1 in the common USDT quote. This does not assume a stable USD exchange rate.

@@ -27,6 +27,13 @@ def collect_pilot(
     if len(definitions) != 1:
         raise ValueError("EXPLICIT_CONTRACT_REQUIRED")
     definition = definitions[0]
+    expected = {"US": ("SMART", "USD"), "HK": ("SEHK", "HKD")}.get(spec.get("market"))
+    if (
+        expected is None
+        or (definition.get("exchange"), definition.get("currency")) != expected
+        or definition.get("currency") != spec.get("quote_currency")
+    ):
+        raise ValueError("INVALID_CONTRACT_MARKET_OR_CURRENCY")
     if (
         set(definition) != {"product", "con_id", "exchange", "currency"}
         or type(definition["con_id"]) is not int

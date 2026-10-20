@@ -215,6 +215,7 @@
       "FIXED_CRYPTO_CANDIDATE_SELECTION_BIAS": "数字货币候选池为事后固定名单，历史入选资格未获证明。",
       "MAKER_VENUE_PRODUCT_LINEAGE_UNKNOWN": "归档做市数据的场所、产品来源及币种仍未知。",
       "CONSERVATIVE_FILL_MODEL_UNSUPPORTED": "现有做市引擎没有保守成交场景开关。"
-    }
+    },
+    "coverageNote": "覆盖日期为各产品实际观测的最早至最晚日期，不代表共同起点。各产品历史长度不同，评估仍固定使用2023–2025年。"
   }
 }

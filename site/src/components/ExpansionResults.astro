@@ -12,6 +12,7 @@ const report = `https://github.com/runchengxie/2026-quant-competition/blob/main/
 <section id="expansion" class="expansion-section">
   <h2>{t.title}</h2><p>{t.intro}</p>
   <h3>{t.coverage}</h3>
+  <p class="detail">{t.coverageNote}</p>
   {snapshot.coverage.map(row => <p><code>{row.source}</code> · {t.statuses[row.status as keyof typeof t.statuses]} · {row.products.length} {t.pool} · {row.rows} {t.rows} · {row.start}–{row.end} · {t.fixed}</p>)}
   <h3>{t.daily}</h3><p class="detail">{t.dailyNote}</p>
   <div class="result-scroll"><table class="results-table"><thead><tr><th>{t.strategy}</th><th>{t.pool}</th><th>{t.cost}</th><th>{t.period}</th><th>{t.return}</th><th>{t.drawdown}</th><th>{t.sharpe}</th></tr></thead><tbody>

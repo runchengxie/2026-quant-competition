@@ -10,8 +10,10 @@ class HistoricalOnly:
         self.calls = []
         self.disconnected = False
         self.nonempty = nonempty
+        self.connected = False
 
     def connect(self, host, port, **kwargs):
+        self.connected = True
         assert host == "127.0.0.1" and port == 4002
         assert kwargs["readonly"] is True
 
@@ -37,6 +39,8 @@ def test_readonly_pilot_disconnects_and_records_unknown_availability(tmp_path):
     client = HistoricalOnly()
     value = collect_pilot(
         {
+            "market": "US",
+            "quote_currency": "USD",
             "products": ["SPY"],
             "contracts": [
                 {
@@ -65,10 +69,40 @@ def test_readonly_pilot_disconnects_and_records_unknown_availability(tmp_path):
     assert len(client.calls) == 1
 
 
+def test_contract_market_mismatch_rejected_before_connection(tmp_path):
+    import pytest
+
+    client = HistoricalOnly()
+    spec = {
+        "market": "US",
+        "quote_currency": "USD",
+        "products": ["SPY"],
+        "contracts": [
+            {"product": "SPY", "con_id": 123, "exchange": "SEHK", "currency": "HKD"}
+        ],
+        "start": "2024-01-01",
+        "end": "2024-01-31",
+        "budget": {"requests": 100, "bytes": 100000, "seconds": 1800},
+    }
+    with pytest.raises(ValueError, match="CONTRACT_MARKET"):
+        collect_pilot(
+            spec,
+            {"host": "127.0.0.1", "port": 4002, "client_id": 999},
+            tmp_path,
+            client=client,
+            contract_factory=lambda **kwargs: kwargs,
+            sleep=lambda seconds: None,
+        )
+    assert not client.connected
+    assert not client.calls
+
+
 def test_empty_pilot_stops_before_expanding(tmp_path):
     client = HistoricalOnly(False)
     value = collect_pilot(
         {
+            "market": "US",
+            "quote_currency": "USD",
             "products": ["SPY", "AAPL"],
             "contracts": [
                 {

@@ -215,6 +215,7 @@
       "FIXED_CRYPTO_CANDIDATE_SELECTION_BIAS": "The crypto candidates are fixed retrospectively; historical eligibility is not proven.",
       "MAKER_VENUE_PRODUCT_LINEAGE_UNKNOWN": "Archived maker venue/product lineage and currency remain unknown.",
       "CONSERVATIVE_FILL_MODEL_UNSUPPORTED": "The current maker engine has no conservative-fill scenario control."
-    }
+    },
+    "coverageNote": "Coverage dates span the earliest and latest observed bars across products, not a common start date. Product histories differ. The evaluated study remains fixed to 2023–2025."
   }
 }

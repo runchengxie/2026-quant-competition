@@ -150,14 +150,45 @@ def import_licensed(spec: dict, staging: Path) -> dict:
     coverage, gaps = {}, []
     total_bytes = 0
     started = time.monotonic()
+    previous_receipt = staging / "receipt.json"
+    previous = (
+        json.loads(previous_receipt.read_text(encoding="utf-8"))
+        if previous_receipt.exists()
+        else {}
+    )
+    input_checkpoint = staging / "licensed-inputs.json"
+    retained_inputs = (
+        json.loads(input_checkpoint.read_text(encoding="utf-8"))
+        if input_checkpoint.exists()
+        else {}
+    )
     if spec["universe_status"] == "point_in_time":
         if not spec.get("membership_file"):
             raise DatasetBlocked("PIT_MEMBERSHIP_MISSING")
         membership = validate_external(Path(spec["membership_file"]))
+        total_bytes += membership.stat().st_size
+        if total_bytes > spec["budget"]["bytes"]:
+            raise DatasetBlocked("BYTE_BUDGET")
         records = load_membership(membership, status="point_in_time")
+        if not records:
+            raise DatasetBlocked("PIT_MEMBERSHIP_EMPTY")
         if any(not r["available_at"] for r in records):
             raise DatasetBlocked("PIT_AVAILABILITY_UNKNOWN")
-        (staging / "membership.csv").write_bytes(membership.read_bytes())
+        for product in spec["products"]:
+            if not any(
+                r["symbol"] == product
+                and r["valid_from"] <= spec["end"]
+                and (not r["valid_to"] or r["valid_to"] >= spec["start"])
+                and r["available_at"] <= spec["end"]
+                for r in records
+            ):
+                raise DatasetBlocked("PIT_MEMBERSHIP_UNRELATED")
+        retained_membership = staging / "membership.csv"
+        if retained_membership.exists() and digest(retained_membership) != digest(
+            membership
+        ):
+            raise ValueError("MEMBERSHIP_REVISION_REQUIRES_NEW_VERSION")
+        retained_membership.write_bytes(membership.read_bytes())
     for product in spec["products"]:
         if time.monotonic() - started >= spec["budget"]["seconds"]:
             raise DatasetBlocked("TIME_BUDGET")
@@ -168,6 +199,12 @@ def import_licensed(spec: dict, staging: Path) -> dict:
         total_bytes += path.stat().st_size
         if total_bytes > spec["budget"]["bytes"]:
             raise DatasetBlocked("BYTE_BUDGET")
+        input_hash = digest(path)
+        retained_hash = retained_inputs.get(product) or previous.get(
+            "coverage", {}
+        ).get(product, {}).get("input_sha256")
+        if retained_hash is not None and retained_hash != input_hash:
+            raise ValueError("INPUT_REVISION_REQUIRES_NEW_VERSION")
         with path.open(encoding="utf-8-sig", newline="") as stream:
             reader = csv.reader(stream)
             if next(reader) != ["date", "open", "high", "low", "close", "volume"]:
@@ -178,6 +215,31 @@ def import_licensed(spec: dict, staging: Path) -> dict:
         if not rows:
             gaps.append({"product": product, "reason": "EMPTY_INPUT"})
             continue
+        retained_inputs[product] = input_hash
+        write_json(input_checkpoint, retained_inputs)
+        if spec["calendar"] == "365" and spec["market"] == "crypto":
+            expected = (
+                date.fromisoformat(spec["end"]) - date.fromisoformat(spec["start"])
+            ).days + 1
+            if (
+                len(rows) != expected
+                or rows[0][0] != spec["start"]
+                or rows[-1][0] != spec["end"]
+            ):
+                gaps.append(
+                    {"product": product, "reason": "REQUESTED_DAILY_RANGE_INCOMPLETE"}
+                )
+        else:
+            # A calendar ID alone is not an authoritative exchange-session schedule.
+            # Do not demand weekend/holiday bars or certify an unknown schedule.
+            gaps.append(
+                {
+                    "product": product,
+                    "reason": "CALENDAR_COVERAGE_UNVERIFIED",
+                    "requested_start": spec["start"],
+                    "requested_end": spec["end"],
+                }
+            )
         target = staging / "normalized" / path.name
         target.parent.mkdir(exist_ok=True)
         with target.open("w", encoding="utf-8", newline="") as stream:
@@ -188,7 +250,7 @@ def import_licensed(spec: dict, staging: Path) -> dict:
             "rows": len(rows),
             "start": rows[0][0],
             "end": rows[-1][0],
-            "input_sha256": digest(path),
+            "input_sha256": input_hash,
         }
     receipt = {
         "schema": "competition.dataset_receipt.v1",

@@ -94,6 +94,8 @@ def test_licensed_import_charges_total_input_bytes(tmp_path):
             {
                 "input_directory": str(source),
                 "universe_status": "fixed_current",
+                "market": "US",
+                "calendar": "XNYS",
                 "source": "licensed_import",
                 "products": ["A", "B"],
                 "start": "2024-01-01",
@@ -105,3 +107,101 @@ def test_licensed_import_charges_total_input_bytes(tmp_path):
             },
             staging,
         )
+
+
+def licensed_fixture(tmp_path, *, status="fixed_current", market="US", calendar="XNYS"):
+    source = tmp_path / "source"
+    source.mkdir()
+    (source / "SPY.csv").write_text(
+        "date,open,high,low,close,volume\n2024-06-03,1,2,0.5,1,1\n"
+    )
+    staging = tmp_path / "staging"
+    staging.mkdir()
+    membership = tmp_path / "membership.csv"
+    spec = {
+        "source": "licensed_import",
+        "market": market,
+        "calendar": calendar,
+        "products": ["SPY"],
+        "input_directory": str(source),
+        "membership_file": str(membership),
+        "universe_status": status,
+        "start": "2024-01-01",
+        "end": "2024-12-31",
+        "budget": {"bytes": 100000, "seconds": 600},
+    }
+    return spec, staging, membership
+
+
+@pytest.mark.parametrize(
+    "membership_rows",
+    [
+        "",
+        "other,QQQ,2024-01-01,2024-12-31,2023-12-31\n",
+        "spy,SPY,2020-01-01,2020-12-31,2019-12-31\n",
+    ],
+)
+def test_pit_requires_relevant_nonempty_membership(tmp_path, membership_rows):
+    from competition_tools.datasets.acquisition import import_licensed
+
+    spec, staging, membership = licensed_fixture(tmp_path, status="point_in_time")
+    membership.write_text(
+        "stable_id,symbol,valid_from,valid_to,available_at\n" + membership_rows
+    )
+    with pytest.raises(DatasetBlocked, match="PIT_MEMBERSHIP"):
+        import_licensed(spec, staging)
+
+
+def test_one_day_is_not_complete_requested_equity_year(tmp_path):
+    from competition_tools.datasets.acquisition import import_licensed
+
+    spec, staging, _ = licensed_fixture(tmp_path)
+    result = import_licensed(spec, staging)
+    assert result["status"] == "partial"
+    assert result["gaps"]
+    assert result["coverage"]["SPY"]["rows"] == 1
+
+
+def test_complete_continuous_calendar_can_be_acquired(tmp_path):
+    from competition_tools.datasets.acquisition import import_licensed
+
+    spec, staging, _ = licensed_fixture(tmp_path, market="crypto", calendar="365")
+    spec.update(start="2024-06-03", end="2024-06-04")
+    (tmp_path / "source/SPY.csv").write_text(
+        "date,open,high,low,close,volume\n2024-06-03,1,2,0.5,1,1\n2024-06-04,1,2,0.5,1,1\n"
+    )
+    assert import_licensed(spec, staging)["status"] == "acquired"
+
+
+def test_licensed_input_revision_requires_new_version(tmp_path):
+    from competition_tools.datasets.acquisition import import_licensed
+
+    spec, staging, _ = licensed_fixture(tmp_path)
+    import_licensed(spec, staging)
+    original = (staging / "normalized/SPY.csv").read_bytes()
+    path = tmp_path / "source/SPY.csv"
+    path.write_text(path.read_text().replace(",1,1\n", ",1.2,1\n"))
+    with pytest.raises(ValueError, match="REVISION"):
+        import_licensed(spec, staging)
+    assert (staging / "normalized/SPY.csv").read_bytes() == original
+
+
+def test_interrupted_import_retains_input_identity(tmp_path, monkeypatch):
+    from competition_tools.datasets import acquisition
+
+    spec, staging, _ = licensed_fixture(tmp_path)
+    write_json = acquisition.write_json
+
+    def fail_receipt(path, value):
+        if path.name == "receipt.json":
+            raise OSError("simulated receipt interruption")
+        write_json(path, value)
+
+    with monkeypatch.context() as context:
+        context.setattr(acquisition, "write_json", fail_receipt)
+        with pytest.raises(OSError):
+            acquisition.import_licensed(spec, staging)
+    source = tmp_path / "source/SPY.csv"
+    source.write_text(source.read_text().replace(",1,1\n", ",1.2,1\n"))
+    with pytest.raises(ValueError, match="REVISION"):
+        acquisition.import_licensed(spec, staging)

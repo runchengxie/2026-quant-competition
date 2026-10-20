@@ -32,7 +32,7 @@ python team.py data inspect --config /absolute/private/team.toml --spec /absolut
 
 `licensed_import` 接受明确指定的外部 `input_directory`，其中 `<product>.csv` 列必须为 `date,open,high,low,close,volume`。同时指定市场、币种、交易日历、时区和原始或复权口径。导入会记录源文件哈希并校验价格，但不能证明供应商授权、复权正确性或信息发布时间。
 
-`point_in_time` 还需外部 `membership_file`，列为 `stable_id,symbol,valid_from,valid_to,available_at`。同一身份的区间不得重叠。发布时间未知不能认证为 PIT。`membership.eligible` 同时检查有效期和截至指定日期可知的信息，但导入成分区间不会自动让现有引擎应用历史选股规则。
+`point_in_time` 还需外部 `membership_file`，列为 `stable_id,symbol,valid_from,valid_to,available_at`。同一身份的区间不得重叠。拒绝空文件、无关区间和发布时间未知的成分证据，每个请求产品都需在请求期间有相关成分记录。`membership.eligible` 同时检查有效期和截至指定日期可知的信息，但导入成分区间不会自动让现有引擎应用历史选股规则。授权数字货币日线只有完整覆盖连续365天日历的请求范围才标为已取得。交易所日历导入保留为部分覆盖，并记录 `CALENDAR_COVERAGE_UNVERIFIED`，因为导入器没有权威交易日安排，不要求周末或假日也有价格。已保留的源文件或成分字节变化时，必须建立新版本。
 
 当前名单必须保持 `fixed_current`。SPY和当前成分名单都不是历史标普500选股池。完整扩池需要合法历史成分、稳定身份、退市与公司行动证据及匹配价格数据，不会补造已移除成分。
 
