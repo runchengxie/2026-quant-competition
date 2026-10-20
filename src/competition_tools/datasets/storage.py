@@ -3,6 +3,7 @@
 import hashlib
 import json
 import os
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
 
@@ -22,9 +23,25 @@ def spec_hash(spec: dict) -> str:
 
 
 def write_json(path: Path, value: dict) -> None:
-    path.write_text(
-        json.dumps(value, indent=2, allow_nan=False) + "\n", encoding="utf-8"
-    )
+    body = json.dumps(value, indent=2, allow_nan=False) + "\n"
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=path.parent,
+            prefix=".checkpoint-",
+            suffix=".tmp",
+            delete=False,
+        ) as stream:
+            temporary = Path(stream.name)
+            stream.write(body)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, path)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
 
 
 def publish_dataset(spec: dict, staging: Path, destination: Path) -> dict:

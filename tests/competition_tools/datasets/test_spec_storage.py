@@ -96,3 +96,20 @@ def test_broker_trades_cannot_be_mislabeled_raw(tmp_path):
         load_spec(path)
     path.write_text(json.dumps(value | {"price_basis": "split_adjusted"}))
     assert load_spec(path)["price_basis"] == "split_adjusted"
+
+
+def test_checkpoint_replace_failure_preserves_previous_json(tmp_path, monkeypatch):
+    from competition_tools.datasets.storage import write_json
+    import os
+
+    path = tmp_path / "checkpoint.json"
+    path.write_text('{"retained": 1}')
+
+    def interrupted_replace(*args):
+        raise OSError("simulated publication interruption")
+
+    monkeypatch.setattr(os, "replace", interrupted_replace)
+    with pytest.raises(OSError):
+        write_json(path, {"retained": 2})
+    assert json.loads(path.read_text()) == {"retained": 1}
+    assert [p.name for p in tmp_path.iterdir()] == ["checkpoint.json"]
