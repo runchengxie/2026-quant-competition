@@ -14,9 +14,11 @@
 
 ## 已知限制
 
+独立的 `crypto_mm.daily` CLI 消费已校验的现货日线 manifest，支持 `equal_weight` 建仓后持有及滞后的 `momentum_63d` 诊断。它使用365天年化、明确的USDT报价及按成交金额计算的成本，不复用事件 receipt，也不模拟做市。见[数据准备](../../docs/research/datasets.zh-CN.md)和[新评估证据](../../docs/research/data-expansion-and-evaluation.zh-CN.md)。`python -m crypto_mm.daily --help` 不需要工作区配置。
+
 信号期限按实际秒数计算。采样间隔必须能整除 1、5、30 秒期限，无法表示的网格会抛出 `ValueError`。为兼容旧字段，`one_second_log_return` 保留名称，但非一秒采样时表示相邻网格的对数收益。时间和窗口配置必须为整数。
 
-审计质量字段增加 `nonfinite_values` 和盘口 `nonpositive_price_rows` 计数，空值仍单独统计。审计报告用于诊断无效输入，不证明交易所数据有效性。库存峰值统计包含同一时间戳内每次成交。本次没有复现完整历史回测或参数扫描。重叠挂单的共享可见队列和交易所成交真实性仍存在模型限制。
+审计质量字段增加 `nonfinite_values` 和盘口 `nonpositive_price_rows` 计数，空值仍单独统计。审计报告用于诊断无效输入，不证明交易所数据有效性。库存峰值统计包含同一时间戳内每次成交。链接的评估记录了有预算的三天归档回放，不代表完整历史研究或参数优化。重叠挂单的共享可见队列和交易所成交真实性仍存在模型限制。
 
 ## 配置与输出
 

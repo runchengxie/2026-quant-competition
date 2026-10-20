@@ -42,6 +42,15 @@ def main(argv: list[str] | None = None) -> int:
     run.add_argument("--config", type=Path, required=True)
     run.add_argument("--experiment-config", type=Path, required=True)
     run.add_argument("--output-root", type=Path, required=True)
+    data = commands.add_parser("data", help="Plan, acquire or inspect explicit offline datasets")
+    data.add_argument("operation", choices=["plan", "acquire", "inspect"])
+    data.add_argument("--config", type=Path, required=True)
+    data.add_argument("--spec", type=Path, required=True)
+    data.add_argument("--manifest", type=Path)
+    evaluate = commands.add_parser("evaluate", help="Run bounded retrospective daily diagnostics")
+    evaluate.add_argument("--config", type=Path, required=True)
+    evaluate.add_argument("--spec", type=Path, required=True)
+    evaluate.add_argument("--output-root", type=Path, required=True)
     args = parser.parse_args(argv)
     try:
         if args.action == "init":
@@ -49,7 +58,15 @@ def main(argv: list[str] | None = None) -> int:
             value = envelope(args.action)
         else:
             config = load_config(args.config)
-            if args.action == "setup":
+            if args.action == "evaluate":
+                from .evaluate import execute
+
+                value = execute(config, args.spec, args.output_root)
+            elif args.action == "data":
+                from .data import execute
+
+                value = execute(args.operation, config, args.spec, args.manifest)
+            elif args.action == "setup":
                 from .setup import setup
 
                 value = setup(config, args.repository_root, args.profile)
@@ -67,7 +84,7 @@ def main(argv: list[str] | None = None) -> int:
                 value = run_experiment(
                     args.project, config, args.experiment_config, args.output_root
                 )
-    except ValueError:
+    except (ValueError, OSError, TypeError, KeyError):
         value = envelope(
             args.action,
             issues=["INVALID_CONFIGURATION"],

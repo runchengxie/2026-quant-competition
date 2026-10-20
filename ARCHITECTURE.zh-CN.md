@@ -26,6 +26,8 @@
 
 ## 数据流与身份
 
+独立的[数据准备工具](docs/research/datasets.zh-CN.md)在 `src/competition_tools/datasets` 中维护显式来源规格、有预算的下载和外部不可覆盖的 manifest。根评估工具启动独立安装的加密日线 CLI，并读取 JSON，不导入子项目模块，也不把日线当作订单簿事件输入。Pages 使用单独的 `strategy-expansion.v1.json` 展示新的事后汇总，原24条结果快照保持不变。
+
 ```text
 外部数据集 + 显式清单
   → 研究包输入检查 → 版本化输入凭证

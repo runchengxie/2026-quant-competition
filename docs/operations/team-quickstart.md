@@ -32,3 +32,6 @@ Default CI tests root and both leaves and runs team demos without framework depe
 New code under `src/competition_tools/team/` uses its scoped MIT `LICENSE`. Existing root code and third-party packages retain their licensing.
 
 Use the explicit `run international` or optional `run next-open` command for [international experiments](../research/international-experiments.md).
+## Data acquisition and retrospective evaluation
+
+Use [dataset preparation](../research/datasets.md) for the separate external specification, budget caps, immutable receipts and actual provider support. `team.py data plan`, `data acquire` and `data inspect` preserve the team configuration schema. `team.py evaluate` dispatches only the daily crypto matrix in its own environment; equity and maker matrices use their existing APIs. See [new evidence and limitations](../research/data-expansion-and-evaluation.md). None of these commands starts Gateway or submits orders.

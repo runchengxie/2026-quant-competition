@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "coverage-report.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": "competition.coverage_report.v1"
+    },
+    "dataset_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+    },
+    "status": {
+      "enum": [
+        "acquired",
+        "partial",
+        "blocked"
+      ]
+    },
+    "coverage": {
+      "type": "object"
+    },
+    "gaps": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "universe_status": {
+      "enum": [
+        "fixed_current",
+        "point_in_time"
+      ]
+    },
+    "accepted_research": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema",
+    "dataset_id",
+    "version",
+    "status",
+    "coverage",
+    "gaps",
+    "universe_status",
+    "accepted_research"
+  ]
+}

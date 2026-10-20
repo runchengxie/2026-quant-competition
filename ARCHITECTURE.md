@@ -26,6 +26,8 @@ The equity package also owns the distinct six-market international diagnostic. F
 
 ## Data flow and identity
 
+Standalone [dataset preparation](docs/research/datasets.md) adds explicit source specifications, bounded downloads and external immutable manifests under `src/competition_tools/datasets`. Root evaluation dispatches the separately installed crypto daily CLI and reads JSON results. It does not import leaf packages or reuse daily candles as event-book inputs. The separate `strategy-expansion.v1.json` Pages projection carries new retrospective aggregates; the original 24-result snapshot stays unchanged.
+
 ```text
 external dataset + explicit manifest
   → leaf input inspection → versioned input receipt

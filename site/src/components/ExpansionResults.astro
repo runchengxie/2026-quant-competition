@@ -1,0 +1,39 @@
+---
+import snapshot from "../data/strategy-expansion.v1.json";
+import en from "../i18n/en.json";
+import zh from "../i18n/zh-CN.json";
+interface Props { locale?: string }
+const locale = Astro.props.locale === "zh-CN" ? "zh-CN" : "en";
+const t = (locale === "zh-CN" ? zh : en).expansion;
+const n = new Intl.NumberFormat(locale, { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+const show = (value: number | null, percent = false) => value === null ? "—" : `${n.format(value * (percent ? 100 : 1))}${percent ? "%" : ""}`;
+const report = `https://github.com/runchengxie/2026-quant-competition/blob/main/docs/research/data-expansion-and-evaluation${locale === "zh-CN" ? ".zh-CN" : ""}.md`;
+---
+<section id="expansion" class="expansion-section">
+  <h2>{t.title}</h2><p>{t.intro}</p>
+  <h3>{t.coverage}</h3>
+  {snapshot.coverage.map(row => <p><code>{row.source}</code> · {t.statuses[row.status as keyof typeof t.statuses]} · {row.products.length} {t.pool} · {row.rows} {t.rows} · {row.start}–{row.end} · {t.fixed}</p>)}
+  <h3>{t.daily}</h3><p class="detail">{t.dailyNote}</p>
+  <div class="result-scroll"><table class="results-table"><thead><tr><th>{t.strategy}</th><th>{t.pool}</th><th>{t.cost}</th><th>{t.period}</th><th>{t.return}</th><th>{t.drawdown}</th><th>{t.sharpe}</th></tr></thead><tbody>
+    {snapshot.daily_results.map((row, i) => <tr data-expansion-id={`daily-${i}`} data-facts={JSON.stringify(row)}><th scope="row"><code>{row.strategy}</code></th><td>{row.products.length}</td><td>{row.fee_bps}</td><td>{row.start}<br />{row.end}</td><td>{show(row.net_return, true)}</td><td>{show(row.max_drawdown, true)}</td><td>{show(row.sharpe)}</td></tr>)}
+  </tbody></table></div>
+  <h3>{t.equity}</h3><p class="detail">{t.equityNote}</p>
+  <details><summary>{t.equity} ({snapshot.equity_results.length})</summary><div class="result-scroll"><table class="results-table"><thead><tr><th>{t.market}</th><th>{t.strategy}</th><th>{t.fold}</th><th>{t.period}</th><th>{t.return}</th><th>{t.drawdown}</th></tr></thead><tbody>
+    {snapshot.equity_results.map((row, i) => <tr data-expansion-id={`equity-${i}`} data-facts={JSON.stringify(row)}><th scope="row">{row.market}</th><td><code>{row.strategy}</code></td><td>{row.fold + 1}</td><td>{row.start}<br />{row.end}</td><td>{show(row.net_return, true)}</td><td>{show(row.max_drawdown, true)}</td></tr>)}
+  </tbody></table></div></details>
+  <h3>{t.maker}</h3><p class="detail">{t.makerNote}</p>
+  <div class="result-scroll"><table class="results-table"><thead><tr><th>{t.strategy}</th><th>{t.scenario}</th><th>{t.pnl}</th><th>{t.fills}</th></tr></thead><tbody>
+    {snapshot.maker_results.map((row, i) => <tr data-expansion-id={`maker-${i}`} data-facts={JSON.stringify(row)}><th scope="row">{row.strategy}</th><td>{t.scenarios[row.scenario as keyof typeof t.scenarios]}</td><td>{show(row.total_pnl)}</td><td>{row.fill_count}</td></tr>)}
+  </tbody></table></div>
+  <h3>{t.limits}</h3><ul>{snapshot.blockers.map(code => <li>{t.blockers[code as keyof typeof t.blockers]}</li>)}</ul>
+  <a class="text-link" href={report}>{t.report} ↗</a>
+</section>
+<style>
+.expansion-section { border-top: 1px solid var(--line); padding-top: 3rem; }
+.result-scroll { overflow-x: auto; margin: 1rem 0 1.5rem; }
+.results-table { width: 100%; border-collapse: collapse; text-align: left; font-size: .88rem; }
+.results-table th, .results-table td { padding: .85rem .7rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+.results-table thead { color: var(--table-heading); background: var(--table-bg); }
+summary { cursor: pointer; padding: .7rem 0; }
+li { margin-bottom: .6rem; }
+</style>

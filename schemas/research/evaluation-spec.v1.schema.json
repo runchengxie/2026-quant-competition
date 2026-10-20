@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "competition.evaluation_spec.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "manifests"
+  ],
+  "properties": {
+    "schema": {
+      "const": "competition.evaluation_spec.v1"
+    },
+    "manifests": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^(?:/|[A-Za-z]:[/\\\\])"
+      }
+    }
+  }
+}

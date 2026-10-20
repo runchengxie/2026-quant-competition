@@ -34,3 +34,5 @@ include = ["adapters*", "apps*", "packages*", "strategies*", "competition_tools*
 
 [tool.setuptools.package-data]
 "competition_tools.team" = ["LICENSE"]
+"competition_tools.datasets" = ["LICENSE"]
+"competition_tools.evaluation" = ["LICENSE"]

@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "dataset-spec.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": "competition.dataset_spec.v1"
+    },
+    "dataset_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+    },
+    "source": {
+      "enum": [
+        "binance_spot",
+        "licensed_import",
+        "ibkr",
+        "algoseek",
+        "aivix",
+        "index_one",
+        "coinpaprika"
+      ]
+    },
+    "market": {
+      "enum": [
+        "crypto",
+        "US",
+        "HK"
+      ]
+    },
+    "products": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "quote_currency": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+    },
+    "start": {
+      "type": "string",
+      "format": "date"
+    },
+    "end": {
+      "type": "string",
+      "format": "date"
+    },
+    "timezone": {
+      "type": "string",
+      "minLength": 1
+    },
+    "calendar": {
+      "type": "string",
+      "minLength": 1
+    },
+    "price_basis": {
+      "enum": [
+        "raw",
+        "adjusted",
+        "split_adjusted"
+      ]
+    },
+    "universe_status": {
+      "enum": [
+        "fixed_current",
+        "point_in_time"
+      ]
+    },
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requests",
+        "bytes",
+        "seconds"
+      ],
+      "properties": {
+        "requests": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "seconds": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "credential_file": {
+      "type": "string",
+      "minLength": 1
+    },
+    "input_directory": {
+      "type": "string",
+      "minLength": 1
+    },
+    "membership_file": {
+      "type": "string",
+      "minLength": 1
+    },
+    "contracts": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  },
+  "required": [
+    "schema",
+    "dataset_id",
+    "version",
+    "source",
+    "market",
+    "products",
+    "quote_currency",
+    "start",
+    "end",
+    "timezone",
+    "calendar",
+    "price_basis",
+    "universe_status",
+    "budget"
+  ]
+}

@@ -25,9 +25,11 @@ Backtest and analysis commands print to stdout. Plotting writes to the external 
 
 ## Known limitations
 
+The separate `crypto_mm.daily` CLI consumes checked spot-daily manifests and supports `equal_weight` buy/hold and lagged `momentum_63d` diagnostics. It uses a 365-day calendar, explicit USDT quotes and traded-notional costs; it does not reuse the event receipt or simulate market making. See [dataset preparation](../../docs/research/datasets.md) and [new evaluation evidence](../../docs/research/data-expansion-and-evaluation.md). `python -m crypto_mm.daily --help` needs no workspace configuration.
+
 Signal horizons use elapsed seconds. The sampling interval must exactly divide the 1, 5 and 30 second horizons; unrepresentable grids raise `ValueError`. The legacy `one_second_log_return` column retains its name but contains adjacent-grid log returns when the interval differs from one second. Timing and window settings require integers.
 
-Audit quality adds `nonfinite_values` and book `nonpositive_price_rows` counts. Null counts remain separate; audit reports diagnose invalid input rather than certify exchange validity. Peak inventory includes individual fills within a timestamp batch. A full historical backtest or parameter scan has not been reproduced for this snapshot. Shared visible queues across overlapping orders and exchange-specific fill realism remain modeling limitations.
+Audit quality adds `nonfinite_values` and book `nonpositive_price_rows` counts. Null counts remain separate; audit reports diagnose invalid input rather than certify exchange validity. Peak inventory includes individual fills within a timestamp batch. The linked evaluation records bounded three-day archived reruns, not a complete historical study or parameter optimization. Shared visible queues across overlapping orders and exchange-specific fill realism remain modeling limitations.
 
 ## Configuration and outputs
 

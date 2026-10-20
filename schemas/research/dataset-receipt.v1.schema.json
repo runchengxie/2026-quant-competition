@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "dataset-receipt.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": "competition.dataset_receipt.v1"
+    },
+    "source": {
+      "type": "string",
+      "minLength": 1
+    },
+    "spec_hash": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "acquired",
+        "partial",
+        "blocked"
+      ]
+    },
+    "coverage": {
+      "type": "object"
+    },
+    "gaps": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "observed_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "available_at": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "normalization": {
+      "type": "string",
+      "minLength": 1
+    },
+    "requests": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "downloaded_bytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "universe_status": {
+      "enum": [
+        "fixed_current",
+        "point_in_time"
+      ]
+    },
+    "accepted_research": {
+      "const": false
+    }
+  },
+  "required": [
+    "schema",
+    "source",
+    "spec_hash",
+    "status",
+    "coverage",
+    "gaps",
+    "observed_at",
+    "available_at",
+    "normalization",
+    "accepted_research"
+  ]
+}

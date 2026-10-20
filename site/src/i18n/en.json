@@ -170,5 +170,51 @@
       "execution": "Research packages have no broker wiring. HK v1 schema alignment, order identity mapping and the supervised Paper lifecycle remain unresolved."
     },
     "acceptanceGuide": "Input receipts, experiment acceptance and remaining integration work"
+  },
+  "expansion": {
+    "title": "Expanded data and retrospective experiments",
+    "intro": "Real daily bars and new diagnostic reruns. These are retrospective research results, not accepted research or execution targets.",
+    "coverage": "Observed daily coverage",
+    "daily": "Daily spot baselines",
+    "dailyNote": "Both pools use 2023–2025 observations with 63 days of warmup. Equal weight buys once and holds; momentum selects positive trailing 63-day returns using only the previous close and otherwise holds cash. Costs are basis points per one-way traded notional. USDT is not USD. The disclosed fixed candidate pool has selection bias.",
+    "equity": "Equity rolling diagnostics",
+    "equityNote": "30 completed folds: 252 sessions of warmup and 63 evaluation sessions, with positions carried from each warmup. HK uses one stock; US uses SPY. These do not establish S&P500 stock-selection performance. Existing engine costs are 30 bps for HK and 20 bps for US; adjustment and availability timing remain unverified.",
+    "maker": "Archived maker diagnostics",
+    "makerNote": "Three archived days, 2026-03-19–21. Venue, product and account currency remain unknown. PnL is in recorded account units, not a funded percentage return. Baseline, 1 bps maker fee and 300 ms placement/cancellation latency change one factor at a time. A conservative-fill scenario is unsupported by the current model.",
+    "strategy": "Strategy",
+    "pool": "Products",
+    "cost": "Cost (bps)",
+    "return": "Net return",
+    "drawdown": "Max drawdown",
+    "sharpe": "Sharpe",
+    "period": "Evaluation period",
+    "market": "Market",
+    "fold": "Fold",
+    "scenario": "Scenario",
+    "pnl": "PnL (unknown unit)",
+    "fills": "Fills",
+    "limits": "Remaining evidence gaps",
+    "report": "Method, results and reproduction",
+    "fixed": "Fixed study pool",
+    "rows": "daily bars",
+    "statuses": {
+      "acquired": "Acquired",
+      "partial": "Partial",
+      "blocked": "Blocked"
+    },
+    "scenarios": {
+      "baseline": "Baseline",
+      "fee_1bps": "Maker fee 1 bps",
+      "latency_300ms": "Latency 300 ms"
+    },
+    "blockers": {
+      "SP500_PIT_MEMBERSHIP_AND_PRICE_ACCESS_MISSING": "Historical S&P500 membership and compatible price access are missing.",
+      "IBKR_GATEWAY_UNREACHABLE": "The configured Paper Gateway TCP endpoint was unreachable; no login or restart was attempted.",
+      "EQUITY_SINGLE_INSTRUMENT_ONLY": "Equity diagnostics contain one instrument per market, not a stock-selection pool.",
+      "EQUITY_ADJUSTMENT_TIMING_UNVERIFIED": "Equity adjustment and publication timing are not independently verified.",
+      "FIXED_CRYPTO_CANDIDATE_SELECTION_BIAS": "The crypto candidates are fixed retrospectively; historical eligibility is not proven.",
+      "MAKER_VENUE_PRODUCT_LINEAGE_UNKNOWN": "Archived maker venue/product lineage and currency remain unknown.",
+      "CONSERVATIVE_FILL_MODEL_UNSUPPORTED": "The current maker engine has no conservative-fill scenario control."
+    }
   }
 }

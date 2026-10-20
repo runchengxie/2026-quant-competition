@@ -55,6 +55,31 @@ def test_allows_bilingual_astro_sources_assets_and_build_output(tmp_path):
     assert check_site(source, built) == []
 
 
+def test_allows_reviewed_expansion_snapshot_but_still_scans_secrets(tmp_path):
+    source, built = make_site_trees(tmp_path)
+    path = source / "src/data/strategy-expansion.v1.json"
+    path.parent.mkdir()
+    path.write_text('{"schema": "competition.public_strategy_expansion.v1"}')
+    test = source / "tests/expansion.spec.mjs"
+    test.parent.mkdir()
+    test.write_text("// Reviewed bilingual presentation regression test")
+    assert check_site(source, built) == []
+    path.write_text(json.dumps({"api_key": "sensitive-example-value-1234567890"}))
+    assert any("sensitive pattern" in error for error in check_site(source, built))
+
+
+def test_expansion_facts_must_match_between_locales(tmp_path):
+    source, built = make_site_trees(tmp_path)
+    for relative, value in (("index.html", "1"), ("zh-CN/index.html", "2")):
+        path = built / relative
+        path.write_text(
+            path.read_text(encoding="utf-8")
+            + f'<tr data-expansion-id="daily-0" data-facts="{value}"></tr>',
+            encoding="utf-8",
+        )
+    assert any("expansion facts differ" in error for error in check_site(source, built))
+
+
 def test_allows_only_reviewed_validation_snapshot_and_scans_its_content(tmp_path):
     source, built = make_site_trees(tmp_path)
     data = source / "src/data"

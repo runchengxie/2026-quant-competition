@@ -48,9 +48,12 @@ class _PageMetadata(HTMLParser):
         self.language: str | None = None
         self.hrefs: list[str] = []
         self.validation_facts: list[tuple[str, str | None, str | None]] = []
+        self.expansion_facts: list[tuple[str, str | None]] = []
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         attributes = dict(attrs)
+        if expansion_id := attributes.get("data-expansion-id"):
+            self.expansion_facts.append((expansion_id, attributes.get("data-facts")))
         if result_id := attributes.get("data-result-id"):
             self.validation_facts.append(
                 (
@@ -73,10 +76,12 @@ def _allowed_source(relative_path: PurePosixPath) -> bool:
         "package-lock.json",
         "playwright.config.mjs",
         "tests/theme.spec.mjs",
+        "tests/expansion.spec.mjs",
         "tsconfig.json",
         "src/i18n/en.json",
         "src/i18n/zh-CN.json",
         "src/data/strategy-validation.json",
+        "src/data/strategy-expansion.v1.json",
     }:
         return True
     if path.startswith("src/"):
@@ -152,6 +157,7 @@ def _validate_localized_output(
         },
     }
     validation_facts: list[list[tuple[str, str | None, str | None]]] = []
+    expansion_facts: list[list[tuple[str, str | None]]] = []
     for relative_path, requirements in route_requirements.items():
         if relative_path not in output_paths:
             continue
@@ -165,6 +171,7 @@ def _validate_localized_output(
         metadata = _PageMetadata()
         metadata.feed(page)
         validation_facts.append(sorted(metadata.validation_facts))
+        expansion_facts.append(sorted(metadata.expansion_facts))
         if metadata.language != requirements["language"]:
             errors.append(f"locale metadata mismatch in output page {relative_path}")
         if requirements["locale_switch"] not in metadata.hrefs:
@@ -179,6 +186,8 @@ def _validate_localized_output(
 
     if len(validation_facts) == 2 and validation_facts[0] != validation_facts[1]:
         errors.append("validation facts differ between localized output pages")
+    if len(expansion_facts) == 2 and expansion_facts[0] != expansion_facts[1]:
+        errors.append("expansion facts differ between localized output pages")
 
 
 def check_site(source_dir: Path, built_dir: Path) -> list[str]:

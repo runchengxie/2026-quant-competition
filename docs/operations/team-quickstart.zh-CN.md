@@ -32,3 +32,6 @@ python team.py demo crypto --config /absolute/private/team.toml --output-root /a
 新增的 `src/competition_tools/team/` 代码使用目录内 MIT `LICENSE`，根目录已有代码和第三方包保留原许可。
 
 使用显式 `run international` 或可选 `run next-open` 命令运行[国际实验](../research/international-experiments.zh-CN.md).
+## 数据准备与历史评估
+
+独立外部规格、预算、不可覆盖的receipt及实际来源支持见[数据准备](../research/datasets.zh-CN.md)。`team.py data plan`、`data acquire`、`data inspect`不改变团队配置schema。`team.py evaluate`只在独立环境中运行加密日线矩阵，股票和做市矩阵仍使用既有API。结果与限制见[新评估证据](../research/data-expansion-and-evaluation.zh-CN.md)。这些命令均不启动Gateway或下单。

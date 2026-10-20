@@ -170,5 +170,51 @@
       "execution": "研究包没有接通券商。港股 v1 schema、订单身份关联以及人工监督下的 Paper 全生命周期仍待解决。"
     },
     "acceptanceGuide": "输入凭证、实验验收与待完成的接入工作"
+  },
+  "expansion": {
+    "title": "数据扩池与历史策略评估",
+    "intro": "真实日线及新一轮诊断回放。这些是事后研究结果，尚未通过研究验收，也不构成执行目标。",
+    "coverage": "实际日线覆盖",
+    "daily": "现货日线基线",
+    "dailyNote": "两组均使用2023–2025年观测及63天预热。等权策略建仓后持有；动量策略只使用上一日收盘信息，选择过去63天收益为正的币种，否则持有现金。成本按单向成交金额的基点数计，USDT不等于USD。固定候选池存在选择偏差。",
+    "equity": "股票滚动诊断",
+    "equityNote": "完成30个窗口，每个窗口预热252个交易日、评估63日，并承接预热末的持仓。港股仅一只股票，美股仅SPY，不能证明标普500选股表现。沿用引擎成本，港股30 bps、美股20 bps；复权与信息可用时间尚未独立核实。",
+    "maker": "归档做市诊断",
+    "makerNote": "使用2026-03-19至21的三天归档。交易场所、产品和账户币种仍未知，PnL为记录中的账户单位，不是有本金分母的收益率。原始配置、1 bps做市手续费、挂单及撤单延迟300 ms分别只改变一个因素。现有模型不支持保守成交场景。",
+    "strategy": "策略",
+    "pool": "产品数",
+    "cost": "成本（bps）",
+    "return": "净收益率",
+    "drawdown": "最大回撤",
+    "sharpe": "夏普比率",
+    "period": "评估期间",
+    "market": "市场",
+    "fold": "窗口",
+    "scenario": "场景",
+    "pnl": "PnL（单位未知）",
+    "fills": "成交数",
+    "limits": "仍缺少的证据",
+    "report": "方法、结果与复现说明",
+    "fixed": "固定研究池",
+    "rows": "根日线",
+    "statuses": {
+      "acquired": "已取得",
+      "partial": "部分覆盖",
+      "blocked": "受阻"
+    },
+    "scenarios": {
+      "baseline": "原始配置",
+      "fee_1bps": "做市手续费1 bps",
+      "latency_300ms": "延迟300 ms"
+    },
+    "blockers": {
+      "SP500_PIT_MEMBERSHIP_AND_PRICE_ACCESS_MISSING": "缺少标普500历史成分及匹配价格数据的访问条件。",
+      "IBKR_GATEWAY_UNREACHABLE": "配置的Paper Gateway TCP端点不可达，未尝试登录或重启。",
+      "EQUITY_SINGLE_INSTRUMENT_ONLY": "每个股票市场仅有一个标的，不能作为选股池。",
+      "EQUITY_ADJUSTMENT_TIMING_UNVERIFIED": "股票复权及信息发布时间尚未独立核实。",
+      "FIXED_CRYPTO_CANDIDATE_SELECTION_BIAS": "数字货币候选池为事后固定名单，历史入选资格未获证明。",
+      "MAKER_VENUE_PRODUCT_LINEAGE_UNKNOWN": "归档做市数据的场所、产品来源及币种仍未知。",
+      "CONSERVATIVE_FILL_MODEL_UNSUPPORTED": "现有做市引擎没有保守成交场景开关。"
+    }
   }
 }
