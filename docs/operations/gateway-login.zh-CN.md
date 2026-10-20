@@ -73,10 +73,10 @@ icacls $privateDirectory
 
 ## 数据任务的可选登录前置步骤
 
-`team.py data acquire --ensure-gateway` 只对 `source=ibkr` 显式启用，默认仍不启动。`plan`、`inspect`、离线评估和其他来源拒绝这个参数。先用只读客户端检查 Paper API，已连接时不启动工具，也不要求桌面操作。否则需要 Windows、已登录桌面、经过校验且仅所有者可访问的 IBC 部署、已准备运行副本及 `activation_authorized=true`。
+`python -m competition_tools.team data acquire --ensure-gateway` 只对 `source=ibkr` 显式启用，默认仍不启动。`plan`、`inspect`、离线评估和其他来源拒绝这个参数。先用只读客户端检查 Paper API，已连接时不启动工具，也不要求桌面操作。否则需要 Windows、已登录桌面、经过校验且仅所有者可访问的 IBC 部署、已准备运行副本及 `activation_authorized=true`。
 
 ```powershell
-& $pythonPath team.py data acquire --config $teamConfig --spec $datasetSpec --ensure-gateway --gateway-config $launcherJson --gateway-workspace $workspaceToml --gateway-wrapper $deployedWrapper
+& $pythonPath -m competition_tools.team data acquire --config $teamConfig --spec $datasetSpec --ensure-gateway --gateway-config $launcherJson --gateway-workspace $workspaceToml --gateway-wrapper $deployedWrapper
 ```
 
 需在稳定外部部署中同时保留 `Start-PaperGateway.ps1`、`PaperGateway.psm1`，根环境安装可选的 `broker-data` 依赖。计划任务不能指向 worktree。工具只调用一次已有包装器的 `-Action ensure`，按配置观察30–300秒内的API状态，并在开始取数据前独立复查一次。检查失败就阻止取数。API就绪不能认证账户身份或历史行情权限。

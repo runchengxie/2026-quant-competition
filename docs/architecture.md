@@ -8,11 +8,11 @@ Competition-specific offline research and data preparation belong to this reposi
 
 ## Current ownership
 
-Paths in code spans are repository-relative. `team.py` bootstraps the CLI from a source checkout before installation. Its implementation is already in `src/competition_tools/team`, available after installation as `python -m competition_tools.team`. Operational wrappers live in `scripts/windows`. `research` contains independently packaged projects, `config` holds runtime settings and templates, and `schemas` defines artifact contracts.
+Paths in code spans are repository-relative. The CLI implementation lives in `src/competition_tools/team`, available after installation as `python -m competition_tools.team`. Initial setup uses an external bootstrap environment, as described in the team quickstart. Operational wrappers live in `scripts/windows`. `research` contains independently packaged projects, `config` holds runtime settings and templates, and `schemas` defines artifact contracts.
 
 | Capability | Code or contract |
 | --- | --- |
-| Portable setup, local readiness and synthetic demo orchestration | `team.py`, `src/competition_tools/team`, [team quickstart](operations/team-quickstart.md) |
+| Portable setup, local readiness and synthetic demo orchestration | `src/competition_tools/team`, [team quickstart](operations/team-quickstart.md) |
 | Target handoff and order/event contracts | `src/packages/contracts` |
 | Market normalization, risk, audit and reconciliation | `src/packages/market_model`, `src/packages/risk`, `src/packages/audit`, `src/packages/reconciliation` |
 | IBKR mapping and execution application | `src/adapters/ibkr`, `src/apps/execution_runner` |

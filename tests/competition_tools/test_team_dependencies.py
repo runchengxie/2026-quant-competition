@@ -47,7 +47,7 @@ def test_framework_checks_are_separate_from_default_research():
 def test_default_ci_exercises_team_delivery():
     text = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
     assert "check_team_delivery" in text
-    assert "team.py setup" in text
+    assert "python -m competition_tools.team setup" in text
 
 
 def test_core_lockfiles_exclude_framework_distributions():

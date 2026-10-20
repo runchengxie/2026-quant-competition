@@ -17,7 +17,7 @@ The independent [international v2 target contract](docs/strategy/target-manifest
 
 ## Offline research
 
-Start with the [team quickstart](docs/operations/team-quickstart.md) ([简体中文](docs/operations/team-quickstart.zh-CN.md)) for a single-clone setup. `python team.py --help` needs only Python 3.12. Default setup installs isolated core environments and runs synthetic equity/crypto demos without quant framework packages. Accounting comparison remains an optional profile.
+Start with the [team quickstart](docs/operations/team-quickstart.md) ([简体中文](docs/operations/team-quickstart.zh-CN.md)) for a single-clone setup. `python -m competition_tools.team --help` requires Python 3.12 and the installed root package. Default setup installs isolated core environments and runs synthetic equity/crypto demos without quant framework packages. Accounting comparison remains an optional profile.
 
 The two baseline [offline research packages](research/README.md) provide synthetic crypto market-making and daily equity backtest experiments. They have separate dependencies, tests and MIT licenses. Their results are not execution commands, verified live trading, or evidence of competition eligibility.
 
@@ -38,12 +38,11 @@ The competition strategy has not been selected or registered. The candidates sti
 
 ## Repository map
 
-See [architecture and ownership](docs/architecture.md) ([简体中文](docs/architecture.zh-CN.md)) for package boundaries. `team.py` is a source-checkout bootstrap for setup before installation; its CLI implementation lives in `src/competition_tools/team`. Installed environments can use `python -m competition_tools.team`.
+See [architecture and ownership](docs/architecture.md) ([简体中文](docs/architecture.zh-CN.md)) for package boundaries. The CLI lives in `src/competition_tools/team` and runs as `python -m competition_tools.team` after installation. Follow the quickstart for an external bootstrap environment.
 
 ```text
 2026-quant-competition/
 ├── README.md
-├── team.py                  # source-checkout setup entry
 ├── docs/                    # competition, strategy, and operations material
 ├── scripts/windows/         # Paper Gateway operational wrappers
 ├── config/                  # runtime configuration and templates

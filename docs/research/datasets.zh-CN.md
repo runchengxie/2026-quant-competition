@@ -9,9 +9,9 @@
 按[团队快速上手](../operations/team-quickstart.zh-CN.md)安装锁定的 offline 环境。`competition.team.v1` 不变，另行准备外部 JSON 数据规格：
 
 ```sh
-python team.py data plan --config /absolute/private/team.toml --spec /absolute/private/dataset.json
-python team.py data acquire --config /absolute/private/team.toml --spec /absolute/private/dataset.json
-python team.py data inspect --config /absolute/private/team.toml --spec /absolute/private/dataset.json --manifest /absolute/data/2026-quant-competition/datasets/spot-study/v1/manifest.json
+python -m competition_tools.team data plan --config /absolute/private/team.toml --spec /absolute/private/dataset.json
+python -m competition_tools.team data acquire --config /absolute/private/team.toml --spec /absolute/private/dataset.json
+python -m competition_tools.team data inspect --config /absolute/private/team.toml --spec /absolute/private/dataset.json --manifest /absolute/data/2026-quant-competition/datasets/spot-study/v1/manifest.json
 ```
 
 `plan` 和 `inspect` 不发起网络请求。`acquire` 默认不启动Gateway或登录。只有显式IBKR取数可通过 `--ensure-gateway` 和已启用的私有部署使用[Paper登录前置步骤](../operations/gateway-login.zh-CN.md#数据任务的可选登录前置步骤)，任何模式均不购买数据或下单。输出沿用 `competition.team_result.v1`。部分覆盖返回退出码2及 `PARTIAL_COVERAGE`，不算下载完成。

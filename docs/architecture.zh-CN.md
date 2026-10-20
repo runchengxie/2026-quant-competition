@@ -8,11 +8,11 @@
 
 ## 当前职责
 
-行内代码中的路径均相对于仓库根目录。`team.py` 用于尚未安装环境时从源码启动 CLI，实际实现已在 `src/competition_tools/team` 中，安装后可通过 `python -m competition_tools.team` 使用。运维包装脚本放在 `scripts/windows`。`research` 包含独立打包的研究项目，`config` 保存运行配置和模板，`schemas` 定义 artifact 契约。
+行内代码中的路径均相对于仓库根目录。CLI 实现位于 `src/competition_tools/team`，安装后通过 `python -m competition_tools.team` 使用。首次安装使用外部引导环境，步骤见团队快速开始。运维包装脚本放在 `scripts/windows`。`research` 包含独立打包的研究项目，`config` 保存运行配置和模板，`schemas` 定义 artifact 契约。
 
 | 能力 | 代码或契约 |
 | --- | --- |
-| 独立安装、本地环境检查和合成演示 | `team.py`、`src/competition_tools/team`、[团队快速开始](operations/team-quickstart.zh-CN.md) |
+| 独立安装、本地环境检查和合成演示 | `src/competition_tools/team`、[团队快速开始](operations/team-quickstart.zh-CN.md) |
 | 目标交接及订单、事件契约 | `src/packages/contracts` |
 | 市场标准化、风控、审计和对账 | `src/packages/market_model`、`src/packages/risk`、`src/packages/audit`、`src/packages/reconciliation` |
 | IBKR 映射及执行应用 | `src/adapters/ibkr`、`src/apps/execution_runner` |

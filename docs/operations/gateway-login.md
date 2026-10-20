@@ -73,10 +73,10 @@ Rollback is manual: disable only a separately approved scheduled task, stop the 
 
 ## Optional data-task login precondition
 
-`team.py data acquire --ensure-gateway` is an explicit opt-in for `source=ibkr` only. The default remains no startup. `plan`, `inspect`, offline evaluation and other providers reject this flag. A read-only Paper API probe runs first. If API is already connected, no launcher or desktop action is needed. Otherwise Windows, an existing desktop, verified owner-only IBC deployment, prepared runtime and `activation_authorized=true` are required.
+`python -m competition_tools.team data acquire --ensure-gateway` is an explicit opt-in for `source=ibkr` only. The default remains no startup. `plan`, `inspect`, offline evaluation and other providers reject this flag. A read-only Paper API probe runs first. If API is already connected, no launcher or desktop action is needed. Otherwise Windows, an existing desktop, verified owner-only IBC deployment, prepared runtime and `activation_authorized=true` are required.
 
 ```powershell
-& $pythonPath team.py data acquire --config $teamConfig --spec $datasetSpec --ensure-gateway --gateway-config $launcherJson --gateway-workspace $workspaceToml --gateway-wrapper $deployedWrapper
+& $pythonPath -m competition_tools.team data acquire --config $teamConfig --spec $datasetSpec --ensure-gateway --gateway-config $launcherJson --gateway-workspace $workspaceToml --gateway-wrapper $deployedWrapper
 ```
 
 Use a stable external deployment of both `Start-PaperGateway.ps1` and `PaperGateway.psm1`, and an installed root environment with the optional `broker-data` dependencies. Do not point scheduled tasks at a worktree. The helper invokes the existing wrapper once with `-Action ensure`, observes API readiness for the configured 30–300 seconds, then independently probes the API again before data acquisition. A probe failure blocks acquisition. No account identity or historical-data entitlement is certified by API readiness.

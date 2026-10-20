@@ -12,7 +12,7 @@ The competition repository owns two distinct international research experiments.
 Use [team setup](../operations/team-quickstart.md), then copy [the fictional six-market configuration](../../config/examples/international-six-market.synthetic.yaml) outside Git and replace `data_root` with your own absolute external input directory. The template contains an invented allocation and no observations. It does not prove that a dataset is synthetic or licensed.
 
 ```sh
-python team.py run international --config /absolute/private/team.toml --experiment-config /absolute/private/six-market.yml --output-root /absolute/data/six-market-run-001
+python -m competition_tools.team run international --config /absolute/private/team.toml --experiment-config /absolute/private/six-market.yml --output-root /absolute/data/six-market-run-001
 ```
 
 The installed equity interpreter can also run `python -m equity_lab.international.six_market_run --config FILE --output-dir NEW_EXTERNAL_DIR --json`. All six asset CSVs require `date,close,volume`; five FX CSVs require `date,usd_per_local`. Dates are local daily observations, not intraday availability timestamps. USD is the base currency. The runner requires 24 common calendar months across configured assets and FX. Missing Canada or any other market fails rather than shrinking the experiment. Distribution CSVs, when supplied through `distribution_files`, require `date,cash_per_share,currency,source`.
@@ -22,8 +22,8 @@ The original fractional-weight calculation, month-end observation schedule, retu
 ## Optional next-open replay
 
 ```sh
-python team.py setup --config /absolute/private/team.toml --profile framework
-python team.py run next-open --config /absolute/private/team.toml --experiment-config /absolute/private/next-open.yml --output-root /absolute/data/next-open-run-001
+python -m competition_tools.team setup --config /absolute/private/team.toml --profile framework
+python -m competition_tools.team run next-open --config /absolute/private/team.toml --experiment-config /absolute/private/next-open.yml --output-root /absolute/data/next-open-run-001
 ```
 
 The installed framework interpreter can run `python -m platform_compare.next_open.run --config FILE --output-dir NEW_EXTERNAL_DIR --json`. Configuration is explicit, with `experiment_id`, `strategy_id`, `data_root`, `target_schedule_path`, `signal_cutoff`, `initial_cash_usd`, `sizing_mode`, `max_price_age_days`, `max_fx_age_days`, `production_eligible`, `return_basis` and `reference_cost_bps`. This preserved study uses cutoff `2026-10-01`, fractional sizing, `production_eligible: false`, `return_basis: usd_price_nav` and reference costs `{commission: 5, equity_slippage: 5, fx: 0}`. These are diagnostic protocol restrictions, not a selected trading strategy. No private schedule/default configuration is distributed.
