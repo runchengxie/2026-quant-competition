@@ -4,116 +4,117 @@
   "license": "Apache-2.0",
   "modifications": [
     "Relocated imports into platform_compare.accounting; minimal package initializers.",
-    "Changed bundle backend identity to competition.usd_price_ledger and relocated portfolio_backtester schema namespace strings to platform_compare.accounting; financial algorithms unchanged."
+    "Changed bundle backend identity to competition.usd_price_ledger and relocated portfolio_backtester schema namespace strings to platform_compare.accounting; financial algorithms unchanged.",
+    "Added per-file notices marking the derived files and namespace/identity modifications."
   ],
   "files": [
     {
       "source": "packages/portfolio-backtester/src/portfolio_backtester/usd_ledger.py",
       "destination": "src/platform_compare/accounting/usd_ledger.py",
       "upstream_sha256": "2e421777c9b5651b1509f38b276b5aeb4b01232253bb2c5a421357f00711bc55",
-      "local_sha256": "2e421777c9b5651b1509f38b276b5aeb4b01232253bb2c5a421357f00711bc55"
+      "local_sha256": "f3a5befc970e6b745c4f710877233cb70332362a08c2b67891dd20e042919e48"
     },
     {
       "source": "packages/portfolio-backtester/src/portfolio_backtester/usd_ledger_accounting.py",
       "destination": "src/platform_compare/accounting/usd_ledger_accounting.py",
       "upstream_sha256": "fc6b1d21c1caee380680c42ef445d475f0d69c6ab9aba7ca6ca9850ffdb705a2",
-      "local_sha256": "fc6b1d21c1caee380680c42ef445d475f0d69c6ab9aba7ca6ca9850ffdb705a2"
+      "local_sha256": "92707e0d75cc4561e7e8e2dbf118670bb1f7f01bcb88727e0787f2aa08258a5e"
     },
     {
       "source": "packages/portfolio-backtester/src/portfolio_backtester/usd_ledger_bundle.py",
       "destination": "src/platform_compare/accounting/usd_ledger_bundle.py",
       "upstream_sha256": "d00b52209b14a3dfcda2be651a1b3a4567adc7f62d40be0a73a2cce583a5d430",
-      "local_sha256": "116ebdf9bab7c659b5ddff8d10e12042e2627de9bd7f167e01da8bd05274aeaf"
+      "local_sha256": "588d16e8e38e564352bc8395cecc6796de5de337f271bad2922be214e7eeb9ca"
     },
     {
       "source": "packages/portfolio-backtester/src/portfolio_backtester/usd_ledger_inputs.py",
       "destination": "src/platform_compare/accounting/usd_ledger_inputs.py",
       "upstream_sha256": "d3ffc2f819a380d0a6d152fdc9f75847ec3ed726c09261e0b4ae7d9822be7a2d",
-      "local_sha256": "db69a7cdf8e7f5304f531d5cded8c17ef8adaa18da97f1cf76272039d6528ac4"
+      "local_sha256": "41c5c7f2be7ce127a86c3698eba28c6120883b772d32a4eb6e59a8fb0b3a8a6b"
     },
     {
       "source": "packages/portfolio-backtester/src/portfolio_backtester/usd_ledger_models.py",
       "destination": "src/platform_compare/accounting/usd_ledger_models.py",
       "upstream_sha256": "b6dd5239206a0dfea17475e445688a6087016e4bf6c446de26e7be7b2bf12bda",
-      "local_sha256": "3120c4036b6844e0dfe675309dd69d1c79be13b41f5341785f1e2cae2b51935c"
+      "local_sha256": "39010d8d30acf94fa0fab27761b12e2df175cb6be80c2b32af70e35c94fe5d65"
     },
     {
       "source": "packages/portfolio-backtester/src/portfolio_backtester/backtest_bundle.py",
       "destination": "src/platform_compare/accounting/backtest_bundle.py",
       "upstream_sha256": "23f83d0e891c780247a701f3d8f8bd6739c97f6fb62e1a8b77bae993f22ef3f7",
-      "local_sha256": "bbe278899c6812aafc1ea38542ed2899bb40400d90d4d1d5805bd59402efa985"
+      "local_sha256": "8ceeabbdfaba09944a7a69a3b4b2f990b8b534e1a9865f2ce393461a3f8a0b94"
     },
     {
       "source": "packages/portfolio-backtester/src/portfolio_backtester/backtest_bundle_io.py",
       "destination": "src/platform_compare/accounting/backtest_bundle_io.py",
       "upstream_sha256": "3dd190cfb88799cb70d6d6531eb0fb413d63286ef67984566410434213bf1815",
-      "local_sha256": "c8a0298ee435514c590ca188044cfb70c871eebec731c9f7607ec7cda0364f27"
+      "local_sha256": "406b97d0a833f084765d8dbe410ed2c89d0c7d892a9b75e682e3538d906ca67a"
     },
     {
       "source": "packages/portfolio-backtester/src/portfolio_backtester/execution_sim/results.py",
       "destination": "src/platform_compare/accounting/execution_sim/results.py",
       "upstream_sha256": "9ec72dfffd88452d77cf5316e23025f0d8b3ce7d308d9098d0e9588b74f6be50",
-      "local_sha256": "9ec72dfffd88452d77cf5316e23025f0d8b3ce7d308d9098d0e9588b74f6be50"
+      "local_sha256": "59c5a96897169586ab47ccffe275d5eed5bd1c7b1f224e498d2e8472d7d04c5d"
     },
     {
       "source": "packages/portfolio-backtester/src/portfolio_backtester/backends/base.py",
       "destination": "src/platform_compare/accounting/backends/base.py",
       "upstream_sha256": "f59058538ac42d36c2d586e5e046f9ab7b552a924394d8b174b8a00e0d7d7142",
-      "local_sha256": "f59058538ac42d36c2d586e5e046f9ab7b552a924394d8b174b8a00e0d7d7142"
+      "local_sha256": "41ab04b46232c08d8ff7b66f8b7124457cab8727f82ca6b917495f02c6b7ae3f"
     },
     {
       "source": "packages/research-contracts/artifact_envelope.py",
       "destination": "src/platform_compare/accounting/contracts/artifact_envelope.py",
       "upstream_sha256": "45ede7ae47bee16ddcdf11fc9eb529d0084334a7776d1e94e12a9058f913c765",
-      "local_sha256": "45ede7ae47bee16ddcdf11fc9eb529d0084334a7776d1e94e12a9058f913c765"
+      "local_sha256": "447a86e3ced60c055e647a00ad410853b91b27e4838a73af922b32bf7ff4b1d5"
     },
     {
       "source": "packages/research-contracts/file_receipts.py",
       "destination": "src/platform_compare/accounting/contracts/file_receipts.py",
       "upstream_sha256": "014ebf1cd0c7775b786d8fe57a598866b73048d8424afa5cb3f89596f2a52b42",
-      "local_sha256": "014ebf1cd0c7775b786d8fe57a598866b73048d8424afa5cb3f89596f2a52b42"
+      "local_sha256": "78690fe642116354d558a1207b04b26095837c4862ef27f310591923fb3e7eb4"
     },
     {
       "source": "packages/research-contracts/research_clock.py",
       "destination": "src/platform_compare/accounting/contracts/research_clock.py",
       "upstream_sha256": "9cde9a133ecbc06bfbe3263c5e6c801f54e24b67656b3f3996954eb1ae936801",
-      "local_sha256": "9cde9a133ecbc06bfbe3263c5e6c801f54e24b67656b3f3996954eb1ae936801"
+      "local_sha256": "2510142621dbd5191978d875d0e29f8b56f351b97bca93e92a0b7f33a8e29281"
     },
     {
       "source": "packages/research-contracts/research_run_manifest.py",
       "destination": "src/platform_compare/accounting/contracts/research_run_manifest.py",
       "upstream_sha256": "aa99832ad5e1d8dadbe90e87c84a6d14c6616f4c2b93a31211d08c637b4a1d53",
-      "local_sha256": "aa99832ad5e1d8dadbe90e87c84a6d14c6616f4c2b93a31211d08c637b4a1d53"
+      "local_sha256": "516f349e61b4739618d918cf6eafa4b11f0f4b25b809df558d1bae2873a9fb44"
     },
     {
       "source": "tests/test_usd_ledger_accounting.py",
       "destination": "tests/accounting/test_usd_ledger_accounting.py",
       "upstream_sha256": "13b2d3129c60d84766a579594850303b67d774dbc1c32b03942efe54d87f4bdd",
-      "local_sha256": "d93e137e031541748875876c900a0ba88a343b85832be4e4bfcbd315f49f937d"
+      "local_sha256": "32d54db046793d310d32b97d29c1683cedd99bb1b7a9ae07bd657c218303f067"
     },
     {
       "source": "tests/test_usd_ledger_bundle.py",
       "destination": "tests/accounting/test_usd_ledger_bundle.py",
       "upstream_sha256": "78194914a79e12bde02e45c366719bc54bc84db68f585420a930036af449c565",
-      "local_sha256": "ca0f9ff22c5320a649ff62166959992495fe03dd92e9e244029107005ae4ce5c"
+      "local_sha256": "f864e8dd5d5dce8c1d8d9e2a0ad8f939f1c71954b0acb109886ba7ac6695e1f5"
     },
     {
       "source": "tests/test_usd_ledger_inputs.py",
       "destination": "tests/accounting/test_usd_ledger_inputs.py",
       "upstream_sha256": "662f0c467cb770c29ad04e5a7d28da01df79236373e17af637aaf9c8a03e91e1",
-      "local_sha256": "75d0d3a79605096747588e588635398348c162181300c7779345ac5a88ed6e09"
+      "local_sha256": "c571f63c2e3a0835118fca29072f60eda941e0afd0b18df6d2fe40a49f902baa"
     },
     {
       "source": "tests/test_usd_ledger_replay.py",
       "destination": "tests/accounting/test_usd_ledger_replay.py",
       "upstream_sha256": "0b70774cf09d987dc0897af9147b464ed83d8e1adf8490aa168c043bbe92a34c",
-      "local_sha256": "0de0bee92e71b112875819ecae7889f3e58bb15fafa9bb91c6e087a1df9abd61"
+      "local_sha256": "7f14f3b58e54842c4537ce49579de318b6e6de463178696842baf9da9c2b8749"
     },
     {
       "source": "tests/usd_ledger_fixtures.py",
       "destination": "tests/accounting/usd_ledger_fixtures.py",
       "upstream_sha256": "b9996790eca307ace86c1a4aa90efda5253d46cdece9218148f561f8d3e6a82b",
-      "local_sha256": "b59b8ce9bde759f7d4b3d8637c7f477133f3adff859628f77e5e1cd89647d1f8"
+      "local_sha256": "0b8c12e0778b573405708a55daaaeb028729640986fbbdb0bd7874d8ee7ff1c4"
     }
   ]
 }

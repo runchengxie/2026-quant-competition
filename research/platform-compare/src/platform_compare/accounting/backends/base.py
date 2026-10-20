@@ -1,3 +1,6 @@
+# Derived from quant-platform 28a32ba707ad72d1eb68cde5075663e1b3819ac7.
+# Modified for the competition namespace/identity; licensed under Apache-2.0.
+# See accounting/ORIGIN.json and LICENSE-APACHE-2.0.txt for provenance and terms.
 """Framework-neutral backtest backend protocol and canonical result contract."""
 
 from __future__ import annotations
