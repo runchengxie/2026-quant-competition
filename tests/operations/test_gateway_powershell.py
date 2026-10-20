@@ -11,8 +11,8 @@ pytestmark = pytest.mark.skipif(
     os.name != "nt", reason="Native PowerShell tests run in Windows CI"
 )
 ROOT = Path(__file__).resolve().parents[2]
-MODULE = ROOT / "operations/windows/PaperGateway.psm1"
-WRAPPER = ROOT / "operations/windows/Start-PaperGateway.ps1"
+MODULE = ROOT / "scripts/windows/PaperGateway.psm1"
+WRAPPER = ROOT / "scripts/windows/Start-PaperGateway.ps1"
 
 
 def run(script, tmp_path):

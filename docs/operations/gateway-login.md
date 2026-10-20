@@ -42,6 +42,8 @@ icacls $privateDirectory
 
 ## Non-launching checks
 
+Source wrappers are under `scripts/windows` (previously `operations/windows`). Copy both files together when preparing a new stable external deployment. Existing external deployment paths do not change when the source directory moves.
+
 Use an explicit Python executable from a stable installed root environment. Help requires no private configuration:
 
 ```powershell
@@ -65,7 +67,7 @@ Activation requires the user's approval to install IBC, privately enter credenti
 
 The wrapper acquires an exclusive `launch.lease` in the private log directory and revalidates the specification while holding it before starting the hidden console helper. The Gateway UI remains available. Complete mobile authentication manually. Child output stays in owner-protected log files. Exit codes are propagated. An observation timeout returns code 3 without killing or restarting the child, and does not establish whether authentication succeeded. A timeout or uncertain spawn failure retains `launch.lease`, blocking subsequent attempts. Check the private desktop and process state before manually removing that one lease file. A normally exited child releases it. Confirm Paper identity and read-only API locally, then test historical data independently. No orders are authorized.
 
-`Export-PaperGatewayTask` in `operations/windows/PaperGateway.psm1` can write an unregistered, disabled task XML artifact for review. It requires explicit stable absolute paths and an owner SID. It uses `InteractiveToken`, `LeastPrivilege`, a six-minute task limit and no retry policy. It must reference a stable deployed wrapper, never a worktree. It does not register or enable a task. A logged-on desktop is required. Automatic Windows login and stored task passwords are unsupported.
+`Export-PaperGatewayTask` in `scripts/windows/PaperGateway.psm1` can write an unregistered, disabled task XML artifact for review. It requires explicit stable absolute paths and an owner SID. It uses `InteractiveToken`, `LeastPrivilege`, a six-minute task limit and no retry policy. It must reference a stable deployed wrapper, never a worktree. It does not register or enable a task. A logged-on desktop is required. Automatic Windows login and stored task passwords are unsupported.
 
 Rollback is manual: disable only a separately approved scheduled task, stop the helper through the normal UI with user approval, and return to the unchanged manual Gateway startup. Do not remove shared tools, credentials or settings automatically.
 

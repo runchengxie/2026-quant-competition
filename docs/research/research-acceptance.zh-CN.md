@@ -87,4 +87,4 @@ CI 在独立的锁定环境中分别执行两项，不安装私有研究所有�
 
 对保留的 2026-10-19 报告应用新验收后，16 个研究包股票实验均未通过研究证据验收。港股仍只有一只股票，美股仍只有 SPY，零持仓 CNN 和无 fold 结果还带有额外阻止原因。4 个加密汇总报告也未通过，原因包括缺少保留的逐事件记录和明确的 PnL 单位。根项目另外 4 个按月或价格代理报告缺少适配器要求的持仓及来源凭证，本次未验收。此次只验收保留材料，没有重新运行历史回测。[原有 24 条结果快照](strategy-validation-2026-10-19.zh-CN.md)保持不变。
 
-后续核算适配器应通过版本化 artifact 或独立环境复用固定版本的所有者 API。本次没有安装 `quant-platform` 核算及契约。只读本机核验发现，该平台默认 IBKR factory 导入的 `quant_execution_engine.broker.ibkr` 不可用，这不代表本仓库自己的 IBKR adapter 缺失。`quant-backtest-runtime` 当前要求 Linux，未在 Windows 启用。存在 pandas 或模块命名冲突的模型、研究和报告所有者仍采用独立进程。数据来源、因果 FX、公司行动、完整研究股票池、所有者留出集治理及受监督的 Paper 生命周期均待后续完成，参见[架构](../../ARCHITECTURE.zh-CN.md)。
+后续核算适配器应通过版本化 artifact 或独立环境复用固定版本的所有者 API。本次没有安装 `quant-platform` 核算及契约。只读本机核验发现，该平台默认 IBKR factory 导入的 `quant_execution_engine.broker.ibkr` 不可用，这不代表本仓库自己的 IBKR adapter 缺失。`quant-backtest-runtime` 当前要求 Linux，未在 Windows 启用。存在 pandas 或模块命名冲突的模型、研究和报告所有者仍采用独立进程。数据来源、因果 FX、公司行动、完整研究股票池、所有者留出集治理及受监督的 Paper 生命周期均待后续完成，参见[架构](../architecture.zh-CN.md)。

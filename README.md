@@ -38,10 +38,16 @@ The competition strategy has not been selected or registered. The candidates sti
 
 ## Repository map
 
+See [architecture and ownership](docs/architecture.md) ([简体中文](docs/architecture.zh-CN.md)) for package boundaries. `team.py` is a source-checkout bootstrap for setup before installation; its CLI implementation lives in `src/competition_tools/team`. Installed environments can use `python -m competition_tools.team`.
+
 ```text
 2026-quant-competition/
 ├── README.md
+├── team.py                  # source-checkout setup entry
 ├── docs/                    # competition, strategy, and operations material
+├── scripts/windows/         # Paper Gateway operational wrappers
+├── config/                  # runtime configuration and templates
+├── schemas/                 # artifact and handoff JSON schemas
 ├── src/
 │   ├── packages/            # contracts, audit, reconciliation, and policies
 │   ├── strategies/nira/     # external targets.json handoff only
