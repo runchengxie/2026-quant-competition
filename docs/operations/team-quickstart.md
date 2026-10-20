@@ -44,7 +44,7 @@ Commands emit `competition.team_result.v1` JSON with `action`, `status`, `issue_
 
 ## Optional profiles and validation
 
-`setup --profile framework` installs only the separately locked [accounting adapter](../research/accounting-comparison.md), including fixed-version public framework packages. `setup --profile broker-data` installs the root `ibkr` extra without logging in or submitting orders. `setup --profile website` requires Node.js 24/npm and runs `npm ci` for `site`. These explicit profiles are excluded from offline setup.
+`setup --profile framework` installs only the separately locked [accounting package](../research/accounting-comparison.md), with a local ledger and no external framework packages. The profile name is retained for compatibility. `setup --profile broker-data` installs the root `ibkr` extra without logging in or submitting orders. `setup --profile website` requires Node.js 24/npm and runs `npm ci` for `site`. These explicit profiles are excluded from offline setup.
 
 Default CI tests root and both leaves and runs team demos without framework dependencies. Separate `platform-comparison.yml` validates adapter/accounting changes and supports manual runs. See [development checks](../../README.md#development-checks). Input acceptance, provenance limits and execution safety rules still apply. This entry does not download full-market datasets, register strategies, connect research to orders or activate Gateway automation. The historical public result snapshot is unchanged.
 

@@ -44,7 +44,7 @@ python -m competition_tools.team demo crypto --config /absolute/private/team.tom
 
 ## 可选环境与验证
 
-`setup --profile framework` 只安装独立锁定的[记账适配器](../research/accounting-comparison.zh-CN.md)，包含固定版本公开框架包。`setup --profile broker-data` 只安装根包的 `ibkr` extra，不登录或下单。`setup --profile website` 需要 Node.js 24/npm，为 `site` 运行 `npm ci`。默认离线安装不包含这些环境。
+`setup --profile framework` 只安装独立锁定的[记账适配器](../research/accounting-comparison.zh-CN.md)，使用本地账本，不再安装外部框架包；`framework` 名称仅为兼容旧命令保留。`setup --profile broker-data` 只安装根包的 `ibkr` extra，不登录或下单。`setup --profile website` 需要 Node.js 24/npm，为 `site` 运行 `npm ci`。默认离线安装不包含这些环境。
 
 默认 CI 检查根包和两个研究包，并在无框架依赖的环境中运行团队演示。独立的 `platform-comparison.yml` 检查适配器及记账相关改动，也支持手动运行。参见[开发检查](../../README.md#development-checks)。原有输入验收、来源限制和执行安全规则仍然适用。这个入口不下载全市场数据、不登记策略、不将研究接入下单，也不启用 Gateway 自动化。历史公开结果快照保持不变。
 

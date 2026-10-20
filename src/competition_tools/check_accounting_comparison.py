@@ -193,7 +193,7 @@ def build_inputs(root, legacy, bars_path):
     }
     input_sha = hashlib.sha256((root / "asset.json").read_bytes()).hexdigest()
     request = {
-        "schema_version": "competition.accounting_request.v1",
+        "schema_version": "competition.accounting_request.v2",
         "provider": PROVIDER,
         "run_id": legacy["market"] + "-" + legacy["strategy_id"],
         "market": legacy["market"],

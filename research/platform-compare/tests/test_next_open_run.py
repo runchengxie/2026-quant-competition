@@ -6,8 +6,8 @@ import pandas as pd
 import pytest
 import yaml
 
-from portfolio_backtester.backtest_bundle import BacktestEvidenceTier
-from portfolio_backtester.backtest_bundle_io import read_backtest_bundle
+from platform_compare.accounting.backtest_bundle import BacktestEvidenceTier
+from platform_compare.accounting.backtest_bundle_io import read_backtest_bundle
 from platform_compare.next_open.loader import ASSET_FILES, FX_FILES
 from platform_compare.next_open.run import run_experiment
 
@@ -118,7 +118,7 @@ def test_run_writes_36_cost_scenarios_and_input_lock(tmp_path, monkeypatch):
     assert result["status"] == "completed"
     assert len(list((output / "scenarios").iterdir())) == 36
     lock = json.loads((output / "input-lock.json").read_text(encoding="utf-8"))
-    assert lock["platform_revision"] == "28a32ba707ad72d1eb68cde5075663e1b3819ac7"
+    assert lock["accounting_engine"]["engine"] == "competition.usd_price_ledger"
     assert lock["calendar"]["package"] == "exchange_calendars"
     assert lock["calendar"]["version"] == "4.13.2"
     assert lock["target_schedule_sha256"]

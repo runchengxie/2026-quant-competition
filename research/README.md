@@ -22,4 +22,4 @@ The opt-in [research acceptance tools](../docs/research/research-acceptance.md) 
 
 ## Optional accounting comparison
 
-The independent [fixed-version adapter](platform-compare/README.md) uses a separate environment to call public `quant-platform` accounting APIs. The [comparison guide](../docs/research/accounting-comparison.md) documents retained legacy decisions, explicit clocks, synthetic HK/US diagnostics and blocked real inputs. It does not replace the existing engines or publish a new result snapshot.
+The independent [accounting package](platform-compare/README.md) includes a competition-owned cash/share ledger without external framework dependencies. It supports accounting comparisons and five-market next-open diagnostics. The [comparison guide](../docs/research/accounting-comparison.md) explains model differences and real-input limitations.

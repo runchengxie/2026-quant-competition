@@ -1,8 +1,8 @@
-# 固定版本记账对照
+# 独立记账对照
 
 [English](accounting-comparison.md)
 
-可选的 `research/platform-compare` 已接入公开 `quant-platform` 提交 `28a32ba707ad72d1eb68cde5075663e1b3819ac7` 的 USD 价格记账引擎，把保留的策略决策与现金、股数模型对照。原引擎、默认配置及公开的 24 条历史结果保持原样。新增结果都是合成软件诊断，不认证真实数据回测或券商执行。
+可选的 `research/platform-compare` 使用比赛项目自有的 USD 价格账本，将保留的策略决策与现金、股数模型对照。它不安装任何 quant 框架包，默认引擎和公开的 24 条历史结果不变。对照仍为合成软件诊断，不认证真实回测或券商执行。
 
 ## 已接通的边界
 
@@ -30,7 +30,7 @@ uv sync --project research/platform-compare --locked --group dev
 & $rootPython -m competition_tools.check_accounting_comparison --output-root $newSyntheticDirectory --leaf-python $equityPython --provider-python $providerPython
 ```
 
-命令生成八组用例，调用真正的原策略生产者和固定版本 owner，再用第二个进程验证每个输出包。输出目录必须尚不存在，其中保留私有的完整对照和汇总 `summary.json`，不会自动发布到 Pages，也不会改动原输入字节或既有报告。CI 的 accounting job 执行相同边界。
+命令生成八组用例，调用真正的原策略生产者和本地账本，再用第二个进程验证每个输出包。输出目录必须尚不存在，其中保留私有的完整对照和汇总 `summary.json`，不会自动发布到 Pages，也不会改动原输入字节或既有报告。CI 的 accounting job 执行相同边界。
 
 有明确时钟凭证的保留文件可通过下面的命令对照：
 
@@ -46,7 +46,7 @@ uv sync --project research/platform-compare --locked --group dev
 
 来源日期必须早于成交日期，信息截止、信号、决策、订单、成交和估值顺序须满足因果约束。这组日频 HK/US 适配要求 UTC 时钟日期与提供的交易日标签一致，跨午夜政策需要另行适配。真实交易日期本身不足以完成验证，时钟凭证和报告中的决策不能矛盾。
 
-必须核对 owner 请求的输入、配置、决策序列和 manifest 身份，以及初始资金、佣金和滑点假设。owner publisher 独立对账其财务表，reader 校验文件哈希。验证还通过公开 owner API 和 publisher 完整重放请求并比较全部诊断结果，防止修改 manifest 标签后冒充另一计算。只有在文件清单验证后，才把 owner 输出的有限 Decimal 指数形式转成规范字符串；输入金额仍遵守较严格的语法。额外的未列入清单的汇总文件不能证明 owner 结果。
+必须核对 owner 请求的输入、配置、决策序列和 manifest 身份，以及初始资金、佣金和滑点假设。owner publisher 独立对账其财务表，reader 校验文件哈希。验证还通过本地账本 API 和 publisher 完整重放请求并比较全部诊断结果，防止修改 manifest 标签后冒充另一计算。只有在文件清单验证后，才把 owner 输出的有限 Decimal 指数形式转成规范字符串；输入金额仍遵守较严格的语法。额外的未列入清单的汇总文件不能证明 owner 结果。
 
 原始权重和净值保持不变。浮点目标序列化为十进制后，若总权重超出一的部分不超过 `0.000000000001`，映射只从最大目标减去这部分误差，同权重时按 instrument ID 决定。更大的超额直接拒绝。`weight_mapping_policy=decimal_budget_residue.v1` 和 `weight_mapping_adjustments` 记录每次调整的成交日期、标的、原总权重及扣减量。
 
@@ -76,3 +76,9 @@ uv sync --project research/platform-compare --locked --group dev
 目前找到的历史日线只有交易日标签，缺少所需的可验证可用时间、成交时钟、完整每手信息和因果汇率，继续阻塞。旧的 20 只股票盘点文档不能充当不可变数据凭证。不会把合成时钟附到真实数据，也不会用样例代替缺失数据。
 
 本次公开导出审计还从当前读者文档移除不必要的比赛方和合作宣传描述及私有入组流程。公开规则来源链接和已经公开的 GitHub 仓库身份保留以便追溯，因此属于减少披露，不代表完全匿名。凭据、个人联系方式、账户和报表数据、私有路径及授权原始行情应放在源码外。历史 PR 引用可能仍保留曾经公开的材料，本任务不重写历史，也不承诺清除缓存；私有审计报告会记录剩余范围。
+
+账本来源与许可见[包说明](../../research/platform-compare/README.zh-CN.md)。下表保留 2026-10-19 的原框架历史基线，不能将历史文件改标为本地引擎结果。新请求及结果使用 v2，并记录比赛项目自己的引擎身份。
+
+## 解耦验证（2026-10-20）
+
+迁移前后八组汇总、全部诊断内容及 64 张 Parquet 财务表完全一致。五市场 next-open 的 36 个成本情景、288 张财务表和全部诊断内容完全一致，成本敏感性 CSV 逐字节一致。根测试 562 项、独立记账测试 173 项通过；wheel 在源码目录外、未安装外部框架且阻断框架导入的环境通过 5 项检查。这些均为软件验证，不增加真实数据或交易有效性结论。

@@ -5,8 +5,8 @@ import pandas as pd
 import pytest
 from exchange_calendars import get_calendar
 
-from portfolio_backtester.usd_ledger import run_usd_price_replay
-from portfolio_backtester.usd_ledger_models import USDModeledExecutionPrice
+from platform_compare.accounting.usd_ledger import run_usd_price_replay
+from platform_compare.accounting.usd_ledger_models import USDModeledExecutionPrice
 from platform_compare.next_open.adapter import (
     ASSET_METADATA,
     CostScenario,

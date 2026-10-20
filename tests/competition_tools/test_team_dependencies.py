@@ -1,4 +1,4 @@
-"""Default delivery must not require the optional accounting framework."""
+"""All competition profiles must remain independent of external quant frameworks."""
 
 import ast
 from pathlib import Path
@@ -51,7 +51,12 @@ def test_default_ci_exercises_team_delivery():
 
 
 def test_core_lockfiles_exclude_framework_distributions():
-    for relative in (".", "research/equity-lab", "research/crypto-mm"):
+    for relative in (
+        ".",
+        "research/equity-lab",
+        "research/crypto-mm",
+        "research/platform-compare",
+    ):
         lock = tomllib.loads((ROOT / relative / "uv.lock").read_text(encoding="utf-8"))
         assert not any(
             package["name"].startswith(
@@ -61,9 +66,14 @@ def test_core_lockfiles_exclude_framework_distributions():
         )
 
 
-def test_framework_imports_remain_confined_to_optional_package():
+def test_all_packages_exclude_framework_imports():
     forbidden = {"portfolio_backtester", "research_contracts", "quant_execution_engine"}
-    for folder in ("src", "research/equity-lab/src", "research/crypto-mm/src"):
+    for folder in (
+        "src",
+        "research/equity-lab/src",
+        "research/crypto-mm/src",
+        "research/platform-compare/src",
+    ):
         for path in (ROOT / folder).rglob("*.py"):
             for node in ast.walk(ast.parse(path.read_text(encoding="utf-8-sig"))):
                 if isinstance(node, ast.ImportFrom):
