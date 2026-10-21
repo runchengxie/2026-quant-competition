@@ -133,8 +133,13 @@ def _collect_daily(spec, staging, *, session_factory, clock, sleep):
         if remaining <= 0:
             raise StopCollection("TIME_BUDGET")
         state["requests"] += 1
-        last_start = clock()
         save()
+        # Hashing/serialization/fsync belongs to the same deadline. Reserve
+        # conservatively before persistence, but timestamp the actual call boundary.
+        remaining = spec["budget"]["seconds"] - prior_elapsed - (clock() - began)
+        if remaining <= 0:
+            raise StopCollection("TIME_BUDGET")
+        last_start = clock()
         return min(60, remaining)
 
     rows_by_product = {}
@@ -169,8 +174,9 @@ def _collect_daily(spec, staging, *, session_factory, clock, sleep):
                     windows = list(_windows(refresh["overlap_start"], sessions[-1]))
                 if all(f"{product}:{a}:{b}" in state["done"] for a, b in windows):
                     continue
+                requested_contract = _stock(definition)
                 client.RequestTimeout = budget_request()
-                qualified = client.qualifyContracts(_stock(definition))
+                qualified = client.qualifyContracts(requested_contract)
                 if len(qualified) != 1 or not _matches(qualified[0], definition):
                     raise StopCollection("CONTRACT_MISMATCH")
                 resolved = {"con_id": qualified[0].conId, **definition}
