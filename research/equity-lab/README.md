@@ -45,3 +45,5 @@ Code in this subtree is MIT licensed. This does not change the licensing of the 
 ## Input and experiment acceptance
 
 The opt-in [research acceptance tools](../../docs/research/research-acceptance.md) inspect explicit manifests and issue input receipts. These new entry points do not require global data configuration. Successful software checks do not establish research eligibility; owner provenance and holdout protocol validation remain unavailable. Default strategies and existing reports are preserved.
+
+[Retrospective daily study](../../docs/research/real-data-study.md)

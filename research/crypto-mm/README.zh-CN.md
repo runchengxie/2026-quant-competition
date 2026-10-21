@@ -33,3 +33,5 @@
 ## 输入与实验验收
 
 可选的[研究验收工具](../../docs/research/research-acceptance.zh-CN.md)使用显式清单检查输入并生成凭证，新入口不需要全局数据配置。软件检查成功不代表合格研究证据，所有者来源及留出集协议尚未接入。默认策略和既有报告保持不变。
+
+[日频历史对比研究](../../docs/research/real-data-study.zh-CN.md)

@@ -42,7 +42,7 @@ def run_child(
     )
     try:
         stdout, stderr = process.communicate(timeout=timeout)
-    except subprocess.TimeoutExpired:
+    except (subprocess.TimeoutExpired, KeyboardInterrupt):
         # Kill the tree while its parent still exists, then drain the pipes.
         if os.name == "nt":
             killer = (

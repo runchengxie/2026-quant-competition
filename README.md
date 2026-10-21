@@ -39,3 +39,5 @@ Use the [documentation index](docs/README.md) to find competition guidance, rese
 ## Development checks
 
 Installation for development, test commands and website builds are in the [development guide](docs/development.md). Package boundaries and execution limits are in the [project overview](docs/project-overview.md).
+
+[Retrospective daily study](docs/research/real-data-study.md)

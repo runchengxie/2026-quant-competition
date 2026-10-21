@@ -4,6 +4,7 @@ import json
 import math
 import subprocess
 import time
+from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
 
 from competition_tools.datasets.daily_storage import safe_path
@@ -58,6 +59,10 @@ def _result(job, destination):
         "strategy": "strategy",
         "fee_bps": "fee_bps",
         "products": "products",
+        "code_commit": "code_commit",
+        "parameters": "parameters",
+        "benchmark": "benchmark",
+        "fold": "fold",
     }
     if (
         not isinstance(value, dict)
@@ -70,6 +75,51 @@ def _result(job, destination):
         or value.get("end") != job["fold"]["end"]
         or value.get("metrics", {}).get("periods") != job["fold"]["scoring_periods"]
     ):
+        raise ValueError("INVALID_STUDY_RESULT")
+    metrics = value.get("metrics")
+    metric_keys = set(
+        "periods net_return gross_return cost_drag volatility sharpe max_drawdown turnover total_costs mean_daily_turnover mean_exposure flat_days".split()
+    )
+    if not isinstance(metrics, dict) or set(metrics) != metric_keys:
+        raise ValueError("INVALID_STUDY_RESULT")
+    for key, number in metrics.items():
+        if key == "sharpe" and number is None:
+            continue
+        if type(number) not in (int, float) or not math.isfinite(number):
+            raise ValueError("INVALID_STUDY_RESULT")
+    if (
+        type(metrics["periods"]) is not int
+        or type(metrics["flat_days"]) is not int
+        or not 0 <= metrics["flat_days"] <= metrics["periods"]
+        or not 0 <= metrics["max_drawdown"] <= 1
+        or not 0 <= metrics["mean_exposure"] <= 1 + 1e-12
+        or any(
+            metrics[k] < 0
+            for k in ("volatility", "turnover", "total_costs", "mean_daily_turnover")
+        )
+    ):
+        raise ValueError("INVALID_STUDY_RESULT")
+    hold = job["strategy"] in {"buy_hold", "benchmark_buy_hold"} or (
+        job["market"] == "crypto" and job["strategy"] == "equal_weight"
+    )
+    methods = dict(
+        method_id=job["market"].lower()
+        + "."
+        + job["strategy"]
+        + ".self_financing_daily.v1",
+        strategy=job["strategy"],
+        signal_parameters=job["parameters"],
+        signal_lag_periods=1,
+        rebalance="buy_hold" if hold else "daily_target_weights",
+        execution_assumption="lagged_close_proxy",
+        warmup_periods=252,
+        scoring_periods=job["fold"]["scoring_periods"],
+        fold_initialization="independent_cash",
+        cost_model="self_financing_oneway_bps",
+        terminal_liquidation=False,
+        retrospective=True,
+    )
+    if value.get("methods") != methods:
         raise ValueError("INVALID_STUDY_RESULT")
     for artifact in value["artifacts"]:
         relative = PurePosixPath(artifact["path"])
@@ -248,6 +298,8 @@ def run_study(config: TeamConfig, plan_path: Path) -> dict:
                 )
     result = {
         "schema": "competition.study_results.v1",
+        "plan_path": str(plan_path),
+        "observed_at": datetime.now(timezone.utc).isoformat(),
         "plan_sha256": plan["plan_sha256"],
         "code_commit": plan["code_identity"]["commit"],
         "jobs": records,

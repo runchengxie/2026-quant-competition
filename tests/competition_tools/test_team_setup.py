@@ -33,6 +33,46 @@ def test_child_timeout():
         )
 
 
+def test_interrupt_stops_real_child(monkeypatch):
+    import subprocess
+
+    original = subprocess.Popen
+    children = []
+
+    def interrupted_child(*args, **kwargs):
+        process = original(*args, **kwargs)
+        if children:
+            return process
+        children.append(process)
+        communicate = process.communicate
+        calls = 0
+
+        def interrupted(*args, **kwargs):
+            nonlocal calls
+            calls += 1
+            if calls == 1:
+                raise KeyboardInterrupt
+            return communicate(*args, **kwargs)
+
+        process.communicate = interrupted
+        return process
+
+    monkeypatch.setattr(subprocess, "Popen", interrupted_child)
+    try:
+        with pytest.raises(KeyboardInterrupt):
+            run_child(
+                [sys.executable, "-c", "import time;time.sleep(30)"],
+                environment=os.environ.copy(),
+                timeout=10,
+            )
+        assert children[0].poll() is not None, "Interrupted study left a child running"
+    finally:
+        for process in children:
+            if process.poll() is None:
+                process.kill()
+                process.wait(timeout=5)
+
+
 def test_offline_locked_projects_with_real_fake_uv(tmp_path, monkeypatch):
     # A Python launcher prefix is portable on Windows and POSIX and uses no shell.
     log = tmp_path / "record.jsonl"

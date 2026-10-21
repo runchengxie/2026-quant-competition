@@ -52,13 +52,16 @@ def source_hash(root: Path) -> str:
 
 
 def source_identity(root: Path) -> dict:
-    result = subprocess.run(
-        ["git", "-C", str(root), "rev-parse", "HEAD"],
-        capture_output=True,
-        text=True,
-        timeout=5,
-        check=True,
-    )
+    try:
+        result = subprocess.run(
+            ["git", "-C", str(root), "rev-parse", "HEAD"],
+            capture_output=True,
+            text=True,
+            timeout=5,
+            check=True,
+        )
+    except (OSError, subprocess.SubprocessError):
+        raise ValueError("STUDY_SOURCE_CHECKOUT_REQUIRED") from None
     return {
         "commit": result.stdout.strip(),
         "source_root": str(root.resolve()),

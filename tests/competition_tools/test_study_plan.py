@@ -11,6 +11,13 @@ from competition_tools.evaluation.study_plan import freeze_study
 COSTS = {"US": [20, 40], "HK": [30, 60], "crypto": [0, 10, 25]}
 
 
+def test_source_identity_requires_checkout(tmp_path):
+    from competition_tools.evaluation.study_identity import source_identity
+
+    with pytest.raises(ValueError, match="STUDY_SOURCE_CHECKOUT_REQUIRED"):
+        source_identity(tmp_path)
+
+
 def crypto_manifest(root, *, days=600, partial=False):
     root.mkdir(parents=True)
     (root / ".dataset-owner").write_text("competition.dataset.v1")
