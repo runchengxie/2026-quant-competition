@@ -16,13 +16,13 @@ const columns=[t.strategy,t.variant,t.fee,t.count,t.net,t.excess,t.paired,t.draw
 const groups=snapshot?summarizeAblations(snapshot,{market:"US",feeBps:20}):[];
 ---
 <section id="ablation" class="ablation-section" data-ready={snapshot?"pending":"unavailable"}>
- <div class="ablation-heading"><div><p class="eyebrow">ABLATION / RESEARCH</p><h2>{t.title}</h2><p>{t.intro}</p></div><a href={`${prefix}docs/strategies/#formal-ablation`}>{t.guide} ↗</a></div>
+ <div class="ablation-heading"><div><p class="eyebrow">{t.eyebrow}</p><h2>{t.title}</h2><p>{t.intro}</p></div><a href={`${prefix}docs/strategies/#formal-ablation`}>{t.guide} ↗</a></div>
  <p class="ablation-limit">{t.limitation}</p>
  {snapshot?<>
   <p class="ablation-role-note" data-ablation-role-note><span class="role-badge" data-ablation-role="post_hoc_diagnostic">{t.roles.post_hoc_diagnostic}</span> {t.roleNote}</p>
   <dl class="ablation-counts"><div><dt>{t.coverage}</dt><dd>{snapshot.results.length}</dd></div><div><dt>{t.baseline}</dt><dd>{snapshot.results.filter((r:any)=>r.variant_id==="baseline").length}</dd></div><div><dt>{t.policies}</dt><dd>{new Set(snapshot.results.filter((r:any)=>r.variant_id&&r.variant_id!=="baseline").map((r:any)=>r.variant_id)).size}</dd></div></dl>
   <div class="ablation-controls" data-ablation-controls hidden>
-   <label>{t.market}<select data-ablation-filter="market">{(["US","HK","crypto"] as const).map(m=><option value={m}>{t.markets[m]}</option>)}</select></label>
+   <label>{t.market}<select data-ablation-filter="market">{(["US","HK","crypto"] as const).map(m=><option value={m}>{t.markets[m]}</option>)}{snapshot.results.some((r:any)=>r.market==="unknown")&&<option value="unknown">{t.markets.unknown}</option>}</select></label>
    <label>{t.fee}<select data-ablation-filter="fee" /></label>
    <label>{t.strategy}<select data-ablation-filter="strategy" /></label>
    <label>{t.variant}<select data-ablation-filter="variant" /></label>

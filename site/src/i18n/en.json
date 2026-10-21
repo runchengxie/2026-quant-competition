@@ -313,8 +313,8 @@
     "factorTitle": "Strategy effects, before factor claims",
     "factorNote": "Momentum and trend filters are tested strategies. IC, rank-IC, quantile spreads, signal decay and machine-learning test results have not been measured here. These charts do not establish independent factor efficacy.",
     "nextTitle": "Next research milestones",
-    "usNext": "US stocks: momentum ranking, slower rebalancing, volatility scaling and position caps, compared one change at a time with hold/equal-weight baselines.",
-    "cryptoNext": "Crypto spot: test trend sizing, cash exits and turnover buffers before introducing derivatives or maker claims.",
+    "usNext": "US stocks: inspect the fixed weekly/monthly comparison below. Momentum ranking, position caps and realistic fills still need separate protocols.",
+    "cryptoNext": "Crypto spot: inspect the fixed trend overlays below and compare risk changes with exposure. Derivative and maker research needs new inputs and a separate protocol.",
     "mlNext": "Machine learning is a later challenger: causal features, chronological validation, fixed costs and a separate forward observation period.",
     "runtimeNext": "Default delivery stays standalone. A future optional runtime adapter must prove clock, cash and cost compatibility; it is not connected here.",
     "historical": "Earlier snapshots and synthetic demos below retain their original methods and dates.",
@@ -461,6 +461,7 @@
     },
     "coverage": "Formal jobs",
     "baseline": "Original controls",
-    "policies": "New policy rules"
+    "policies": "New policy rules",
+    "eyebrow": "ABLATION / RESEARCH"
   }
 }

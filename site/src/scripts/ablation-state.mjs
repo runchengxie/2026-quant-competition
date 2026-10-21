@@ -1,6 +1,6 @@
 /** Selection over reviewed aggregates only; no portfolio arithmetic or fold stitching. */
 export function selectAblations(snapshot,selection){
- if(!selection||!["US","HK","crypto"].includes(selection.market))return [];
+ if(!selection||!["US","HK","crypto","unknown"].includes(selection.market))return [];
  if(selection.feeBps!==undefined&&(typeof selection.feeBps!=="number"||!Number.isFinite(selection.feeBps)))return [];
  return (snapshot?.results??[]).filter(r=>r.market===selection.market&&(selection.feeBps===undefined||r.cost_bps===selection.feeBps)&&(selection.strategy===undefined||r.strategy===selection.strategy)&&(selection.variantId===undefined||r.variant_id===selection.variantId)&&(selection.windowStart===undefined||r.start===selection.windowStart));
 }

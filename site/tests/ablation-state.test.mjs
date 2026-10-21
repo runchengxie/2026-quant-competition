@@ -24,3 +24,9 @@ test("locale_never_changes_fact_objects",()=>{
 test("a_market_cannot_silently_mix_currencies",()=>{
  assert.throws(()=>summarizeAblations({results:[row,{...row,quote_currency:"HKD"}]},{market:"US"}));
 });
+
+test("invalid_input_blockers_remain_inspectable_without_a_market",()=>{
+ const blocked={market:"unknown",status:"blocked",reason_code:"INVALID_STUDY_INPUT",strategy:null,cost_bps:null};
+ assert.deepEqual(selectAblations({results:[blocked]},{market:"unknown"}),[blocked]);
+ assert.deepEqual(summarizeAblations({results:[blocked]},{market:"unknown"}),[]);
+});
