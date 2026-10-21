@@ -9,7 +9,7 @@ const format=new Intl.NumberFormat(locale,{maximumFractionDigits:2});
 const pct=(value:number|null)=>value===null?'—':format.format(value*100)+'%';
 const markets=Object.entries(t.markets).map(([market,label])=>{
  const rows=snapshot.results.filter(r=>r.market===market&&r.status==='completed');
- const feeBps=Math.min(...rows.map(r=>r.cost_bps));
+ const feeBps=({US:20,HK:30,crypto:10})[market as "US"|"HK"|"crypto"];
  const strategies=[...new Set(rows.map(r=>r.strategy))].sort();
  return {market,label,feeBps,strategies:strategies.map(strategy=>({strategy,summary:summarizeWindows(snapshot,{market,strategy,feeBps})!}))};
 });

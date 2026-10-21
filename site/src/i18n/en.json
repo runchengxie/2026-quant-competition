@@ -359,7 +359,7 @@
     },
     "insights": {
       "title": "What the study found",
-      "intro": "All fixed strategies at the lower predeclared one-way cost for each market. Figures describe separate historical windows, not a compounded account or a forward test.",
+      "intro": "All fixed strategies at the predeclared nonzero one-way cost (US 20, HK 30, crypto 10 bps) for each market. Figures describe separate historical windows, not a compounded account or a forward test.",
       "count": "Windows",
       "positive": "Positive excess",
       "median": "Median net",

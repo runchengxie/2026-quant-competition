@@ -61,7 +61,7 @@ test('research summaries expose fixed assumptions and localized stable statistic
   await expect(page.locator('[data-market-summary]')).toHaveCount(3);
   const facts=await page.locator('[data-summary-facts]').evaluateAll(nodes=>nodes.map(n=>JSON.parse(n.dataset.summaryFacts)));
   if(canonical)expect(facts).toEqual(canonical);else canonical=facts;
-  for(const fact of facts){const rows=study.results.filter(r=>r.market===fact.market&&r.strategy===fact.strategy&&r.cost_bps===fact.feeBps);expect(fact.count).toBe(rows.length);expect(fact.worstNetReturn).toBe(Math.min(...rows.map(r=>r.net_return)));}
+  for(const fact of facts){expect(fact.feeBps).toBe({US:20,HK:30,crypto:10}[fact.market]);const rows=study.results.filter(r=>r.market===fact.market&&r.strategy===fact.strategy&&r.cost_bps===fact.feeBps);expect(fact.count).toBe(rows.length);expect(fact.worstNetReturn).toBe(Math.min(...rows.map(r=>r.net_return)));}
   const root=page.locator('#performance');await root.scrollIntoViewIfNeeded();await expect(root).toHaveAttribute('data-ready','true');
   await expect(root.locator('[data-stability]')).toHaveAttribute('data-count','11');
   await root.locator('[data-filter=market]').selectOption('crypto');
