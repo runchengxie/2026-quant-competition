@@ -1,0 +1,112 @@
+{
+  "schema": "competition.dataset_spec.v2",
+  "version": "v1",
+  "source": "ibkr_daily",
+  "start": "2023-01-01",
+  "end": "2026-10-20",
+  "price_basis": "split_adjusted",
+  "universe_status": "fixed_current",
+  "budget": {
+    "requests": 120,
+    "bytes": 33554432,
+    "seconds": 2400
+  },
+  "connection_file": "REPLACE_WITH_ABSOLUTE_EXTERNAL_PAPER_ENDPOINT_JSON",
+  "dataset_id": "hk-fixed-daily",
+  "market": "HK",
+  "products": [
+    "0005",
+    "0388",
+    "0700",
+    "0939",
+    "0941",
+    "1299",
+    "1810",
+    "2318",
+    "3690",
+    "9988"
+  ],
+  "benchmark": "2800",
+  "quote_currency": "HKD",
+  "calendar": "XHKG",
+  "timezone": "Asia/Hong_Kong",
+  "contracts": [
+    {
+      "product": "0005",
+      "symbol": "5",
+      "exchange": "SEHK",
+      "currency": "HKD",
+      "role": "stock"
+    },
+    {
+      "product": "0388",
+      "symbol": "388",
+      "exchange": "SEHK",
+      "currency": "HKD",
+      "role": "stock"
+    },
+    {
+      "product": "0700",
+      "symbol": "700",
+      "exchange": "SEHK",
+      "currency": "HKD",
+      "role": "stock"
+    },
+    {
+      "product": "0939",
+      "symbol": "939",
+      "exchange": "SEHK",
+      "currency": "HKD",
+      "role": "stock"
+    },
+    {
+      "product": "0941",
+      "symbol": "941",
+      "exchange": "SEHK",
+      "currency": "HKD",
+      "role": "stock"
+    },
+    {
+      "product": "1299",
+      "symbol": "1299",
+      "exchange": "SEHK",
+      "currency": "HKD",
+      "role": "stock"
+    },
+    {
+      "product": "1810",
+      "symbol": "1810",
+      "exchange": "SEHK",
+      "currency": "HKD",
+      "role": "stock"
+    },
+    {
+      "product": "2318",
+      "symbol": "2318",
+      "exchange": "SEHK",
+      "currency": "HKD",
+      "role": "stock"
+    },
+    {
+      "product": "3690",
+      "symbol": "3690",
+      "exchange": "SEHK",
+      "currency": "HKD",
+      "role": "stock"
+    },
+    {
+      "product": "9988",
+      "symbol": "9988",
+      "exchange": "SEHK",
+      "currency": "HKD",
+      "role": "stock"
+    },
+    {
+      "product": "2800",
+      "symbol": "2800",
+      "exchange": "SEHK",
+      "currency": "HKD",
+      "role": "benchmark"
+    }
+  ]
+}

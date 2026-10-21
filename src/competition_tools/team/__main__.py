@@ -51,10 +51,11 @@ def main(argv: list[str] | None = None) -> int:
     run.add_argument("--experiment-config", type=Path, required=True)
     run.add_argument("--output-root", type=Path, required=True)
     data = commands.add_parser("data", help="Plan, acquire or inspect explicit offline datasets")
-    data.add_argument("operation", choices=["plan", "acquire", "inspect"])
+    data.add_argument("operation", choices=["plan", "acquire", "inspect", "refresh"])
     data.add_argument("--config", type=Path, required=True)
     data.add_argument("--spec", type=Path, required=True)
     data.add_argument("--manifest", type=Path)
+    data.add_argument("--base-manifest", type=Path, help="Explicit immutable v2 refresh parent")
     data.add_argument("--ensure-gateway", action="store_true", help="Opt in to one authorized Paper login attempt for IBKR acquisition")
     data.add_argument("--gateway-config", type=Path, help="External activated IBC launcher JSON")
     data.add_argument("--gateway-workspace", type=Path, help="Explicit machine workspace.toml")
@@ -89,6 +90,7 @@ def main(argv: list[str] | None = None) -> int:
                 from .data import execute
 
                 value = execute(args.operation, config, args.spec, args.manifest,
+                                base_manifest=args.base_manifest,
                                 ensure_gateway=args.ensure_gateway, gateway_config=args.gateway_config,
                                 gateway_workspace=args.gateway_workspace, gateway_wrapper=args.gateway_wrapper)
             elif args.action == "setup":

@@ -1,0 +1,112 @@
+{
+  "schema": "competition.dataset_spec.v2",
+  "version": "v1",
+  "source": "ibkr_daily",
+  "start": "2023-01-01",
+  "end": "2026-10-20",
+  "price_basis": "split_adjusted",
+  "universe_status": "fixed_current",
+  "budget": {
+    "requests": 120,
+    "bytes": 33554432,
+    "seconds": 2400
+  },
+  "connection_file": "REPLACE_WITH_ABSOLUTE_EXTERNAL_PAPER_ENDPOINT_JSON",
+  "dataset_id": "us-fixed-daily",
+  "market": "US",
+  "products": [
+    "AAPL",
+    "MSFT",
+    "AMZN",
+    "GOOGL",
+    "META",
+    "NVDA",
+    "JPM",
+    "JNJ",
+    "XOM",
+    "PG"
+  ],
+  "benchmark": "SPY",
+  "quote_currency": "USD",
+  "calendar": "XNYS",
+  "timezone": "America/New_York",
+  "contracts": [
+    {
+      "product": "AAPL",
+      "symbol": "AAPL",
+      "exchange": "SMART",
+      "currency": "USD",
+      "role": "stock"
+    },
+    {
+      "product": "MSFT",
+      "symbol": "MSFT",
+      "exchange": "SMART",
+      "currency": "USD",
+      "role": "stock"
+    },
+    {
+      "product": "AMZN",
+      "symbol": "AMZN",
+      "exchange": "SMART",
+      "currency": "USD",
+      "role": "stock"
+    },
+    {
+      "product": "GOOGL",
+      "symbol": "GOOGL",
+      "exchange": "SMART",
+      "currency": "USD",
+      "role": "stock"
+    },
+    {
+      "product": "META",
+      "symbol": "META",
+      "exchange": "SMART",
+      "currency": "USD",
+      "role": "stock"
+    },
+    {
+      "product": "NVDA",
+      "symbol": "NVDA",
+      "exchange": "SMART",
+      "currency": "USD",
+      "role": "stock"
+    },
+    {
+      "product": "JPM",
+      "symbol": "JPM",
+      "exchange": "SMART",
+      "currency": "USD",
+      "role": "stock"
+    },
+    {
+      "product": "JNJ",
+      "symbol": "JNJ",
+      "exchange": "SMART",
+      "currency": "USD",
+      "role": "stock"
+    },
+    {
+      "product": "XOM",
+      "symbol": "XOM",
+      "exchange": "SMART",
+      "currency": "USD",
+      "role": "stock"
+    },
+    {
+      "product": "PG",
+      "symbol": "PG",
+      "exchange": "SMART",
+      "currency": "USD",
+      "role": "stock"
+    },
+    {
+      "product": "SPY",
+      "symbol": "SPY",
+      "exchange": "SMART",
+      "currency": "USD",
+      "role": "benchmark"
+    }
+  ]
+}

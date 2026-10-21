@@ -22,6 +22,7 @@ def execute(
     gateway_config: Path | None = None,
     gateway_workspace: Path | None = None,
     gateway_wrapper: Path | None = None,
+    base_manifest: Path | None = None,
 ) -> dict:
     spec = load_spec(validate_external(spec_path))
     if ensure_gateway and (action != "acquire" or spec["source"] != "ibkr"):
@@ -32,6 +33,10 @@ def execute(
         p is not None for p in (gateway_config, gateway_workspace, gateway_wrapper)
     ):
         raise ValueError("Gateway arguments require explicit opt-in")
+    if spec["schema"] == "competition.dataset_spec.v2":
+        return _execute_daily(action, config, spec, manifest_path, base_manifest)
+    if action == "refresh" or base_manifest is not None:
+        raise ValueError("REFRESH_REQUIRES_V2")
     capability = readiness(spec)
     if action == "inspect":
         if manifest_path is None:
@@ -98,3 +103,52 @@ def execute(
             }
         ],
     )
+
+
+def _execute_daily(action, config, spec, manifest_path, base_manifest):
+    from competition_tools.datasets.daily_broker import collect_daily
+    from competition_tools.datasets.daily_refresh import refresh_daily
+    from competition_tools.datasets.daily_storage import safe_path, write_daily_manifest, verify_daily_manifest
+
+    if action == "inspect":
+        if manifest_path is None:
+            raise ValueError("MANIFEST_REQUIRED")
+        return envelope("data", projects=[inspect_dataset(manifest_path)])
+    if (action == "refresh") != (base_manifest is not None):
+        raise ValueError("EXPLICIT_REFRESH_PARENT_REQUIRED")
+    if action == "plan":
+        return envelope("data", projects=[{"status":"ready", "source":"ibkr_daily", "kind":"bounded_daily_equity", "budget":spec["budget"], "entitlement":"not_checked"}])
+    if action not in {"acquire", "refresh"}:
+        raise ValueError("INVALID_DATA_ACTION")
+    destination = safe_path(config.data_root / "2026-quant-competition/datasets" / spec["dataset_id"] / spec["version"])
+    if destination.exists():
+        raise ValueError("DATASET_VERSION_EXISTS")
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    lock = safe_path(destination.with_name(destination.name + ".acquire-lock"))
+    try:
+        fd = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+    except FileExistsError:
+        raise ValueError("ACQUISITION_IN_PROGRESS") from None
+    staging = destination.with_name(destination.name + ".partial")
+    try:
+        if (staging / "manifest.json").exists():
+            manifest = verify_daily_manifest(staging / "manifest.json")
+            from competition_tools.datasets.storage import spec_hash
+            if manifest["spec_hash"] != spec_hash(spec) or manifest["status"] != "acquired":
+                raise ValueError("INVALID_COMPLETED_STAGING")
+            receipt = manifest["receipt"]
+        else:
+            receipt = refresh_daily(spec, base_manifest, staging) if action == "refresh" else collect_daily(spec, staging)
+            if receipt["status"] == "acquired":
+                write_daily_manifest(spec, staging, receipt, parent_sha256=receipt["parent_manifest_sha256"])
+        if receipt["status"] == "acquired":
+            staging.rename(destination)
+            artifact = destination / "manifest.json"
+        else:
+            # Owned checkpoints may resume. Only a completed snapshot gets an
+            # immutable manifest; partial attempt evidence stays in receipt.json.
+            artifact = staging / "receipt.json"
+    finally:
+        os.close(fd)
+        lock.unlink()
+    return envelope("data", issues=[] if receipt["status"] == "acquired" else ["PARTIAL_COVERAGE", *receipt["issue_codes"]], projects=[{"status":receipt["status"], "receipt":str(artifact), "coverage":receipt["coverage"], "gaps":receipt["gaps"]}])

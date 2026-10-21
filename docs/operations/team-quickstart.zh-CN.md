@@ -56,3 +56,5 @@ python -m competition_tools.team demo crypto --config /absolute/private/team.tom
 独立外部规格、预算、不可覆盖的receipt及实际来源支持见[数据准备](../research/datasets.zh-CN.md)。`python -m competition_tools.team data plan`、`data acquire`、`data inspect`不改变团队配置schema。`python -m competition_tools.team evaluate`只在独立环境中运行加密日线矩阵，股票和做市矩阵仍使用既有API。结果与限制见[新评估证据](../research/data-expansion-and-evaluation.zh-CN.md)。默认不启动Gateway。显式IBKR取数可选择[Paper登录前置步骤](gateway-login.zh-CN.md#数据任务的可选登录前置步骤)，这些命令均不下单。
 
 需要分别检查 Paper 账户前缀、合约和可选历史读取时，请使用[只读验收](gateway-login.zh-CN.md#只读验收)。该命令不需要团队配置，不会登录或下单。
+
+可选的 `daily-data` 环境安装锁定的 Paper 日线采集和交易日历依赖。v2 配置与不可变刷新见[股票日线快照](../research/datasets.zh-CN.md#有预算限制的股票日线快照)，该功能不会登录 Gateway。

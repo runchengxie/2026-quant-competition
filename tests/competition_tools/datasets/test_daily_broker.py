@@ -201,3 +201,111 @@ def test_unchanged_resume_does_not_request_again(tmp_path, monkeypatch):
     )
     assert after["requests"] == before["requests"]
     assert after["status"] == "acquired"
+
+
+def test_partial_empty_response_can_resume_without_discarding_good_data(
+    tmp_path, monkeypatch
+):
+    spec, before, _, clock = run(tmp_path, monkeypatch, missing=True)
+    assert before["status"] == "partial"
+
+    class Session:
+        def __init__(self, *a, **k):
+            pass
+
+        def __enter__(self):
+            return Client(clock)
+
+        def __exit__(self, *a):
+            pass
+
+    after = collect_daily(
+        spec,
+        tmp_path / "stage",
+        session_factory=Session,
+        clock=clock,
+        sleep=clock.sleep,
+    )
+    assert after["status"] == "acquired"
+    assert after["coverage"]["AAPL"]["bars"] == 4
+
+
+def test_interrupt_releases_own_lock_and_retains_verified_checkpoint(
+    tmp_path, monkeypatch
+):
+    spec, _, _, clock = run(tmp_path / "fixture", monkeypatch)
+
+    class Interrupted(Client):
+        def reqHistoricalData(self, *a, **k):
+            raise KeyboardInterrupt
+
+    class Session:
+        def __init__(self, *a, **k):
+            pass
+
+        def __enter__(self):
+            return Interrupted(clock)
+
+        def __exit__(self, *a):
+            pass
+
+    with pytest.raises(KeyboardInterrupt):
+        collect_daily(
+            spec,
+            tmp_path / "new",
+            session_factory=Session,
+            clock=clock,
+            sleep=clock.sleep,
+        )
+    assert not (tmp_path / "new.collection-lock").exists()
+    checkpoint = json.loads((tmp_path / "new/checkpoint.json").read_text())
+    assert checkpoint["requests"] == 2
+    assert checkpoint["files"] == []
+
+
+def test_serialization_time_is_included_in_budget(tmp_path, monkeypatch):
+    from competition_tools.datasets import daily_broker
+
+    spec, _, _, clock = run(tmp_path / "fixture", monkeypatch)
+    original = daily_broker._normalized
+
+    def slow(rows):
+        clock.sleep(2500)
+        return original(rows)
+
+    monkeypatch.setattr(daily_broker, "_normalized", slow)
+
+    class Session:
+        def __init__(self, *a, **k):
+            pass
+
+        def __enter__(self):
+            return Client(clock)
+
+        def __exit__(self, *a):
+            pass
+
+    receipt = collect_daily(
+        spec, tmp_path / "new", session_factory=Session, clock=clock, sleep=clock.sleep
+    )
+    assert receipt["status"] == "partial"
+    assert receipt["issue_codes"] == ["TIME_BUDGET"]
+    assert receipt["retained_payload_bytes"] == 0
+
+
+def test_generated_receipt_and_manifest_match_schemas(tmp_path, monkeypatch):
+    from pathlib import Path
+    import jsonschema
+
+    spec, receipt, _, _ = run(tmp_path, monkeypatch)
+    manifest = write_daily_manifest(spec, tmp_path / "stage", receipt)
+    schema_root = Path(__file__).resolve().parents[3] / "schemas/research"
+    for name, value in [
+        ("dataset-spec", spec),
+        ("dataset-receipt", receipt),
+        ("dataset-manifest", manifest),
+    ]:
+        schema = json.loads((schema_root / f"{name}.v2.schema.json").read_text())
+        jsonschema.Draft202012Validator(
+            schema, format_checker=jsonschema.FormatChecker()
+        ).validate(value)

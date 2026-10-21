@@ -45,3 +45,22 @@ python -m competition_tools.team data inspect --config /absolute/private/team.to
 `schemas/research/` 定义 `competition.dataset_spec.v1`、`competition.dataset_manifest.v1`、`competition.dataset_receipt.v1` 和 `competition.coverage_report.v1`。manifest 绑定来源、规格、请求范围、实际覆盖、未知发布时间、原始和标准化文件哈希、字节数、行数、修订或校验和及标准化链路。没有独立证据时，发布时间保持未知。新数据不满足既有 `accepted_research` 门槛，也不替换事件输入 receipt。
 
 完整 receipt 和原始观测保留在外部，Pages 只接收[评估报告](data-expansion-and-evaluation.zh-CN.md)对应的白名单汇总。新增数据及评估模块在各自目录按 MIT 授权，不改变无关执行代码或上游数据的许可。
+
+## 有预算限制的股票日线快照
+
+使用 `setup --profile daily-data` 安装锁定的可选券商和交易日历依赖，默认离线交付不变。`competition.dataset_spec.v2` 使用 `source=ibkr_daily`、外部 `connection_file`、明确的股票合约及独立基准。美股配置为 US/USD/XNYS/`America/New_York`，港股为 HK/HKD/XHKG/`Asia/Hong_Kong`。这是固定的当前股票池，不代表历史指数成分。[美股](../../config/examples/us-fixed-daily.json)和[港股](../../config/examples/hk-fixed-daily.json)示例含占位符：先复制到源码外，将 `connection_file` 替换为外部端点 JSON 的绝对路径，选择新版本并设置日期范围，再运行。
+
+```powershell
+& $pythonPath -m competition_tools.team data plan --config $teamConfig --spec $dailySpec
+& $pythonPath -m competition_tools.team data acquire --config $teamConfig --spec $dailySpec
+& $pythonPath -m competition_tools.team data inspect --config $teamConfig --spec $dailySpec --manifest $dailyManifest
+& $pythonPath -m competition_tools.team data refresh --config $teamConfig --spec $nextVersionSpec --base-manifest $dailyManifest
+```
+
+最多支持 20 只股票和一个独立基准。代码、交易所和币种必须与券商确认的股票合约一致，请求前先通过单一 Paper 前缀账户检查。交易日历包含节假日、半日市和夏令时，仅将采集时已收盘的交易日纳入完整性判断。日线使用拆股调整后的每日 RTH TRADES，不是包含分红再投资的总收益数据，也不填充缺失价格。所有股票和基准覆盖全部已收盘交易日，才标为 `acquired`；来源、公司行动质量和研究验收仍未验证。
+
+每个市场最多 120 次应用层券商请求、32 MiB 保留的原始及标准化数据、2400 秒。合约确认和失败请求计入预算，请求串行执行，开始时间至少相隔十秒，遇到券商错误停止，不重试或登录。每段覆盖一年或更短，并明确结束时间。这些是应用预算，不代表券商权限保证，也不衡量网络传输字节。原始文件保留解析后的 SDK 日线，标准化文件列为 `date,open,high,low,close,volume`。
+
+完成的快照包含不可变的 `competition.dataset_manifest.v2` 和 `competition.dataset_receipt.v2`，记录文件哈希、合约身份、日历版本及日程哈希、预算和缺口。`inspect` 返回 `competition.coverage_report.v2`。未完成采集保留在本任务所有的 `.partial` 暂存目录，包含 `receipt.json` 和可校验检查点，暂不发布不可变 manifest。相同 acquire 可在剩余累计预算内继续。配置改变、文件损坏或已收盘交易日范围变化时，需要人工检查或新版本。不会自动删除遗留锁。
+
+刷新需要完整且校验通过的父快照、新版本、保持数据集及产品、起始日期和价格口径不变，并且结束日期不得倒退。刷新将父数据复制到新暂存目录，检查最近五个可用的已收盘交易日，记录父 manifest 哈希，不记录私有路径。重叠区间改变时，重取受影响标的的完整历史；预算不足则保留未完成状态。重叠区间未变也不能排除更早的修订。刷新时保守保留 `last_full_verification`，公司行动及重叠区间外修订仍为 `not_verified`。父数据不会修改，也不更新 latest 指针。v1 `ibkr` 试验和显式启动选项的含义不变，v2 采集不会启动 Gateway 或授权下单。

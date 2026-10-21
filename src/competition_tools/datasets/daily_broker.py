@@ -4,6 +4,7 @@ import csv
 import io
 import json
 import os
+from contextlib import contextmanager
 import time
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
@@ -45,6 +46,14 @@ def collect_daily(
     clock=time.monotonic,
     sleep=time.sleep,
 ) -> dict:
+    with collection_lock(staging):
+        return _collect_daily(
+            spec, staging, session_factory=session_factory, clock=clock, sleep=sleep
+        )
+
+
+@contextmanager
+def collection_lock(staging):
     staging = safe_path(staging)
     staging.parent.mkdir(parents=True, exist_ok=True)
     lock = safe_path(staging.with_name(staging.name + ".collection-lock"))
@@ -53,9 +62,7 @@ def collect_daily(
     except FileExistsError:
         raise ValueError("COLLECTION_IN_PROGRESS") from None
     try:
-        return _collect_daily(
-            spec, staging, session_factory=session_factory, clock=clock, sleep=sleep
-        )
+        yield
     finally:
         os.close(fd)
         lock.unlink()
@@ -104,7 +111,7 @@ def _collect_daily(spec, staging, *, session_factory, clock, sleep):
     state["calendar"] = calendar
     began = clock()
     prior_elapsed = state["elapsed_seconds"]
-    last_start = None
+    last_start = clock() if state["requests"] else None
     issues = []
 
     def save(*, refresh_files=True):
@@ -146,11 +153,15 @@ def _collect_daily(spec, staging, *, session_factory, clock, sleep):
             client.RaiseRequestErrors = True
             for definition in spec["contracts"]:
                 product = definition["product"]
-                windows = [
+                full_windows = [
                     (a, b)
                     for a, b in _windows(sessions[0], sessions[-1])
                     if any(a <= s <= b for s in sessions)
                 ]
+                windows = full_windows.copy()
+                refresh = state.get("refresh")
+                if refresh and product not in state.get("rebuild_products", []):
+                    windows = list(_windows(refresh["overlap_start"], sessions[-1]))
                 if all(f"{product}:{a}:{b}" in state["done"] for a, b in windows):
                     continue
                 client.RequestTimeout = budget_request()
@@ -178,7 +189,10 @@ def _collect_daily(spec, staging, *, session_factory, clock, sleep):
                         endDateTime=end.strftime("%Y%m%d 00:00:00")
                         + " "
                         + spec["timezone"],
-                        durationStr="1 Y",
+                        durationStr="1 Y"
+                        if (date.fromisoformat(upper) - date.fromisoformat(lower)).days
+                        >= 365
+                        else f"{(date.fromisoformat(upper) - date.fromisoformat(lower)).days + 1} D",
                         barSizeSetting="1 day",
                         whatToShow="TRADES",
                         useRTH=True,
@@ -211,6 +225,31 @@ def _collect_daily(spec, staging, *, session_factory, clock, sleep):
                         json.dumps(rows, allow_nan=False, separators=(",", ":")) + "\n"
                     ).encode()
                     by_date = {r[0]: r for r in rows_by_product[product]}
+                    if refresh and product not in state.get("rebuild_products", []):
+                        overlap_old = {
+                            day: row
+                            for day, row in by_date.items()
+                            if lower <= day <= upper
+                        }
+                        overlap_new = {r[0]: r for r in rows if r[0] in overlap_old}
+                        if overlap_new != overlap_old:
+                            state["rebuild_products"].append(product)
+                            state["revisions"].append(
+                                {
+                                    "product": product,
+                                    "action": "full_rebuild",
+                                    "reason": "OVERLAP_CHANGED",
+                                }
+                            )
+                            rows_by_product[product] = []
+                            (staging / "normalized" / f"{product}.csv").write_bytes(
+                                _normalized([])
+                            )
+                            by_date = {}
+                            windows.extend(
+                                w for w in full_windows if w != (lower, upper)
+                            )
+                            save()
                     for row in rows:
                         if lower <= row[0] <= upper:
                             if row[0] not in sessions:
@@ -239,7 +278,9 @@ def _collect_daily(spec, staging, *, session_factory, clock, sleep):
                     raw.write_bytes(raw_bytes)
                     normalized.write_bytes(normalized_bytes)
                     rows_by_product[product] = combined
-                    state["done"].append(key)
+                    expected_chunk = {s for s in sessions if lower <= s <= upper}
+                    if expected_chunk <= {r[0] for r in rows}:
+                        state["done"].append(key)
                     save()
                     if not rows:
                         raise StopCollection("HISTORICAL_UNAVAILABLE")
@@ -285,13 +326,17 @@ def _collect_daily(spec, staging, *, session_factory, clock, sleep):
             "price_basis": "split_adjusted",
             "corporate_actions": "not_verified",
             "out_of_overlap_revisions": "not_verified",
-            "last_full_verification": observed.isoformat(),
+            "last_full_verification": state.get("refresh", {}).get(
+                "last_full_verification"
+            )
+            if state.get("refresh")
+            else observed.isoformat(),
         },
         "requests": state["requests"],
         "elapsed_seconds": state["elapsed_seconds"],
         "retained_payload_bytes": sum(f["bytes"] for f in state["files"]),
         "parent_manifest_sha256": None,
-        "revisions": [],
+        "revisions": state.get("revisions", []),
         "accepted_research": False,
     }
     write_json(staging / "receipt.json", receipt)

@@ -86,6 +86,9 @@
     },
     "accepted_research": {
       "const": false
+    },
+    "overlap_sessions": {
+      "const": 5
     }
   }
 }

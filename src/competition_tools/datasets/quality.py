@@ -32,7 +32,7 @@ def inspect_dataset(manifest_path: Path) -> dict:
 
     manifest = verify_manifest(manifest_path)
     return {
-        "schema": "competition.coverage_report.v1",
+        "schema": "competition.coverage_report.v2" if manifest["schema"] == "competition.dataset_manifest.v2" else "competition.coverage_report.v1",
         "dataset_id": manifest["dataset_id"],
         "version": manifest["version"],
         "status": manifest["status"],
