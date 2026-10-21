@@ -4,6 +4,7 @@ from html.parser import HTMLParser
 from pathlib import Path, PurePosixPath
 import re
 from typing import Callable
+from urllib.parse import unquote, urlsplit
 
 PAGES_BASE_PATH = "/2026-quant-competition"
 
@@ -29,7 +30,7 @@ REQUIRED_SOURCE = {
 }
 REQUIRED_OUTPUT = {"index.html", "zh-CN/index.html"}
 IGNORED_SOURCE_DIRS = {"node_modules", ".astro", "dist"}
-TEXT_SUFFIXES = {".astro", ".css", ".html", ".js", ".json", ".mjs", ".svg"}
+TEXT_SUFFIXES = {".astro", ".css", ".html", ".js", ".json", ".mjs", ".svg", ".ts"}
 PUBLIC_ASSET_SUFFIXES = {
     ".ico",
     ".jpeg",
@@ -51,9 +52,15 @@ class _PageMetadata(HTMLParser):
         self.validation_facts: list[tuple[str, str | None, str | None]] = []
         self.expansion_facts: list[tuple[str, str | None]] = []
         self.study_facts: list[tuple[str, str | None]] = []
+        self.dashboard_facts: list[str | None] = []
+        self.ids: set[str] = set()
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         attributes = dict(attrs)
+        if attributes.get("id"):
+            self.ids.add(attributes["id"])
+        if "data-dashboard-selected" in attributes:
+            self.dashboard_facts.append(attributes.get("data-facts"))
         if study_id := attributes.get("data-study-id"):
             self.study_facts.append((study_id, attributes.get("data-facts")))
         if expansion_id := attributes.get("data-expansion-id"):
@@ -88,6 +95,16 @@ def _allowed_source(relative_path: PurePosixPath) -> bool:
         "src/data/strategy-validation.json",
         "src/data/strategy-expansion.v1.json",
         "src/data/real-data-study.v1.json",
+        "src/data/real-data-series.v1.json",
+        "document-routes.mjs",
+        "remark-doc-links.mjs",
+        "src/lib/documents.ts",
+        "src/scripts/dashboard-state.mjs",
+        "src/scripts/performance-charts.mjs",
+        "tests/dashboard-state.test.mjs",
+        "tests/dashboard.spec.mjs",
+        "tests/docs-links.test.mjs",
+        "tests/docs.spec.mjs",
     }:
         return True
     if path.startswith("src/"):
@@ -239,11 +256,104 @@ def check_site(source_dir: Path, built_dir: Path) -> list[str]:
                 actual = {key: json.loads(facts) for key, facts in metadata.study_facts}
                 if actual != expected or len(metadata.study_facts) != len(expected):
                     errors.append("study facts differ from reviewed source snapshot")
+                for facts in metadata.dashboard_facts:
+                    selected = json.loads(facts)
+                    if selected != expected.get(selected.get("job_id")):
+                        errors.append(
+                            "dashboard facts differ from reviewed source snapshot"
+                        )
+                if (
+                    source_dir / "src/components/PerformanceDashboard.astro"
+                ).exists() and len(metadata.dashboard_facts) != 1:
+                    errors.append("dashboard selected facts missing")
         except (OSError, ValueError, TypeError, KeyError, AttributeError):
             errors.append("invalid public study snapshot or output")
+    series_path = source_dir / "src/data/real-data-series.v1.json"
+    if series_path.is_file():
+        from competition_tools.evaluation.study_series import validate_public_series
+
+        try:
+            validate_public_series(
+                json.loads(series_path.read_text(encoding="utf-8")),
+                json.loads(snapshot.read_text(encoding="utf-8")),
+            )
+        except (OSError, ValueError, TypeError, KeyError, AttributeError):
+            errors.append("invalid public series snapshot")
+    if "document-routes.mjs" in source_paths:
+        _validate_documentation(built_dir, output_paths, errors)
     _scan_sensitive(source_files, "source", errors)
     _scan_sensitive(output_files, "output", errors)
     return errors
+
+
+def _validate_documentation(
+    built_dir: Path, output_paths: set[str], errors: list[str]
+) -> None:
+    expected = {
+        f"{prefix}docs/{slug + '/' if slug else ''}index.html": (
+            "zh-CN" if prefix else "en",
+            f"{PAGES_BASE_PATH}/{'docs/' if prefix else 'zh-CN/docs/'}{slug + '/' if slug else ''}",
+        )
+        for prefix in ("", "zh-CN/")
+        for slug in ("", "architecture", "quickstart", "datasets", "study")
+    }
+    for name in expected.keys() - output_paths:
+        errors.append(f"documentation route missing: {name}")
+    cache = {}
+
+    def metadata(name):
+        if name not in cache:
+            page = _PageMetadata()
+            page.feed((built_dir / name).read_text(encoding="utf-8"))
+            cache[name] = page
+        return cache[name]
+
+    for name in output_paths:
+        if (
+            name.startswith(("docs/", "zh-CN/docs/"))
+            and name.endswith(".html")
+            and name not in expected
+        ):
+            errors.append(f"unreviewed documentation route: {name}")
+    for name in expected.keys() & output_paths:
+        try:
+            page = metadata(name)
+            language, switch = expected[name]
+            if page.language != language or switch not in page.hrefs:
+                errors.append(f"documentation locale or switch mismatch: {name}")
+            for href in page.hrefs:
+                parts = urlsplit(href)
+                if parts.scheme or parts.netloc:
+                    continue
+                if parts.path.startswith(PAGES_BASE_PATH + "/"):
+                    relative = unquote(parts.path[len(PAGES_BASE_PATH) + 1 :])
+                    if ".." in PurePosixPath(relative).parts:
+                        errors.append(f"invalid documentation link: {name}")
+                        continue
+                    target = (
+                        relative + "index.html"
+                        if not relative or relative.endswith("/")
+                        else relative
+                    )
+                elif not parts.path:
+                    target = name
+                else:
+                    errors.append(f"unresolved documentation link: {name}")
+                    continue
+                if target not in output_paths:
+                    errors.append(
+                        f"documentation link target missing: {name} -> {target}"
+                    )
+                elif (
+                    parts.fragment
+                    and target.endswith(".html")
+                    and unquote(parts.fragment) not in metadata(target).ids
+                ):
+                    errors.append(
+                        f"documentation link fragment missing: {name} -> {target}#{parts.fragment}"
+                    )
+        except (OSError, ValueError, TypeError):
+            errors.append(f"invalid documentation output: {name}")
 
 
 def main() -> int:

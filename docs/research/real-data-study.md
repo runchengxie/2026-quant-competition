@@ -90,3 +90,19 @@ Reproducibility identities are published in `site/src/data/real-data-study.v1.js
 Local checks passed: root 682 tests (45 inherited dependency warnings), equity 158 tests, crypto 205 tests, 19 real-CLI synthetic vectors, Ruff, configured format/lock checks, public JSON Schema, Pages content/privacy gate and 10 browser tests covering locale/theme/mobile behavior. Both earlier result snapshots match the clean base checkout byte for byte. The local build ran from an external source mirror on the data drive because Astro’s intermediate asset rename cannot cross drives; no default build configuration changed.
 
 The initial 2026-10-21 `npm audit` reported one high-severity Vite launch-editor dependency finding (GHSA-698v-4r3x-3vcv, GHSA-r825-w8mm-5pxw and GHSA-587h-7wmj-h5pm). A subsequent security maintenance update changed the locked Vite from 8.3.1 to 8.3.4 and updated its required PostCSS dependencies. A fresh explicit audit reported zero known vulnerabilities; the static build, 10 browser tests and Pages content gate passed. Earlier TLS failures and the original finding remain historical evidence. No dedicated type or coverage threshold is configured, and no additional scan is claimed. CI and deployment results are recorded in the publishing PR.
+
+## Interactive site and documentation
+
+The [performance dashboard](https://runchengxie.github.io/2026-quant-competition/#performance) uses Apache ECharts with market, strategy, fee and independent-window selectors. Hover, legends, curve zoom and reset are presentation controls. Published financial metrics are selected from the frozen study; the browser does not rerun accounting or join windows into a continuous portfolio. Return histograms calculate bin counts only.
+
+The eight views cover net/gross NAV, drawdown, window net/excess returns, fixed-window cost sensitivity, return/drawdown comparison, daily turnover and position proxies, and window-return distribution. The same currencies and methods apply across languages and themes. Accessible summaries and the complete tables remain available without JavaScript.
+
+`competition.public_study_series.v1` contains 276 portfolio curves, derived from verified private period artifacts, plus 42 explicit unavailable records for single-instrument stock benchmarks. A curve starts at normalized wealth 1 on the last warmup close and includes each scored period. Its final net/gross wealth and largest drawdown must match the reviewed summary within 1e-10. Only dates, aggregate net/gross NAV and aggregate drawdown are published. No raw prices, individual holdings, account amounts, logs or private locators are copied. Benchmark window returns remain public; daily benchmark price-linked curves are not published.
+
+```sh
+python -m competition_tools.evaluation.study_series --aggregate /external/study/run/study-results.json --output /external/new-public-series.json
+```
+
+The [integrated documentation](https://runchengxie.github.io/2026-quant-competition/docs/) renders this canonical Markdown and the curated architecture, quickstart and dataset guides directly through Astro. Language switches retain the article. Other source documents remain GitHub links. This avoids a second documentation copy or MkDocs deployment.
+
+Current charts describe strategy effects. IC, rank-IC, quantile spreads, decay and machine-learning out-of-time performance have not been measured. The site labels these as later research, alongside slower stock rebalancing, crypto volatility sizing and a possible runtime adapter. The default packages remain standalone. No external runtime has been connected and no new strategy experiment was run for this display update.

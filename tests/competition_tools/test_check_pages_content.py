@@ -102,6 +102,68 @@ def test_study_snapshot_requires_strict_public_contract(tmp_path):
     assert any("invalid public study" in error for error in check_site(source, built))
 
 
+def test_portfolio_series_gate_rejects_nested_private_metadata(tmp_path):
+    source, built = make_site_trees(tmp_path)
+    original = Path(__file__).resolve().parents[2] / "site/src/data"
+    study = json.loads(
+        (original / "real-data-study.v1.json").read_text(encoding="utf-8")
+    )
+    series = json.loads(
+        (original / "real-data-series.v1.json").read_text(encoding="utf-8")
+    )
+    series["series"][0]["points"][0]["private_location"] = "C:/private/raw.csv"
+    target = source / "src/data"
+    target.mkdir()
+    (target / "real-data-study.v1.json").write_text(json.dumps(study), encoding="utf-8")
+    (target / "real-data-series.v1.json").write_text(
+        json.dumps(series), encoding="utf-8"
+    )
+    assert any("invalid public series" in error for error in check_site(source, built))
+
+
+def test_documentation_registry_requires_all_reviewed_routes(tmp_path):
+    source, built = make_site_trees(tmp_path)
+    (source / "document-routes.mjs").write_text("export const documentRoutes=[];")
+    assert any(
+        "documentation route missing" in error for error in check_site(source, built)
+    )
+
+
+def test_documentation_routes_validate_locale_links_and_reject_unlisted_pages(tmp_path):
+    source, built = make_site_trees(tmp_path)
+    (source / "document-routes.mjs").write_text("// Reviewed document registry")
+    for prefix in ("", "zh-CN/"):
+        for slug in ("", "architecture", "quickstart", "datasets", "study"):
+            suffix = f"docs/{slug + '/' if slug else ''}"
+            p = built / prefix / suffix / "index.html"
+            p.parent.mkdir(parents=True, exist_ok=True)
+            language = "zh-CN" if prefix else "en"
+            switch = BASE_PATH + "/" + ("" if prefix else "zh-CN/") + suffix
+            p.write_text(rendered_page(language, switch), encoding="utf-8")
+    assert check_site(source, built) == []
+    extra = built / "docs/internal/index.html"
+    extra.parent.mkdir()
+    extra.write_text(rendered_page("en", BASE_PATH + "/zh-CN/"))
+    assert any(
+        "unreviewed documentation route" in error for error in check_site(source, built)
+    )
+
+
+def test_documentation_fragment_must_exist(tmp_path):
+    source, built = make_site_trees(tmp_path)
+    (source / "document-routes.mjs").write_text("// Reviewed document registry")
+    path = built / "docs/study/index.html"
+    path.parent.mkdir(parents=True)
+    path.write_text(
+        rendered_page("en", BASE_PATH + "/zh-CN/docs/study/")
+        + '<a href="#missing">Missing</a>'
+    )
+    assert any(
+        "documentation link fragment missing" in error
+        for error in check_site(source, built)
+    )
+
+
 def test_study_gate_rejects_nested_private_products(tmp_path):
     import html
 

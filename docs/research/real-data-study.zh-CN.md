@@ -90,3 +90,19 @@ v2 spec 仅包含以下三个键。
 本地检查通过：根项目 682 项测试（45 条原有依赖警告）、美股 158 项、数字货币 205 项、19 项真实 CLI 合成数据检查、Ruff、已配置格式与锁文件检查、公开 JSON Schema、Pages 内容与隐私检查，以及覆盖语言、主题和手机宽度的 10 项浏览器测试。两个旧结果快照与干净基线检出逐字节一致。本地构建使用数据盘上的外部源码镜像，因为 Astro 中间资源重命名不能跨磁盘；默认构建配置未修改。
 
 2026-10-21 首次 `npm audit` 报告 Vite launch-editor 依赖存在一个高危项（GHSA-698v-4r3x-3vcv、GHSA-r825-w8mm-5pxw 和 GHSA-587h-7wmj-h5pm）。随后安全维护将锁定的 Vite 从 8.3.1 更新至 8.3.4，并更新其所需的 PostCSS 依赖。新一次显式审计报告零个已知漏洞，静态构建、10 项浏览器测试与 Pages 内容检查通过。之前的 TLS 错误及原始漏洞记录仍保留为历史证据。项目没有独立的类型检查或 coverage 阈值，不声称额外扫描已通过。CI 与部署结果记录在发布 PR。
+
+## 互动展示与站内文档
+
+[业绩看板](https://runchengxie.github.io/2026-quant-competition/zh-CN/#performance) 使用 Apache ECharts，可选择市场、策略、费用和独立窗口。悬停、图例、曲线缩放与重置只改变展示。财务指标直接选自冻结研究结果，浏览器不重跑记账，也不拼接窗口形成连续组合。收益直方图仅计算分箱计数。
+
+八类图表分别展示净／毛净值、回撤、窗口净／超额收益、同窗口费用敏感性、收益与回撤比较、日均换手与仓位代理，以及窗口收益分布。切换语言或主题不改变币种和方法。关闭 JavaScript 后仍可阅读摘要和完整表格。
+
+`competition.public_study_series.v1` 包含从已核验私有逐日产物生成的 276 条组合曲线，以及单标的股票基准的 42 条明确不可用记录。曲线在最后一个预热收盘日从归一化资产 1 开始，包含全部评分期。期末净／毛资产和最大回撤必须在 1e-10 容差内与已审查汇总一致。只公开日期、组合净／毛净值与组合回撤，不复制原始价格、个股持仓、账户金额、日志或私有定位。基准窗口收益继续公开，不发布接近行情序列的逐日基准曲线。
+
+```sh
+python -m competition_tools.evaluation.study_series --aggregate /external/study/run/study-results.json --output /external/new-public-series.json
+```
+
+[站内文档](https://runchengxie.github.io/2026-quant-competition/zh-CN/docs/) 通过 Astro 直接渲染本篇权威 Markdown，以及选定的架构、快速上手和数据指南。语言切换保留当前文章，其他源文档继续链接 GitHub，无需第二份正文或独立 MkDocs 部署。
+
+当前图表展示策略效果，尚未测量 IC、rank-IC、分组收益差、信号衰减或机器学习的按时间留出表现。页面将这些列为后续研究，同时说明股票降频调仓、加密波动率仓位与可选 runtime adapter 的探索方向。默认研究包仍可独立运行，尚未接入外部 runtime，本次展示更新没有新增策略实验。
