@@ -1,0 +1,763 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "manifests",
+    "costs",
+    "origin",
+    "variants"
+  ],
+  "properties": {
+    "schema": {
+      "const": "competition.evaluation_spec.v3"
+    },
+    "manifests": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "costs": {
+      "const": {
+        "US": [
+          20,
+          40
+        ],
+        "HK": [
+          30,
+          60
+        ],
+        "crypto": [
+          0,
+          10,
+          25
+        ]
+      }
+    },
+    "origin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "probe_protocol",
+        "diagnostic_protocol",
+        "evidence_manifest"
+      ],
+      "properties": {
+        "probe_protocol": {
+          "type": "string",
+          "minLength": 1
+        },
+        "diagnostic_protocol": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_manifest": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "variants": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "US": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ],
+                "properties": {
+                  "strategy": {
+                    "const": "buy_hold"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ],
+                "properties": {
+                  "strategy": {
+                    "const": "equal_weight"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ],
+                "properties": {
+                  "strategy": {
+                    "const": "equal_weight"
+                  },
+                  "variant_id": {
+                    "const": "weekly"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ],
+                "properties": {
+                  "strategy": {
+                    "const": "equal_weight"
+                  },
+                  "variant_id": {
+                    "const": "monthly"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ],
+                "properties": {
+                  "strategy": {
+                    "const": "momentum_20d"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ],
+                "properties": {
+                  "strategy": {
+                    "const": "momentum_20d"
+                  },
+                  "variant_id": {
+                    "const": "weekly"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ],
+                "properties": {
+                  "strategy": {
+                    "const": "momentum_20d"
+                  },
+                  "variant_id": {
+                    "const": "monthly"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ],
+                "properties": {
+                  "strategy": {
+                    "const": "sma_cross"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ],
+                "properties": {
+                  "strategy": {
+                    "const": "sma_cross"
+                  },
+                  "variant_id": {
+                    "const": "weekly"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ],
+                "properties": {
+                  "strategy": {
+                    "const": "sma_cross"
+                  },
+                  "variant_id": {
+                    "const": "monthly"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ],
+                "properties": {
+                  "strategy": {
+                    "const": "benchmark_buy_hold"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  }
+                }
+              }
+            ]
+          },
+          "allOf": [
+            {
+              "contains": {
+                "properties": {
+                  "strategy": {
+                    "const": "buy_hold"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  }
+                },
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "strategy": {
+                    "const": "equal_weight"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  }
+                },
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "strategy": {
+                    "const": "momentum_20d"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  }
+                },
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "strategy": {
+                    "const": "sma_cross"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  }
+                },
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "strategy": {
+                    "const": "benchmark_buy_hold"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  }
+                },
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ]
+              }
+            }
+          ]
+        },
+        "HK": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ],
+                "properties": {
+                  "strategy": {
+                    "const": "buy_hold"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ],
+                "properties": {
+                  "strategy": {
+                    "const": "equal_weight"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ],
+                "properties": {
+                  "strategy": {
+                    "const": "equal_weight"
+                  },
+                  "variant_id": {
+                    "const": "weekly"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ],
+                "properties": {
+                  "strategy": {
+                    "const": "equal_weight"
+                  },
+                  "variant_id": {
+                    "const": "monthly"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ],
+                "properties": {
+                  "strategy": {
+                    "const": "momentum_20d"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ],
+                "properties": {
+                  "strategy": {
+                    "const": "momentum_20d"
+                  },
+                  "variant_id": {
+                    "const": "weekly"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ],
+                "properties": {
+                  "strategy": {
+                    "const": "momentum_20d"
+                  },
+                  "variant_id": {
+                    "const": "monthly"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ],
+                "properties": {
+                  "strategy": {
+                    "const": "sma_cross"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ],
+                "properties": {
+                  "strategy": {
+                    "const": "sma_cross"
+                  },
+                  "variant_id": {
+                    "const": "weekly"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ],
+                "properties": {
+                  "strategy": {
+                    "const": "sma_cross"
+                  },
+                  "variant_id": {
+                    "const": "monthly"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ],
+                "properties": {
+                  "strategy": {
+                    "const": "benchmark_buy_hold"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  }
+                }
+              }
+            ]
+          },
+          "allOf": [
+            {
+              "contains": {
+                "properties": {
+                  "strategy": {
+                    "const": "buy_hold"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  }
+                },
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "strategy": {
+                    "const": "equal_weight"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  }
+                },
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "strategy": {
+                    "const": "momentum_20d"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  }
+                },
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "strategy": {
+                    "const": "sma_cross"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  }
+                },
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "strategy": {
+                    "const": "benchmark_buy_hold"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  }
+                },
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ]
+              }
+            }
+          ]
+        },
+        "crypto": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ],
+                "properties": {
+                  "strategy": {
+                    "const": "equal_weight"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ],
+                "properties": {
+                  "strategy": {
+                    "const": "momentum_63d"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ],
+                "properties": {
+                  "strategy": {
+                    "const": "trend_200d"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ],
+                "properties": {
+                  "strategy": {
+                    "const": "trend_200d"
+                  },
+                  "variant_id": {
+                    "const": "hysteresis_2pct"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ],
+                "properties": {
+                  "strategy": {
+                    "const": "trend_200d"
+                  },
+                  "variant_id": {
+                    "const": "vol_target_40pct"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ],
+                "properties": {
+                  "strategy": {
+                    "const": "trend_200d"
+                  },
+                  "variant_id": {
+                    "const": "fixed_exposure_60pct"
+                  }
+                }
+              }
+            ]
+          },
+          "allOf": [
+            {
+              "contains": {
+                "properties": {
+                  "strategy": {
+                    "const": "equal_weight"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  }
+                },
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "strategy": {
+                    "const": "momentum_63d"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  }
+                },
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ]
+              }
+            },
+            {
+              "contains": {
+                "properties": {
+                  "strategy": {
+                    "const": "trend_200d"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  }
+                },
+                "required": [
+                  "strategy",
+                  "variant_id"
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

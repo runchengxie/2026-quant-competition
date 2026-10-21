@@ -1,0 +1,200 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "plan_sha256",
+    "code_identity",
+    "costs",
+    "inputs",
+    "jobs",
+    "retrospective",
+    "selection",
+    "budget",
+    "accepted_research",
+    "origin",
+    "catalog_sha256",
+    "source_receipt"
+  ],
+  "properties": {
+    "schema": {
+      "const": "competition.study_plan.v2"
+    },
+    "plan_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "code_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "commit",
+        "source_root",
+        "source_sha256"
+      ],
+      "properties": {
+        "commit": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        "source_root": {
+          "type": "string"
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "costs": {
+      "const": {
+        "US": [
+          20,
+          40
+        ],
+        "HK": [
+          30,
+          60
+        ],
+        "crypto": [
+          0,
+          10,
+          25
+        ]
+      }
+    },
+    "inputs": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "type": "object"
+      }
+    },
+    "jobs": {
+      "type": "array",
+      "maxItems": 768,
+      "items": {
+        "type": "object",
+        "required": [
+          "job_id",
+          "market",
+          "status",
+          "plan_sha256",
+          "accepted_research"
+        ],
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "market": {
+            "enum": [
+              "US",
+              "HK",
+              "crypto",
+              "unknown"
+            ]
+          },
+          "status": {
+            "enum": [
+              "planned",
+              "blocked"
+            ]
+          },
+          "plan_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "accepted_research": {
+            "const": false
+          }
+        }
+      }
+    },
+    "retrospective": {
+      "const": true
+    },
+    "selection": {
+      "const": "fixed_current_from_2023"
+    },
+    "budget": {
+      "const": {
+        "jobs": 768,
+        "seconds": 3600,
+        "batch_jobs": 384
+      }
+    },
+    "accepted_research": {
+      "const": false
+    },
+    "origin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "probe_protocol_sha256",
+        "diagnostic_protocol_sha256",
+        "evidence_manifest_sha256",
+        "stage",
+        "retrospective",
+        "accepted_research"
+      ],
+      "properties": {
+        "probe_protocol_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "diagnostic_protocol_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "evidence_manifest_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "stage": {
+          "const": "retrospective"
+        },
+        "retrospective": {
+          "const": true
+        },
+        "accepted_research": {
+          "const": false
+        }
+      }
+    },
+    "catalog_sha256": {
+      "const": "942d0a84cf5b627e19f4f592fb92aad9cfce80080fd1983736ef2efaca63a364"
+    },
+    "source_receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "commit",
+        "source_root",
+        "archive",
+        "source_sha256",
+        "archive_sha256"
+      ],
+      "properties": {
+        "commit": {
+          "type": "string"
+        },
+        "source_root": {
+          "type": "string"
+        },
+        "archive": {
+          "type": "string"
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "archive_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    }
+  }
+}
