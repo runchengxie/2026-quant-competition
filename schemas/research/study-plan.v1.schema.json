@@ -1,0 +1,128 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "plan_sha256",
+    "code_identity",
+    "costs",
+    "inputs",
+    "jobs",
+    "retrospective",
+    "selection",
+    "budget",
+    "accepted_research"
+  ],
+  "properties": {
+    "schema": {
+      "const": "competition.study_plan.v1"
+    },
+    "plan_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "code_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "commit",
+        "source_root",
+        "source_sha256"
+      ],
+      "properties": {
+        "commit": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        "source_root": {
+          "type": "string"
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "costs": {
+      "const": {
+        "US": [
+          20,
+          40
+        ],
+        "HK": [
+          30,
+          60
+        ],
+        "crypto": [
+          0,
+          10,
+          25
+        ]
+      }
+    },
+    "inputs": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "type": "object"
+      }
+    },
+    "jobs": {
+      "type": "array",
+      "maxItems": 384,
+      "items": {
+        "type": "object",
+        "required": [
+          "job_id",
+          "market",
+          "status",
+          "plan_sha256",
+          "accepted_research"
+        ],
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "market": {
+            "enum": [
+              "US",
+              "HK",
+              "crypto",
+              "unknown"
+            ]
+          },
+          "status": {
+            "enum": [
+              "planned",
+              "blocked"
+            ]
+          },
+          "plan_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "accepted_research": {
+            "const": false
+          }
+        }
+      }
+    },
+    "retrospective": {
+      "const": true
+    },
+    "selection": {
+      "const": "fixed_current_from_2023"
+    },
+    "budget": {
+      "const": {
+        "jobs": 384,
+        "seconds": 3600
+      }
+    },
+    "accepted_research": {
+      "const": false
+    }
+  }
+}

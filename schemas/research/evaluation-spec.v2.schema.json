@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "manifests",
+    "costs"
+  ],
+  "properties": {
+    "schema": {
+      "const": "competition.evaluation_spec.v2"
+    },
+    "manifests": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "costs": {
+      "const": {
+        "US": [
+          20,
+          40
+        ],
+        "HK": [
+          30,
+          60
+        ],
+        "crypto": [
+          0,
+          10,
+          25
+        ]
+      }
+    }
+  }
+}

@@ -14,6 +14,16 @@ from competition_tools.datasets.storage import write_json
 
 def execute(config: TeamConfig, spec_path: Path, output_root: Path) -> dict:
     spec = json.loads(validate_external(spec_path).read_text(encoding="utf-8-sig"))
+    if isinstance(spec,dict) and spec.get("schema") == "competition.evaluation_spec.v2":
+        from competition_tools.evaluation.study_identity import source_identity
+        from competition_tools.evaluation.study_plan import freeze_study
+        from competition_tools.evaluation.study_runner import run_study
+
+        output = validate_external(output_root)
+        freeze_study(spec,output,code_identity=source_identity(Path(__file__).resolve().parents[3]))
+        result = run_study(config,output/"plan.json")
+        complete = sum(job["status"] == "completed" for job in result["jobs"])
+        return envelope("evaluate",issues=[] if complete == len(result["jobs"]) else ["EVALUATION_PARTIAL"],projects=[{"status":"completed" if complete == len(result["jobs"]) else "partial","completed_jobs":complete,"total_jobs":len(result["jobs"]),"plan":str(output/"plan.json"),"results":str(output/"run/study-results.json")}])
     if (
         set(spec) != {"schema", "manifests"}
         or spec["schema"] != "competition.evaluation_spec.v1"
