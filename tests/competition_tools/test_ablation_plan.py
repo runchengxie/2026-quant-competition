@@ -94,6 +94,15 @@ def test_origin_requires_hashed_protocols_and_safe_members(tmp_path):
                 }
             )
         )
+    b.write_text(
+        json.dumps(
+            {
+                "post_hoc": True,
+                "accepted_research": False,
+                "parent_protocol_sha256": hashlib.sha256(a.read_bytes()).hexdigest(),
+            }
+        )
+    )
     m.write_text(
         json.dumps(
             {
@@ -145,6 +154,15 @@ def test_freeze_two_synthetic_markets_and_job_integrity(tmp_path):
                 }
             )
         )
+    b.write_text(
+        json.dumps(
+            {
+                "post_hoc": True,
+                "accepted_research": False,
+                "parent_protocol_sha256": hashlib.sha256(a.read_bytes()).hexdigest(),
+            }
+        )
+    )
     m.write_text(
         json.dumps(
             {

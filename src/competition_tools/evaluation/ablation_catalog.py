@@ -145,14 +145,14 @@ def load_origin_evidence(origin: dict) -> dict:
             if rel not in records:
                 raise ValueError
             value = json.loads(p.read_text(encoding="utf-8"))
-            if (
-                value.get("retrospective") is not True
-                or value.get("accepted_research") is not False
-            ):
+            if value.get("accepted_research") is not False:
                 raise ValueError
             protocols.append(value)
-        if protocols[0].get("parent_plan_sha256") != protocols[1].get(
-            "parent_plan_sha256"
+        if (
+            protocols[0].get("retrospective") is not True
+            or protocols[1].get("post_hoc") is not True
+            or protocols[1].get("parent_protocol_sha256")
+            != digest(paths["probe_protocol"])
         ):
             raise ValueError
         return {
