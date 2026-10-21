@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "coverage-report.v1",
+  "title": "coverage-report.v2",
   "type": "object",
   "additionalProperties": false,
   "properties": {

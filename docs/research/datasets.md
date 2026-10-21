@@ -67,7 +67,7 @@ Full receipts and raw observations stay external. Pages receives only the allowl
 
 ## Bounded daily equity snapshots
 
-Use `setup --profile daily-data` to install the optional locked broker and exchange-calendar dependencies. Default offline delivery stays unchanged. `competition.dataset_spec.v2` uses `source=ibkr_daily`, an external `connection_file`, explicit stock contracts and a separate benchmark. It supports US/USD/XNYS/America_New_York (configured as `America/New_York`) and HK/HKD/XHKG/Asia_Hong_Kong (configured as `Asia/Hong_Kong`). This is a fixed current pool, not historical index membership. [US](../../config/examples/us-fixed-daily.json) and [HK](../../config/examples/hk-fixed-daily.json) examples contain a placeholder: copy them outside source, replace `connection_file` with an absolute external endpoint JSON, choose a new version and set the range before running.
+Use `setup --profile daily-data` to install the optional locked broker and exchange-calendar dependencies. Default offline delivery stays unchanged. `competition.dataset_spec.v2` uses `source=ibkr_daily`, an external `connection_file`, explicit stock contracts and a separate benchmark. It supports US/USD/XNYS/`America/New_York` and HK/HKD/XHKG/`Asia/Hong_Kong`. This is a fixed current pool, not historical index membership. [US](../../config/examples/us-fixed-daily.json) and [HK](../../config/examples/hk-fixed-daily.json) examples contain a placeholder: copy them outside source, replace `connection_file` with an absolute external endpoint JSON, choose a new version and set the range before running.
 
 ```powershell
 & $pythonPath -m competition_tools.team data plan --config $teamConfig --spec $dailySpec

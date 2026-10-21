@@ -33,6 +33,7 @@ def refresh_daily(
 
 
 def _refresh(spec, base_manifest, staging, *, session_factory, clock, sleep):
+    preparation_started = clock()
     validate_daily_spec(spec)
     base_manifest = safe_path(base_manifest)
     base = verify_daily_manifest(base_manifest)
@@ -85,6 +86,8 @@ def _refresh(spec, base_manifest, staging, *, session_factory, clock, sleep):
         state = json.loads(safe_path(checkpoint).read_text())
         if state.get("refresh", {}).get("parent_sha256") != parent_hash:
             raise ValueError("REFRESH_PARENT_MISMATCH")
+    state["elapsed_seconds"] += max(0, clock() - preparation_started)
+    write_json(checkpoint, state)
     receipt = _collect_daily(
         spec, staging, session_factory=session_factory, clock=clock, sleep=sleep
     )

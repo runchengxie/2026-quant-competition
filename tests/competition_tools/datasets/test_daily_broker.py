@@ -309,3 +309,28 @@ def test_generated_receipt_and_manifest_match_schemas(tmp_path, monkeypatch):
         jsonschema.Draft202012Validator(
             schema, format_checker=jsonschema.FormatChecker()
         ).validate(value)
+
+
+def test_calendar_preparation_consumes_time_before_connection(tmp_path, monkeypatch):
+    spec, _, _, clock = run(tmp_path / "fixture", monkeypatch)
+    from competition_tools.datasets import daily_broker
+
+    original = daily_broker.completed_sessions
+
+    def slow(*args, **kwargs):
+        clock.sleep(2500)
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(daily_broker, "completed_sessions", slow)
+
+    def forbidden(*a, **k):
+        pytest.fail("Expired budget must not connect")
+
+    receipt = collect_daily(
+        spec,
+        tmp_path / "new",
+        session_factory=forbidden,
+        clock=clock,
+        sleep=clock.sleep,
+    )
+    assert receipt["issue_codes"] == ["TIME_BUDGET"]

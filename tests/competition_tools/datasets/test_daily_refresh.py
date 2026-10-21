@@ -124,3 +124,85 @@ def test_refresh_does_not_copy_parent_over_the_byte_budget(tmp_path, monkeypatch
             sleep=lambda x: None,
         )
     assert not (tmp_path / "new").exists()
+
+
+def test_revision_replaces_prices_older_than_five_session_overlap(
+    tmp_path, monkeypatch
+):
+    import csv
+    from datetime import date
+    from types import SimpleNamespace
+    from competition_tools.datasets.daily_broker import collect_daily
+
+    spec, _, _, clock = run(tmp_path / "fixture", monkeypatch)
+    dates = [
+        "2023-01-03",
+        "2024-07-01",
+        "2024-07-02",
+        "2024-07-03",
+        "2024-07-05",
+        "2024-07-08",
+    ]
+    monkeypatch.setattr(
+        "competition_tools.datasets.daily_broker.completed_sessions",
+        lambda *a, **k: {
+            "sessions": dates,
+            "calendar_name": "XNYS",
+            "package_version": "synthetic",
+            "schedule_sha256": "b" * 64,
+            "latest_completed_session": dates[-1],
+        },
+    )
+    revised = False
+
+    class History(Client):
+        def reqHistoricalData(self, contract, **kwargs):
+            close = 50.0 if revised and contract.symbol == "AAPL" else 100.0
+            return [
+                SimpleNamespace(
+                    date=date.fromisoformat(d),
+                    open=close,
+                    high=close,
+                    low=close,
+                    close=close,
+                    volume=5,
+                )
+                for d in dates
+            ]
+
+    class Session:
+        def __init__(self, *a, **k):
+            pass
+
+        def __enter__(self):
+            return History(clock)
+
+        def __exit__(self, *a):
+            pass
+
+    spec = spec | {"start": "2023-01-01", "end": dates[-1]}
+    receipt = collect_daily(
+        spec,
+        tmp_path / "parent",
+        session_factory=Session,
+        clock=clock,
+        sleep=clock.sleep,
+    )
+    assert receipt["status"] == "acquired"
+    write_daily_manifest(spec, tmp_path / "parent", receipt)
+    revised = True
+    child = refresh_daily(
+        spec | {"version": "v2"},
+        tmp_path / "parent/manifest.json",
+        tmp_path / "child",
+        session_factory=Session,
+        clock=clock,
+        sleep=clock.sleep,
+    )
+    assert child["status"] == "acquired"
+    rows = list(csv.DictReader((tmp_path / "child/normalized/AAPL.csv").open()))
+    assert rows[0]["date"] == "2023-01-03"
+    assert float(rows[0]["close"]) == 50
+    assert child["revisions"] == [
+        {"product": "AAPL", "action": "full_rebuild", "reason": "OVERLAP_CHANGED"}
+    ]

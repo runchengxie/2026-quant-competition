@@ -69,6 +69,7 @@ def collection_lock(staging):
 
 
 def _collect_daily(spec, staging, *, session_factory, clock, sleep):
+    began = clock()
     validate_daily_spec(spec)
     staging = safe_path(staging)
     if (staging / "manifest.json").exists():
@@ -109,7 +110,6 @@ def _collect_daily(spec, staging, *, session_factory, clock, sleep):
     if state.get("calendar") not in (None, calendar):
         raise ValueError("CALENDAR_CHANGED_RESUME_NEW_VERSION_REQUIRED")
     state["calendar"] = calendar
-    began = clock()
     prior_elapsed = state["elapsed_seconds"]
     last_start = clock() if state["requests"] else None
     issues = []
@@ -147,8 +147,13 @@ def _collect_daily(spec, staging, *, session_factory, clock, sleep):
             else []
         )
     try:
+        remaining_connection = (
+            spec["budget"]["seconds"] - prior_elapsed - (clock() - began)
+        )
+        if remaining_connection <= 0:
+            raise StopCollection("TIME_BUDGET")
         with session_factory(
-            Path(spec["connection_file"]), timeout=min(8, spec["budget"]["seconds"])
+            Path(spec["connection_file"]), timeout=min(8, remaining_connection)
         ) as client:
             client.RaiseRequestErrors = True
             for definition in spec["contracts"]:
