@@ -82,7 +82,7 @@ def validate_ablation_job(job: dict) -> None:
             raise ValueError
         policy = variant_spec(job["market"], job["strategy"], job["variant_id"])
         if (
-            any(job[k] != v for k, v in policy.items())
+            any(canonical_hash(job[k]) != canonical_hash(v) for k, v in policy.items())
             or job_hash(job) != job["job_id"]
         ):
             raise ValueError
@@ -109,6 +109,10 @@ def validate_ablation_job(job: dict) -> None:
                 "diagnostic_protocol_sha256",
                 "evidence_manifest_sha256",
             )
+        ):
+            raise ValueError
+        if canonical_hash(job["parameters"]) != canonical_hash(
+            PARAMETERS[job["strategy"]]
         ):
             raise ValueError
         legacy = {k: v for k, v in job.items() if k not in EXTRA}
@@ -185,7 +189,7 @@ def freeze_ablation(spec: dict, output_root: Path, *, code_identity: dict) -> di
                         "benchmark": data["benchmark"],
                         "quote_currency": data["quote_currency"],
                         "strategy": strategy,
-                        "parameters": PARAMETERS[strategy],
+                        "parameters": copy.deepcopy(PARAMETERS[strategy]),
                         "fee_bps": fee,
                         "fold": fold,
                         "dates": dates[first - 252 : first + score],
@@ -217,7 +221,7 @@ def freeze_ablation(spec: dict, output_root: Path, *, code_identity: dict) -> di
         "schema": "competition.study_plan.v2",
         "code_identity": identity,
         "source_receipt": receipt,
-        "costs": COSTS,
+        "costs": copy.deepcopy(COSTS),
         "inputs": inputs,
         "jobs": jobs,
         "retrospective": True,

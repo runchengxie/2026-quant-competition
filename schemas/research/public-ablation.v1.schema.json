@@ -1,0 +1,1845 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "as_of",
+    "blockers",
+    "code_commit",
+    "coverage",
+    "methods",
+    "plan_sha256",
+    "results",
+    "schema",
+    "catalog_sha256",
+    "origin"
+  ],
+  "properties": {
+    "schema": {
+      "const": "competition.public_ablation.v1"
+    },
+    "as_of": {
+      "type": "string",
+      "format": "date"
+    },
+    "code_commit": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "plan_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "methods": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "const": {
+              "method_id": "us.buy_hold.baseline.self_financing_daily.v1",
+              "strategy": "buy_hold",
+              "signal_parameters": {},
+              "signal_lag_periods": 1,
+              "rebalance": "buy_hold",
+              "execution_assumption": "lagged_close_proxy",
+              "warmup_periods": 252,
+              "scoring_periods": 63,
+              "fold_initialization": "independent_cash",
+              "cost_model": "self_financing_oneway_bps",
+              "terminal_liquidation": false,
+              "retrospective": true,
+              "variant_id": "baseline",
+              "variant_parameters": {},
+              "evidence_role": "retrospective_ablation"
+            }
+          },
+          {
+            "const": {
+              "method_id": "us.equal_weight.baseline.self_financing_daily.v1",
+              "strategy": "equal_weight",
+              "signal_parameters": {},
+              "signal_lag_periods": 1,
+              "rebalance": "daily_target_weights",
+              "execution_assumption": "lagged_close_proxy",
+              "warmup_periods": 252,
+              "scoring_periods": 63,
+              "fold_initialization": "independent_cash",
+              "cost_model": "self_financing_oneway_bps",
+              "terminal_liquidation": false,
+              "retrospective": true,
+              "variant_id": "baseline",
+              "variant_parameters": {},
+              "evidence_role": "retrospective_ablation"
+            }
+          },
+          {
+            "const": {
+              "method_id": "us.equal_weight.weekly.self_financing_daily.v1",
+              "strategy": "equal_weight",
+              "signal_parameters": {},
+              "signal_lag_periods": 1,
+              "rebalance": "weekly",
+              "execution_assumption": "lagged_close_proxy",
+              "warmup_periods": 252,
+              "scoring_periods": 63,
+              "fold_initialization": "independent_cash",
+              "cost_model": "self_financing_oneway_bps",
+              "terminal_liquidation": false,
+              "retrospective": true,
+              "variant_id": "weekly",
+              "variant_parameters": {
+                "schedule": "weekly",
+                "initial_entry": true
+              },
+              "evidence_role": "retrospective_ablation"
+            }
+          },
+          {
+            "const": {
+              "method_id": "us.equal_weight.monthly.self_financing_daily.v1",
+              "strategy": "equal_weight",
+              "signal_parameters": {},
+              "signal_lag_periods": 1,
+              "rebalance": "monthly",
+              "execution_assumption": "lagged_close_proxy",
+              "warmup_periods": 252,
+              "scoring_periods": 63,
+              "fold_initialization": "independent_cash",
+              "cost_model": "self_financing_oneway_bps",
+              "terminal_liquidation": false,
+              "retrospective": true,
+              "variant_id": "monthly",
+              "variant_parameters": {
+                "schedule": "monthly",
+                "initial_entry": true
+              },
+              "evidence_role": "retrospective_ablation"
+            }
+          },
+          {
+            "const": {
+              "method_id": "us.momentum_20d.baseline.self_financing_daily.v1",
+              "strategy": "momentum_20d",
+              "signal_parameters": {
+                "lookback_days": 20,
+                "min_momentum": 0
+              },
+              "signal_lag_periods": 1,
+              "rebalance": "daily_target_weights",
+              "execution_assumption": "lagged_close_proxy",
+              "warmup_periods": 252,
+              "scoring_periods": 63,
+              "fold_initialization": "independent_cash",
+              "cost_model": "self_financing_oneway_bps",
+              "terminal_liquidation": false,
+              "retrospective": true,
+              "variant_id": "baseline",
+              "variant_parameters": {},
+              "evidence_role": "retrospective_ablation"
+            }
+          },
+          {
+            "const": {
+              "method_id": "us.momentum_20d.weekly.self_financing_daily.v1",
+              "strategy": "momentum_20d",
+              "signal_parameters": {
+                "lookback_days": 20,
+                "min_momentum": 0
+              },
+              "signal_lag_periods": 1,
+              "rebalance": "weekly",
+              "execution_assumption": "lagged_close_proxy",
+              "warmup_periods": 252,
+              "scoring_periods": 63,
+              "fold_initialization": "independent_cash",
+              "cost_model": "self_financing_oneway_bps",
+              "terminal_liquidation": false,
+              "retrospective": true,
+              "variant_id": "weekly",
+              "variant_parameters": {
+                "schedule": "weekly",
+                "initial_entry": true
+              },
+              "evidence_role": "retrospective_ablation"
+            }
+          },
+          {
+            "const": {
+              "method_id": "us.momentum_20d.monthly.self_financing_daily.v1",
+              "strategy": "momentum_20d",
+              "signal_parameters": {
+                "lookback_days": 20,
+                "min_momentum": 0
+              },
+              "signal_lag_periods": 1,
+              "rebalance": "monthly",
+              "execution_assumption": "lagged_close_proxy",
+              "warmup_periods": 252,
+              "scoring_periods": 63,
+              "fold_initialization": "independent_cash",
+              "cost_model": "self_financing_oneway_bps",
+              "terminal_liquidation": false,
+              "retrospective": true,
+              "variant_id": "monthly",
+              "variant_parameters": {
+                "schedule": "monthly",
+                "initial_entry": true
+              },
+              "evidence_role": "retrospective_ablation"
+            }
+          },
+          {
+            "const": {
+              "method_id": "us.sma_cross.baseline.self_financing_daily.v1",
+              "strategy": "sma_cross",
+              "signal_parameters": {
+                "short_window": 20,
+                "long_window": 60
+              },
+              "signal_lag_periods": 1,
+              "rebalance": "daily_target_weights",
+              "execution_assumption": "lagged_close_proxy",
+              "warmup_periods": 252,
+              "scoring_periods": 63,
+              "fold_initialization": "independent_cash",
+              "cost_model": "self_financing_oneway_bps",
+              "terminal_liquidation": false,
+              "retrospective": true,
+              "variant_id": "baseline",
+              "variant_parameters": {},
+              "evidence_role": "retrospective_ablation"
+            }
+          },
+          {
+            "const": {
+              "method_id": "us.sma_cross.weekly.self_financing_daily.v1",
+              "strategy": "sma_cross",
+              "signal_parameters": {
+                "short_window": 20,
+                "long_window": 60
+              },
+              "signal_lag_periods": 1,
+              "rebalance": "weekly",
+              "execution_assumption": "lagged_close_proxy",
+              "warmup_periods": 252,
+              "scoring_periods": 63,
+              "fold_initialization": "independent_cash",
+              "cost_model": "self_financing_oneway_bps",
+              "terminal_liquidation": false,
+              "retrospective": true,
+              "variant_id": "weekly",
+              "variant_parameters": {
+                "schedule": "weekly",
+                "initial_entry": true
+              },
+              "evidence_role": "retrospective_ablation"
+            }
+          },
+          {
+            "const": {
+              "method_id": "us.sma_cross.monthly.self_financing_daily.v1",
+              "strategy": "sma_cross",
+              "signal_parameters": {
+                "short_window": 20,
+                "long_window": 60
+              },
+              "signal_lag_periods": 1,
+              "rebalance": "monthly",
+              "execution_assumption": "lagged_close_proxy",
+              "warmup_periods": 252,
+              "scoring_periods": 63,
+              "fold_initialization": "independent_cash",
+              "cost_model": "self_financing_oneway_bps",
+              "terminal_liquidation": false,
+              "retrospective": true,
+              "variant_id": "monthly",
+              "variant_parameters": {
+                "schedule": "monthly",
+                "initial_entry": true
+              },
+              "evidence_role": "retrospective_ablation"
+            }
+          },
+          {
+            "const": {
+              "method_id": "us.benchmark_buy_hold.baseline.self_financing_daily.v1",
+              "strategy": "benchmark_buy_hold",
+              "signal_parameters": {},
+              "signal_lag_periods": 1,
+              "rebalance": "buy_hold",
+              "execution_assumption": "lagged_close_proxy",
+              "warmup_periods": 252,
+              "scoring_periods": 63,
+              "fold_initialization": "independent_cash",
+              "cost_model": "self_financing_oneway_bps",
+              "terminal_liquidation": false,
+              "retrospective": true,
+              "variant_id": "baseline",
+              "variant_parameters": {},
+              "evidence_role": "retrospective_ablation"
+            }
+          },
+          {
+            "const": {
+              "method_id": "hk.buy_hold.baseline.self_financing_daily.v1",
+              "strategy": "buy_hold",
+              "signal_parameters": {},
+              "signal_lag_periods": 1,
+              "rebalance": "buy_hold",
+              "execution_assumption": "lagged_close_proxy",
+              "warmup_periods": 252,
+              "scoring_periods": 63,
+              "fold_initialization": "independent_cash",
+              "cost_model": "self_financing_oneway_bps",
+              "terminal_liquidation": false,
+              "retrospective": true,
+              "variant_id": "baseline",
+              "variant_parameters": {},
+              "evidence_role": "retrospective_ablation"
+            }
+          },
+          {
+            "const": {
+              "method_id": "hk.equal_weight.baseline.self_financing_daily.v1",
+              "strategy": "equal_weight",
+              "signal_parameters": {},
+              "signal_lag_periods": 1,
+              "rebalance": "daily_target_weights",
+              "execution_assumption": "lagged_close_proxy",
+              "warmup_periods": 252,
+              "scoring_periods": 63,
+              "fold_initialization": "independent_cash",
+              "cost_model": "self_financing_oneway_bps",
+              "terminal_liquidation": false,
+              "retrospective": true,
+              "variant_id": "baseline",
+              "variant_parameters": {},
+              "evidence_role": "retrospective_ablation"
+            }
+          },
+          {
+            "const": {
+              "method_id": "hk.equal_weight.weekly.self_financing_daily.v1",
+              "strategy": "equal_weight",
+              "signal_parameters": {},
+              "signal_lag_periods": 1,
+              "rebalance": "weekly",
+              "execution_assumption": "lagged_close_proxy",
+              "warmup_periods": 252,
+              "scoring_periods": 63,
+              "fold_initialization": "independent_cash",
+              "cost_model": "self_financing_oneway_bps",
+              "terminal_liquidation": false,
+              "retrospective": true,
+              "variant_id": "weekly",
+              "variant_parameters": {
+                "schedule": "weekly",
+                "initial_entry": true
+              },
+              "evidence_role": "retrospective_ablation"
+            }
+          },
+          {
+            "const": {
+              "method_id": "hk.equal_weight.monthly.self_financing_daily.v1",
+              "strategy": "equal_weight",
+              "signal_parameters": {},
+              "signal_lag_periods": 1,
+              "rebalance": "monthly",
+              "execution_assumption": "lagged_close_proxy",
+              "warmup_periods": 252,
+              "scoring_periods": 63,
+              "fold_initialization": "independent_cash",
+              "cost_model": "self_financing_oneway_bps",
+              "terminal_liquidation": false,
+              "retrospective": true,
+              "variant_id": "monthly",
+              "variant_parameters": {
+                "schedule": "monthly",
+                "initial_entry": true
+              },
+              "evidence_role": "retrospective_ablation"
+            }
+          },
+          {
+            "const": {
+              "method_id": "hk.momentum_20d.baseline.self_financing_daily.v1",
+              "strategy": "momentum_20d",
+              "signal_parameters": {
+                "lookback_days": 20,
+                "min_momentum": 0
+              },
+              "signal_lag_periods": 1,
+              "rebalance": "daily_target_weights",
+              "execution_assumption": "lagged_close_proxy",
+              "warmup_periods": 252,
+              "scoring_periods": 63,
+              "fold_initialization": "independent_cash",
+              "cost_model": "self_financing_oneway_bps",
+              "terminal_liquidation": false,
+              "retrospective": true,
+              "variant_id": "baseline",
+              "variant_parameters": {},
+              "evidence_role": "retrospective_ablation"
+            }
+          },
+          {
+            "const": {
+              "method_id": "hk.momentum_20d.weekly.self_financing_daily.v1",
+              "strategy": "momentum_20d",
+              "signal_parameters": {
+                "lookback_days": 20,
+                "min_momentum": 0
+              },
+              "signal_lag_periods": 1,
+              "rebalance": "weekly",
+              "execution_assumption": "lagged_close_proxy",
+              "warmup_periods": 252,
+              "scoring_periods": 63,
+              "fold_initialization": "independent_cash",
+              "cost_model": "self_financing_oneway_bps",
+              "terminal_liquidation": false,
+              "retrospective": true,
+              "variant_id": "weekly",
+              "variant_parameters": {
+                "schedule": "weekly",
+                "initial_entry": true
+              },
+              "evidence_role": "retrospective_ablation"
+            }
+          },
+          {
+            "const": {
+              "method_id": "hk.momentum_20d.monthly.self_financing_daily.v1",
+              "strategy": "momentum_20d",
+              "signal_parameters": {
+                "lookback_days": 20,
+                "min_momentum": 0
+              },
+              "signal_lag_periods": 1,
+              "rebalance": "monthly",
+              "execution_assumption": "lagged_close_proxy",
+              "warmup_periods": 252,
+              "scoring_periods": 63,
+              "fold_initialization": "independent_cash",
+              "cost_model": "self_financing_oneway_bps",
+              "terminal_liquidation": false,
+              "retrospective": true,
+              "variant_id": "monthly",
+              "variant_parameters": {
+                "schedule": "monthly",
+                "initial_entry": true
+              },
+              "evidence_role": "retrospective_ablation"
+            }
+          },
+          {
+            "const": {
+              "method_id": "hk.sma_cross.baseline.self_financing_daily.v1",
+              "strategy": "sma_cross",
+              "signal_parameters": {
+                "short_window": 20,
+                "long_window": 60
+              },
+              "signal_lag_periods": 1,
+              "rebalance": "daily_target_weights",
+              "execution_assumption": "lagged_close_proxy",
+              "warmup_periods": 252,
+              "scoring_periods": 63,
+              "fold_initialization": "independent_cash",
+              "cost_model": "self_financing_oneway_bps",
+              "terminal_liquidation": false,
+              "retrospective": true,
+              "variant_id": "baseline",
+              "variant_parameters": {},
+              "evidence_role": "retrospective_ablation"
+            }
+          },
+          {
+            "const": {
+              "method_id": "hk.sma_cross.weekly.self_financing_daily.v1",
+              "strategy": "sma_cross",
+              "signal_parameters": {
+                "short_window": 20,
+                "long_window": 60
+              },
+              "signal_lag_periods": 1,
+              "rebalance": "weekly",
+              "execution_assumption": "lagged_close_proxy",
+              "warmup_periods": 252,
+              "scoring_periods": 63,
+              "fold_initialization": "independent_cash",
+              "cost_model": "self_financing_oneway_bps",
+              "terminal_liquidation": false,
+              "retrospective": true,
+              "variant_id": "weekly",
+              "variant_parameters": {
+                "schedule": "weekly",
+                "initial_entry": true
+              },
+              "evidence_role": "retrospective_ablation"
+            }
+          },
+          {
+            "const": {
+              "method_id": "hk.sma_cross.monthly.self_financing_daily.v1",
+              "strategy": "sma_cross",
+              "signal_parameters": {
+                "short_window": 20,
+                "long_window": 60
+              },
+              "signal_lag_periods": 1,
+              "rebalance": "monthly",
+              "execution_assumption": "lagged_close_proxy",
+              "warmup_periods": 252,
+              "scoring_periods": 63,
+              "fold_initialization": "independent_cash",
+              "cost_model": "self_financing_oneway_bps",
+              "terminal_liquidation": false,
+              "retrospective": true,
+              "variant_id": "monthly",
+              "variant_parameters": {
+                "schedule": "monthly",
+                "initial_entry": true
+              },
+              "evidence_role": "retrospective_ablation"
+            }
+          },
+          {
+            "const": {
+              "method_id": "hk.benchmark_buy_hold.baseline.self_financing_daily.v1",
+              "strategy": "benchmark_buy_hold",
+              "signal_parameters": {},
+              "signal_lag_periods": 1,
+              "rebalance": "buy_hold",
+              "execution_assumption": "lagged_close_proxy",
+              "warmup_periods": 252,
+              "scoring_periods": 63,
+              "fold_initialization": "independent_cash",
+              "cost_model": "self_financing_oneway_bps",
+              "terminal_liquidation": false,
+              "retrospective": true,
+              "variant_id": "baseline",
+              "variant_parameters": {},
+              "evidence_role": "retrospective_ablation"
+            }
+          },
+          {
+            "const": {
+              "method_id": "crypto.equal_weight.baseline.self_financing_daily.v1",
+              "strategy": "equal_weight",
+              "signal_parameters": {},
+              "signal_lag_periods": 1,
+              "rebalance": "buy_hold",
+              "execution_assumption": "lagged_close_proxy",
+              "warmup_periods": 252,
+              "scoring_periods": 90,
+              "fold_initialization": "independent_cash",
+              "cost_model": "self_financing_oneway_bps",
+              "terminal_liquidation": false,
+              "retrospective": true,
+              "variant_id": "baseline",
+              "variant_parameters": {},
+              "evidence_role": "retrospective_ablation"
+            }
+          },
+          {
+            "const": {
+              "method_id": "crypto.momentum_63d.baseline.self_financing_daily.v1",
+              "strategy": "momentum_63d",
+              "signal_parameters": {
+                "lookback_days": 63
+              },
+              "signal_lag_periods": 1,
+              "rebalance": "daily_target_weights",
+              "execution_assumption": "lagged_close_proxy",
+              "warmup_periods": 252,
+              "scoring_periods": 90,
+              "fold_initialization": "independent_cash",
+              "cost_model": "self_financing_oneway_bps",
+              "terminal_liquidation": false,
+              "retrospective": true,
+              "variant_id": "baseline",
+              "variant_parameters": {},
+              "evidence_role": "retrospective_ablation"
+            }
+          },
+          {
+            "const": {
+              "method_id": "crypto.trend_200d.baseline.self_financing_daily.v1",
+              "strategy": "trend_200d",
+              "signal_parameters": {
+                "long_window": 200
+              },
+              "signal_lag_periods": 1,
+              "rebalance": "daily_target_weights",
+              "execution_assumption": "lagged_close_proxy",
+              "warmup_periods": 252,
+              "scoring_periods": 90,
+              "fold_initialization": "independent_cash",
+              "cost_model": "self_financing_oneway_bps",
+              "terminal_liquidation": false,
+              "retrospective": true,
+              "variant_id": "baseline",
+              "variant_parameters": {},
+              "evidence_role": "retrospective_ablation"
+            }
+          },
+          {
+            "const": {
+              "method_id": "crypto.trend_200d.hysteresis_2pct.self_financing_daily.v1",
+              "strategy": "trend_200d",
+              "signal_parameters": {
+                "long_window": 200
+              },
+              "signal_lag_periods": 1,
+              "rebalance": "hysteresis_2pct",
+              "execution_assumption": "lagged_close_proxy",
+              "warmup_periods": 252,
+              "scoring_periods": 90,
+              "fold_initialization": "independent_cash",
+              "cost_model": "self_financing_oneway_bps",
+              "terminal_liquidation": false,
+              "retrospective": true,
+              "variant_id": "hysteresis_2pct",
+              "variant_parameters": {
+                "band": 0.02
+              },
+              "evidence_role": "retrospective_ablation"
+            }
+          },
+          {
+            "const": {
+              "method_id": "crypto.trend_200d.vol_target_40pct.self_financing_daily.v1",
+              "strategy": "trend_200d",
+              "signal_parameters": {
+                "long_window": 200
+              },
+              "signal_lag_periods": 1,
+              "rebalance": "vol_target_40pct",
+              "execution_assumption": "lagged_close_proxy",
+              "warmup_periods": 252,
+              "scoring_periods": 90,
+              "fold_initialization": "independent_cash",
+              "cost_model": "self_financing_oneway_bps",
+              "terminal_liquidation": false,
+              "retrospective": true,
+              "variant_id": "vol_target_40pct",
+              "variant_parameters": {
+                "lookback_days": 20,
+                "annual_target": 0.4,
+                "annual_periods": 365
+              },
+              "evidence_role": "retrospective_ablation"
+            }
+          },
+          {
+            "const": {
+              "method_id": "crypto.trend_200d.fixed_exposure_60pct.self_financing_daily.v1",
+              "strategy": "trend_200d",
+              "signal_parameters": {
+                "long_window": 200
+              },
+              "signal_lag_periods": 1,
+              "rebalance": "fixed_exposure_60pct",
+              "execution_assumption": "lagged_close_proxy",
+              "warmup_periods": 252,
+              "scoring_periods": 90,
+              "fold_initialization": "independent_cash",
+              "cost_model": "self_financing_oneway_bps",
+              "terminal_liquidation": false,
+              "retrospective": true,
+              "variant_id": "fixed_exposure_60pct",
+              "variant_parameters": {
+                "multiplier": 0.6
+              },
+              "evidence_role": "post_hoc_diagnostic"
+            }
+          }
+        ]
+      }
+    },
+    "coverage": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "benchmark",
+          "end",
+          "market",
+          "products",
+          "quote_currency",
+          "rows",
+          "source",
+          "start",
+          "status",
+          "universe_status"
+        ],
+        "properties": {
+          "benchmark": {
+            "enum": [
+              "SPY",
+              "2800",
+              "equal_weight"
+            ]
+          },
+          "source": {
+            "enum": [
+              "ibkr_daily",
+              "binance_spot"
+            ]
+          },
+          "end": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "acquired",
+              "partial"
+            ]
+          },
+          "products": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "0005",
+                "0388",
+                "0700",
+                "0939",
+                "0941",
+                "1299",
+                "1810",
+                "2318",
+                "2800",
+                "3690",
+                "9988",
+                "AAPL",
+                "ADAUSDT",
+                "AMZN",
+                "BNBUSDT",
+                "BTCUSDT",
+                "DOGEUSDT",
+                "ETHUSDT",
+                "GOOGL",
+                "JNJ",
+                "JPM",
+                "LINKUSDT",
+                "META",
+                "MSFT",
+                "NVDA",
+                "PG",
+                "SOLUSDT",
+                "SPY",
+                "XOM",
+                "XRPUSDT"
+              ]
+            }
+          },
+          "quote_currency": {
+            "enum": [
+              "USD",
+              "HKD",
+              "USDT"
+            ]
+          },
+          "rows": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "universe_status": {
+            "const": "fixed_current"
+          },
+          "market": {
+            "enum": [
+              "US",
+              "HK",
+              "crypto"
+            ]
+          },
+          "start": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "accounting_model",
+          "benchmark",
+          "benchmark_return",
+          "cost_bps",
+          "cost_drag",
+          "eligibility_basis",
+          "end",
+          "excess_return",
+          "flat_days_proxy",
+          "fold",
+          "gross_return",
+          "job_id",
+          "market",
+          "max_drawdown",
+          "mean_daily_oneway_turnover_proxy",
+          "mean_daily_position_proxy",
+          "mean_exposure",
+          "method_id",
+          "net_return",
+          "periods_per_year",
+          "plan_sha256",
+          "products",
+          "quote_currency",
+          "reason_code",
+          "result_sha256",
+          "sessions",
+          "sharpe",
+          "start",
+          "status",
+          "strategy",
+          "turnover",
+          "volatility",
+          "variant_id",
+          "evidence_role",
+          "variant_parameters",
+          "baseline_job_id",
+          "paired_net_change",
+          "paired_drawdown_change",
+          "paired_turnover_change",
+          "paired_exposure_change"
+        ],
+        "properties": {
+          "benchmark": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "end": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "benchmark_return": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "strategy": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "plan_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "sessions": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "reason_code": {
+            "enum": [
+              "CODE_CHANGED",
+              "INPUT_CHANGED",
+              "INPUT_CHANGED_POST_RUN",
+              "INSUFFICIENT_HISTORY",
+              "INTERRUPTED",
+              "INVALID_STUDY_ARTIFACT",
+              "INVALID_STUDY_INPUT",
+              "INVALID_STUDY_RESULT",
+              "MARKET_INPUT_UNAVAILABLE",
+              "STUDY_CHILD_FAILED",
+              "STUDY_INPUT_OR_CHILD_UNAVAILABLE",
+              "TIME_BUDGET",
+              null
+            ]
+          },
+          "max_drawdown": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "products": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "0005",
+                "0388",
+                "0700",
+                "0939",
+                "0941",
+                "1299",
+                "1810",
+                "2318",
+                "2800",
+                "3690",
+                "9988",
+                "AAPL",
+                "ADAUSDT",
+                "AMZN",
+                "BNBUSDT",
+                "BTCUSDT",
+                "DOGEUSDT",
+                "ETHUSDT",
+                "GOOGL",
+                "JNJ",
+                "JPM",
+                "LINKUSDT",
+                "META",
+                "MSFT",
+                "NVDA",
+                "PG",
+                "SOLUSDT",
+                "SPY",
+                "XOM",
+                "XRPUSDT"
+              ]
+            }
+          },
+          "net_return": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "eligibility_basis": {
+            "const": "daily_model_proxy"
+          },
+          "cost_drag": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "turnover": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "gross_return": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "market": {
+            "enum": [
+              "US",
+              "HK",
+              "crypto",
+              "unknown"
+            ]
+          },
+          "start": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "fold": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "end",
+                  "scoring_periods",
+                  "start",
+                  "warmup_periods",
+                  "warmup_start"
+                ],
+                "properties": {
+                  "warmup_start": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "start": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "end": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "warmup_periods": {
+                    "const": 252
+                  },
+                  "scoring_periods": {
+                    "enum": [
+                      63,
+                      90
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "enum": [
+              "completed",
+              "blocked",
+              "failed"
+            ]
+          },
+          "mean_daily_position_proxy": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "accounting_model": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "volatility": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "cost_bps": {
+            "enum": [
+              0,
+              10,
+              20,
+              25,
+              30,
+              40,
+              60,
+              null
+            ]
+          },
+          "sharpe": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "method_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "quote_currency": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "periods_per_year": {
+            "enum": [
+              252,
+              365,
+              null
+            ]
+          },
+          "mean_exposure": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "result_sha256": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "excess_return": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "mean_daily_oneway_turnover_proxy": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "job_id": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "flat_days_proxy": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "variant_id": {
+            "anyOf": [
+              {
+                "enum": [
+                  "monthly",
+                  "vol_target_40pct",
+                  "weekly",
+                  "hysteresis_2pct",
+                  "baseline",
+                  "fixed_exposure_60pct"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "evidence_role": {
+            "anyOf": [
+              {
+                "enum": [
+                  "post_hoc_diagnostic",
+                  "retrospective_ablation"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "variant_parameters": {
+            "anyOf": [
+              {
+                "oneOf": [
+                  {
+                    "const": {}
+                  },
+                  {
+                    "const": {
+                      "schedule": "weekly",
+                      "initial_entry": true
+                    }
+                  },
+                  {
+                    "const": {
+                      "schedule": "monthly",
+                      "initial_entry": true
+                    }
+                  },
+                  {
+                    "const": {
+                      "band": 0.02
+                    }
+                  },
+                  {
+                    "const": {
+                      "lookback_days": 20,
+                      "annual_target": 0.4,
+                      "annual_periods": 365
+                    }
+                  },
+                  {
+                    "const": {
+                      "multiplier": 0.6
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "baseline_job_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "paired_net_change": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "paired_drawdown_change": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "paired_turnover_change": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "paired_exposure_change": {
+            "type": [
+              "number",
+              "null"
+            ]
+          }
+        },
+        "allOf": [
+          {
+            "oneOf": [
+              {
+                "properties": {
+                  "market": {
+                    "const": "US"
+                  },
+                  "strategy": {
+                    "const": "buy_hold"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  },
+                  "variant_parameters": {
+                    "const": {}
+                  },
+                  "evidence_role": {
+                    "const": "retrospective_ablation"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "market": {
+                    "const": "US"
+                  },
+                  "strategy": {
+                    "const": "equal_weight"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  },
+                  "variant_parameters": {
+                    "const": {}
+                  },
+                  "evidence_role": {
+                    "const": "retrospective_ablation"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "market": {
+                    "const": "US"
+                  },
+                  "strategy": {
+                    "const": "equal_weight"
+                  },
+                  "variant_id": {
+                    "const": "weekly"
+                  },
+                  "variant_parameters": {
+                    "const": {
+                      "schedule": "weekly",
+                      "initial_entry": true
+                    }
+                  },
+                  "evidence_role": {
+                    "const": "retrospective_ablation"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "market": {
+                    "const": "US"
+                  },
+                  "strategy": {
+                    "const": "equal_weight"
+                  },
+                  "variant_id": {
+                    "const": "monthly"
+                  },
+                  "variant_parameters": {
+                    "const": {
+                      "schedule": "monthly",
+                      "initial_entry": true
+                    }
+                  },
+                  "evidence_role": {
+                    "const": "retrospective_ablation"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "market": {
+                    "const": "US"
+                  },
+                  "strategy": {
+                    "const": "momentum_20d"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  },
+                  "variant_parameters": {
+                    "const": {}
+                  },
+                  "evidence_role": {
+                    "const": "retrospective_ablation"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "market": {
+                    "const": "US"
+                  },
+                  "strategy": {
+                    "const": "momentum_20d"
+                  },
+                  "variant_id": {
+                    "const": "weekly"
+                  },
+                  "variant_parameters": {
+                    "const": {
+                      "schedule": "weekly",
+                      "initial_entry": true
+                    }
+                  },
+                  "evidence_role": {
+                    "const": "retrospective_ablation"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "market": {
+                    "const": "US"
+                  },
+                  "strategy": {
+                    "const": "momentum_20d"
+                  },
+                  "variant_id": {
+                    "const": "monthly"
+                  },
+                  "variant_parameters": {
+                    "const": {
+                      "schedule": "monthly",
+                      "initial_entry": true
+                    }
+                  },
+                  "evidence_role": {
+                    "const": "retrospective_ablation"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "market": {
+                    "const": "US"
+                  },
+                  "strategy": {
+                    "const": "sma_cross"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  },
+                  "variant_parameters": {
+                    "const": {}
+                  },
+                  "evidence_role": {
+                    "const": "retrospective_ablation"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "market": {
+                    "const": "US"
+                  },
+                  "strategy": {
+                    "const": "sma_cross"
+                  },
+                  "variant_id": {
+                    "const": "weekly"
+                  },
+                  "variant_parameters": {
+                    "const": {
+                      "schedule": "weekly",
+                      "initial_entry": true
+                    }
+                  },
+                  "evidence_role": {
+                    "const": "retrospective_ablation"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "market": {
+                    "const": "US"
+                  },
+                  "strategy": {
+                    "const": "sma_cross"
+                  },
+                  "variant_id": {
+                    "const": "monthly"
+                  },
+                  "variant_parameters": {
+                    "const": {
+                      "schedule": "monthly",
+                      "initial_entry": true
+                    }
+                  },
+                  "evidence_role": {
+                    "const": "retrospective_ablation"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "market": {
+                    "const": "US"
+                  },
+                  "strategy": {
+                    "const": "benchmark_buy_hold"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  },
+                  "variant_parameters": {
+                    "const": {}
+                  },
+                  "evidence_role": {
+                    "const": "retrospective_ablation"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "market": {
+                    "const": "HK"
+                  },
+                  "strategy": {
+                    "const": "buy_hold"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  },
+                  "variant_parameters": {
+                    "const": {}
+                  },
+                  "evidence_role": {
+                    "const": "retrospective_ablation"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "market": {
+                    "const": "HK"
+                  },
+                  "strategy": {
+                    "const": "equal_weight"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  },
+                  "variant_parameters": {
+                    "const": {}
+                  },
+                  "evidence_role": {
+                    "const": "retrospective_ablation"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "market": {
+                    "const": "HK"
+                  },
+                  "strategy": {
+                    "const": "equal_weight"
+                  },
+                  "variant_id": {
+                    "const": "weekly"
+                  },
+                  "variant_parameters": {
+                    "const": {
+                      "schedule": "weekly",
+                      "initial_entry": true
+                    }
+                  },
+                  "evidence_role": {
+                    "const": "retrospective_ablation"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "market": {
+                    "const": "HK"
+                  },
+                  "strategy": {
+                    "const": "equal_weight"
+                  },
+                  "variant_id": {
+                    "const": "monthly"
+                  },
+                  "variant_parameters": {
+                    "const": {
+                      "schedule": "monthly",
+                      "initial_entry": true
+                    }
+                  },
+                  "evidence_role": {
+                    "const": "retrospective_ablation"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "market": {
+                    "const": "HK"
+                  },
+                  "strategy": {
+                    "const": "momentum_20d"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  },
+                  "variant_parameters": {
+                    "const": {}
+                  },
+                  "evidence_role": {
+                    "const": "retrospective_ablation"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "market": {
+                    "const": "HK"
+                  },
+                  "strategy": {
+                    "const": "momentum_20d"
+                  },
+                  "variant_id": {
+                    "const": "weekly"
+                  },
+                  "variant_parameters": {
+                    "const": {
+                      "schedule": "weekly",
+                      "initial_entry": true
+                    }
+                  },
+                  "evidence_role": {
+                    "const": "retrospective_ablation"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "market": {
+                    "const": "HK"
+                  },
+                  "strategy": {
+                    "const": "momentum_20d"
+                  },
+                  "variant_id": {
+                    "const": "monthly"
+                  },
+                  "variant_parameters": {
+                    "const": {
+                      "schedule": "monthly",
+                      "initial_entry": true
+                    }
+                  },
+                  "evidence_role": {
+                    "const": "retrospective_ablation"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "market": {
+                    "const": "HK"
+                  },
+                  "strategy": {
+                    "const": "sma_cross"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  },
+                  "variant_parameters": {
+                    "const": {}
+                  },
+                  "evidence_role": {
+                    "const": "retrospective_ablation"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "market": {
+                    "const": "HK"
+                  },
+                  "strategy": {
+                    "const": "sma_cross"
+                  },
+                  "variant_id": {
+                    "const": "weekly"
+                  },
+                  "variant_parameters": {
+                    "const": {
+                      "schedule": "weekly",
+                      "initial_entry": true
+                    }
+                  },
+                  "evidence_role": {
+                    "const": "retrospective_ablation"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "market": {
+                    "const": "HK"
+                  },
+                  "strategy": {
+                    "const": "sma_cross"
+                  },
+                  "variant_id": {
+                    "const": "monthly"
+                  },
+                  "variant_parameters": {
+                    "const": {
+                      "schedule": "monthly",
+                      "initial_entry": true
+                    }
+                  },
+                  "evidence_role": {
+                    "const": "retrospective_ablation"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "market": {
+                    "const": "HK"
+                  },
+                  "strategy": {
+                    "const": "benchmark_buy_hold"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  },
+                  "variant_parameters": {
+                    "const": {}
+                  },
+                  "evidence_role": {
+                    "const": "retrospective_ablation"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "market": {
+                    "const": "crypto"
+                  },
+                  "strategy": {
+                    "const": "equal_weight"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  },
+                  "variant_parameters": {
+                    "const": {}
+                  },
+                  "evidence_role": {
+                    "const": "retrospective_ablation"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "market": {
+                    "const": "crypto"
+                  },
+                  "strategy": {
+                    "const": "momentum_63d"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  },
+                  "variant_parameters": {
+                    "const": {}
+                  },
+                  "evidence_role": {
+                    "const": "retrospective_ablation"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "market": {
+                    "const": "crypto"
+                  },
+                  "strategy": {
+                    "const": "trend_200d"
+                  },
+                  "variant_id": {
+                    "const": "baseline"
+                  },
+                  "variant_parameters": {
+                    "const": {}
+                  },
+                  "evidence_role": {
+                    "const": "retrospective_ablation"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "market": {
+                    "const": "crypto"
+                  },
+                  "strategy": {
+                    "const": "trend_200d"
+                  },
+                  "variant_id": {
+                    "const": "hysteresis_2pct"
+                  },
+                  "variant_parameters": {
+                    "const": {
+                      "band": 0.02
+                    }
+                  },
+                  "evidence_role": {
+                    "const": "retrospective_ablation"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "market": {
+                    "const": "crypto"
+                  },
+                  "strategy": {
+                    "const": "trend_200d"
+                  },
+                  "variant_id": {
+                    "const": "vol_target_40pct"
+                  },
+                  "variant_parameters": {
+                    "const": {
+                      "lookback_days": 20,
+                      "annual_target": 0.4,
+                      "annual_periods": 365
+                    }
+                  },
+                  "evidence_role": {
+                    "const": "retrospective_ablation"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "market": {
+                    "const": "crypto"
+                  },
+                  "strategy": {
+                    "const": "trend_200d"
+                  },
+                  "variant_id": {
+                    "const": "fixed_exposure_60pct"
+                  },
+                  "variant_parameters": {
+                    "const": {
+                      "multiplier": 0.6
+                    }
+                  },
+                  "evidence_role": {
+                    "const": "post_hoc_diagnostic"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "strategy": {
+                    "const": null
+                  },
+                  "variant_id": {
+                    "const": null
+                  },
+                  "variant_parameters": {
+                    "const": null
+                  },
+                  "evidence_role": {
+                    "const": null
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "maxItems": 768
+    },
+    "blockers": {
+      "const": [
+        "RETROSPECTIVE_FIXED_CURRENT_POOL",
+        "DAILY_EXECUTION_AND_ELIGIBILITY_PROXY",
+        "EQUITY_DIVIDENDS_AND_ADJUSTMENT_TIMING_UNVERIFIED",
+        "ACCOUNT_PRODUCT_AUTHORIZATION_SEPARATE",
+        "MAKER_ARCHIVE_NOT_RERUN"
+      ]
+    },
+    "catalog_sha256": {
+      "const": "942d0a84cf5b627e19f4f592fb92aad9cfce80080fd1983736ef2efaca63a364"
+    },
+    "origin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "probe_protocol_sha256",
+        "diagnostic_protocol_sha256",
+        "evidence_manifest_sha256",
+        "stage",
+        "retrospective",
+        "accepted_research"
+      ],
+      "properties": {
+        "probe_protocol_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "diagnostic_protocol_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "evidence_manifest_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "stage": {
+          "const": "retrospective"
+        },
+        "retrospective": {
+          "const": true
+        },
+        "accepted_research": {
+          "const": false
+        }
+      }
+    }
+  }
+}

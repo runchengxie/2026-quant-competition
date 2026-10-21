@@ -419,3 +419,31 @@ def test_notice_is_exactly_allowlisted_and_still_scanned(tmp_path):
     assert any("unrecognized source path" in e for e in check_site(source, built))
     notice.write_text('api_key = "sensitive-example-value-1234567890"')
     assert any("sensitive pattern" in e for e in check_site(source, built))
+
+
+def test_ablation_facts_have_separate_strict_source_and_locale_parity(tmp_path):
+    import html
+    from test_ablation_publication import public_fixture
+
+    source, built = make_site_trees(tmp_path)
+    value = public_fixture()
+    p = source / "src/data/ablation-study.v1.json"
+    p.parent.mkdir()
+    p.write_text(json.dumps(value))
+    for relative in ["index.html", "zh-CN/index.html"]:
+        path = built / relative
+        path.write_text(
+            path.read_text()
+            + "".join(
+                '<tr data-ablation-id="'
+                + r["job_id"]
+                + '" data-facts="'
+                + html.escape(json.dumps(r), quote=True)
+                + '"></tr>'
+                for r in value["results"]
+            )
+        )
+    assert check_site(source, built) == []
+    p = built / "zh-CN/index.html"
+    p.write_text(p.read_text().replace("retrospective_ablation", "forward_validated"))
+    assert any("ablation facts differ" in e for e in check_site(source, built))

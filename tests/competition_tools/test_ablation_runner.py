@@ -139,3 +139,38 @@ def test_interruption_blocks_remaining_jobs_without_retry(tmp_path, monkeypatch)
     assert len(calls) == 1
     assert all(r["metrics"] is None for r in out["jobs"])
     assert all(r["reason"] == "INTERRUPTED" for r in out["jobs"] if "strategy" in r)
+
+
+@pytest.mark.parametrize("field", ["origin", "code_identity", "catalog_sha256"])
+def test_self_hashed_plan_cannot_diverge_from_retained_identity(tmp_path, field):
+    import json
+    from competition_tools.evaluation.ablation_plan import ablation_plan_hash
+
+    plan, p, _ = frozen(tmp_path)
+    if field == "origin":
+        plan[field]["probe_protocol_sha256"] = "f" * 64
+    elif field == "code_identity":
+        plan[field]["source_sha256"] = "f" * 64
+    else:
+        plan[field] = "f" * 64
+    plan["plan_sha256"] = ablation_plan_hash(plan)
+    for j in plan["jobs"]:
+        j["plan_sha256"] = plan["plan_sha256"]
+        (p.parent / "jobs" / (j["job_id"] + ".json")).write_text(json.dumps(j))
+    p.write_text(json.dumps(plan))
+    with pytest.raises(ValueError):
+        runner.verify_plan(p)
+
+
+def test_boolean_signal_parameter_is_not_numeric_zero(tmp_path):
+    from competition_tools.evaluation.ablation_plan import (
+        job_hash,
+        validate_ablation_job,
+    )
+
+    plan, _, _ = frozen(tmp_path)
+    job = next(j for j in plan["jobs"] if j.get("strategy") == "momentum_20d")
+    job["parameters"]["min_momentum"] = False
+    job["job_id"] = job_hash(job)
+    with pytest.raises(ValueError):
+        validate_ablation_job(job)

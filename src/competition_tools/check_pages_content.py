@@ -61,6 +61,7 @@ class _PageMetadata(HTMLParser):
         self.hrefs: list[str] = []
         self.validation_facts: list[tuple[str, str | None, str | None]] = []
         self.expansion_facts: list[tuple[str, str | None]] = []
+        self.ablation_facts: list[tuple[str, str | None]] = []
         self.study_facts: list[tuple[str, str | None]] = []
         self.dashboard_facts: list[str | None] = []
         self.ids: set[str] = set()
@@ -71,6 +72,8 @@ class _PageMetadata(HTMLParser):
             self.ids.add(attributes["id"])
         if "data-dashboard-selected" in attributes:
             self.dashboard_facts.append(attributes.get("data-facts"))
+        if ablation_id := attributes.get("data-ablation-id"):
+            self.ablation_facts.append((ablation_id, attributes.get("data-facts")))
         if study_id := attributes.get("data-study-id"):
             self.study_facts.append((study_id, attributes.get("data-facts")))
         if expansion_id := attributes.get("data-expansion-id"):
@@ -106,6 +109,12 @@ def _allowed_source(relative_path: PurePosixPath) -> bool:
         "src/data/strategy-validation.json",
         "src/data/strategy-expansion.v1.json",
         "src/data/real-data-study.v1.json",
+        "src/data/ablation-study.v1.json",
+        "src/lib/ablation.ts",
+        "src/scripts/ablation-state.mjs",
+        "src/scripts/ablation-charts.mjs",
+        "tests/ablation-state.test.mjs",
+        "tests/ablation.spec.mjs",
         "src/data/real-data-series.v1.json",
         "document-routes.mjs",
         "remark-doc-links.mjs",
@@ -282,6 +291,29 @@ def check_site(source_dir: Path, built_dir: Path) -> list[str]:
                     errors.append("dashboard selected facts missing")
         except (OSError, ValueError, TypeError, KeyError, AttributeError):
             errors.append("invalid public study snapshot or output")
+    ablation_path = source_dir / "src/data/ablation-study.v1.json"
+    if ablation_path.is_file():
+        from competition_tools.evaluation.ablation_publication import (
+            validate_public_ablation,
+        )
+
+        try:
+            ablation = validate_public_ablation(
+                json.loads(ablation_path.read_text(encoding="utf-8"))
+            )
+            expected_ablation = {r["job_id"]: r for r in ablation["results"]}
+            for relative in REQUIRED_OUTPUT & output_paths:
+                metadata = _PageMetadata()
+                metadata.feed((built_dir / relative).read_text(encoding="utf-8"))
+                actual = {
+                    key: json.loads(facts) for key, facts in metadata.ablation_facts
+                }
+                if actual != expected_ablation or len(metadata.ablation_facts) != len(
+                    expected_ablation
+                ):
+                    errors.append("ablation facts differ from reviewed source snapshot")
+        except (OSError, ValueError, TypeError, KeyError, AttributeError):
+            errors.append("invalid public ablation snapshot or output")
     series_path = source_dir / "src/data/real-data-series.v1.json"
     if series_path.is_file():
         from competition_tools.evaluation.study_series import validate_public_series

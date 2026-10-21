@@ -77,7 +77,7 @@ def validate_ablation_job(job):
         ):
             raise ValueError
         if any(
-            job[k] != v
+            _hash(job[k]) != _hash(v)
             for k, v in policy_spec(job["strategy"], job["variant_id"]).items()
         ):
             raise ValueError
@@ -104,6 +104,8 @@ def validate_ablation_job(job):
                 *(origin[k] for k in origin if k.endswith("sha256")),
             ]
         ):
+            raise ValueError
+        if _hash(job["parameters"]) != _hash(PARAMETERS[job["strategy"]]):
             raise ValueError
         legacy = {k: v for k, v in job.items() if k not in EXTRA}
         legacy["schema"] = "competition.daily_study_job.v1"

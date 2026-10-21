@@ -11,11 +11,12 @@ from competition_tools.datasets.daily_storage import safe_path
 from competition_tools.datasets.storage import digest, write_json, verify_manifest
 from competition_tools.team.config import TeamConfig
 from competition_tools.team.processes import interpreter, child_environment, run_child
-from .study_identity import source_hash
+from .study_identity import source_hash, canonical_hash
 from .study_plan import PARAMETERS
 from .study_runner import _verify_consumed, _finite
 from .ablation_plan import validate_ablation_job, ablation_plan_hash, BUDGET, EXTRA
 from .ablation_source import verify_source_snapshot
+from .ablation_catalog import CATALOG_SHA256
 
 METRIC_KEYS = set(
     "periods net_return gross_return cost_drag volatility sharpe max_drawdown turnover total_costs mean_daily_turnover mean_exposure flat_days".split()
@@ -220,8 +221,39 @@ def verify_plan(plan_path):
     ):
         raise ValueError("INVALID_FROZEN_PLAN")
     verify_source_snapshot(plan["source_receipt"])
+    if (
+        set(plan)
+        != {
+            "schema",
+            "plan_sha256",
+            "code_identity",
+            "source_receipt",
+            "costs",
+            "inputs",
+            "jobs",
+            "retrospective",
+            "selection",
+            "budget",
+            "accepted_research",
+            "origin",
+            "catalog_sha256",
+        }
+        or plan["catalog_sha256"] != CATALOG_SHA256
+        or plan["retrospective"] is not True
+        or plan["accepted_research"] is not False
+    ):
+        raise ValueError("INVALID_FROZEN_PLAN")
+    if plan["code_identity"] != {
+        k: plan["source_receipt"][k] for k in ["commit", "source_root", "source_sha256"]
+    }:
+        raise ValueError("INVALID_FROZEN_PLAN")
     for j in plan["jobs"]:
         validate_ablation_job(j)
+        if j["status"] == "planned" and (
+            canonical_hash(j["origin"]) != canonical_hash(plan["origin"])
+            or j["code_commit"] != plan["code_identity"]["commit"]
+        ):
+            raise ValueError("INVALID_FROZEN_PLAN")
         if (
             j["plan_sha256"] != plan["plan_sha256"]
             or json.loads(
