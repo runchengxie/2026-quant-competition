@@ -7,6 +7,7 @@ const locale=Astro.props.locale==='zh-CN'?'zh-CN':'en';
 const t=(locale==='en'?en:zh).dashboard;const text=t.insights;
 const format=new Intl.NumberFormat(locale,{maximumFractionDigits:2});
 const pct=(value:number|null)=>value===null?'—':format.format(value*100)+'%';
+const prefix=`/2026-quant-competition/${locale==='zh-CN'?'zh-CN/':''}`;
 const markets=Object.entries(t.markets).map(([market,label])=>{
  const rows=snapshot.results.filter(r=>r.market===market&&r.status==='completed');
  const feeBps=({US:20,HK:30,crypto:10})[market as "US"|"HK"|"crypto"];
@@ -19,7 +20,7 @@ const markets=Object.entries(t.markets).map(([market,label])=>{
  <div class="market-summaries">{markets.map(m=><article data-market-summary={m.market}>
   <h3>{m.label} · {m.feeBps} bps · {m.strategies[0].summary.quoteCurrency}</h3>
   <div class="summary-table"><table><thead><tr><th scope="col">{t.strategy}</th><th scope="col">{text.count}</th><th scope="col">{text.positive}</th><th scope="col">{text.median}</th><th scope="col">{text.worst}</th></tr></thead>
-  <tbody>{m.strategies.map(({strategy,summary:s})=><tr data-summary-facts={JSON.stringify({market:m.market,strategy,feeBps:m.feeBps,...s})}><th scope="row">{t.strategies[strategy as keyof typeof t.strategies]}</th><td>{s.count}</td><td>{pct(s.positiveExcessRate)} ({s.positiveExcessCount}/{s.excessCount})</td><td>{pct(s.medianNetReturn)}</td><td>{pct(s.worstNetReturn)}</td></tr>)}</tbody></table></div>
+  <tbody>{m.strategies.map(({strategy,summary:s})=><tr data-summary-facts={JSON.stringify({market:m.market,strategy,feeBps:m.feeBps,...s})}><th scope="row"><a href={`${prefix}docs/strategies/#${strategy.replaceAll("_","-")}`}>{t.strategies[strategy as keyof typeof t.strategies]}</a></th><td>{s.count}</td><td>{pct(s.positiveExcessRate)} ({s.positiveExcessCount}/{s.excessCount})</td><td>{pct(s.medianNetReturn)}</td><td>{pct(s.worstNetReturn)}</td></tr>)}</tbody></table></div>
  </article>)}</div><p class="detail">{text.caveat}</p>
 </section>
 <style>

@@ -1,4 +1,5 @@
 ---
+import StrategyComparison from "./StrategyComparison.astro";
 import snapshot from "../data/real-data-study.v1.json";
 import { deriveChartModels,selectWindowOptions,summarizeWindows } from "../scripts/dashboard-state.mjs";
 import en from "../i18n/en.json";
@@ -34,6 +35,7 @@ const panels=["nav","drawdown","folds","fees","scatter","turnover","exposure","h
   <section data-stability data-count={stability.count} data-summary={JSON.stringify(stability)}><h3>{t.insights.stability}</h3><div class="metric-cards">{["count","positiveExcessRate","medianNetReturn","medianExcessReturn","worstNetReturn","medianCostDrag"].map((key,i)=><div><span>{[t.insights.count,t.insights.positive,t.insights.median,t.insights.excess,t.insights.worst,t.insights.drag][i]}</span><strong data-stability-metric={key}>{key==="count"?stability.count:display(stability[key as keyof typeof stability] as number|null)}</strong></div>)}</div><p class="detail" data-stability-denominator>{stability.excessCount} {t.insights.denominator}</p><p class="detail">{t.insights.caveat}</p></section>
   <p class="selection-note" data-selection-note>{selected.quote_currency} · {selected.start} – {selected.end} · {selected.sessions} {t.periods}</p>
   <div class="metric-cards" data-dashboard-selected data-facts={JSON.stringify(selected)}>{cards.map(key=><div><span>{t.metrics[key]}</span><strong data-metric={key}>{display(selected[key],key!=="sharpe")}</strong></div>)}</div>
+  <StrategyComparison locale={locale} />
   <p class="chart-status" data-chart-status role="status">{t.loading}</p>
   <p class="chart-status" data-curve-unavailable hidden>{t.curveUnavailable}</p>
   <div class="chart-grid">{panels.map(key=><figure><figcaption>{t.charts[key]}</figcaption><div class="chart-root" data-chart={key} role="img" aria-label={t.charts[key]}></div><p>{t.chartNotes[key]}</p></figure>)}</div>

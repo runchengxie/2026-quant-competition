@@ -309,7 +309,14 @@ def _validate_documentation(
             f"{PAGES_BASE_PATH}/{'docs/' if prefix else 'zh-CN/docs/'}{slug + '/' if slug else ''}",
         )
         for prefix in ("", "zh-CN/")
-        for slug in ("", "architecture", "quickstart", "datasets", "study")
+        for slug in (
+            "",
+            "architecture",
+            "quickstart",
+            "datasets",
+            "study",
+            "strategies",
+        )
     }
     for name in expected.keys() - output_paths:
         errors.append(f"documentation route missing: {name}")

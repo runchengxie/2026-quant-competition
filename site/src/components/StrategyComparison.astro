@@ -1,0 +1,27 @@
+---
+import snapshot from '../data/real-data-study.v1.json';
+import {compareStrategies,summarizeFeeRobustness} from '../scripts/dashboard-state.mjs';
+import en from '../i18n/en.json';import zh from '../i18n/zh-CN.json';
+const locale=Astro.props.locale==='zh-CN'?'zh-CN':'en';const t=(locale==='en'?en:zh).dashboard;const c=t.comparison;
+const selection={market:'US',strategy:'buy_hold',feeBps:20};
+const comparison=compareStrategies(snapshot,null,selection,['buy_hold','equal_weight']);
+const robustness=summarizeFeeRobustness(snapshot,selection);
+const fmt=new Intl.NumberFormat(locale,{maximumFractionDigits:2});
+const pct=(value:number|null|undefined)=>value==null?'—':fmt.format(value*100)+'%';
+const prefix=`/2026-quant-competition/${locale==='zh-CN'?'zh-CN/':''}`;
+const metrics=['net_return','excess_return','max_drawdown','cost_drag','sharpe'] as const;
+---
+<section class="strategy-comparison" aria-labelledby="comparison-title">
+ <h3 id="comparison-title">{c.title}</h3><p>{c.intro}</p>
+ <fieldset data-comparison-controls disabled><legend class="visually-hidden">{c.title}</legend>{['second','third'].map((key)=><label>{c[key as 'second'|'third']}<select data-compare={key}><option value="">{c.none}</option>{Object.entries(t.strategies).filter(([value])=>!['buy_hold','momentum_63d','trend_200d'].includes(value)).map(([value,label])=><option value={value} selected={key==='second'&&value==='equal_weight'}>{label}</option>)}</select></label>)}</fieldset>
+ <p><a data-strategy-guide href={`${prefix}docs/strategies/#buy-hold`}>{c.guide} ↗</a></p>
+ <div class="scroll-table"><table><thead><tr><th scope="col">{t.strategy}</th>{metrics.map(key=><th scope="col">{t.metrics[key]}</th>)}</tr></thead><tbody data-comparison-body>{comparison.entries.map(e=><tr data-comparison-row data-facts={JSON.stringify(e.result)}><th scope="row">{t.strategies[e.strategy as keyof typeof t.strategies]}</th>{metrics.map(key=><td>{key==='sharpe'?e.result![key]===null?'—':fmt.format(e.result![key]):pct(e.result![key])}</td>)}</tr>)}</tbody></table></div>
+ <p class="detail" data-comparison-note></p>
+ <figure><figcaption>{c.chart}</figcaption><div class="chart-root" data-chart="comparison" role="img" aria-label={c.chart}></div></figure>
+ <h3>{c.feesTitle}</h3><p>{c.feesIntro}</p>
+ <p data-fee-matches>{c.matched}: {robustness.matchedWindows} · {c.excluded}: {robustness.excludedWindows}</p>
+ <div class="scroll-table"><table><thead><tr><th scope="col">{t.fee}</th><th scope="col">{t.insights.count}</th><th scope="col">{c.positiveNet}</th><th scope="col">{t.insights.positive}</th><th scope="col">{t.insights.median}</th><th scope="col">{t.insights.excess}</th></tr></thead><tbody data-fee-body>{robustness.fees.map(f=><tr data-fee-row data-fee-facts={JSON.stringify(f)}><th scope="row">{f.feeBps} bps {f.feeBps===0?`(${c.control})`:''}</th><td>{f.summary?.count??0}</td><td>{f.positiveNetCount}/{f.summary?.count??0}</td><td>{f.summary?.positiveExcessCount??0}/{f.summary?.excessCount??0}</td><td>{pct(f.summary?.medianNetReturn)}</td><td>{pct(f.summary?.medianExcessReturn)}</td></tr>)}</tbody></table></div>
+</section>
+<style>
+.strategy-comparison{margin:2rem 0;padding:1rem;border:1px solid var(--line);border-radius:.75rem;min-width:0}p{color:var(--muted)}fieldset{display:flex;flex-wrap:wrap;gap:1rem;border:0;padding:0}label{display:grid;gap:.4rem;min-width:0;flex:1}select{width:100%;padding:.65rem;color:var(--ink);background:var(--paper);border:1px solid var(--line);font:inherit}.scroll-table{overflow-x:auto;max-width:100%}table{width:100%;border-collapse:collapse;font-size:.85rem}th,td{padding:.6rem;text-align:left;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}figure{margin:1.5rem 0}.chart-root{height:300px;width:100%}figcaption{font-weight:650}
+</style>

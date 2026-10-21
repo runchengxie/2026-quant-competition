@@ -270,13 +270,15 @@
       "architecture": "Architecture",
       "quickstart": "Team quickstart",
       "datasets": "Data and snapshots",
-      "study": "Study methods and results"
+      "study": "Study methods and results",
+      "strategies": "Strategy guide"
     },
     "summaries": {
       "architecture": "Responsibilities, package boundaries and execution contracts.",
       "quickstart": "Install, configure and run the independent offline packages.",
       "datasets": "Daily acquisition, immutable receipts and input validation.",
-      "study": "Fixed assumptions, accounting, actual results and limitations."
+      "study": "Fixed assumptions, accounting, actual results and limitations.",
+      "strategies": "Signals, fixed pools, failure cases, costs and reproduction."
     }
   },
   "dashboard": {
@@ -381,6 +383,22 @@
       "sma_cross": "Select symbols whose 20-session moving average exceeds their 60-session average at the prior close. Take up to ten in sorted identifier order and equally weight them, or hold cash.",
       "momentum_63d": "Equally weight spot assets whose prior close exceeds their close 63 daily periods earlier. Hold cash if none qualify.",
       "trend_200d": "Equally weight spot assets whose prior close exceeds their trailing 200-period average. Hold cash if none qualify."
+    },
+    "comparison": {
+      "title": "Compare under the same conditions",
+      "intro": "The primary strategy and up to two alternatives share the selected market, fee and exact scored window. Metrics are copied from published results. Curves require an identical date grid; unavailable curves are omitted, never interpolated.",
+      "second": "Alternative 1",
+      "third": "Alternative 2",
+      "none": "None",
+      "chart": "Net NAV comparison · same window",
+      "missing": "No compatible result or published curve for this strategy.",
+      "guide": "Strategy details and reproduction",
+      "feesTitle": "Does the effect survive higher costs?",
+      "feesIntro": "All declared fee assumptions for the primary strategy use only windows present at every fee with matching accounting inputs. Zero bps is a control, not a realistic execution estimate. Positive net and excess counts are descriptive, not significance tests.",
+      "matched": "Matched windows",
+      "excluded": "Excluded window/input conditions",
+      "positiveNet": "Positive net windows",
+      "control": "Zero-cost control"
     }
   }
 }

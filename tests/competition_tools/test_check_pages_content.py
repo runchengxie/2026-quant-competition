@@ -133,7 +133,14 @@ def test_documentation_routes_validate_locale_links_and_reject_unlisted_pages(tm
     source, built = make_site_trees(tmp_path)
     (source / "document-routes.mjs").write_text("// Reviewed document registry")
     for prefix in ("", "zh-CN/"):
-        for slug in ("", "architecture", "quickstart", "datasets", "study"):
+        for slug in (
+            "",
+            "architecture",
+            "quickstart",
+            "datasets",
+            "study",
+            "strategies",
+        ):
             suffix = f"docs/{slug + '/' if slug else ''}"
             p = built / prefix / suffix / "index.html"
             p.parent.mkdir(parents=True, exist_ok=True)

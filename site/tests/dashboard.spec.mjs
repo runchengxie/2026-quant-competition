@@ -11,7 +11,7 @@ for(const locale of ["en","zh-CN"]){
     const root=page.locator("#performance");
     await root.scrollIntoViewIfNeeded();
     await expect(root).toHaveAttribute("data-ready","true");
-    await expect(root.locator("canvas")).toHaveCount(8);
+    await expect(root.locator("canvas")).toHaveCount(9);
     await root.locator("[data-filter=market]").selectOption("crypto");
     await root.locator("[data-filter=strategy]").selectOption("trend_200d");
     await root.locator("[data-filter=fee]").selectOption("10");
@@ -89,4 +89,26 @@ test('legend choice and panned curve range survive a theme change',async({page})
  await page.getByLabel('Appearance').selectOption('dark');
  await expect(root.locator('[data-chart=nav]')).toHaveAttribute('data-range',range);
  await expect(root.locator('[data-toggle-gross]')).not.toBeChecked();
+});
+
+test('matched strategy comparison and fee robustness preserve published conditions in both locales',async({page})=>{
+ let canonical;
+ for(const locale of ['en','zh-CN']){
+  await page.goto(locale==='en'?'/2026-quant-competition/':'/2026-quant-competition/zh-CN/');
+  const root=page.locator('#performance');await root.scrollIntoViewIfNeeded();await expect(root).toHaveAttribute('data-ready','true');
+  await expect(root.locator('[data-comparison-row]')).toHaveCount(2);
+  await root.locator('[data-compare=third]').selectOption('momentum_20d');await expect(root.locator('[data-comparison-row]')).toHaveCount(3);
+  const rows=await root.locator('[data-comparison-row]').evaluateAll(ns=>ns.map(n=>JSON.parse(n.dataset.facts)));
+  for(const row of rows){expect(row).toEqual(study.results.find(r=>r.job_id===row.job_id));expect(row.start).toBe(rows[0].start);expect(row.end).toBe(rows[0].end);expect(row.cost_bps).toBe(20);}
+  await root.locator('[data-filter=market]').selectOption('crypto');await root.locator('[data-filter=strategy]').selectOption('trend_200d');
+  await root.locator('[data-compare=second]').selectOption('equal_weight');await root.locator('[data-compare=third]').selectOption('momentum_63d');
+  await expect(root.locator('[data-comparison-row]')).toHaveCount(3);
+  const feeFacts=await root.locator('[data-fee-row]').evaluateAll(ns=>ns.map(n=>JSON.parse(n.dataset.feeFacts)));
+  expect(feeFacts.map(f=>f.feeBps)).toEqual([0,10,25]);expect(feeFacts.map(f=>f.summary.count)).toEqual([12,12,12]);
+  if(canonical)expect(feeFacts).toEqual(canonical);else canonical=feeFacts;
+  for(const fact of feeFacts){const rows=study.results.filter(r=>r.market==='crypto'&&r.strategy==='trend_200d'&&r.cost_bps===fact.feeBps);expect(fact.positiveNetCount).toBe(rows.filter(r=>r.net_return>0).length);}
+  await expect(root.locator('[data-strategy-guide]')).toHaveAttribute('href',`${locale==='en'?'/2026-quant-competition/':'/2026-quant-competition/zh-CN/'}docs/strategies/#trend-200d`);
+  await root.locator('[data-strategy-guide]').click();await expect(page.locator('main article h1')).toBeVisible();
+  await page.setViewportSize({width:390,height:844});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ }
 });

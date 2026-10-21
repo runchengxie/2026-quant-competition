@@ -51,3 +51,34 @@ test("window summaries separate fees and currencies, preserve nulls and never co
  assert.equal(summarizeWindows({results:[{...rows[0],excess_return:null}]},selection).positiveExcessRate,null);
  assert.throws(()=>summarizeWindows({results:[rows[0],{...rows[1],quote_currency:'HKD'}]},selection),/currency/i);
 });
+
+test('comparison binds market, cost, exact window, currency and plan without fallback',async()=>{
+ const {compareStrategies}=await import('../src/scripts/dashboard-state.mjs');
+ const reference=selectResults(study,selection)[0];const options={...selection,windowStart:reference.start};
+ const before=JSON.stringify(study);const model=compareStrategies(study,series,options,['equal_weight','momentum_20d','benchmark_buy_hold']);
+ assert.equal(model.entries.length,3);assert.equal(model.entries[2].curve,null);
+ for(const e of model.entries){assert.equal(e.result.start,reference.start);assert.equal(e.result.end,reference.end);assert.equal(e.result.cost_bps,20);assert.equal(e.result.quote_currency,'USD');}
+ assert.equal(JSON.stringify(study),before);
+ assert.equal(compareStrategies(study,series,options,['equal_weight','missing']).entries[1].result,null);
+ assert.equal(compareStrategies(study,series,{...options,windowStart:'1900-01-01'},['equal_weight']).reference,null);
+ assert.throws(()=>compareStrategies(study,series,options,['a','b','c','d']),/three/i);
+ const corrupt=structuredClone(study);corrupt.results.find(r=>r.job_id===model.entries[1].result.job_id).quote_currency='HKD';
+ assert.equal(compareStrategies(corrupt,series,options,['equal_weight','momentum_20d']).entries[1].result,null);
+ const badCurve=structuredClone(series);badCurve.series.find(c=>c.job_id===model.entries[1].result.job_id).points.pop();
+ assert.equal(compareStrategies(study,badCurve,options,['equal_weight','momentum_20d']).entries[1].curve,null);
+ assert.throws(()=>compareStrategies({results:[...study.results,reference]},series,options,['equal_weight']),/duplicate/i);
+});
+
+test('fee robustness uses only common windows and keeps zero-cost controls and null excess',async()=>{
+ const {summarizeFeeRobustness}=await import('../src/scripts/dashboard-state.mjs');
+ const base=selectResults(study,selection)[0];
+ const row=(cost,start,net,excess)=>({...base,job_id:`${cost}-${start}`,cost_bps:cost,start,end:start,net_return:net,excess_return:excess});
+ const data={results:[row(0,'a',.2,.1),row(0,'b',.5,.3),row(20,'a',.1,null),row(40,'a',-.1,0),{...row(40,'z',99,99),market:'HK'}]};
+ const before=JSON.stringify(data);const value=summarizeFeeRobustness(data,selection);
+ assert.equal(value.matchedWindows,1);assert.equal(value.excludedWindows,1);
+ assert.deepEqual(value.fees.map(f=>f.feeBps),[0,20,40]);assert.deepEqual(value.fees.map(f=>f.positiveNetCount),[1,1,0]);
+ assert.deepEqual(value.fees.map(f=>f.summary.medianNetReturn),[.2,.1,-.1]);assert.equal(value.fees[1].summary.positiveExcessRate,null);assert.equal(value.fees[2].summary.positiveExcessRate,0);
+ assert.equal(JSON.stringify(data),before);
+ assert.equal(summarizeFeeRobustness({results:[row(0,'a',.2,.1),row(20,'b',.1,null)]},selection).matchedWindows,0);
+ assert.deepEqual(summarizeFeeRobustness(data,{...selection,market:'XX'}).fees,[]);
+});

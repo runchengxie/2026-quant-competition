@@ -2,7 +2,7 @@ import * as echarts from "echarts/core";
 import { LineChart,BarChart,ScatterChart } from "echarts/charts";
 import { GridComponent,TooltipComponent,LegendComponent,DataZoomComponent,DatasetComponent,AriaComponent } from "echarts/components";
 import { CanvasRenderer } from "echarts/renderers";
-import { deriveChartModels,selectResults,selectWindowOptions,summarizeWindows } from "./dashboard-state.mjs";
+import { deriveChartModels,selectResults,selectWindowOptions,summarizeWindows,compareStrategies,summarizeFeeRobustness } from "./dashboard-state.mjs";
 
 echarts.use([LineChart,BarChart,ScatterChart,GridComponent,TooltipComponent,LegendComponent,DataZoomComponent,DatasetComponent,AriaComponent,CanvasRenderer]);
 
@@ -11,6 +11,9 @@ export async function mountPerformanceDashboard(root){
   const study={results:[...document.querySelectorAll("#study [data-study-id]")].map(node=>JSON.parse(node.dataset.facts))};
   const curves=(await import("../data/real-data-series.v1.json")).default;
   const controls=Object.fromEntries([...root.querySelectorAll("[data-filter]")].map(node=>[node.dataset.filter,node]));
+  const alternatives=[...root.querySelectorAll("[data-compare]")];
+  const guide=root.querySelector("[data-strategy-guide]");
+  const guideBase=guide.getAttribute("href").split("#")[0];
   const nodes=Object.fromEntries([...root.querySelectorAll("[data-chart]")].map(node=>[node.dataset.chart,node]));
   const charts=Object.fromEntries(Object.entries(nodes).map(([key,node])=>[key,echarts.init(node)]));
   const gross=root.querySelector("[data-toggle-gross]");
@@ -34,6 +37,9 @@ export async function mountPerformanceDashboard(root){
     options(controls.strategy,strategies.map(value=>({value,label:seriesLabel(value)})),strategies.includes(wanted)?wanted:(market==="crypto"?"equal_weight":"buy_hold"));
     const fees=[...new Set(rows.map(row=>row.cost_bps))].sort((a,b)=>a-b);
     options(controls.fee,fees.map(value=>({value:String(value),label:`${value} bps`})),reset?"20":(fees.includes(Number(controls.fee.value))?controls.fee.value:String(market==="HK"?30:market==="crypto"?10:20)));
+    for(const control of alternatives){
+      options(control,[{value:"",label:t.comparison.none},...strategies.filter(value=>value!==controls.strategy.value).map(value=>({value,label:seriesLabel(value)}))],reset?(control.dataset.compare==="second"?"equal_weight":""):control.value);
+    }
     const windows=selectWindowOptions(selectResults(study,selection()));
     options(controls.window,windows.map(w=>({value:w.start,label:`${w.start} – ${w.end}`})),reset?"":controls.window.value);
   }
@@ -72,6 +78,28 @@ export async function mountPerformanceDashboard(root){
     zoom.disabled=!model.curve;
     nodes.nav.dataset.range=JSON.stringify({start:zoomStart,end:zoomEnd});
     const dataZoom=[{type:"inside",start:zoomStart,end:zoomEnd},{type:"slider",start:zoomStart,end:zoomEnd,height:18,bottom:5}];
+    const comparison=compareStrategies(study,curves,selection(),[row.strategy,...alternatives.map(n=>n.value)]);
+    const metrics=["net_return","excess_return","max_drawdown","cost_drag","sharpe"];
+    const body=root.querySelector("[data-comparison-body]");body.replaceChildren();
+    for(const entry of comparison.entries){
+      const tr=document.createElement("tr");const heading=document.createElement("th");heading.scope="row";heading.textContent=seriesLabel(entry.strategy);tr.append(heading);
+      if(entry.result){tr.dataset.comparisonRow="";tr.dataset.facts=JSON.stringify(entry.result);for(const key of metrics){const td=document.createElement("td");const value=entry.result[key];td.textContent=value===null?"—":key==="sharpe"?format.format(value):percent(value);tr.append(td);}}
+      else{const td=document.createElement("td");td.colSpan=metrics.length;td.textContent=t.comparison.missing;tr.append(td);}
+      body.append(tr);
+    }
+    const available=comparison.entries.filter(e=>e.curve);
+    root.querySelector("[data-comparison-note]").textContent=comparison.entries.some(e=>!e.curve)?t.comparison.missing:"";
+    guide.href=guideBase+"#"+row.strategy.replaceAll("_","-");
+    nodes.comparison.dataset.jobs=JSON.stringify(available.map(e=>e.result.job_id));
+    set("comparison",{tooltip:{...base().tooltip,valueFormatter:value=>navFormat.format(value)},legend:{...base().legend,type:"scroll",data:available.map(e=>seriesLabel(e.strategy))},xAxis:{...base().xAxis,data:available[0]?.curve.points.map(p=>p.date)??[]},yAxis:{...base().yAxis,scale:true},dataZoom:[{type:"inside"},{type:"slider",height:18,bottom:5}],series:available.map(e=>({name:seriesLabel(e.strategy),type:"line",showSymbol:false,data:e.curve.points.map(p=>p.net_nav)}))});
+    const robustness=summarizeFeeRobustness(study,selection());
+    root.querySelector("[data-fee-matches]").textContent=`${t.comparison.matched}: ${robustness.matchedWindows} · ${t.comparison.excluded}: ${robustness.excludedWindows}`;
+    const feeBody=root.querySelector("[data-fee-body]");feeBody.replaceChildren();
+    for(const f of robustness.fees){
+      const tr=document.createElement("tr");tr.dataset.feeRow="";tr.dataset.feeFacts=JSON.stringify(f);
+      const values=[`${f.feeBps} bps${f.feeBps===0?` (${t.comparison.control})`:""}`,String(f.summary?.count??0),`${f.positiveNetCount}/${f.summary?.count??0}`,`${f.summary?.positiveExcessCount??0}/${f.summary?.excessCount??0}`,f.summary?.medianNetReturn==null?"—":percent(f.summary.medianNetReturn),f.summary?.medianExcessReturn==null?"—":percent(f.summary.medianExcessReturn)];
+      values.forEach((value,i)=>{const td=document.createElement(i===0?"th":"td");if(i===0)td.scope="row";td.textContent=value;tr.append(td);});feeBody.append(tr);
+    }
     set("nav",{tooltip:{...base().tooltip,valueFormatter:value=>navFormat.format(value)},xAxis:{...base().xAxis,data:points.map(p=>p.date)},yAxis:{...base().yAxis,scale:true},legend:{...base().legend,data:[t.net,t.gross],selected:{[t.gross]:gross.checked}},dataZoom,series:[{name:t.net,type:"line",showSymbol:false,data:points.map(p=>p.net_nav)},{name:t.gross,type:"line",showSymbol:false,lineStyle:{type:"dashed"},data:points.map(p=>p.gross_nav)}]});
     set("drawdown",{tooltip:{...base().tooltip,valueFormatter:percent},xAxis:{...base().xAxis,data:points.map(p=>p.date)},yAxis:{...base().yAxis,axisLabel:{formatter:percent}},dataZoom,series:[{name:t.charts.drawdown,type:"line",showSymbol:false,areaStyle:{opacity:.18},data:points.map(p=>p.drawdown)}]});
     set("folds",{tooltip:{...base().tooltip,valueFormatter:percent},xAxis:{...base().xAxis,data:model.foldReturns.map(r=>r.start)},yAxis:{...base().yAxis,axisLabel:{formatter:percent}},legend:{...base().legend,data:[t.net,t.excess]},series:[{name:t.net,type:"bar",data:model.foldReturns.map(r=>r.net_return)},{name:t.excess,type:"bar",data:model.foldReturns.map(r=>r.excess_return)}]});
@@ -92,6 +120,7 @@ export async function mountPerformanceDashboard(root){
     }
   });
   for(const control of Object.values(controls))control.addEventListener("change",()=>{syncControls();zoomPercent=100;zoomStart=0;zoomEnd=100;zoom.value="100";root.dataset.zoom="100";render();});
+  for(const control of alternatives)control.addEventListener("change",render);
   charts.nav.on("legendselectchanged",event=>{gross.checked=event.selected[t.gross]!==false;root.dataset.grossVisible=String(gross.checked);});
   gross.addEventListener("change",()=>{root.dataset.grossVisible=String(gross.checked);charts.nav.dispatchAction({type:gross.checked?"legendSelect":"legendUnSelect",name:t.gross});});
   zoom.addEventListener("input",()=>{zoomPercent=Number(zoom.value);zoomStart=100-zoomPercent;zoomEnd=100;root.dataset.zoom=String(zoomPercent);charts.nav.dispatchAction({type:"dataZoom",start:100-zoomPercent,end:100});});
@@ -100,5 +129,6 @@ export async function mountPerformanceDashboard(root){
   matchMedia("(prefers-color-scheme: dark)").addEventListener("change",render);
   new ResizeObserver(()=>Object.values(charts).forEach(chart=>chart.resize())).observe(root);
   root.querySelector("fieldset").disabled=false;
+  root.querySelector("[data-comparison-controls]").disabled=false;
   syncControls();render();
 }

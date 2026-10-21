@@ -95,7 +95,7 @@ The initial 2026-10-21 `npm audit` reported one high-severity Vite launch-editor
 
 The [performance dashboard](https://runchengxie.github.io/2026-quant-competition/#performance) uses Apache ECharts with market, strategy, fee and independent-window selectors. Hover, legends, curve zoom and reset are presentation controls. Published financial metrics are selected from the frozen study; the browser does not rerun accounting or join windows into a continuous portfolio. Return histograms calculate bin counts only.
 
-The eight views cover net/gross NAV, drawdown, window net/excess returns, fixed-window cost sensitivity, return/drawdown comparison, daily turnover and position proxies, and window-return distribution. The same currencies and methods apply across languages and themes. Accessible summaries and the complete tables remain available without JavaScript.
+The original eight views cover net/gross NAV, drawdown, window net/excess returns, fixed-window cost sensitivity, return/drawdown comparison, daily turnover and position proxies, and window-return distribution. The same currencies and methods apply across languages and themes. Accessible summaries and the complete tables remain available without JavaScript.
 
 `competition.public_study_series.v1` contains 276 portfolio curves, derived from verified private period artifacts, plus 42 explicit unavailable records for single-instrument stock benchmarks. A curve starts at normalized wealth 1 on the last warmup close and includes each scored period. Its final net/gross wealth and largest drawdown must match the reviewed summary within 1e-10. Only dates, aggregate net/gross NAV and aggregate drawdown are published. No raw prices, individual holdings, account amounts, logs or private locators are copied. Benchmark window returns remain public; daily benchmark price-linked curves are not published.
 
@@ -110,3 +110,10 @@ Current charts describe strategy effects. IC, rank-IC, quantile spreads, decay a
 ### Reading the research overview
 
 The homepage lists every strategy at each market's predeclared nonzero one-way cost (US 20, HK 30, crypto 10 bps), with independent window counts, strictly positive benchmark-excess frequency, median net return and worst net return. The selected strategy panel also shows median excess return and median cost drag. Missing benchmark values are excluded from the excess denominator; zero excess is not positive. These descriptive statistics do not compound windows or constitute a significance test. Strategy descriptions distinguish stock daily equal-weight rebalancing from crypto initial equal-weight holdings with drifting weights.
+
+
+### Matched strategy and fee comparisons
+
+The dashboard adds a net NAV overlay and side-by-side metric table for the primary strategy and up to two alternatives. Market, fee, exact scored window, currency, plan and accounting basis must match. Missing results remain unavailable; curves additionally need identical date grids. Single-instrument stock benchmark daily curves remain withheld.
+
+Fee robustness summarizes the primary strategy at all declared fees using only windows with matching input and accounting conditions at every fee. The zero-bps crypto control is explicitly labeled. Positive net and positive excess counts have separate denominators; absent benchmark values are not zero. The [strategy guide](strategies.md) documents signals, fixed pools, failure cases and reproduction. These views reuse the frozen results and do not constitute a new strategy experiment.
