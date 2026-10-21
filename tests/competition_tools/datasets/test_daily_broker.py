@@ -384,28 +384,72 @@ def test_checkpoint_delay_cannot_bypass_request_deadline_or_spacing(
 def test_eleven_contracts_across_annual_windows(tmp_path, monkeypatch):
     spec, _, _, clock = run(tmp_path / "fixture", monkeypatch)
     dates = ["2023-01-03", "2024-01-02", "2025-01-02", "2026-01-02"]
-    monkeypatch.setattr("competition_tools.datasets.daily_broker.completed_sessions", lambda *a,**k:{"sessions":dates, "calendar_name":"XNYS", "package_version":"synthetic", "schedule_sha256":"c"*64, "latest_completed_session":dates[-1]})
+    monkeypatch.setattr(
+        "competition_tools.datasets.daily_broker.completed_sessions",
+        lambda *a, **k: {
+            "sessions": dates,
+            "calendar_name": "XNYS",
+            "package_version": "synthetic",
+            "schedule_sha256": "c" * 64,
+            "latest_completed_session": dates[-1],
+        },
+    )
     products = [f"S{i}" for i in range(10)]
-    spec = spec | {"products":products, "start":"2023-01-01", "end":dates[-1], "contracts":[{"product":p,"symbol":p,"currency":"USD","exchange":"SMART","role":"benchmark" if p=="SPY" else "stock"} for p in products+["SPY"]]}
+    spec = spec | {
+        "products": products,
+        "start": "2023-01-01",
+        "end": dates[-1],
+        "contracts": [
+            {
+                "product": p,
+                "symbol": p,
+                "currency": "USD",
+                "exchange": "SMART",
+                "role": "benchmark" if p == "SPY" else "stock",
+            }
+            for p in products + ["SPY"]
+        ],
+    }
+
     class Annual(Client):
         def qualifyContracts(self, contract):
             self.starts.append(clock())
-            contract.conId = 100 if contract.symbol == "SPY" else 1 + int(contract.symbol[1:])
+            contract.conId = (
+                100 if contract.symbol == "SPY" else 1 + int(contract.symbol[1:])
+            )
             return [contract]
+
         def reqHistoricalData(self, contract, **kwargs):
             self.starts.append(clock())
-            return [SimpleNamespace(date=date.fromisoformat(d),open=100,high=100,low=100,close=100,volume=5) for d in dates]
+            return [
+                SimpleNamespace(
+                    date=date.fromisoformat(d),
+                    open=100,
+                    high=100,
+                    low=100,
+                    close=100,
+                    volume=5,
+                )
+                for d in dates
+            ]
+
     client = Annual(clock)
+
     class Session:
-        def __init__(self,*a,**k):
+        def __init__(self, *a, **k):
             pass
+
         def __enter__(self):
             return client
-        def __exit__(self,*a):
+
+        def __exit__(self, *a):
             pass
-    receipt = collect_daily(spec, tmp_path / "new", session_factory=Session, clock=clock, sleep=clock.sleep)
+
+    receipt = collect_daily(
+        spec, tmp_path / "new", session_factory=Session, clock=clock, sleep=clock.sleep
+    )
     assert receipt["status"] == "acquired"
     assert receipt["requests"] == 55
     assert len(receipt["coverage"]) == 11
     assert all(c["bars"] == 4 for c in receipt["coverage"].values())
-    assert all(b-a >= 10 for a,b in zip(client.starts,client.starts[1:]))
+    assert all(b - a >= 10 for a, b in zip(client.starts, client.starts[1:]))
