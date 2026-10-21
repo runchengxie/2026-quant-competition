@@ -25,7 +25,7 @@ def synthetic_manifest(root: Path, *, crypto: bool) -> Path:
     )
     count = 342 if crypto else 315
     dates = [(date(2023, 1, 1) + timedelta(days=i)).isoformat() for i in range(count)]
-    products = ["BTCUSDT", "ETHUSDT"] if crypto else ["A", "B"]
+    products = ["BTCUSDT", "ETHUSDT"] if crypto else ["AAPL", "MSFT"]
     selected = products if crypto else products + ["SPY"]
     for product in selected:
         with (root / "normalized" / (product + ".csv")).open(
@@ -128,6 +128,11 @@ def check(config, output_root: Path) -> dict:
             if r["status"] != "completed"
         ],
     )
+    from .evaluation.study_publication import project_study
+
+    projected = project_study(result)
+    if len(projected["results"]) != 20 or len(projected["methods"]) != 8:
+        raise ValueError("SYNTHETIC_STUDY_PUBLICATION_MISMATCH")
     write_json(output / "delivery.json", report)
     return report
 

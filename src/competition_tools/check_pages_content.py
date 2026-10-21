@@ -1,4 +1,5 @@
 import argparse
+import json
 from html.parser import HTMLParser
 from pathlib import Path, PurePosixPath
 import re
@@ -49,9 +50,12 @@ class _PageMetadata(HTMLParser):
         self.hrefs: list[str] = []
         self.validation_facts: list[tuple[str, str | None, str | None]] = []
         self.expansion_facts: list[tuple[str, str | None]] = []
+        self.study_facts: list[tuple[str, str | None]] = []
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         attributes = dict(attrs)
+        if study_id := attributes.get("data-study-id"):
+            self.study_facts.append((study_id, attributes.get("data-facts")))
         if expansion_id := attributes.get("data-expansion-id"):
             self.expansion_facts.append((expansion_id, attributes.get("data-facts")))
         if result_id := attributes.get("data-result-id"):
@@ -77,11 +81,13 @@ def _allowed_source(relative_path: PurePosixPath) -> bool:
         "playwright.config.mjs",
         "tests/theme.spec.mjs",
         "tests/expansion.spec.mjs",
+        "tests/study.spec.mjs",
         "tsconfig.json",
         "src/i18n/en.json",
         "src/i18n/zh-CN.json",
         "src/data/strategy-validation.json",
         "src/data/strategy-expansion.v1.json",
+        "src/data/real-data-study.v1.json",
     }:
         return True
     if path.startswith("src/"):
@@ -158,6 +164,7 @@ def _validate_localized_output(
     }
     validation_facts: list[list[tuple[str, str | None, str | None]]] = []
     expansion_facts: list[list[tuple[str, str | None]]] = []
+    study_facts: list[list[tuple[str, str | None]]] = []
     for relative_path, requirements in route_requirements.items():
         if relative_path not in output_paths:
             continue
@@ -172,6 +179,7 @@ def _validate_localized_output(
         metadata.feed(page)
         validation_facts.append(sorted(metadata.validation_facts))
         expansion_facts.append(sorted(metadata.expansion_facts))
+        study_facts.append(sorted(metadata.study_facts))
         if metadata.language != requirements["language"]:
             errors.append(f"locale metadata mismatch in output page {relative_path}")
         if requirements["locale_switch"] not in metadata.hrefs:
@@ -188,6 +196,8 @@ def _validate_localized_output(
         errors.append("validation facts differ between localized output pages")
     if len(expansion_facts) == 2 and expansion_facts[0] != expansion_facts[1]:
         errors.append("expansion facts differ between localized output pages")
+    if len(study_facts) == 2 and study_facts[0] != study_facts[1]:
+        errors.append("study facts differ between localized output pages")
 
 
 def check_site(source_dir: Path, built_dir: Path) -> list[str]:
@@ -214,6 +224,23 @@ def check_site(source_dir: Path, built_dir: Path) -> list[str]:
         errors.append(f"required output file missing: {sorted(missing_output)}")
 
     _validate_localized_output(built_dir, output_paths, errors)
+    snapshot = source_dir / "src/data/real-data-study.v1.json"
+    if snapshot.is_file():
+        from competition_tools.evaluation.study_publication import validate_public_study
+
+        try:
+            value = validate_public_study(
+                json.loads(snapshot.read_text(encoding="utf-8"))
+            )
+            expected = {r["job_id"]: r for r in value["results"]}
+            for relative in REQUIRED_OUTPUT & output_paths:
+                metadata = _PageMetadata()
+                metadata.feed((built_dir / relative).read_text(encoding="utf-8"))
+                actual = {key: json.loads(facts) for key, facts in metadata.study_facts}
+                if actual != expected or len(metadata.study_facts) != len(expected):
+                    errors.append("study facts differ from reviewed source snapshot")
+        except (OSError, ValueError, TypeError, KeyError, AttributeError):
+            errors.append("invalid public study snapshot or output")
     _scan_sensitive(source_files, "source", errors)
     _scan_sensitive(output_files, "output", errors)
     return errors

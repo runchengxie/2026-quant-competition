@@ -80,6 +80,28 @@ def test_expansion_facts_must_match_between_locales(tmp_path):
     assert any("expansion facts differ" in error for error in check_site(source, built))
 
 
+def test_study_facts_must_match_between_locales(tmp_path):
+    source, built = make_site_trees(tmp_path)
+    for relative, value in (("index.html", "1"), ("zh-CN/index.html", "2")):
+        path = built / relative
+        path.write_text(
+            path.read_text(encoding="utf-8")
+            + f'<tr data-study-id="example" data-facts="{value}"></tr>',
+            encoding="utf-8",
+        )
+    assert any("study facts differ" in error for error in check_site(source, built))
+
+
+def test_study_snapshot_requires_strict_public_contract(tmp_path):
+    source, built = make_site_trees(tmp_path)
+    path = source / "src/data/real-data-study.v1.json"
+    path.parent.mkdir()
+    path.write_text(
+        '{"schema":"competition.public_study.v1","private_path":"C:/private"}'
+    )
+    assert any("invalid public study" in error for error in check_site(source, built))
+
+
 def test_allows_only_reviewed_validation_snapshot_and_scans_its_content(tmp_path):
     source, built = make_site_trees(tmp_path)
     data = source / "src/data"

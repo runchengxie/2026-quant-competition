@@ -217,5 +217,46 @@
       "CONSERVATIVE_FILL_MODEL_UNSUPPORTED": "The current maker engine has no conservative-fill scenario control."
     },
     "coverageNote": "Coverage dates span the earliest and latest observed bars across products, not a common start date. Product histories differ. The evaluated study remains fixed to 2023–2025."
+  },
+  "study": {
+    "title": "Fixed-plan real-data comparisons",
+    "intro": "US stocks, Hong Kong stocks and crypto spot, evaluated with the same explicit cash-funded accounting. Expand a market to inspect each independent fold. These are retrospective research results, not accepted strategies or continuous account returns.",
+    "method": "252 observations of feature-only warmup; 63 stock sessions or 90 crypto days per fold. Previous-close signals with an idealized lagged-close allocation proxy. Every fold starts in cash, pays entry costs and keeps its final holdings. Stock equal weight rebalances daily; crypto equal weight buys and holds. Costs are one-way basis-point assumptions, not verified fills.",
+    "proxy": "Exposure, turnover and flat-day figures are daily-model proxies. They do not establish competition eligibility. US/HK use 252 periods per year; crypto uses 365. USD, HKD and USDT remain separate.",
+    "markets": {
+      "US": "US stocks",
+      "HK": "Hong Kong stocks",
+      "crypto": "Crypto spot"
+    },
+    "completed": "completed jobs",
+    "bars": "selected daily bars",
+    "fixed": "Fixed current pool",
+    "benchmark": "Benchmark",
+    "results": "study results",
+    "strategy": "Strategy",
+    "period": "Scored window",
+    "cost": "Cost (bps)",
+    "excess": "Excess return",
+    "drawdown": "Max drawdown",
+    "sharpe": "Sharpe",
+    "details": "Inspect",
+    "statuses": {
+      "completed": "Completed",
+      "blocked": "Blocked",
+      "failed": "Failed"
+    },
+    "gross": "Gross return",
+    "costDrag": "Cost drag",
+    "volatility": "Annualized volatility",
+    "exposure": "Mean daily position proxy",
+    "turnover": "Mean daily one-way turnover proxy",
+    "flat": "Flat-day proxy",
+    "sessions": "Scored periods",
+    "annualization": "Periods per year",
+    "methodLabel": "Method",
+    "limits": "Fixed current pools have selection bias. Stock dividends, historical adjustment timing, lots, capacity and real slippage are unverified. Crypto spot research does not establish an authorized execution venue or product. Archived maker results below remain separate and were not rerun.",
+    "provenance": "Snapshot and reproducibility identity",
+    "report": "Methods, results and reproduction",
+    "return": "Net return"
   }
 }

@@ -1,0 +1,54 @@
+---
+import snapshot from "../data/real-data-study.v1.json";
+import en from "../i18n/en.json";
+import zh from "../i18n/zh-CN.json";
+interface Props { locale?: string }
+const locale = Astro.props.locale === "zh-CN" ? "zh-CN" : "en";
+const t = (locale === "zh-CN" ? zh : en).study;
+const n = new Intl.NumberFormat(locale, { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+const show = (value: number | null, percent = false) => value === null ? "—" : `${n.format(value * (percent ? 100 : 1))}${percent ? "%" : ""}`;
+const report = `https://github.com/runchengxie/2026-quant-competition/blob/main/docs/research/real-data-study${locale === "zh-CN" ? ".zh-CN" : ""}.md`;
+---
+<section id="study" class="study-section">
+  <h2>{t.title}</h2><p>{t.intro}</p>
+  <p class="detail">{t.method}</p>
+  <p class="detail">{t.proxy}</p>
+  {(["US", "HK", "crypto"] as const).map(market => {
+    const coverage = snapshot.coverage.find(c => c.market === market);
+    const rows = snapshot.results.filter(r => r.market === market);
+    return <details class="market-study">
+      <summary>{t.markets[market]} · {rows.filter(r => r.status === "completed").length} / {rows.length} {t.completed}</summary>
+      {coverage && <p>{coverage.products.join(" · ")}<br />{coverage.start}–{coverage.end} · {coverage.rows} {t.bars} · {coverage.quote_currency} · {t.fixed}<br />{t.benchmark}: <code>{coverage.benchmark}</code> · {coverage.source} · {coverage.status}</p>}
+      <div class="result-scroll" tabindex="0" aria-label={`${t.markets[market]} ${t.results}`}><table class="results-table"><thead><tr><th>{t.strategy}</th><th>{t.period}</th><th>{t.cost}</th><th>{t.return}</th><th>{t.excess}</th><th>{t.drawdown}</th><th>{t.sharpe}</th><th>{t.details}</th></tr></thead><tbody>
+        {rows.map(row => <tr data-study-id={row.job_id} data-facts={JSON.stringify(row)}>
+          <th scope="row"><code>{row.strategy ?? "—"}</code><br />{t.statuses[row.status as keyof typeof t.statuses]}</th>
+          <td>{row.start ?? "—"}<br />{row.end ?? "—"}</td><td>{row.cost_bps ?? "—"}</td>
+          <td>{show(row.net_return, true)}</td><td>{show(row.excess_return, true)}</td><td>{show(row.max_drawdown, true)}</td><td>{show(row.sharpe)}</td>
+          <td>{row.status !== "completed" ? <code>{row.reason_code}</code> : <details><summary>{t.details}</summary><dl>
+            <dt>{t.gross}</dt><dd>{show(row.gross_return, true)}</dd><dt>{t.costDrag}</dt><dd>{show(row.cost_drag, true)}</dd>
+            <dt>{t.volatility}</dt><dd>{show(row.volatility, true)}</dd><dt>{t.benchmark}</dt><dd>{show(row.benchmark_return, true)}</dd>
+            <dt>{t.exposure}</dt><dd>{show(row.mean_daily_position_proxy, true)}</dd><dt>{t.turnover}</dt><dd>{show(row.mean_daily_oneway_turnover_proxy, true)}</dd>
+            <dt>{t.flat}</dt><dd>{row.flat_days_proxy}</dd><dt>{t.sessions}</dt><dd>{row.sessions}</dd>
+            <dt>{t.annualization}</dt><dd>{row.periods_per_year}</dd><dt>{t.methodLabel}</dt><dd><code>{row.method_id}</code></dd>
+          </dl></details>}</td>
+        </tr>)}
+      </tbody></table></div>
+    </details>;
+  })}
+  <p class="detail">{t.limits}</p>
+  <details><summary>{t.provenance}</summary><p>{snapshot.as_of}<br /><code>{snapshot.code_commit}</code><br /><code>{snapshot.plan_sha256}</code></p></details>
+  <a class="text-link report-link" href={report}>{t.report} ↗</a>
+</section>
+<style>
+.study-section { border-top: 1px solid var(--line); padding-top: 3rem; }
+.market-study { border-bottom: 1px solid var(--line); padding: .7rem 0; }
+summary { cursor: pointer; padding: .5rem 0; }
+.result-scroll { overflow-x: auto; margin: 1rem 0 1.5rem; }
+.results-table { width: 100%; border-collapse: collapse; text-align: left; font-size: .88rem; }
+.results-table th,.results-table td { padding: .8rem .6rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+.results-table thead { color: var(--table-heading); background: var(--table-bg); }
+.results-table td details { min-width: 11rem; }
+code { overflow-wrap: anywhere; }
+dd { margin: 0 0 .5rem; }
+dt { color: var(--muted); }
+</style>
