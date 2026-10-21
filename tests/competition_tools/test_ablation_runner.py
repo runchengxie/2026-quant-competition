@@ -174,3 +174,16 @@ def test_boolean_signal_parameter_is_not_numeric_zero(tmp_path):
     job["job_id"] = job_hash(job)
     with pytest.raises(ValueError):
         validate_ablation_job(job)
+
+
+def test_job_rejects_boolean_exposure_limit(tmp_path):
+    from competition_tools.evaluation.ablation_plan import validate_ablation_job
+
+    plan, _, _ = frozen(tmp_path)
+    job = next(j for j in plan["jobs"] if j["status"] == "planned")
+    job["max_gross_exposure"] = True
+    from competition_tools.evaluation.ablation_plan import job_hash
+
+    job["job_id"] = job_hash(job)
+    with pytest.raises(ValueError):
+        validate_ablation_job(job)

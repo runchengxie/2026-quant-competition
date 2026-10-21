@@ -148,6 +148,12 @@ def validate_public_ablation(value: dict) -> dict:
                 raise ValueError
             ids.add(r["job_id"])
             if r["strategy"] is not None:
+                if type(r["cost_bps"]) is not int:
+                    raise ValueError
+                if r["status"] == "completed" and any(
+                    type(r[k]) is not int for k in ["sessions", "flat_days_proxy"]
+                ):
+                    raise ValueError
                 policy = variant_spec(r["market"], r["strategy"], r["variant_id"])
                 if any(
                     canonical_hash(r[k]) != canonical_hash(v) for k, v in policy.items()

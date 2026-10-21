@@ -23,22 +23,7 @@ EXTRA = {
     "origin",
     "catalog_sha256",
 }
-ID_KEYS = (
-    "schema",
-    "market",
-    "manifest_sha256",
-    "strategy",
-    "parameters",
-    "fold",
-    "fee_bps",
-    "variant_id",
-    "variant_parameters",
-    "evidence_role",
-    "origin",
-    "catalog_sha256",
-    "code_commit",
-    "expected_leaf_sha256",
-)
+ID_KEYS = tuple(sorted((JOB_KEYS | EXTRA) - {"job_id", "plan_sha256"}))
 
 
 def job_hash(job):
@@ -79,6 +64,21 @@ def validate_ablation_job(job):
         if any(
             _hash(job[k]) != _hash(v)
             for k, v in policy_spec(job["strategy"], job["variant_id"]).items()
+        ):
+            raise ValueError
+        if any(
+            type(job[k]) is not int
+            for k in [
+                "fee_bps",
+                "max_positions",
+                "max_gross_exposure",
+                "signal_lag_periods",
+            ]
+        ):
+            raise ValueError
+        if any(
+            type(job["fold"][k]) is not int
+            for k in ["warmup_periods", "scoring_periods"]
         ):
             raise ValueError
         origin = job["origin"]

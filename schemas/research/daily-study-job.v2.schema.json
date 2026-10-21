@@ -41,6 +41,7 @@
       "type": "array"
     },
     "max_gross_exposure": {
+      "const": 1,
       "type": "integer"
     },
     "dates": {
@@ -140,6 +141,7 @@
       }
     },
     "signal_lag_periods": {
+      "const": 1,
       "type": "integer"
     },
     "project": {
@@ -168,6 +170,7 @@
       "pattern": "^[a-f0-9]{64}$"
     },
     "execution_assumption": {
+      "const": "lagged_close_proxy",
       "type": "string"
     },
     "manifest": {
@@ -177,6 +180,7 @@
       "type": "string"
     },
     "accounting_model": {
+      "const": "self_financing_daily.v1",
       "type": "string"
     },
     "expected_leaf_sha256": {
@@ -220,6 +224,23 @@
             },
             "evidence_role": {
               "const": "retrospective_ablation"
+            },
+            "fee_bps": {
+              "type": "integer",
+              "enum": [
+                20,
+                40
+              ]
+            },
+            "max_positions": {
+              "type": "integer",
+              "const": 10
+            },
+            "project": {
+              "const": "equity-lab"
+            },
+            "quote_currency": {
+              "const": "USD"
             }
           }
         },
@@ -239,6 +260,23 @@
             },
             "evidence_role": {
               "const": "retrospective_ablation"
+            },
+            "fee_bps": {
+              "type": "integer",
+              "enum": [
+                20,
+                40
+              ]
+            },
+            "max_positions": {
+              "type": "integer",
+              "const": 10
+            },
+            "project": {
+              "const": "equity-lab"
+            },
+            "quote_currency": {
+              "const": "USD"
             }
           }
         },
@@ -261,6 +299,23 @@
             },
             "evidence_role": {
               "const": "retrospective_ablation"
+            },
+            "fee_bps": {
+              "type": "integer",
+              "enum": [
+                20,
+                40
+              ]
+            },
+            "max_positions": {
+              "type": "integer",
+              "const": 10
+            },
+            "project": {
+              "const": "equity-lab"
+            },
+            "quote_currency": {
+              "const": "USD"
             }
           }
         },
@@ -283,6 +338,23 @@
             },
             "evidence_role": {
               "const": "retrospective_ablation"
+            },
+            "fee_bps": {
+              "type": "integer",
+              "enum": [
+                20,
+                40
+              ]
+            },
+            "max_positions": {
+              "type": "integer",
+              "const": 10
+            },
+            "project": {
+              "const": "equity-lab"
+            },
+            "quote_currency": {
+              "const": "USD"
             }
           }
         },
@@ -302,6 +374,23 @@
             },
             "evidence_role": {
               "const": "retrospective_ablation"
+            },
+            "fee_bps": {
+              "type": "integer",
+              "enum": [
+                20,
+                40
+              ]
+            },
+            "max_positions": {
+              "type": "integer",
+              "const": 10
+            },
+            "project": {
+              "const": "equity-lab"
+            },
+            "quote_currency": {
+              "const": "USD"
             }
           }
         },
@@ -324,6 +413,23 @@
             },
             "evidence_role": {
               "const": "retrospective_ablation"
+            },
+            "fee_bps": {
+              "type": "integer",
+              "enum": [
+                20,
+                40
+              ]
+            },
+            "max_positions": {
+              "type": "integer",
+              "const": 10
+            },
+            "project": {
+              "const": "equity-lab"
+            },
+            "quote_currency": {
+              "const": "USD"
             }
           }
         },
@@ -346,6 +452,23 @@
             },
             "evidence_role": {
               "const": "retrospective_ablation"
+            },
+            "fee_bps": {
+              "type": "integer",
+              "enum": [
+                20,
+                40
+              ]
+            },
+            "max_positions": {
+              "type": "integer",
+              "const": 10
+            },
+            "project": {
+              "const": "equity-lab"
+            },
+            "quote_currency": {
+              "const": "USD"
             }
           }
         },
@@ -365,6 +488,23 @@
             },
             "evidence_role": {
               "const": "retrospective_ablation"
+            },
+            "fee_bps": {
+              "type": "integer",
+              "enum": [
+                20,
+                40
+              ]
+            },
+            "max_positions": {
+              "type": "integer",
+              "const": 10
+            },
+            "project": {
+              "const": "equity-lab"
+            },
+            "quote_currency": {
+              "const": "USD"
             }
           }
         },
@@ -387,6 +527,23 @@
             },
             "evidence_role": {
               "const": "retrospective_ablation"
+            },
+            "fee_bps": {
+              "type": "integer",
+              "enum": [
+                20,
+                40
+              ]
+            },
+            "max_positions": {
+              "type": "integer",
+              "const": 10
+            },
+            "project": {
+              "const": "equity-lab"
+            },
+            "quote_currency": {
+              "const": "USD"
             }
           }
         },
@@ -409,6 +566,23 @@
             },
             "evidence_role": {
               "const": "retrospective_ablation"
+            },
+            "fee_bps": {
+              "type": "integer",
+              "enum": [
+                20,
+                40
+              ]
+            },
+            "max_positions": {
+              "type": "integer",
+              "const": 10
+            },
+            "project": {
+              "const": "equity-lab"
+            },
+            "quote_currency": {
+              "const": "USD"
             }
           }
         },
@@ -428,6 +602,23 @@
             },
             "evidence_role": {
               "const": "retrospective_ablation"
+            },
+            "fee_bps": {
+              "type": "integer",
+              "enum": [
+                20,
+                40
+              ]
+            },
+            "max_positions": {
+              "type": "integer",
+              "const": 10
+            },
+            "project": {
+              "const": "equity-lab"
+            },
+            "quote_currency": {
+              "const": "USD"
             }
           }
         },
@@ -447,6 +638,23 @@
             },
             "evidence_role": {
               "const": "retrospective_ablation"
+            },
+            "fee_bps": {
+              "type": "integer",
+              "enum": [
+                30,
+                60
+              ]
+            },
+            "max_positions": {
+              "type": "integer",
+              "const": 10
+            },
+            "project": {
+              "const": "equity-lab"
+            },
+            "quote_currency": {
+              "const": "HKD"
             }
           }
         },
@@ -466,6 +674,23 @@
             },
             "evidence_role": {
               "const": "retrospective_ablation"
+            },
+            "fee_bps": {
+              "type": "integer",
+              "enum": [
+                30,
+                60
+              ]
+            },
+            "max_positions": {
+              "type": "integer",
+              "const": 10
+            },
+            "project": {
+              "const": "equity-lab"
+            },
+            "quote_currency": {
+              "const": "HKD"
             }
           }
         },
@@ -488,6 +713,23 @@
             },
             "evidence_role": {
               "const": "retrospective_ablation"
+            },
+            "fee_bps": {
+              "type": "integer",
+              "enum": [
+                30,
+                60
+              ]
+            },
+            "max_positions": {
+              "type": "integer",
+              "const": 10
+            },
+            "project": {
+              "const": "equity-lab"
+            },
+            "quote_currency": {
+              "const": "HKD"
             }
           }
         },
@@ -510,6 +752,23 @@
             },
             "evidence_role": {
               "const": "retrospective_ablation"
+            },
+            "fee_bps": {
+              "type": "integer",
+              "enum": [
+                30,
+                60
+              ]
+            },
+            "max_positions": {
+              "type": "integer",
+              "const": 10
+            },
+            "project": {
+              "const": "equity-lab"
+            },
+            "quote_currency": {
+              "const": "HKD"
             }
           }
         },
@@ -529,6 +788,23 @@
             },
             "evidence_role": {
               "const": "retrospective_ablation"
+            },
+            "fee_bps": {
+              "type": "integer",
+              "enum": [
+                30,
+                60
+              ]
+            },
+            "max_positions": {
+              "type": "integer",
+              "const": 10
+            },
+            "project": {
+              "const": "equity-lab"
+            },
+            "quote_currency": {
+              "const": "HKD"
             }
           }
         },
@@ -551,6 +827,23 @@
             },
             "evidence_role": {
               "const": "retrospective_ablation"
+            },
+            "fee_bps": {
+              "type": "integer",
+              "enum": [
+                30,
+                60
+              ]
+            },
+            "max_positions": {
+              "type": "integer",
+              "const": 10
+            },
+            "project": {
+              "const": "equity-lab"
+            },
+            "quote_currency": {
+              "const": "HKD"
             }
           }
         },
@@ -573,6 +866,23 @@
             },
             "evidence_role": {
               "const": "retrospective_ablation"
+            },
+            "fee_bps": {
+              "type": "integer",
+              "enum": [
+                30,
+                60
+              ]
+            },
+            "max_positions": {
+              "type": "integer",
+              "const": 10
+            },
+            "project": {
+              "const": "equity-lab"
+            },
+            "quote_currency": {
+              "const": "HKD"
             }
           }
         },
@@ -592,6 +902,23 @@
             },
             "evidence_role": {
               "const": "retrospective_ablation"
+            },
+            "fee_bps": {
+              "type": "integer",
+              "enum": [
+                30,
+                60
+              ]
+            },
+            "max_positions": {
+              "type": "integer",
+              "const": 10
+            },
+            "project": {
+              "const": "equity-lab"
+            },
+            "quote_currency": {
+              "const": "HKD"
             }
           }
         },
@@ -614,6 +941,23 @@
             },
             "evidence_role": {
               "const": "retrospective_ablation"
+            },
+            "fee_bps": {
+              "type": "integer",
+              "enum": [
+                30,
+                60
+              ]
+            },
+            "max_positions": {
+              "type": "integer",
+              "const": 10
+            },
+            "project": {
+              "const": "equity-lab"
+            },
+            "quote_currency": {
+              "const": "HKD"
             }
           }
         },
@@ -636,6 +980,23 @@
             },
             "evidence_role": {
               "const": "retrospective_ablation"
+            },
+            "fee_bps": {
+              "type": "integer",
+              "enum": [
+                30,
+                60
+              ]
+            },
+            "max_positions": {
+              "type": "integer",
+              "const": 10
+            },
+            "project": {
+              "const": "equity-lab"
+            },
+            "quote_currency": {
+              "const": "HKD"
             }
           }
         },
@@ -655,6 +1016,23 @@
             },
             "evidence_role": {
               "const": "retrospective_ablation"
+            },
+            "fee_bps": {
+              "type": "integer",
+              "enum": [
+                30,
+                60
+              ]
+            },
+            "max_positions": {
+              "type": "integer",
+              "const": 10
+            },
+            "project": {
+              "const": "equity-lab"
+            },
+            "quote_currency": {
+              "const": "HKD"
             }
           }
         },
@@ -674,6 +1052,24 @@
             },
             "evidence_role": {
               "const": "retrospective_ablation"
+            },
+            "fee_bps": {
+              "type": "integer",
+              "enum": [
+                0,
+                10,
+                25
+              ]
+            },
+            "max_positions": {
+              "type": "integer",
+              "const": 20
+            },
+            "project": {
+              "const": "crypto-mm"
+            },
+            "quote_currency": {
+              "const": "USDT"
             }
           }
         },
@@ -693,6 +1089,24 @@
             },
             "evidence_role": {
               "const": "retrospective_ablation"
+            },
+            "fee_bps": {
+              "type": "integer",
+              "enum": [
+                0,
+                10,
+                25
+              ]
+            },
+            "max_positions": {
+              "type": "integer",
+              "const": 20
+            },
+            "project": {
+              "const": "crypto-mm"
+            },
+            "quote_currency": {
+              "const": "USDT"
             }
           }
         },
@@ -712,6 +1126,24 @@
             },
             "evidence_role": {
               "const": "retrospective_ablation"
+            },
+            "fee_bps": {
+              "type": "integer",
+              "enum": [
+                0,
+                10,
+                25
+              ]
+            },
+            "max_positions": {
+              "type": "integer",
+              "const": 20
+            },
+            "project": {
+              "const": "crypto-mm"
+            },
+            "quote_currency": {
+              "const": "USDT"
             }
           }
         },
@@ -733,6 +1165,24 @@
             },
             "evidence_role": {
               "const": "retrospective_ablation"
+            },
+            "fee_bps": {
+              "type": "integer",
+              "enum": [
+                0,
+                10,
+                25
+              ]
+            },
+            "max_positions": {
+              "type": "integer",
+              "const": 20
+            },
+            "project": {
+              "const": "crypto-mm"
+            },
+            "quote_currency": {
+              "const": "USDT"
             }
           }
         },
@@ -756,6 +1206,24 @@
             },
             "evidence_role": {
               "const": "retrospective_ablation"
+            },
+            "fee_bps": {
+              "type": "integer",
+              "enum": [
+                0,
+                10,
+                25
+              ]
+            },
+            "max_positions": {
+              "type": "integer",
+              "const": 20
+            },
+            "project": {
+              "const": "crypto-mm"
+            },
+            "quote_currency": {
+              "const": "USDT"
             }
           }
         },
@@ -777,6 +1245,24 @@
             },
             "evidence_role": {
               "const": "post_hoc_diagnostic"
+            },
+            "fee_bps": {
+              "type": "integer",
+              "enum": [
+                0,
+                10,
+                25
+              ]
+            },
+            "max_positions": {
+              "type": "integer",
+              "const": 20
+            },
+            "project": {
+              "const": "crypto-mm"
+            },
+            "quote_currency": {
+              "const": "USDT"
             }
           }
         }

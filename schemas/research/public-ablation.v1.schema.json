@@ -1212,6 +1212,16 @@
                   },
                   "evidence_role": {
                     "const": "retrospective_ablation"
+                  },
+                  "cost_bps": {
+                    "type": "integer",
+                    "enum": [
+                      20,
+                      40
+                    ]
+                  },
+                  "quote_currency": {
+                    "const": "USD"
                   }
                 }
               },
@@ -1231,6 +1241,16 @@
                   },
                   "evidence_role": {
                     "const": "retrospective_ablation"
+                  },
+                  "cost_bps": {
+                    "type": "integer",
+                    "enum": [
+                      20,
+                      40
+                    ]
+                  },
+                  "quote_currency": {
+                    "const": "USD"
                   }
                 }
               },
@@ -1253,6 +1273,16 @@
                   },
                   "evidence_role": {
                     "const": "retrospective_ablation"
+                  },
+                  "cost_bps": {
+                    "type": "integer",
+                    "enum": [
+                      20,
+                      40
+                    ]
+                  },
+                  "quote_currency": {
+                    "const": "USD"
                   }
                 }
               },
@@ -1275,6 +1305,16 @@
                   },
                   "evidence_role": {
                     "const": "retrospective_ablation"
+                  },
+                  "cost_bps": {
+                    "type": "integer",
+                    "enum": [
+                      20,
+                      40
+                    ]
+                  },
+                  "quote_currency": {
+                    "const": "USD"
                   }
                 }
               },
@@ -1294,6 +1334,16 @@
                   },
                   "evidence_role": {
                     "const": "retrospective_ablation"
+                  },
+                  "cost_bps": {
+                    "type": "integer",
+                    "enum": [
+                      20,
+                      40
+                    ]
+                  },
+                  "quote_currency": {
+                    "const": "USD"
                   }
                 }
               },
@@ -1316,6 +1366,16 @@
                   },
                   "evidence_role": {
                     "const": "retrospective_ablation"
+                  },
+                  "cost_bps": {
+                    "type": "integer",
+                    "enum": [
+                      20,
+                      40
+                    ]
+                  },
+                  "quote_currency": {
+                    "const": "USD"
                   }
                 }
               },
@@ -1338,6 +1398,16 @@
                   },
                   "evidence_role": {
                     "const": "retrospective_ablation"
+                  },
+                  "cost_bps": {
+                    "type": "integer",
+                    "enum": [
+                      20,
+                      40
+                    ]
+                  },
+                  "quote_currency": {
+                    "const": "USD"
                   }
                 }
               },
@@ -1357,6 +1427,16 @@
                   },
                   "evidence_role": {
                     "const": "retrospective_ablation"
+                  },
+                  "cost_bps": {
+                    "type": "integer",
+                    "enum": [
+                      20,
+                      40
+                    ]
+                  },
+                  "quote_currency": {
+                    "const": "USD"
                   }
                 }
               },
@@ -1379,6 +1459,16 @@
                   },
                   "evidence_role": {
                     "const": "retrospective_ablation"
+                  },
+                  "cost_bps": {
+                    "type": "integer",
+                    "enum": [
+                      20,
+                      40
+                    ]
+                  },
+                  "quote_currency": {
+                    "const": "USD"
                   }
                 }
               },
@@ -1401,6 +1491,16 @@
                   },
                   "evidence_role": {
                     "const": "retrospective_ablation"
+                  },
+                  "cost_bps": {
+                    "type": "integer",
+                    "enum": [
+                      20,
+                      40
+                    ]
+                  },
+                  "quote_currency": {
+                    "const": "USD"
                   }
                 }
               },
@@ -1420,6 +1520,16 @@
                   },
                   "evidence_role": {
                     "const": "retrospective_ablation"
+                  },
+                  "cost_bps": {
+                    "type": "integer",
+                    "enum": [
+                      20,
+                      40
+                    ]
+                  },
+                  "quote_currency": {
+                    "const": "USD"
                   }
                 }
               },
@@ -1439,6 +1549,16 @@
                   },
                   "evidence_role": {
                     "const": "retrospective_ablation"
+                  },
+                  "cost_bps": {
+                    "type": "integer",
+                    "enum": [
+                      30,
+                      60
+                    ]
+                  },
+                  "quote_currency": {
+                    "const": "HKD"
                   }
                 }
               },
@@ -1458,6 +1578,16 @@
                   },
                   "evidence_role": {
                     "const": "retrospective_ablation"
+                  },
+                  "cost_bps": {
+                    "type": "integer",
+                    "enum": [
+                      30,
+                      60
+                    ]
+                  },
+                  "quote_currency": {
+                    "const": "HKD"
                   }
                 }
               },
@@ -1480,6 +1610,16 @@
                   },
                   "evidence_role": {
                     "const": "retrospective_ablation"
+                  },
+                  "cost_bps": {
+                    "type": "integer",
+                    "enum": [
+                      30,
+                      60
+                    ]
+                  },
+                  "quote_currency": {
+                    "const": "HKD"
                   }
                 }
               },
@@ -1502,6 +1642,16 @@
                   },
                   "evidence_role": {
                     "const": "retrospective_ablation"
+                  },
+                  "cost_bps": {
+                    "type": "integer",
+                    "enum": [
+                      30,
+                      60
+                    ]
+                  },
+                  "quote_currency": {
+                    "const": "HKD"
                   }
                 }
               },
@@ -1521,6 +1671,16 @@
                   },
                   "evidence_role": {
                     "const": "retrospective_ablation"
+                  },
+                  "cost_bps": {
+                    "type": "integer",
+                    "enum": [
+                      30,
+                      60
+                    ]
+                  },
+                  "quote_currency": {
+                    "const": "HKD"
                   }
                 }
               },
@@ -1543,6 +1703,16 @@
                   },
                   "evidence_role": {
                     "const": "retrospective_ablation"
+                  },
+                  "cost_bps": {
+                    "type": "integer",
+                    "enum": [
+                      30,
+                      60
+                    ]
+                  },
+                  "quote_currency": {
+                    "const": "HKD"
                   }
                 }
               },
@@ -1565,6 +1735,16 @@
                   },
                   "evidence_role": {
                     "const": "retrospective_ablation"
+                  },
+                  "cost_bps": {
+                    "type": "integer",
+                    "enum": [
+                      30,
+                      60
+                    ]
+                  },
+                  "quote_currency": {
+                    "const": "HKD"
                   }
                 }
               },
@@ -1584,6 +1764,16 @@
                   },
                   "evidence_role": {
                     "const": "retrospective_ablation"
+                  },
+                  "cost_bps": {
+                    "type": "integer",
+                    "enum": [
+                      30,
+                      60
+                    ]
+                  },
+                  "quote_currency": {
+                    "const": "HKD"
                   }
                 }
               },
@@ -1606,6 +1796,16 @@
                   },
                   "evidence_role": {
                     "const": "retrospective_ablation"
+                  },
+                  "cost_bps": {
+                    "type": "integer",
+                    "enum": [
+                      30,
+                      60
+                    ]
+                  },
+                  "quote_currency": {
+                    "const": "HKD"
                   }
                 }
               },
@@ -1628,6 +1828,16 @@
                   },
                   "evidence_role": {
                     "const": "retrospective_ablation"
+                  },
+                  "cost_bps": {
+                    "type": "integer",
+                    "enum": [
+                      30,
+                      60
+                    ]
+                  },
+                  "quote_currency": {
+                    "const": "HKD"
                   }
                 }
               },
@@ -1647,6 +1857,16 @@
                   },
                   "evidence_role": {
                     "const": "retrospective_ablation"
+                  },
+                  "cost_bps": {
+                    "type": "integer",
+                    "enum": [
+                      30,
+                      60
+                    ]
+                  },
+                  "quote_currency": {
+                    "const": "HKD"
                   }
                 }
               },
@@ -1666,6 +1886,17 @@
                   },
                   "evidence_role": {
                     "const": "retrospective_ablation"
+                  },
+                  "cost_bps": {
+                    "type": "integer",
+                    "enum": [
+                      0,
+                      10,
+                      25
+                    ]
+                  },
+                  "quote_currency": {
+                    "const": "USDT"
                   }
                 }
               },
@@ -1685,6 +1916,17 @@
                   },
                   "evidence_role": {
                     "const": "retrospective_ablation"
+                  },
+                  "cost_bps": {
+                    "type": "integer",
+                    "enum": [
+                      0,
+                      10,
+                      25
+                    ]
+                  },
+                  "quote_currency": {
+                    "const": "USDT"
                   }
                 }
               },
@@ -1704,6 +1946,17 @@
                   },
                   "evidence_role": {
                     "const": "retrospective_ablation"
+                  },
+                  "cost_bps": {
+                    "type": "integer",
+                    "enum": [
+                      0,
+                      10,
+                      25
+                    ]
+                  },
+                  "quote_currency": {
+                    "const": "USDT"
                   }
                 }
               },
@@ -1725,6 +1978,17 @@
                   },
                   "evidence_role": {
                     "const": "retrospective_ablation"
+                  },
+                  "cost_bps": {
+                    "type": "integer",
+                    "enum": [
+                      0,
+                      10,
+                      25
+                    ]
+                  },
+                  "quote_currency": {
+                    "const": "USDT"
                   }
                 }
               },
@@ -1748,6 +2012,17 @@
                   },
                   "evidence_role": {
                     "const": "retrospective_ablation"
+                  },
+                  "cost_bps": {
+                    "type": "integer",
+                    "enum": [
+                      0,
+                      10,
+                      25
+                    ]
+                  },
+                  "quote_currency": {
+                    "const": "USDT"
                   }
                 }
               },
@@ -1769,6 +2044,17 @@
                   },
                   "evidence_role": {
                     "const": "post_hoc_diagnostic"
+                  },
+                  "cost_bps": {
+                    "type": "integer",
+                    "enum": [
+                      0,
+                      10,
+                      25
+                    ]
+                  },
+                  "quote_currency": {
+                    "const": "USDT"
                   }
                 }
               },

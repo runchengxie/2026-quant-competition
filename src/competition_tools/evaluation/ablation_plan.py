@@ -29,22 +29,7 @@ JOB_KEYS = (
     )
     | EXTRA
 )
-ID_KEYS = (
-    "schema",
-    "market",
-    "manifest_sha256",
-    "strategy",
-    "parameters",
-    "fold",
-    "fee_bps",
-    "variant_id",
-    "variant_parameters",
-    "evidence_role",
-    "origin",
-    "catalog_sha256",
-    "code_commit",
-    "expected_leaf_sha256",
-)
+ID_KEYS = tuple(sorted(JOB_KEYS - {"job_id", "plan_sha256"}))
 
 
 def job_hash(job):
@@ -78,6 +63,25 @@ def validate_ablation_job(job: dict) -> None:
             set(job) != JOB_KEYS
             or job["schema"] != "competition.daily_study_job.v2"
             or job["catalog_sha256"] != CATALOG_SHA256
+        ):
+            raise ValueError
+        if any(
+            type(job[k]) is not int
+            for k in [
+                "fee_bps",
+                "max_positions",
+                "max_gross_exposure",
+                "signal_lag_periods",
+            ]
+        ):
+            raise ValueError
+        if job["max_gross_exposure"] != 1 or job["max_positions"] != (
+            20 if job["market"] == "crypto" else 10
+        ):
+            raise ValueError
+        if any(
+            type(job["fold"][k]) is not int
+            for k in ["warmup_periods", "scoring_periods"]
         ):
             raise ValueError
         policy = variant_spec(job["market"], job["strategy"], job["variant_id"])

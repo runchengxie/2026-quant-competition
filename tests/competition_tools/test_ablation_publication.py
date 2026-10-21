@@ -138,3 +138,40 @@ def test_schema_rejects_relabeling_weekly_as_post_hoc():
         jsonschema.validate(v, schema)
     with pytest.raises(ValueError):
         validate_public_ablation(v)
+
+
+def test_public_fee_rejects_boolean_zero():
+    v = public_fixture()
+    from competition_tools.evaluation.ablation_runner import methods_for
+
+    for r in v["results"]:
+        r.update(
+            market="crypto",
+            quote_currency="USDT",
+            strategy="trend_200d",
+            variant_id="baseline",
+            variant_parameters={},
+            cost_bps=False,
+            benchmark="equal_weight",
+            products=["BTCUSDT"],
+            periods_per_year=365,
+        )
+        r["fold"]["scoring_periods"] = 90
+        r["sessions"] = 90
+        r["method_id"] = "crypto.trend_200d.baseline.self_financing_daily.v1"
+    v["results"] = v["results"][:1]
+    v["methods"] = [
+        methods_for(
+            {
+                "market": "crypto",
+                "strategy": "trend_200d",
+                "variant_id": "baseline",
+                "variant_parameters": {},
+                "evidence_role": "retrospective_ablation",
+                "fold": {"scoring_periods": 90},
+            }
+        )
+    ]
+    pair_public_rows(v["results"])
+    with pytest.raises(ValueError):
+        validate_public_ablation(v)
