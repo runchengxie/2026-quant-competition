@@ -41,12 +41,13 @@ def setup(
         validate_external(config.environment_root)
     except ValueError:
         return envelope("setup", issues=["INVALID_REPOSITORY"])
-    if profile not in {"offline", "framework", "broker-data", "website"}:
+    if profile not in {"offline", "framework", "broker-data", "daily-data", "website"}:
         return envelope("setup", issues=["INVALID_PROFILE"])
     names = {
         "offline": ["root", "equity-lab", "crypto-mm"],
         "framework": ["platform-compare"],
         "broker-data": ["root"],
+        "daily-data": ["root"],
         "website": [],
     }[profile]
     launcher = (
@@ -71,6 +72,8 @@ def setup(
             ]
             if profile == "broker-data":
                 argv += ["--extra", "ibkr"]
+            elif profile == "daily-data":
+                argv += ["--extra", "daily-data"]
             child = run_child(argv, environment=environment, timeout=900)
             if child.returncode:
                 return envelope(

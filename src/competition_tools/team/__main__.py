@@ -29,7 +29,7 @@ def main(argv: list[str] | None = None) -> int:
     install.add_argument("--config", type=Path, required=True)
     install.add_argument(
         "--profile",
-        choices=["offline", "framework", "broker-data", "website"],
+        choices=["offline", "framework", "broker-data", "daily-data", "website"],
         default="offline",
     )
     install.add_argument(
