@@ -7,6 +7,7 @@ for(const locale of ["en","zh-CN"]){
   const root=page.locator("#ablation");await expect(root).toBeVisible();await root.scrollIntoViewIfNeeded();await expect(root).toHaveAttribute("data-ready","true");
   await expect(root.locator("canvas")).toHaveCount(2);
   await root.locator("[data-ablation-filter=market]").selectOption("crypto");
+  await root.locator("details[data-ablation-market=crypto] > summary").click();
   await root.locator("[data-ablation-filter=variant]").selectOption("fixed_exposure_60pct");
   await expect(root.locator("[data-ablation-role-note]")).toBeVisible();
   for(const fee of ["0","10","25"]){

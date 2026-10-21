@@ -36,7 +36,7 @@ export function mountAblationCharts(root){
  function draw(){
   const selected=selection(),rows=selectAblations(snapshot,selected),groups=summarizeAblations(snapshot,selected),ids=new Set(rows.map(r=>r.job_id));
   nodes.forEach(n=>{n.hidden=!ids.has(n.dataset.ablationId);});
-  root.querySelectorAll("[data-ablation-market]").forEach(n=>{n.hidden=n.dataset.ablationMarket!==selected.market;n.open=!n.hidden;});
+  root.querySelectorAll("[data-ablation-market]").forEach(n=>{n.hidden=n.dataset.ablationMarket!==selected.market;});
   summary(groups);
   root.querySelector("[data-ablation-status]").textContent=t.ready.replace("{count}",new Intl.NumberFormat(locale).format(rows.length));
   const css=getComputedStyle(document.documentElement),ink=css.getPropertyValue("--ink").trim(),line=css.getPropertyValue("--line").trim(),green=css.getPropertyValue("--green").trim();
