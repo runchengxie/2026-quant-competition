@@ -102,6 +102,33 @@ def test_study_snapshot_requires_strict_public_contract(tmp_path):
     assert any("invalid public study" in error for error in check_site(source, built))
 
 
+def test_study_gate_rejects_nested_private_products(tmp_path):
+    import html
+
+    source, built = make_site_trees(tmp_path)
+    value = json.loads(
+        (
+            Path(__file__).resolve().parents[2]
+            / "site/src/data/real-data-study.v1.json"
+        ).read_text(encoding="utf-8")
+    )
+    product = value["results"][0]["products"][0]
+    value["results"][0]["products"] = {
+        product: {"private_location": "C:/private/raw.csv", "note": "PRIVATE_SENTINEL"}
+    }
+    path = source / "src/data/real-data-study.v1.json"
+    path.parent.mkdir()
+    path.write_text(json.dumps(value), encoding="utf-8")
+    rows = "".join(
+        f'<tr data-study-id="{r["job_id"]}" data-facts="{html.escape(json.dumps(r), quote=True)}"></tr>'
+        for r in value["results"]
+    )
+    for relative in ("index.html", "zh-CN/index.html"):
+        p = built / relative
+        p.write_text(p.read_text(encoding="utf-8") + rows, encoding="utf-8")
+    assert any("invalid public study" in error for error in check_site(source, built))
+
+
 def test_allows_only_reviewed_validation_snapshot_and_scans_its_content(tmp_path):
     source, built = make_site_trees(tmp_path)
     data = source / "src/data"

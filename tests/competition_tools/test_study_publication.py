@@ -26,6 +26,24 @@ def blocked_study(tmp_path):
     )
 
 
+@pytest.mark.parametrize("target", ["coverage", "results"])
+def test_product_arrays_cannot_hide_private_objects(tmp_path, target):
+    from pathlib import Path
+
+    value = json.loads(
+        (
+            Path(__file__).resolve().parents[2]
+            / "site/src/data/real-data-study.v1.json"
+        ).read_text(encoding="utf-8")
+    )
+    product = value[target][0]["products"][0]
+    value[target][0]["products"] = {
+        product: {"private_location": "C:/private/raw.csv", "note": "PRIVATE_SENTINEL"}
+    }
+    with pytest.raises(ValueError):
+        validate_public_study(value)
+
+
 def test_private_metadata_is_not_projected(tmp_path):
     aggregate = blocked_study(tmp_path)
     aggregate["private"] = {"account": "PRIVATE_SENTINEL", "path": "C:/private/raw.csv"}

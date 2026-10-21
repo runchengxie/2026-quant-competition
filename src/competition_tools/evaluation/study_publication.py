@@ -103,6 +103,17 @@ def validate_public_study(value):
         if datetime.fromisoformat(text).date().isoformat() != text:
             raise ValueError("INVALID_PUBLIC_STUDY_DATE")
 
+    def products(items, market, *, empty=False):
+        if (
+            not isinstance(items, list)
+            or len(items) > 20
+            or (not empty and not items)
+            or any(not isinstance(item, str) for item in items)
+            or len(set(items)) != len(items)
+            or (items and (market not in POOLS or not set(items) <= POOLS[market]))
+        ):
+            raise ValueError("INVALID_PUBLIC_STUDY_PRODUCTS")
+
     exact(value, TOP_KEYS)
     if (
         value["schema"] != "competition.public_study.v1"
@@ -153,6 +164,7 @@ def validate_public_study(value):
     for coverage in value["coverage"]:
         exact(coverage, COVERAGE_KEYS)
         market = coverage["market"]
+        products(coverage["products"], market)
         if (
             market not in POOLS
             or coverage["source"]
@@ -188,6 +200,7 @@ def validate_public_study(value):
             raise ValueError("INVALID_PUBLIC_STUDY_RESULT")
         ids.add(row["job_id"])
         market = row["market"]
+        products(row["products"], market, empty=row["strategy"] is None)
         if row["products"] and (
             market not in POOLS or not set(row["products"]) <= POOLS[market]
         ):

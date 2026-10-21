@@ -44,10 +44,11 @@ const report = `https://github.com/runchengxie/2026-quant-competition/blob/main/
 .market-study { border-bottom: 1px solid var(--line); padding: .7rem 0; }
 summary { cursor: pointer; padding: .5rem 0; }
 .result-scroll { overflow-x: auto; margin: 1rem 0 1.5rem; }
-.results-table { width: 100%; border-collapse: collapse; text-align: left; font-size: .88rem; }
+.results-table { width: 100%; min-width: 60rem; border-collapse: collapse; text-align: left; font-size: .88rem; }
 .results-table th,.results-table td { padding: .8rem .6rem; border-bottom: 1px solid var(--line); vertical-align: top; }
 .results-table thead { color: var(--table-heading); background: var(--table-bg); }
 .results-table td details { min-width: 11rem; }
+.results-table th code { white-space: nowrap; }
 code { overflow-wrap: anywhere; }
 dd { margin: 0 0 .5rem; }
 dt { color: var(--muted); }
