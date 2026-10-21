@@ -400,6 +400,7 @@ def test_locales_preserve_validation_machine_facts(tmp_path, translated_return):
         translated_return != "0.1"
     )
 
+
 def test_notice_is_exactly_allowlisted_and_still_scanned(tmp_path):
     source, built = make_site_trees(tmp_path)
     notice = source / "public/third-party-notices.txt"
