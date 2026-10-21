@@ -25,21 +25,32 @@ def result(state, code, *, attempted=False):
     }
 
 
-def probe_api(connection_file: Path, *, timeout=2, client_factory=None) -> dict:
+def load_paper_endpoint(path: Path) -> dict:
+    """Read only a loopback Paper endpoint, never credentials."""
     try:
-        source = validate_external(connection_file)
+        source = validate_external(path)
         connection = json.loads(source.read_text(encoding="utf-8-sig"))
         if (
-            set(connection) != {"host", "port", "client_id"}
+            not isinstance(connection, dict)
+            or set(connection) != {"host", "port", "client_id"}
             or connection["host"] != "127.0.0.1"
             or type(connection["port"]) is not int
             or connection["port"] != 4002
             or type(connection["client_id"]) is not int
             or not 0 < connection["client_id"] < 2**31
-            or not 0.1 <= timeout <= 5
         ):
-            return result("blocked", "INVALID_PAPER_CONNECTION")
+            raise ValueError("INVALID_PAPER_CONNECTION")
+        return connection
     except (OSError, ValueError, TypeError, KeyError):
+        raise ValueError("INVALID_PAPER_CONNECTION") from None
+
+
+def probe_api(connection_file: Path, *, timeout=2, client_factory=None) -> dict:
+    try:
+        connection = load_paper_endpoint(connection_file)
+        if not 0.1 <= timeout <= 5:
+            return result("blocked", "INVALID_PAPER_CONNECTION")
+    except (ValueError, TypeError):
         return result("blocked", "INVALID_PAPER_CONNECTION")
     if client_factory is None:
         try:
