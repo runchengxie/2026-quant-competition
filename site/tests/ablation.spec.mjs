@@ -19,7 +19,11 @@ for(const locale of ["en","zh-CN"]){
   const facts=await root.locator("[data-ablation-id]").evaluateAll(ns=>ns.map(n=>JSON.parse(n.dataset.facts)));
   const original=JSON.parse(await readFile(new URL("../src/data/real-data-study.v1.json",import.meta.url),"utf8"));
   expect(await page.locator("[data-study-id]").evaluateAll(ns=>ns.map(n=>JSON.parse(n.dataset.facts)).sort((a,b)=>a.job_id.localeCompare(b.job_id)))).toEqual([...original.results].sort((a,b)=>a.job_id.localeCompare(b.job_id)));
-  for(const theme of ["dark","light","system"]){await page.locator("#theme-preference").selectOption(theme);await expect(root).toHaveAttribute("data-ready","true");}
+  for(const theme of ["dark","light","system"]){
+   await page.locator("#theme-preference").selectOption(theme);await expect(root).toHaveAttribute("data-ready","true");
+   await expect(root).toHaveAttribute("data-chart-colors",/rgb\(/);
+   await expect.poll(async()=>root.evaluate(n=>JSON.parse(n.dataset.chartColors).ink===getComputedStyle(n).color)).toBe(true);
+  }
   expect(await root.locator("[data-ablation-id]").evaluateAll(ns=>ns.map(n=>JSON.parse(n.dataset.facts)))).toEqual(facts);
   await page.setViewportSize({width:390,height:844});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   expect(errors).toEqual([]);

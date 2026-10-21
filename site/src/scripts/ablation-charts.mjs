@@ -39,8 +39,12 @@ export function mountAblationCharts(root){
   root.querySelectorAll("[data-ablation-market]").forEach(n=>{n.hidden=n.dataset.ablationMarket!==selected.market;});
   summary(groups);
   root.querySelector("[data-ablation-status]").textContent=t.ready.replace("{count}",new Intl.NumberFormat(locale).format(rows.length));
-  const css=getComputedStyle(document.documentElement),ink=css.getPropertyValue("--ink").trim(),line=css.getPropertyValue("--line").trim(),green=css.getPropertyValue("--green").trim();
-  const common={animation:false,textStyle:{color:ink},backgroundColor:"transparent",aria:{enabled:true},tooltip:{trigger:"item",renderMode:"richText"}};
+  // Resolve light-dark() through a styled element before passing colors to Canvas.
+  const probe=document.createElement("span");probe.style.visibility="hidden";root.append(probe);
+  const resolve=name=>{probe.style.color=`var(${name})`;return getComputedStyle(probe).color;};
+  const ink=resolve("--ink"),line=resolve("--line"),green=resolve("--green"),paper=resolve("--surface");probe.remove();
+  root.dataset.chartColors=JSON.stringify({ink,line,green,paper});
+  const common={animation:false,textStyle:{color:ink},backgroundColor:"transparent",aria:{enabled:true},tooltip:{trigger:"item",renderMode:"richText",backgroundColor:paper,borderColor:line,textStyle:{color:ink}}};
   const paired=groups.filter(g=>g.median_paired_net_change!==null);
   charts.paired.setOption({...common,grid:{left:55,right:25,top:25,bottom:95},xAxis:{type:"category",data:paired.map(label),axisLabel:{color:ink,rotate:25,width:115,overflow:"truncate"}},yAxis:{type:"value",axisLabel:{color:ink,formatter:v=>formatter.format(v*100)+"%"},splitLine:{lineStyle:{color:line}}},dataZoom:[{type:"inside",filterMode:"none"},{type:"slider",height:16,bottom:0,textStyle:{color:ink}}],series:[{type:"bar",name:t.paired,data:paired.map(g=>({value:g.median_paired_net_change,name:label(g),itemStyle:{color:g.evidence_role==="post_hoc_diagnostic"?"#b37a25":green}})),tooltip:{valueFormatter:show}}]},true);
   charts.risk.setOption({...common,grid:{left:65,right:25,top:30,bottom:65},xAxis:{type:"value",name:t.exposure,nameLocation:"middle",nameGap:35,nameTextStyle:{color:ink},axisLabel:{color:ink,formatter:v=>formatter.format(v*100)+"%"},splitLine:{lineStyle:{color:line}}},yAxis:{type:"value",axisLabel:{color:ink,formatter:v=>formatter.format(v*100)+"%"},splitLine:{lineStyle:{color:line}}},series:[{type:"scatter",name:t.turnover,symbolSize:13,data:groups.filter(g=>g.median_exposure!==null&&g.median_daily_turnover!==null).map(g=>({name:label(g),value:[g.median_exposure,g.median_daily_turnover],itemStyle:{color:g.evidence_role==="post_hoc_diagnostic"?"#b37a25":green}})),tooltip:{valueFormatter:show}}]},true);
