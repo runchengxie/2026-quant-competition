@@ -52,7 +52,7 @@ def load_study_input(path: Path) -> dict:
     selected = list(products)
     benchmark = "equal_weight" if crypto else spec["benchmark"]
     if not crypto:
-        if not identifier(benchmark) or benchmark in products:
+        if benchmark != {"US": "SPY", "HK": "2800"}[market] or benchmark in products:
             raise ValueError("INVALID_STUDY_BENCHMARK")
         selected.append(benchmark)
     records = {r["path"]: r for r in manifest["files"]}

@@ -230,6 +230,8 @@ def _load_prices(job):
             raise ValueError("DATASET_HASH_MISMATCH")
         records[relative.as_posix()] = target
     if not crypto:
+        if job["benchmark"] != {"US": "SPY", "HK": "2800"}[job["market"]]:
+            raise ValueError("INVALID_STUDY_BENCHMARK")
         schedule = manifest["receipt"]["calendar"]["sessions"]
         if [d for d in schedule if job["dates"][0] <= d <= job["dates"][-1]] != job[
             "dates"

@@ -18,6 +18,22 @@ def test_source_identity_requires_checkout(tmp_path):
         source_identity(tmp_path)
 
 
+def test_stock_benchmark_is_fixed_by_market(tmp_path):
+    from competition_tools.check_study_delivery import synthetic_manifest
+    from competition_tools.evaluation.study_inputs import load_study_input
+
+    path = synthetic_manifest(tmp_path / "dataset", crypto=False)
+    value = json.loads(path.read_text())
+    value["spec"]["benchmark"] = "QQQ"
+    (path.parent / "normalized/SPY.csv").rename(path.parent / "normalized/QQQ.csv")
+    for record in value["files"]:
+        if record["path"] == "normalized/SPY.csv":
+            record["path"] = "normalized/QQQ.csv"
+    path.write_text(json.dumps(value))
+    with pytest.raises(ValueError, match="INVALID_STUDY_BENCHMARK"):
+        load_study_input(path)
+
+
 def crypto_manifest(root, *, days=600, partial=False):
     root.mkdir(parents=True)
     (root / ".dataset-owner").write_text("competition.dataset.v1")
