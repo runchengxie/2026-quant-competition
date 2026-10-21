@@ -173,6 +173,11 @@ main {
   gap:4rem;
   align-items:center;
 }
+.showcase-hero.performance-hero {
+  grid-template-columns:minmax(0,1fr);
+  padding-top:3rem;
+  padding-bottom:2.5rem;
+}
 .eyebrow {
   color:var(--green);
   font-size:.72rem;
@@ -638,10 +643,13 @@ footer {
   .project-nav {
     padding:1rem;
     gap:1rem;
+    flex-wrap:wrap;
   }
   .project-nav>div {
     gap:.85rem;
     font-size:.72rem;
+    flex-wrap:wrap;
+    min-width:0;
   }
   .wordmark {
     font-size:.75rem;

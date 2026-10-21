@@ -1,0 +1,81 @@
+---
+import snapshot from "../data/real-data-study.v1.json";
+import { deriveChartModels,selectWindowOptions } from "../scripts/dashboard-state.mjs";
+import en from "../i18n/en.json";
+import zh from "../i18n/zh-CN.json";
+interface Props { locale?:string }
+const locale=Astro.props.locale==="zh-CN"?"zh-CN":"en";
+const t=(locale==="zh-CN"?zh:en).dashboard;
+const model=deriveChartModels(snapshot,null,{market:"US",strategy:"buy_hold",feeBps:20});
+const selected=model.selected!;
+const windows=selectWindowOptions(model.rows);
+const prefix=`/2026-quant-competition/${locale==="zh-CN"?"zh-CN/":""}`;
+const number=new Intl.NumberFormat(locale,{minimumFractionDigits:2,maximumFractionDigits:2});
+const display=(value:number|null,percent=true)=>value===null?"—":number.format(value*(percent?100:1))+(percent?"%":"");
+const cards=["net_return","excess_return","max_drawdown","sharpe","mean_exposure","cost_drag"] as const;
+const panels=["nav","drawdown","folds","fees","scatter","turnover","exposure","histogram"] as const;
+---
+<section id="performance" data-ready="false" data-zoom="100" data-gross-visible="true" class="performance-dashboard">
+  <div class="dashboard-heading"><div><p class="eyebrow">{t.eyebrow}</p><h2>{t.title}</h2><p>{t.intro}</p></div><a class="text-link" data-documentation href={`${prefix}docs/`}>{t.docs} ↗</a></div>
+  <div class="evidence-strip"><span>{snapshot.as_of}</span><span>318 {t.jobs}</span><span>{t.frozen}</span></div>
+  <p class="detail dashboard-limit">{t.limit}</p>
+  <fieldset class="dashboard-controls" disabled>
+    <legend class="visually-hidden">{t.filters}</legend>
+    <label>{t.market}<select data-filter="market">{Object.entries(t.markets).map(([value,label])=><option value={value}>{label}</option>)}</select></label>
+    <label>{t.strategy}<select data-filter="strategy">{["buy_hold","equal_weight","momentum_20d","sma_cross","benchmark_buy_hold"].map(value=><option value={value}>{t.strategies[value as keyof typeof t.strategies]}</option>)}</select></label>
+    <label>{t.fee}<select data-filter="fee"><option value="20">20 bps</option><option value="40">40 bps</option></select></label>
+    <label>{t.window}<select data-filter="window">{windows.map(w=><option value={w.start}>{w.start} – {w.end}</option>)}</select></label>
+    <label class="gross-toggle"><input type="checkbox" data-toggle-gross checked />{t.gross}</label>
+    <label>{t.zoom}<input data-zoom-window type="range" min="20" max="100" value="100" step="10" /></label>
+    <button type="button" data-reset>{t.reset}</button>
+  </fieldset>
+  <p class="selection-note" data-selection-note>{selected.quote_currency} · {selected.start} – {selected.end} · {selected.sessions} {t.periods}</p>
+  <div class="metric-cards" data-dashboard-selected data-facts={JSON.stringify(selected)}>{cards.map(key=><div><span>{t.metrics[key]}</span><strong data-metric={key}>{display(selected[key],key!=="sharpe")}</strong></div>)}</div>
+  <p class="chart-status" data-chart-status role="status">{t.loading}</p>
+  <p class="chart-status" data-curve-unavailable hidden>{t.curveUnavailable}</p>
+  <div class="chart-grid">{panels.map(key=><figure><figcaption>{t.charts[key]}</figcaption><div class="chart-root" data-chart={key} role="img" aria-label={t.charts[key]}></div><p>{t.chartNotes[key]}</p></figure>)}</div>
+  <noscript><p>{t.noJs} <a href="#study">{t.table}</a></p></noscript>
+  <div class="research-context"><div><h3>{t.factorTitle}</h3><p>{t.factorNote}</p></div><div><h3>{t.nextTitle}</h3><ul><li>{t.usNext}</li><li>{t.cryptoNext}</li><li>{t.mlNext}</li><li>{t.runtimeNext}</li></ul></div></div>
+  <p class="detail">{t.historical} <a href="#study">{t.table}</a> · <a href={`${prefix}docs/study/`}>{t.method}</a></p>
+  <script type="application/json" data-dashboard-config set:html={JSON.stringify({locale,t}).replaceAll("<","\u003c")} />
+</section>
+<script>
+  const root=document.getElementById("performance");
+  if(root){
+    const observer=new IntersectionObserver(async(entries)=>{
+      if(!entries.some(e=>e.isIntersecting))return;
+      observer.disconnect();
+      try { const {mountPerformanceDashboard}=await import("../scripts/performance-charts.mjs"); await mountPerformanceDashboard(root); }
+      catch(error){const config=JSON.parse(root.querySelector("[data-dashboard-config]")!.textContent!);root.querySelector("[data-chart-status]")!.textContent=config.t.loadError;root.dataset.ready="error";console.error("Performance dashboard could not load",error);}
+    },{rootMargin:"200px"});
+    observer.observe(root);
+  }
+</script>
+<style>
+.performance-dashboard { padding:2rem 0 3rem; border-top:1px solid var(--line); }
+.dashboard-heading { display:flex; gap:1.5rem; align-items:start; justify-content:space-between; }
+.dashboard-heading h2 { margin:.4rem 0 1rem; }
+.dashboard-heading>a { flex-shrink:0; margin-top:2rem; }
+.evidence-strip { display:flex; gap:.6rem 1.5rem; flex-wrap:wrap; font-size:.85rem; color:var(--muted); }
+.dashboard-limit { border-left:3px solid var(--green); padding-left:1rem; }
+.dashboard-controls { margin:1.5rem 0; padding:1.2rem; border:1px solid var(--line); border-radius:.75rem; background:var(--surface); display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1rem; }
+.dashboard-controls label { display:grid; gap:.4rem; font-size:.85rem; min-width:0; }
+.dashboard-controls select { width:100%; min-width:0; padding:.65rem .4rem; color:var(--ink); background:var(--paper); border:1px solid var(--line); border-radius:.3rem; font:inherit; }
+.dashboard-controls button { border:1px solid var(--green); border-radius:.3rem; background:var(--green); color:var(--button-ink); cursor:pointer; font:inherit; min-height:2.6rem; align-self:end; }
+.dashboard-controls .gross-toggle { display:flex; align-items:center; gap:.5rem; }
+.selection-note { color:var(--muted); font-size:.9rem; }
+.metric-cards { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:.75rem; }
+.metric-cards>div { padding:1rem .8rem; border:1px solid var(--line); border-radius:.5rem; background:var(--surface); }
+.metric-cards span { display:block; color:var(--muted); font-size:.78rem; }
+.metric-cards strong { display:block; font-size:clamp(1rem,2vw,1.5rem); margin-top:.4rem; font-variant-numeric:tabular-nums; }
+.chart-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem; }
+.chart-grid figure { margin:0; min-width:0; padding:1rem; border:1px solid var(--line); border-radius:.75rem; background:var(--surface); }
+figcaption { font-weight:650; }
+.chart-root { height:300px; width:100%; margin-top:.8rem; }
+.chart-grid figure>p { color:var(--muted); font-size:.8rem; margin:.4rem 0; }
+.chart-status { font-size:.9rem; color:var(--muted); }
+.research-context { display:grid; grid-template-columns:1fr 1fr; gap:2rem; margin-top:2rem; }
+.research-context p,.research-context li { color:var(--muted); }
+@media(max-width:800px) { .dashboard-controls { grid-template-columns:repeat(2,minmax(0,1fr)); } .metric-cards { grid-template-columns:repeat(3,minmax(0,1fr)); } .chart-grid { grid-template-columns:minmax(0,1fr); } }
+@media(max-width:500px) { .dashboard-heading { display:block; } .dashboard-heading>a { display:inline-block; margin:0 0 1rem; } .dashboard-controls { grid-template-columns:minmax(0,1fr); padding:1rem; } .metric-cards { grid-template-columns:repeat(2,minmax(0,1fr)); } .research-context { grid-template-columns:minmax(0,1fr); gap:.5rem; } }
+</style>

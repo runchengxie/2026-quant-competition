@@ -3,12 +3,14 @@ import SiteLayout from "../layouts/SiteLayout.astro";
 import ValidationResults from "./ValidationResults.astro";
 import ExpansionResults from "./ExpansionResults.astro";
 import StudyResults from "./StudyResults.astro";
+import PerformanceDashboard from "./PerformanceDashboard.astro";
 import en from "../i18n/en.json";
 import zh from "../i18n/zh-CN.json";
 interface Props { locale?: string }
 const locale = Astro.props.locale === "zh-CN" ? "zh-CN" : "en";
 const t = locale === "zh-CN" ? zh : en;
 const repository = "https://github.com/runchengxie/2026-quant-competition";
+const docsUrl=`/2026-quant-competition/${locale==="zh-CN"?"zh-CN/":""}docs/`;
 const file = (path: string) => `${repository}/blob/main/${path}`;
 const numbers = new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 const closes = [100.0, 100.3, 100.6, 100.9, 101.2, 101.5, 101.8];
@@ -22,18 +24,18 @@ const guide = (directory: string) => file(`research/${directory}/README${locale 
 <SiteLayout locale={locale} title={t.meta.title} description={t.meta.description}>
   <nav class="project-nav" aria-label={t.nav.demo}>
     <a class="wordmark" href="#">QUANT / LAB</a>
-    <div><a href="#demo">{t.nav.demo}</a><a href="#research">{t.nav.research}</a><a href="#validation">{t.nav.validation}</a><a href="#engineering">{t.nav.engineering}</a></div>
+    <div><a href="#performance">{t.dashboard.title}</a><a href={docsUrl}>{t.documents.title}</a><a href="#demo">{t.nav.demo}</a><a href="#engineering">{t.nav.engineering}</a></div>
     <a class="repo-link" href={repository}>{t.nav.repo}<span aria-hidden="true"> ↗</span></a>
   </nav>
-  <header class="showcase-hero">
+  <header class="showcase-hero performance-hero">
     <div>
       <p class="eyebrow">{t.hero.eyebrow}</p>
       <h1>{t.hero.title}</h1>
       <p class="intro">{t.hero.intro}</p>
-      <div class="hero-actions"><a class="button" href="#demo">{t.hero.primary}<span aria-hidden="true"> ↓</span></a><a class="text-link" href={repository}>{t.hero.secondary} ↗</a></div>
+      <div class="hero-actions"><a class="button" href="#performance">{t.hero.primary}<span aria-hidden="true"> ↓</span></a><a class="text-link" href={docsUrl}>{t.documents.title} ↗</a></div>
       <p class="hero-note">{t.hero.note}</p>
     </div>
-    <div class="lab-window" aria-label={t.demo.pipeline}>
+    <div class="lab-window" aria-label={t.demo.pipeline} hidden>
       <div class="window-bar"><span class="window-dots" aria-hidden="true">● ● ●</span><span>research / offline</span></div>
       <div class="window-body">
         <p class="terminal-label">{t.demo.synthetic}</p>
@@ -45,6 +47,7 @@ const guide = (directory: string) => file(`research/${directory}/README${locale 
     </div>
   </header>
   <main>
+    <PerformanceDashboard locale={locale} />
     <section id="demo" class="demo-section">
       <div class="section-heading"><p class="eyebrow">{t.demo.eyebrow}</p><h2>{t.demo.title}</h2><p>{t.demo.intro}</p></div>
       <div class="demo-switcher">

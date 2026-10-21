@@ -17,12 +17,12 @@
     "validation": "Validation results"
   },
   "hero": {
-    "eyebrow": "RESEARCH LAB / PROJECT SHOWCASE",
-    "title": "See the strategy.\nFollow the experiment.",
-    "intro": "Two offline research paths, from a small fictional dataset to an inspectable report. Explore the models, see what they produce, and run the same demo locally.",
-    "primary": "Explore the demos",
+    "eyebrow": "INSPECTABLE RESEARCH",
+    "title": "Strategy returns, costs and risk in view.",
+    "intro": "Compare fixed-plan historical evidence, explore interactive charts and read the methods in one place.",
+    "primary": "Explore performance",
     "secondary": "Browse the code",
-    "note": "Synthetic examples · Open research code · No broker connection"
+    "note": "Retrospective research · fixed current pools · no live trading record"
   },
   "demo": {
     "eyebrow": "01 / EXPLORE",
@@ -276,6 +276,85 @@
       "quickstart": "Install, configure and run the independent offline packages.",
       "datasets": "Daily acquisition, immutable receipts and input validation.",
       "study": "Fixed assumptions, accounting, actual results and limitations."
+    }
+  },
+  "dashboard": {
+    "eyebrow": "RESEARCH / PERFORMANCE",
+    "title": "Research performance",
+    "intro": "Explore historical strategy outcomes across US stocks, Hong Kong stocks and crypto spot.",
+    "docs": "Read the documentation",
+    "jobs": "completed fold/cost jobs",
+    "frozen": "Fixed plan · independent windows",
+    "limit": "These are independent retrospective windows, not a live account or a continuous equity curve. The current fixed pools have selection bias. USD, HKD and USDT remain separate.",
+    "filters": "Chart filters",
+    "market": "Market",
+    "strategy": "Strategy",
+    "fee": "One-way cost",
+    "window": "Independent scored window",
+    "gross": "Zero-fee gross",
+    "net": "Net",
+    "excess": "Excess return",
+    "zoom": "Visible curve portion (%)",
+    "reset": "Reset view",
+    "periods": "scored periods",
+    "windows": "Windows",
+    "loading": "Interactive charts load when this section becomes visible. Tables remain available below.",
+    "ready": "Hover to inspect. Legends toggle series; curve sliders and the mouse wheel zoom within this window.",
+    "curveUnavailable": "Daily curves are not published for single-instrument stock benchmarks. Their window returns remain in the comparison tables.",
+    "noJs": "JavaScript is disabled. Read the selected-window summary and complete published tables.",
+    "table": "All published windows",
+    "method": "Accounting and methods",
+    "empty": "No completed result matches this selection.",
+    "loadError": "Charts could not load. The published tables and documentation remain available.",
+    "factorTitle": "Strategy effects, before factor claims",
+    "factorNote": "Momentum and trend filters are tested strategies. IC, rank-IC, quantile spreads, signal decay and machine-learning test results have not been measured here. These charts do not establish independent factor efficacy.",
+    "nextTitle": "Next research milestones",
+    "usNext": "US stocks: momentum ranking, slower rebalancing, volatility scaling and position caps, compared one change at a time with hold/equal-weight baselines.",
+    "cryptoNext": "Crypto spot: test trend sizing, cash exits and turnover buffers before introducing derivatives or maker claims.",
+    "mlNext": "Machine learning is a later challenger: causal features, chronological validation, fixed costs and a separate forward observation period.",
+    "runtimeNext": "Default delivery stays standalone. A future optional runtime adapter must prove clock, cash and cost compatibility; it is not connected here.",
+    "historical": "Earlier snapshots and synthetic demos below retain their original methods and dates.",
+    "markets": {
+      "US": "US stocks",
+      "HK": "Hong Kong stocks",
+      "crypto": "Crypto spot"
+    },
+    "strategies": {
+      "buy_hold": "Buy and hold",
+      "equal_weight": "Equal weight",
+      "momentum_20d": "Positive momentum · 20",
+      "sma_cross": "SMA · 20/60",
+      "benchmark_buy_hold": "Market benchmark",
+      "momentum_63d": "Positive momentum · 63",
+      "trend_200d": "Trend · 200"
+    },
+    "metrics": {
+      "net_return": "Net return",
+      "excess_return": "Excess return",
+      "max_drawdown": "Max drawdown",
+      "sharpe": "Sharpe",
+      "mean_exposure": "Mean position proxy",
+      "cost_drag": "Cost drag"
+    },
+    "charts": {
+      "nav": "Selected-window NAV",
+      "drawdown": "Selected-window drawdown",
+      "folds": "Return across independent windows",
+      "fees": "Cost sensitivity · same window",
+      "scatter": "Return versus drawdown · same market/cost",
+      "turnover": "Mean daily one-way turnover proxy",
+      "exposure": "Mean daily position proxy",
+      "histogram": "Distribution of window returns"
+    },
+    "chartNotes": {
+      "nav": "Each window starts at 1. Entry costs are charged before the first scored move; final holdings are not liquidated.",
+      "drawdown": "Nonnegative drawdown from the running peak, including initial NAV 1.",
+      "folds": "Each bar is a separate cash-start window, not a compounded account return.",
+      "fees": "Same strategy and window; only the predeclared one-way fee assumption changes.",
+      "scatter": "All strategies and windows in the selected market/cost. Higher return and smaller drawdown are preferable, not proof of future performance.",
+      "turnover": "Daily average includes all scoring periods, not only trading dates.",
+      "exposure": "Marked model positions; not official competition eligibility.",
+      "histogram": "Counts of independent window returns for the selected strategy and cost."
     }
   }
 }
