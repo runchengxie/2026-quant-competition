@@ -53,3 +53,40 @@ test("published evidence remains readable without JavaScript",async({browser})=>
   await expect(page.locator("[data-study-id]")).toHaveCount(318);
   await context.close();
 });
+
+test('research summaries expose fixed assumptions and localized stable statistics',async({page})=>{
+ let canonical;
+ for(const locale of ['en','zh-CN']){
+  await page.goto(locale==='en'?'/2026-quant-competition/':'/2026-quant-competition/zh-CN/');
+  await expect(page.locator('[data-market-summary]')).toHaveCount(3);
+  const facts=await page.locator('[data-summary-facts]').evaluateAll(nodes=>nodes.map(n=>JSON.parse(n.dataset.summaryFacts)));
+  if(canonical)expect(facts).toEqual(canonical);else canonical=facts;
+  for(const fact of facts){const rows=study.results.filter(r=>r.market===fact.market&&r.strategy===fact.strategy&&r.cost_bps===fact.feeBps);expect(fact.count).toBe(rows.length);expect(fact.worstNetReturn).toBe(Math.min(...rows.map(r=>r.net_return)));}
+  const root=page.locator('#performance');await root.scrollIntoViewIfNeeded();await expect(root).toHaveAttribute('data-ready','true');
+  await expect(root.locator('[data-stability]')).toHaveAttribute('data-count','11');
+  await root.locator('[data-filter=market]').selectOption('crypto');
+  await root.locator('[data-filter=strategy]').selectOption('equal_weight');
+  await expect(root.locator('[data-strategy-description]')).toContainText(locale==='en'?'drift':'漂移');
+  await expect(root.locator('[data-stability]')).toHaveAttribute('data-count',String(study.results.filter(r=>r.market==='crypto'&&r.strategy==='equal_weight'&&r.cost_bps===10).length));
+  await root.locator('[data-toggle-gross]').uncheck();
+  await page.getByLabel(locale==='en'?'Appearance':'外观').selectOption('dark');
+  await expect(root.locator('[data-toggle-gross]')).not.toBeChecked();
+ }
+});
+
+
+test('legend choice and panned curve range survive a theme change',async({page})=>{
+ await page.goto('/2026-quant-competition/');const root=page.locator('#performance');await root.scrollIntoViewIfNeeded();await expect(root).toHaveAttribute('data-ready','true');
+ const canvas=root.locator('[data-chart=nav] canvas');const box=await canvas.boundingBox();
+ await canvas.click({position:{x:box.width/2+40,y:12}});
+ await expect(root.locator('[data-toggle-gross]')).not.toBeChecked();
+ await root.locator('[data-zoom-window]').fill('40');await root.locator('[data-zoom-window]').dispatchEvent('input');
+ await canvas.scrollIntoViewIfNeeded();
+ const b=await canvas.boundingBox();const width=b.width-80;
+ await page.mouse.move(b.x+58+width*.8,b.y+286);await page.mouse.down();await page.mouse.move(b.x+58+width*.5,b.y+286,{steps:5});await page.mouse.up();
+ await expect.poll(async()=>JSON.parse(await root.locator('[data-chart=nav]').getAttribute('data-range')).end).toBeLessThan(72);
+ const range=await root.locator('[data-chart=nav]').getAttribute('data-range');expect(range).not.toBeNull();expect(JSON.parse(range).end).toBeLessThan(99);
+ await page.getByLabel('Appearance').selectOption('dark');
+ await expect(root.locator('[data-chart=nav]')).toHaveAttribute('data-range',range);
+ await expect(root.locator('[data-toggle-gross]')).not.toBeChecked();
+});

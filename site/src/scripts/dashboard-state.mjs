@@ -36,3 +36,13 @@ export function deriveChartModels(study,series,selection) {
     histogram:distribution(rows),
   };
 }
+
+/** Descriptive statistics over separate published windows, never an account return. */
+export function summarizeWindows(snapshot,selection){
+ const rows=selectResults(snapshot,selection);if(!rows.length)return null;
+ const currencies=new Set(rows.map(r=>r.quote_currency));if(currencies.size!==1)throw Error('Mixed currency summary');
+ const median=values=>{const a=values.filter(Number.isFinite).sort((a,b)=>a-b);return !a.length?null:a.length%2?a[(a.length-1)/2]:(a[a.length/2-1]+a[a.length/2])/2;};
+ const excess=rows.map(r=>r.excess_return).filter(Number.isFinite);
+ const positiveExcessCount=excess.filter(v=>v>0).length;
+ return {count:rows.length,excessCount:excess.length,positiveExcessCount,positiveExcessRate:excess.length?positiveExcessCount/excess.length:null,medianNetReturn:median(rows.map(r=>r.net_return)),medianExcessReturn:median(excess),worstNetReturn:Math.min(...rows.map(r=>r.net_return)),medianCostDrag:median(rows.map(r=>r.cost_drag)),quoteCurrency:rows[0].quote_currency};
+}

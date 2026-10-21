@@ -3,6 +3,7 @@ import SiteLayout from "../layouts/SiteLayout.astro";
 import ValidationResults from "./ValidationResults.astro";
 import ExpansionResults from "./ExpansionResults.astro";
 import StudyResults from "./StudyResults.astro";
+import ResearchSummary from "./ResearchSummary.astro";
 import PerformanceDashboard from "./PerformanceDashboard.astro";
 import en from "../i18n/en.json";
 import zh from "../i18n/zh-CN.json";
@@ -47,6 +48,7 @@ const guide = (directory: string) => file(`research/${directory}/README${locale 
     </div>
   </header>
   <main>
+    <ResearchSummary locale={locale} />
     <PerformanceDashboard locale={locale} />
     <section id="demo" class="demo-section">
       <div class="section-heading"><p class="eyebrow">{t.demo.eyebrow}</p><h2>{t.demo.title}</h2><p>{t.demo.intro}</p></div>

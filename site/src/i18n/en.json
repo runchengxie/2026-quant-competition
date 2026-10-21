@@ -356,6 +356,31 @@
       "turnover": "Daily average includes all scoring periods, not only trading dates.",
       "exposure": "Marked model positions; not official competition eligibility.",
       "histogram": "Counts of independent window returns for the selected strategy and cost."
+    },
+    "insights": {
+      "title": "What the study found",
+      "intro": "All fixed strategies at the lower predeclared one-way cost for each market. Figures describe separate historical windows, not a compounded account or a forward test.",
+      "count": "Windows",
+      "positive": "Positive excess",
+      "median": "Median net",
+      "worst": "Worst net",
+      "drag": "Median cost drag",
+      "stability": "Across independent windows",
+      "caveat": "Positive excess counts only windows with a benchmark. Zero is not a win. Small, selected pools and retrospective windows limit generalization.",
+      "strategyTitle": "How this strategy works",
+      "execution": "Signals use the previous close and targets are evaluated on daily close-to-close moves. Long-only, cash-funded model; no broker orders or intraday fill simulation. Fees use the selected one-way bps. Current fixed pools are not a point-in-time full-market universe.",
+      "excess": "Median excess",
+      "denominator": "benchmarked windows"
+    },
+    "descriptions": {
+      "buy_hold": "Start equally allocated across up to ten symbols in sorted identifier order, then let weights drift with prices.",
+      "benchmark_buy_hold": "Hold the declared single-instrument stock benchmark. Its window returns are available; daily curves are withheld.",
+      "equal_weight": "At each daily decision, equally allocate across up to ten symbols in sorted identifier order.",
+      "crypto_equal_weight": "Start equally allocated across the fixed spot pool, then let weights drift with prices. No daily equal-weight rebalance.",
+      "momentum_20d": "Select symbols whose prior-close return over 20 sessions is positive. Take up to ten in sorted identifier order and equally weight them; hold cash if none qualify. This is a sign filter, not a momentum ranking.",
+      "sma_cross": "Select symbols whose 20-session moving average exceeds their 60-session average at the prior close. Take up to ten in sorted identifier order and equally weight them, or hold cash.",
+      "momentum_63d": "Equally weight spot assets whose prior close exceeds their close 63 daily periods earlier. Hold cash if none qualify.",
+      "trend_200d": "Equally weight spot assets whose prior close exceeds their trailing 200-period average. Hold cash if none qualify."
     }
   }
 }

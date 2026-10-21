@@ -106,3 +106,7 @@ python -m competition_tools.evaluation.study_series --aggregate /external/study/
 The [integrated documentation](https://runchengxie.github.io/2026-quant-competition/docs/) renders this canonical Markdown and the curated architecture, quickstart and dataset guides directly through Astro. Language switches retain the article. Other source documents remain GitHub links. This avoids a second documentation copy or MkDocs deployment.
 
 Current charts describe strategy effects. IC, rank-IC, quantile spreads, decay and machine-learning out-of-time performance have not been measured. The site labels these as later research, alongside slower stock rebalancing, crypto volatility sizing and a possible runtime adapter. The default packages remain standalone. No external runtime has been connected and no new strategy experiment was run for this display update.
+
+### Reading the research overview
+
+The homepage lists every strategy at each market's lower predeclared one-way cost, with independent window counts, strictly positive benchmark-excess frequency, median net return and worst net return. The selected strategy panel also shows median excess return and median cost drag. Missing benchmark values are excluded from the excess denominator; zero excess is not positive. These descriptive statistics do not compound windows or constitute a significance test. Strategy descriptions distinguish stock daily equal-weight rebalancing from crypto initial equal-weight holdings with drifting weights.

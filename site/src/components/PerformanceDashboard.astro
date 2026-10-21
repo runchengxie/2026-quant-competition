@@ -1,6 +1,6 @@
 ---
 import snapshot from "../data/real-data-study.v1.json";
-import { deriveChartModels,selectWindowOptions } from "../scripts/dashboard-state.mjs";
+import { deriveChartModels,selectWindowOptions,summarizeWindows } from "../scripts/dashboard-state.mjs";
 import en from "../i18n/en.json";
 import zh from "../i18n/zh-CN.json";
 interface Props { locale?:string }
@@ -8,6 +8,7 @@ const locale=Astro.props.locale==="zh-CN"?"zh-CN":"en";
 const t=(locale==="zh-CN"?zh:en).dashboard;
 const model=deriveChartModels(snapshot,null,{market:"US",strategy:"buy_hold",feeBps:20});
 const selected=model.selected!;
+const stability=summarizeWindows(snapshot,{market:"US",strategy:"buy_hold",feeBps:20})!;
 const windows=selectWindowOptions(model.rows);
 const prefix=`/2026-quant-competition/${locale==="zh-CN"?"zh-CN/":""}`;
 const number=new Intl.NumberFormat(locale,{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -29,6 +30,8 @@ const panels=["nav","drawdown","folds","fees","scatter","turnover","exposure","h
     <label>{t.zoom}<input data-zoom-window type="range" min="20" max="100" value="100" step="10" /></label>
     <button type="button" data-reset>{t.reset}</button>
   </fieldset>
+  <aside class="strategy-explanation"><h3>{t.insights.strategyTitle}</h3><p data-strategy-description>{t.descriptions.buy_hold}</p><p class="detail">{t.insights.execution}</p></aside>
+  <section data-stability data-count={stability.count} data-summary={JSON.stringify(stability)}><h3>{t.insights.stability}</h3><div class="metric-cards">{["count","positiveExcessRate","medianNetReturn","medianExcessReturn","worstNetReturn","medianCostDrag"].map((key,i)=><div><span>{[t.insights.count,t.insights.positive,t.insights.median,t.insights.excess,t.insights.worst,t.insights.drag][i]}</span><strong data-stability-metric={key}>{key==="count"?stability.count:display(stability[key as keyof typeof stability] as number|null)}</strong></div>)}</div><p class="detail" data-stability-denominator>{stability.excessCount} {t.insights.denominator}</p><p class="detail">{t.insights.caveat}</p></section>
   <p class="selection-note" data-selection-note>{selected.quote_currency} · {selected.start} – {selected.end} · {selected.sessions} {t.periods}</p>
   <div class="metric-cards" data-dashboard-selected data-facts={JSON.stringify(selected)}>{cards.map(key=><div><span>{t.metrics[key]}</span><strong data-metric={key}>{display(selected[key],key!=="sharpe")}</strong></div>)}</div>
   <p class="chart-status" data-chart-status role="status">{t.loading}</p>

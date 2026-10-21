@@ -2,7 +2,7 @@ import * as echarts from "echarts/core";
 import { LineChart,BarChart,ScatterChart } from "echarts/charts";
 import { GridComponent,TooltipComponent,LegendComponent,DataZoomComponent,DatasetComponent,AriaComponent } from "echarts/components";
 import { CanvasRenderer } from "echarts/renderers";
-import { deriveChartModels,selectResults,selectWindowOptions } from "./dashboard-state.mjs";
+import { deriveChartModels,selectResults,selectWindowOptions,summarizeWindows } from "./dashboard-state.mjs";
 
 echarts.use([LineChart,BarChart,ScatterChart,GridComponent,TooltipComponent,LegendComponent,DataZoomComponent,DatasetComponent,AriaComponent,CanvasRenderer]);
 
@@ -19,7 +19,7 @@ export async function mountPerformanceDashboard(root){
   const percent=value=>format.format(value*100)+"%";
   const navFormat=new Intl.NumberFormat(locale,{minimumFractionDigits:4,maximumFractionDigits:4});
   const seriesLabel=strategy=>t.strategies[strategy]??strategy;
-  let zoomPercent=100;
+  let zoomPercent=100,zoomStart=0,zoomEnd=100;
   const selection=()=>({market:controls.market.value,strategy:controls.strategy.value,feeBps:Number(controls.fee.value),windowStart:controls.window.value});
   const options=(node,values,wanted)=>{
     node.replaceChildren(...values.map(({value,label})=>new Option(label,value)));
@@ -60,12 +60,18 @@ export async function mountPerformanceDashboard(root){
       node.textContent=value===null?"—":node.dataset.metric==="sharpe"?format.format(value):percent(value);
     }
     root.querySelector("[data-selection-note]").textContent=`${row.quote_currency} · ${row.start} – ${row.end} · ${row.sessions} ${t.periods}`;
+    const summary=summarizeWindows(study,selection());
+    const stability=root.querySelector("[data-stability]");stability.dataset.count=String(summary.count);stability.dataset.summary=JSON.stringify(summary);
+    for(const node of stability.querySelectorAll("[data-stability-metric]")){const key=node.dataset.stabilityMetric;node.textContent=key==="count"?String(summary.count):summary[key]===null?"—":percent(summary[key]);}
+    root.querySelector("[data-stability-denominator]").textContent=`${summary.excessCount} ${t.insights.denominator}`;
+    root.querySelector("[data-strategy-description]").textContent=t.descriptions[row.market==="crypto"&&row.strategy==="equal_weight"?"crypto_equal_weight":row.strategy];
     root.dataset.grossVisible=String(gross.checked);
     const points=model.curve?.points??[];
     nodes.nav.dataset.points=JSON.stringify(points);
     root.querySelector("[data-curve-unavailable]").hidden=Boolean(model.curve);
     zoom.disabled=!model.curve;
-    const dataZoom=[{type:"inside",start:100-zoomPercent,end:100},{type:"slider",start:100-zoomPercent,end:100,height:18,bottom:5}];
+    nodes.nav.dataset.range=JSON.stringify({start:zoomStart,end:zoomEnd});
+    const dataZoom=[{type:"inside",start:zoomStart,end:zoomEnd},{type:"slider",start:zoomStart,end:zoomEnd,height:18,bottom:5}];
     set("nav",{tooltip:{...base().tooltip,valueFormatter:value=>navFormat.format(value)},xAxis:{...base().xAxis,data:points.map(p=>p.date)},yAxis:{...base().yAxis,scale:true},legend:{...base().legend,data:[t.net,t.gross],selected:{[t.gross]:gross.checked}},dataZoom,series:[{name:t.net,type:"line",showSymbol:false,data:points.map(p=>p.net_nav)},{name:t.gross,type:"line",showSymbol:false,lineStyle:{type:"dashed"},data:points.map(p=>p.gross_nav)}]});
     set("drawdown",{tooltip:{...base().tooltip,valueFormatter:percent},xAxis:{...base().xAxis,data:points.map(p=>p.date)},yAxis:{...base().yAxis,axisLabel:{formatter:percent}},dataZoom,series:[{name:t.charts.drawdown,type:"line",showSymbol:false,areaStyle:{opacity:.18},data:points.map(p=>p.drawdown)}]});
     set("folds",{tooltip:{...base().tooltip,valueFormatter:percent},xAxis:{...base().xAxis,data:model.foldReturns.map(r=>r.start)},yAxis:{...base().yAxis,axisLabel:{formatter:percent}},legend:{...base().legend,data:[t.net,t.excess]},series:[{name:t.net,type:"bar",data:model.foldReturns.map(r=>r.net_return)},{name:t.excess,type:"bar",data:model.foldReturns.map(r=>r.excess_return)}]});
@@ -82,13 +88,14 @@ export async function mountPerformanceDashboard(root){
   for(const chart of [charts.nav,charts.drawdown])chart.on("datazoom",event=>{
     const range=event.batch?.[0]??event;
     if(Number.isFinite(range.start)&&Number.isFinite(range.end)){
-      zoomPercent=Math.round(range.end-range.start);zoom.value=String(zoomPercent);root.dataset.zoom=String(zoomPercent);
+      zoomStart=range.start;zoomEnd=range.end;nodes.nav.dataset.range=JSON.stringify({start:zoomStart,end:zoomEnd});zoomPercent=Math.round(range.end-range.start);zoom.value=String(zoomPercent);root.dataset.zoom=String(zoomPercent);
     }
   });
-  for(const control of Object.values(controls))control.addEventListener("change",()=>{syncControls();zoomPercent=100;zoom.value="100";root.dataset.zoom="100";render();});
+  for(const control of Object.values(controls))control.addEventListener("change",()=>{syncControls();zoomPercent=100;zoomStart=0;zoomEnd=100;zoom.value="100";root.dataset.zoom="100";render();});
+  charts.nav.on("legendselectchanged",event=>{gross.checked=event.selected[t.gross]!==false;root.dataset.grossVisible=String(gross.checked);});
   gross.addEventListener("change",()=>{root.dataset.grossVisible=String(gross.checked);charts.nav.dispatchAction({type:gross.checked?"legendSelect":"legendUnSelect",name:t.gross});});
-  zoom.addEventListener("input",()=>{zoomPercent=Number(zoom.value);root.dataset.zoom=String(zoomPercent);charts.nav.dispatchAction({type:"dataZoom",start:100-zoomPercent,end:100});});
-  root.querySelector("[data-reset]").addEventListener("click",()=>{syncControls(true);gross.checked=true;zoomPercent=100;zoom.value="100";root.dataset.zoom="100";render();});
+  zoom.addEventListener("input",()=>{zoomPercent=Number(zoom.value);zoomStart=100-zoomPercent;zoomEnd=100;root.dataset.zoom=String(zoomPercent);charts.nav.dispatchAction({type:"dataZoom",start:100-zoomPercent,end:100});});
+  root.querySelector("[data-reset]").addEventListener("click",()=>{syncControls(true);gross.checked=true;zoomPercent=100;zoomStart=0;zoomEnd=100;zoom.value="100";root.dataset.zoom="100";render();});
   new MutationObserver(render).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
   matchMedia("(prefers-color-scheme: dark)").addEventListener("change",render);
   new ResizeObserver(()=>Object.values(charts).forEach(chart=>chart.resize())).observe(root);
