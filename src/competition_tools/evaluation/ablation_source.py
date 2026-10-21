@@ -53,7 +53,7 @@ def snapshot_source(source_root: Path, output_root: Path) -> dict:
             if (
                 rel.is_absolute()
                 or ".." in rel.parts
-                or "\\" in member.filename
+                or chr(92) in member.orig_filename
                 or ":" in member.filename
                 or (member.external_attr >> 16) & 0o170000 == 0o120000
             ):
