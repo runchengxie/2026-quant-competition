@@ -3,6 +3,7 @@
 import json
 import math
 import re
+import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -104,6 +105,10 @@ def verify_reading(
                 }
                 else "INVALID_IBC_CONFIGURATION"
             )
+            return report
+        except subprocess.SubprocessError:
+            report["intended_read_only"] = "blocked"
+            report["issue_codes"].append("IBC_CONFIGURATION_CHECK_FAILED")
             return report
         except (OSError, ValueError):
             report["intended_read_only"] = "blocked"

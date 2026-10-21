@@ -2,6 +2,7 @@
 
 import json
 import logging
+import io
 
 import pytest
 
@@ -108,3 +109,50 @@ def test_body_exception_is_preserved_after_cleanup(endpoint):
         with PaperReadSession(endpoint, client_factory=lambda: client):
             raise ValueError("consumer failure")
     assert client.disconnected
+
+
+@pytest.mark.parametrize("failure", [False, True])
+def test_explicit_sdk_child_handlers_cannot_leak_private_records(endpoint, failure):
+    output = io.StringIO()
+    logger = logging.getLogger("ib_insync.wrapper")
+    original_level = logger.level
+    original_disable = logging.root.manager.disable
+    handler = logging.StreamHandler(output)
+    logger.addHandler(handler)
+    logger.setLevel(logging.DEBUG)
+
+    class LoggingClient(Client):
+        def connect(self, *args, **kwargs):
+            logger.error("PRIVATE_SENTINEL")
+            if failure:
+                raise RuntimeError("PRIVATE_SENTINEL")
+            super().connect(*args, **kwargs)
+
+        def disconnect(self):
+            logger.error("PRIVATE_SENTINEL")
+            super().disconnect()
+
+    try:
+        if failure:
+            with pytest.raises(PaperReadError, match="^API_READ_FAILED$"):
+                with PaperReadSession(endpoint, client_factory=LoggingClient):
+                    pass
+        else:
+            with PaperReadSession(endpoint, client_factory=LoggingClient):
+                logging.getLogger("ib_insync.new_child").critical("PRIVATE_SENTINEL")
+        assert output.getvalue() == ""
+        assert logging.root.manager.disable == original_disable
+        logger.error("RESTORED")
+        assert output.getvalue() == "RESTORED\n"
+    finally:
+        logger.removeHandler(handler)
+        logger.setLevel(original_level)
+
+
+def test_missing_sdk_is_redacted_before_connection(endpoint, monkeypatch):
+    import sys
+
+    monkeypatch.setitem(sys.modules, "ib_insync", None)
+    with pytest.raises(PaperReadError, match="^BROKER_DATA_PROFILE_REQUIRED$"):
+        with PaperReadSession(endpoint):
+            pytest.fail("SDK unavailable")

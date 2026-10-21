@@ -1,6 +1,7 @@
 """Acceptance distinguishes account, contract and history evidence."""
 
 import json
+import subprocess
 from types import SimpleNamespace
 
 import pytest
@@ -208,3 +209,48 @@ def test_cli_help_needs_no_config_or_sdk(capsys):
         main(["gateway", "verify", "--help"])
     assert error.value.code == 0
     assert "--historical" in capsys.readouterr().out
+
+
+def test_acl_probe_timeout_returns_redacted_report_without_connection(
+    endpoint, contract, tmp_path, monkeypatch, capsys
+):
+    from competition_tools import gateway_launcher as gl
+    from competition_tools.team.__main__ import main
+
+    ini = tmp_path / "ibc.ini"
+    ini.write_text("IbPassword=PRIVATE_SENTINEL")
+    spec = tmp_path / "spec.json"
+    spec.write_text(
+        json.dumps(
+            {
+                "schema": "competition.paper_contract_spec.v1",
+                "market": "US",
+                "contracts": [contract],
+            }
+        )
+    )
+
+    def timeout(path):
+        raise subprocess.TimeoutExpired("PRIVATE_SENTINEL", 20)
+
+    monkeypatch.setattr(gl, "owner_only_acl", timeout)
+    assert (
+        main(
+            [
+                "gateway",
+                "verify",
+                "--connection-file",
+                str(endpoint),
+                "--contract-spec",
+                str(spec),
+                "--ini-file",
+                str(ini),
+            ]
+        )
+        == 2
+    )
+    output = capsys.readouterr().out
+    report = json.loads(output)
+    assert report["api"] == "not_checked"
+    assert report["issue_codes"] == ["IBC_CONFIGURATION_CHECK_FAILED"]
+    assert "PRIVATE_SENTINEL" not in output

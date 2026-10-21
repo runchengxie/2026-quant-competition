@@ -3,9 +3,12 @@
 import logging
 import math
 import re
+import threading
 from pathlib import Path
 
 from .gateway import load_paper_endpoint
+
+_SESSION_LOCK = threading.Lock()
 
 
 class PaperReadError(ValueError):
@@ -30,6 +33,7 @@ class PaperReadSession:
         self.account_check = {"status": "not_checked", "count": None}
         self.logger = logging.getLogger("ib_insync")
         self.previous_level = None
+        self.previous_disable = None
 
     def __enter__(self):
         if self.previous_level is not None:
@@ -45,7 +49,13 @@ class PaperReadSession:
             except ImportError:
                 raise PaperReadError("BROKER_DATA_PROFILE_REQUIRED") from None
             factory = IB
+        if not _SESSION_LOCK.acquire(blocking=False):
+            raise PaperReadError("SESSION_ALREADY_ACTIVE")
         self.previous_level = self.logger.level
+        self.previous_disable = logging.root.manager.disable
+        # Ancestor levels do not block explicitly configured child handlers.
+        # This serial CLI owns the logging suppression window through disconnect.
+        logging.disable(max(logging.CRITICAL, self.previous_disable))
         self.logger.setLevel(logging.CRITICAL)
         try:
             self.client = factory()
@@ -90,6 +100,10 @@ class PaperReadSession:
             if self.previous_level is not None:
                 self.logger.setLevel(self.previous_level)
                 self.previous_level = None
+            if self.previous_disable is not None:
+                logging.disable(self.previous_disable)
+                self.previous_disable = None
+                _SESSION_LOCK.release()
 
     def __exit__(self, exc_type, exc_value, traceback):
         self._close()
