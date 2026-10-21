@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "plan_sha256",
+    "code_commit",
+    "as_of",
+    "series",
+    "unavailable"
+  ],
+  "properties": {
+    "schema": {
+      "const": "competition.public_study_series.v1"
+    },
+    "plan_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "code_commit": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "as_of": {
+      "type": "string",
+      "format": "date"
+    },
+    "series": {
+      "type": "array",
+      "maxItems": 384,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "job_id",
+          "market",
+          "quote_currency",
+          "strategy",
+          "cost_bps",
+          "points"
+        ],
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "market": {
+            "enum": [
+              "US",
+              "HK",
+              "crypto"
+            ]
+          },
+          "quote_currency": {
+            "enum": [
+              "USD",
+              "HKD",
+              "USDT"
+            ]
+          },
+          "strategy": {
+            "enum": [
+              "buy_hold",
+              "equal_weight",
+              "momentum_20d",
+              "sma_cross",
+              "momentum_63d",
+              "trend_200d"
+            ]
+          },
+          "cost_bps": {
+            "enum": [
+              0,
+              10,
+              20,
+              25,
+              30,
+              40,
+              60
+            ]
+          },
+          "points": {
+            "type": "array",
+            "minItems": 64,
+            "maxItems": 91,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "date",
+                "net_nav",
+                "gross_nav",
+                "drawdown"
+              ],
+              "properties": {
+                "date": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "net_nav": {
+                  "type": "number",
+                  "exclusiveMinimum": 0
+                },
+                "gross_nav": {
+                  "type": "number",
+                  "exclusiveMinimum": 0
+                },
+                "drawdown": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "unavailable": {
+      "type": "array",
+      "maxItems": 384,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "job_id",
+          "reason_code"
+        ],
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "reason_code": {
+            "type": "string",
+            "pattern": "^[A-Z_]+$"
+          }
+        }
+      }
+    }
+  }
+}
