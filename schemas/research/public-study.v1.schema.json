@@ -1,0 +1,564 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "as_of",
+    "blockers",
+    "code_commit",
+    "coverage",
+    "methods",
+    "plan_sha256",
+    "results",
+    "schema"
+  ],
+  "properties": {
+    "schema": {
+      "const": "competition.public_study.v1"
+    },
+    "as_of": {
+      "type": "string",
+      "format": "date"
+    },
+    "code_commit": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "plan_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "methods": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "cost_model",
+          "execution_assumption",
+          "fold_initialization",
+          "method_id",
+          "rebalance",
+          "retrospective",
+          "scoring_periods",
+          "signal_lag_periods",
+          "signal_parameters",
+          "strategy",
+          "terminal_liquidation",
+          "warmup_periods"
+        ],
+        "properties": {
+          "rebalance": {
+            "enum": [
+              "buy_hold",
+              "daily_target_weights"
+            ]
+          },
+          "warmup_periods": {
+            "const": 252
+          },
+          "cost_model": {
+            "const": "self_financing_oneway_bps"
+          },
+          "terminal_liquidation": {
+            "const": false
+          },
+          "strategy": {
+            "enum": [
+              "buy_hold",
+              "equal_weight",
+              "benchmark_buy_hold",
+              "momentum_20d",
+              "sma_cross",
+              "momentum_63d",
+              "trend_200d"
+            ]
+          },
+          "fold_initialization": {
+            "const": "independent_cash"
+          },
+          "retrospective": {
+            "const": true
+          },
+          "method_id": {
+            "type": "string"
+          },
+          "scoring_periods": {
+            "enum": [
+              63,
+              90
+            ]
+          },
+          "signal_lag_periods": {
+            "const": 1
+          },
+          "execution_assumption": {
+            "const": "lagged_close_proxy"
+          },
+          "signal_parameters": {
+            "oneOf": [
+              {
+                "const": {}
+              },
+              {
+                "const": {
+                  "lookback_days": 20,
+                  "min_momentum": 0
+                }
+              },
+              {
+                "const": {
+                  "short_window": 20,
+                  "long_window": 60
+                }
+              },
+              {
+                "const": {
+                  "lookback_days": 63
+                }
+              },
+              {
+                "const": {
+                  "long_window": 200
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "coverage": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "benchmark",
+          "end",
+          "market",
+          "products",
+          "quote_currency",
+          "rows",
+          "source",
+          "start",
+          "status",
+          "universe_status"
+        ],
+        "properties": {
+          "benchmark": {
+            "enum": [
+              "SPY",
+              "2800",
+              "equal_weight"
+            ]
+          },
+          "source": {
+            "enum": [
+              "ibkr_daily",
+              "binance_spot"
+            ]
+          },
+          "end": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "acquired",
+              "partial"
+            ]
+          },
+          "products": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "0005",
+                "0388",
+                "0700",
+                "0939",
+                "0941",
+                "1299",
+                "1810",
+                "2318",
+                "2800",
+                "3690",
+                "9988",
+                "AAPL",
+                "ADAUSDT",
+                "AMZN",
+                "BNBUSDT",
+                "BTCUSDT",
+                "DOGEUSDT",
+                "ETHUSDT",
+                "GOOGL",
+                "JNJ",
+                "JPM",
+                "LINKUSDT",
+                "META",
+                "MSFT",
+                "NVDA",
+                "PG",
+                "SOLUSDT",
+                "SPY",
+                "XOM",
+                "XRPUSDT"
+              ]
+            }
+          },
+          "quote_currency": {
+            "enum": [
+              "USD",
+              "HKD",
+              "USDT"
+            ]
+          },
+          "rows": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "universe_status": {
+            "const": "fixed_current"
+          },
+          "market": {
+            "enum": [
+              "US",
+              "HK",
+              "crypto"
+            ]
+          },
+          "start": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "accounting_model",
+          "benchmark",
+          "benchmark_return",
+          "cost_bps",
+          "cost_drag",
+          "eligibility_basis",
+          "end",
+          "excess_return",
+          "flat_days_proxy",
+          "fold",
+          "gross_return",
+          "job_id",
+          "market",
+          "max_drawdown",
+          "mean_daily_oneway_turnover_proxy",
+          "mean_daily_position_proxy",
+          "mean_exposure",
+          "method_id",
+          "net_return",
+          "periods_per_year",
+          "plan_sha256",
+          "products",
+          "quote_currency",
+          "reason_code",
+          "result_sha256",
+          "sessions",
+          "sharpe",
+          "start",
+          "status",
+          "strategy",
+          "turnover",
+          "volatility"
+        ],
+        "properties": {
+          "benchmark": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "end": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "benchmark_return": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "strategy": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "plan_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "sessions": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "reason_code": {
+            "enum": [
+              "CODE_CHANGED",
+              "INPUT_CHANGED",
+              "INPUT_CHANGED_POST_RUN",
+              "INSUFFICIENT_HISTORY",
+              "INTERRUPTED",
+              "INVALID_STUDY_ARTIFACT",
+              "INVALID_STUDY_INPUT",
+              "INVALID_STUDY_RESULT",
+              "MARKET_INPUT_UNAVAILABLE",
+              "STUDY_CHILD_FAILED",
+              "STUDY_INPUT_OR_CHILD_UNAVAILABLE",
+              "TIME_BUDGET",
+              null
+            ]
+          },
+          "max_drawdown": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "products": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "0005",
+                "0388",
+                "0700",
+                "0939",
+                "0941",
+                "1299",
+                "1810",
+                "2318",
+                "2800",
+                "3690",
+                "9988",
+                "AAPL",
+                "ADAUSDT",
+                "AMZN",
+                "BNBUSDT",
+                "BTCUSDT",
+                "DOGEUSDT",
+                "ETHUSDT",
+                "GOOGL",
+                "JNJ",
+                "JPM",
+                "LINKUSDT",
+                "META",
+                "MSFT",
+                "NVDA",
+                "PG",
+                "SOLUSDT",
+                "SPY",
+                "XOM",
+                "XRPUSDT"
+              ]
+            }
+          },
+          "net_return": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "eligibility_basis": {
+            "const": "daily_model_proxy"
+          },
+          "cost_drag": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "turnover": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "gross_return": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "market": {
+            "enum": [
+              "US",
+              "HK",
+              "crypto",
+              "unknown"
+            ]
+          },
+          "start": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "fold": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "end",
+                  "scoring_periods",
+                  "start",
+                  "warmup_periods",
+                  "warmup_start"
+                ],
+                "properties": {
+                  "warmup_start": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "start": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "end": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "warmup_periods": {
+                    "const": 252
+                  },
+                  "scoring_periods": {
+                    "enum": [
+                      63,
+                      90
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "enum": [
+              "completed",
+              "blocked",
+              "failed"
+            ]
+          },
+          "mean_daily_position_proxy": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "accounting_model": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "volatility": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "cost_bps": {
+            "enum": [
+              0,
+              10,
+              20,
+              25,
+              30,
+              40,
+              60,
+              null
+            ]
+          },
+          "sharpe": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "method_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "quote_currency": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "periods_per_year": {
+            "enum": [
+              252,
+              365,
+              null
+            ]
+          },
+          "mean_exposure": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "result_sha256": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "excess_return": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "mean_daily_oneway_turnover_proxy": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "job_id": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "flat_days_proxy": {
+            "type": [
+              "number",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "blockers": {
+      "const": [
+        "RETROSPECTIVE_FIXED_CURRENT_POOL",
+        "DAILY_EXECUTION_AND_ELIGIBILITY_PROXY",
+        "EQUITY_DIVIDENDS_AND_ADJUSTMENT_TIMING_UNVERIFIED",
+        "ACCOUNT_PRODUCT_AUTHORIZATION_SEPARATE",
+        "MAKER_ARCHIVE_NOT_RERUN"
+      ]
+    }
+  }
+}
