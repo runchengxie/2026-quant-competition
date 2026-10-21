@@ -8,6 +8,7 @@ from contextlib import contextmanager
 import time
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 from competition_tools.team.paper_session import PaperReadError, PaperReadSession
 from competition_tools.team.gateway_verification import _stock, _matches
@@ -20,6 +21,15 @@ from .storage import spec_hash, write_json
 
 class StopCollection(ValueError):
     pass
+
+
+def request_end(upper: str, zone: str) -> str:
+    """Equivalent next-local-midnight boundary in IBKR's UTC wire format."""
+    following = date.fromisoformat(upper) + timedelta(days=1)
+    local = datetime(
+        following.year, following.month, following.day, tzinfo=ZoneInfo(zone)
+    )
+    return local.astimezone(timezone.utc).strftime("%Y%m%d-%H:%M:%S")
 
 
 def _windows(start, end):
@@ -194,12 +204,10 @@ def _collect_daily(spec, staging, *, session_factory, clock, sleep):
                     client.RequestTimeout = timeout
                     # A year is bounded, including leap years; filter the exact
                     # requested session interval after the provider response.
-                    end = date.fromisoformat(upper) + timedelta(days=1)
+                    end = request_end(upper, spec["timezone"])
                     bars = client.reqHistoricalData(
                         qualified[0],
-                        endDateTime=end.strftime("%Y%m%d 00:00:00")
-                        + " "
-                        + spec["timezone"],
+                        endDateTime=end,
                         durationStr="1 Y"
                         if (date.fromisoformat(upper) - date.fromisoformat(lower)).days
                         >= 365

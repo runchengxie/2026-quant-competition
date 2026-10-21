@@ -41,6 +41,7 @@ class Client:
         assert kwargs["keepUpToDate"] is False
         assert kwargs["useRTH"] is True
         assert kwargs["barSizeSetting"] == "1 day"
+        assert kwargs["endDateTime"] == "20240706-04:00:00"
         if self.missing and contract.symbol == "AAPL":
             return []
         return [
@@ -453,3 +454,17 @@ def test_eleven_contracts_across_annual_windows(tmp_path, monkeypatch):
     assert len(receipt["coverage"]) == 11
     assert all(c["bars"] == 4 for c in receipt["coverage"].values())
     assert all(b - a >= 10 for a, b in zip(client.starts, client.starts[1:]))
+
+
+@pytest.mark.parametrize(
+    "upper,zone,expected",
+    [
+        ("2024-03-08", "America/New_York", "20240309-05:00:00"),
+        ("2024-03-11", "America/New_York", "20240312-04:00:00"),
+        ("2024-07-05", "Asia/Hong_Kong", "20240705-16:00:00"),
+    ],
+)
+def test_broker_end_time_is_explicit_utc_after_local_session(upper, zone, expected):
+    from competition_tools.datasets.daily_broker import request_end
+
+    assert request_end(upper, zone) == expected
