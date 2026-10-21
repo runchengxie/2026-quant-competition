@@ -6,10 +6,12 @@
     "build": "astro build",
     "dev": "astro dev",
     "preview": "astro preview",
-    "test": "playwright test"
+    "test": "node --test tests/*.test.mjs && playwright test"
   },
   "devDependencies": {
+    "@astrojs/markdown-remark": "7.3.3",
     "@playwright/test": "^1.64.1",
-    "astro": "7.3.5"
+    "astro": "7.3.5",
+    "echarts": "6.1.0"
   }
 }

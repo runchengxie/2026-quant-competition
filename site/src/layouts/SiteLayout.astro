@@ -8,13 +8,15 @@ interface Props {
   title: string;
   description: string;
   locale: "en" | "zh-CN";
+  localePath?: string;
 }
 
 const { title, description, locale } = Astro.props;
 const isEnglish = locale === "en";
 const appearance = (isEnglish ? en : zh).appearance;
-const englishUrl = getRelativeLocaleUrl("en");
-const chineseUrl = getRelativeLocaleUrl("zh-CN", "", { normalizeLocale: false });
+const localePath=Astro.props.localePath??"";
+const englishUrl = getRelativeLocaleUrl("en",localePath);
+const chineseUrl = getRelativeLocaleUrl("zh-CN", localePath, { normalizeLocale: false });
 ---
 
 <!doctype html>

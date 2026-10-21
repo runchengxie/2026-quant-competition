@@ -258,5 +258,24 @@
     "provenance": "Snapshot and reproducibility identity",
     "report": "Methods, results and reproduction",
     "return": "Net return"
+  },
+  "documents": {
+    "title": "Documentation",
+    "intro": "Methods, data contracts and reproducible commands, alongside the research evidence.",
+    "dashboard": "Performance",
+    "canonical": "Rendered from the canonical repository document.",
+    "source": "View source",
+    "titles": {
+      "architecture": "Architecture",
+      "quickstart": "Team quickstart",
+      "datasets": "Data and snapshots",
+      "study": "Study methods and results"
+    },
+    "summaries": {
+      "architecture": "Responsibilities, package boundaries and execution contracts.",
+      "quickstart": "Install, configure and run the independent offline packages.",
+      "datasets": "Daily acquisition, immutable receipts and input validation.",
+      "study": "Fixed assumptions, accounting, actual results and limitations."
+    }
   }
 }

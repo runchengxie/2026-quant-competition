@@ -1,0 +1,8 @@
+---
+import { documents } from "../../lib/documents";
+import DocumentLayout from "../../layouts/DocumentLayout.astro";
+export function getStaticPaths() {
+  return documents.filter(doc=>doc.locale==="en").map(doc=>({params:{slug:doc.slug},props:{doc}}));
+}
+---
+<DocumentLayout doc={Astro.props.doc} />

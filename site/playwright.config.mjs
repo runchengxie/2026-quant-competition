@@ -4,6 +4,7 @@ import { join } from "node:path";
 
 export default defineConfig({
   testDir: "./tests",
+  testMatch: "**/*.spec.mjs",
   outputDir: process.env.PAGES_TEST_OUTPUT || join(tmpdir(), "quant-competition-pages-tests"),
   reporter: "list",
   use: { baseURL: "http://127.0.0.1:4397", browserName: "chromium" },

@@ -41,3 +41,5 @@
 安装开发环境、运行测试和构建网站的方法见[开发指南](docs/development.zh-CN.md)。各部分代码负责什么、交易流程还有哪些限制，见[项目结构与当前限制](docs/project-overview.zh-CN.md)。
 
 [日频历史对比研究](docs/research/real-data-study.zh-CN.md)
+
+[站内项目文档](https://runchengxie.github.io/2026-quant-competition/zh-CN/docs/)

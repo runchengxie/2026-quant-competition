@@ -1,0 +1,37 @@
+---
+import SiteLayout from "./SiteLayout.astro";
+import { documents, type DocumentEntry } from "../lib/documents";
+import en from "../i18n/en.json";
+import zh from "../i18n/zh-CN.json";
+interface Props { doc: DocumentEntry }
+const {doc}=Astro.props;
+const locale=doc.locale==="zh-CN"?"zh-CN":"en";
+const t=(locale==="zh-CN"?zh:en).documents;
+const title=t.titles[doc.slug as keyof typeof t.titles];
+const Content=doc.Content;
+const prefix=`/2026-quant-competition/${locale==="zh-CN"?"zh-CN/":""}`;
+---
+<SiteLayout locale={locale} localePath={`docs/${doc.slug}/`} title={`${title} | QUANT / LAB`} description={t.intro}>
+  <header class="doc-header"><a href={prefix}>QUANT / LAB</a><a href={`${prefix}#performance`}>{t.dashboard}</a><a href={`${prefix}docs/`}>{t.title}</a></header>
+  <main class="doc-shell">
+    <aside><nav aria-label={t.title}>{documents.filter(d=>d.locale===locale).map(d=><a href={d.route} aria-current={d.slug===doc.slug?"page":undefined}>{t.titles[d.slug as keyof typeof t.titles]}</a>)}</nav></aside>
+    <div class="doc-body"><p class="doc-note">{t.canonical} <a href={`https://github.com/runchengxie/2026-quant-competition/blob/main/${doc.source}`}>{t.source} ↗</a></p><article><Content /></article></div>
+  </main>
+</SiteLayout>
+<style>
+.doc-header { display:flex; gap:1.5rem; flex-wrap:wrap; margin:1.5rem auto 2rem; max-width:1180px; padding:0 1rem; }
+.doc-header a:first-child { font-weight:800; margin-right:auto; }
+.doc-shell { display:grid; grid-template-columns:200px minmax(0,1fr); gap:2rem; max-width:1180px; margin:auto; padding:0 1rem 4rem; }
+aside nav { display:grid; gap:.8rem; position:sticky; top:1rem; }
+aside a[aria-current] { font-weight:700; }
+.doc-body { min-width:0; }
+.doc-note { color:var(--muted); font-size:.9rem; }
+article { overflow-wrap:anywhere; }
+article :global(h1) { font-size:clamp(1.8rem,4vw,2.5rem); line-height:1.3; }
+article :global(h2) { margin-top:2.5rem; font-size:1.5rem; }
+article :global(pre) { overflow-x:auto; max-width:100%; padding:1rem; border-radius:.5rem; }
+article :global(table) { display:block; overflow-x:auto; max-width:100%; border-collapse:collapse; }
+article :global(td),article :global(th) { border-bottom:1px solid var(--line); padding:.6rem; }
+article :global(img) { max-width:100%; }
+@media(max-width:700px) { .doc-shell { grid-template-columns:minmax(0,1fr); gap:1rem; } aside nav { display:flex; flex-wrap:wrap; position:static; } }
+</style>
