@@ -90,3 +90,21 @@ This integrates the approved code path; it does not install IBC, enter credentia
 ## Verification
 
 Linux CI runs the pure Python contracts. The dedicated Windows job also runs native PowerShell tests with synthetic children, covering non-launching checks, redaction, interactive-session gating, private output and child failures. Tests do not install IBC, authenticate an account or call broker orders. These remain deployment checks. See [release checks](release-checks.md).
+
+## Read-only acceptance
+
+The lightweight API probe does not check accounts, contracts or data entitlement. Use the separate acceptance command with the optional `ibkr` dependencies:
+
+```powershell
+& $pythonPath -m competition_tools.team gateway verify --connection-file $paperEndpoint --contract-spec $contractSpec --historical --output-root $newExternalOutput
+```
+
+No team configuration is required. The endpoint file accepts only `host=127.0.0.1`, `port=4002` and a positive integer `client_id` below `2**31`. Use a client ID not used by another connection. The external contract file has this shape:
+
+```json
+{"schema":"competition.paper_contract_spec.v1","market":"US","contracts":[{"product":"SPY","symbol":"SPY","exchange":"SMART","currency":"USD","role":"benchmark"}]}
+```
+
+Use `HK`, `SEHK` and `HKD` for Hong Kong. Each file contains one market and 1–21 unique products, with `stock` or `benchmark` roles. The account guard requires exactly one account with a `DU` prefix before contract or history requests. This is a prefix check, not proof that the account is registered for the competition. Contracts must match symbol, exchange, currency and stock type and have a positive broker contract ID. SDK operations have an eight-second timeout. `--historical` requests five days of daily RTH TRADES per qualified contract; omitted means history is not checked. A successful read establishes availability for that request, not full history, adjustment quality or every future entitlement.
+
+The `competition.paper_read_verification.v1` report separates `api`, `account_prefix`, `contract`, `historical`, `intended_read_only` and `server_read_only`. It includes a UTC observation time and stable issue codes, without account IDs, paths or raw SDK errors. Optional `--ini-file` validates an owner-protected, non-reparse IBC configuration and reports intended read-only settings. Server-side read-only remains `not_verified`; this command never tests it with an order. Exit 0 means the requested checks found no blocking issue, not that every optional or server-side check was verified. Exit 2 reports blocked or invalid input. A selected output folder must be new and external and receives `verification.json`. The command never starts, restarts or logs into Gateway.

@@ -90,3 +90,21 @@ icacls $privateDirectory
 ## 验证范围
 
 Linux CI 运行纯 Python 契约测试，专门的 Windows CI 还使用临时假程序测试 PowerShell，覆盖非启动检查、脱敏、桌面会话限制、私有输出和子进程失败。测试不安装 IBC、不认证账户、不下单，这些仍属于部署验证。参见[发布检查](release-checks.md)。
+
+## 只读验收
+
+轻量 API 探测不检查账户、合约或历史数据权限。安装可选的 `ibkr` 依赖后，使用独立验收命令：
+
+```powershell
+& $pythonPath -m competition_tools.team gateway verify --connection-file $paperEndpoint --contract-spec $contractSpec --historical --output-root $newExternalOutput
+```
+
+命令不需要团队配置。端点文件只接受 `host=127.0.0.1`、`port=4002` 和小于 `2**31` 的正整数 `client_id`。请选择其他连接未使用的客户端 ID。外部合约文件格式如下：
+
+```json
+{"schema":"competition.paper_contract_spec.v1","market":"US","contracts":[{"product":"SPY","symbol":"SPY","exchange":"SMART","currency":"USD","role":"benchmark"}]}
+```
+
+港股使用 `HK`、`SEHK` 和 `HKD`。每个文件只包含一个市场，产品数量为 1–21，产品标识不得重复，角色为 `stock` 或 `benchmark`。只有确认连接恰好一个 `DU` 前缀账户，才请求合约或历史数据。这只是账户前缀检查，不证明该账户已登记参赛。合约的代码、交易所、币种和股票类型必须匹配，并具有正整数券商合约 ID。SDK 操作超时为八秒。指定 `--historical` 时，为每个已确认合约请求五天的每日 RTH TRADES 数据；未指定则不检查历史数据。成功读取仅说明该次请求可用，不证明完整历史、复权质量或未来所有数据权限。
+
+`competition.paper_read_verification.v1` 报告分别记录 `api`、`account_prefix`、`contract`、`historical`、`intended_read_only` 和 `server_read_only`，附 UTC 检查时间及稳定错误码，不含账户 ID、路径或 SDK 原始错误。可选的 `--ini-file` 检查仅允许所有者访问且不经过重解析路径的 IBC 配置，报告预期只读设置。服务端只读始终为 `not_verified`，命令不会通过下单验证。退出码 0 表示请求的检查未发现阻断问题，不表示所有可选检查或服务端检查都已验证。退出码 2 表示检查受阻或输入无效。指定的输出目录必须位于源码外且尚不存在，报告写入其中的 `verification.json`。命令不会启动、重启 Gateway 或登录账户。

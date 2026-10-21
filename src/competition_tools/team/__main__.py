@@ -13,6 +13,14 @@ def main(argv: list[str] | None = None) -> int:
         description="Configure and run independent offline research"
     )
     commands = parser.add_subparsers(dest="action", required=True)
+    gateway = commands.add_parser("gateway", help="Verify Paper reading evidence without login or orders")
+    gateway_commands = gateway.add_subparsers(dest="operation", required=True)
+    verify = gateway_commands.add_parser("verify", help="Check Paper account prefix, contracts and optional history")
+    verify.add_argument("--connection-file", type=Path, required=True)
+    verify.add_argument("--contract-spec", type=Path, required=True)
+    verify.add_argument("--ini-file", type=Path)
+    verify.add_argument("--historical", action="store_true")
+    verify.add_argument("--output-root", type=Path)
     init = commands.add_parser("init", help="Create an external private configuration")
     init.add_argument("--config", type=Path, required=True)
     init.add_argument("--data-root", type=Path, required=True)
@@ -56,6 +64,17 @@ def main(argv: list[str] | None = None) -> int:
     evaluate.add_argument("--spec", type=Path, required=True)
     evaluate.add_argument("--output-root", type=Path, required=True)
     args = parser.parse_args(argv)
+    if args.action == "gateway":
+        from .gateway_verification import execute
+
+        try:
+            value = execute(args.connection_file, args.contract_spec, ini_path=args.ini_file,
+                            historical=args.historical, output_root=args.output_root)
+        except (ValueError, OSError, TypeError, KeyError):
+            print(json.dumps({"issue_codes": ["INVALID_VERIFICATION_INPUT"]}))
+            return 2
+        print(json.dumps(value))
+        return 0 if not value["issue_codes"] else 2
     try:
         if args.action == "init":
             init_config(args.config, args.data_root, args.environment_root)

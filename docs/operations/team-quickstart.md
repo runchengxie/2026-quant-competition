@@ -54,3 +54,5 @@ Use the explicit `run international` or optional `run next-open` command for [in
 ## Data acquisition and retrospective evaluation
 
 Use [dataset preparation](../research/datasets.md) for the separate external specification, budget caps, immutable receipts and actual provider support. `python -m competition_tools.team data plan`, `data acquire` and `data inspect` preserve the team configuration schema. `python -m competition_tools.team evaluate` dispatches only the daily crypto matrix in its own environment; equity and maker matrices use their existing APIs. See [new evidence and limitations](../research/data-expansion-and-evaluation.md). Gateway startup is off by default. Explicit IBKR acquisition can opt into the [Paper login precondition](gateway-login.md#optional-data-task-login-precondition); no command here submits orders.
+
+For separate Paper account-prefix, contract and optional historical-read evidence, use [read-only acceptance](gateway-login.md#read-only-acceptance). This command requires no team configuration and never logs in or submits orders.
