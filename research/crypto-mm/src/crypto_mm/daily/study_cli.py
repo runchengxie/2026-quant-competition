@@ -15,7 +15,17 @@ def main(argv=None):
     from .study_inputs import run_job
 
     try:
-        run_job(args.job, args.output_root)
+        from .study_inputs import _external
+
+        schema = json.loads(_external(args.job).read_text(encoding="utf-8-sig")).get(
+            "schema"
+        )
+        if schema == "competition.daily_study_job.v2":
+            from .ablation_inputs import run_ablation_job
+
+            result = run_ablation_job(args.job, args.output_root)
+        else:
+            result = run_job(args.job, args.output_root)
     except (ValueError, OSError, KeyError, TypeError, IndexError):
         print(
             json.dumps(
@@ -23,11 +33,7 @@ def main(argv=None):
             )
         )
         return 2
-    print(
-        json.dumps(
-            {"status": "completed", "schema": "competition.daily_study_result.v1"}
-        )
-    )
+    print(json.dumps({"status": "completed", "schema": result["schema"]}))
     return 0
 
 
