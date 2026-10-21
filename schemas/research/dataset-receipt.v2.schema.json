@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "spec_hash",
+    "observed_at",
+    "status",
+    "coverage",
+    "gaps",
+    "issue_codes",
+    "resolved_contracts",
+    "calendar",
+    "adjustment_evidence",
+    "requests",
+    "elapsed_seconds",
+    "retained_payload_bytes",
+    "parent_manifest_sha256",
+    "revisions",
+    "accepted_research"
+  ],
+  "properties": {
+    "schema": {
+      "const": "competition.dataset_receipt.v2"
+    },
+    "spec_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "enum": [
+        "acquired",
+        "partial"
+      ]
+    },
+    "coverage": {
+      "type": "object"
+    },
+    "gaps": {
+      "type": "array"
+    },
+    "issue_codes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Z][A-Z0-9_]*$"
+      }
+    },
+    "resolved_contracts": {
+      "type": "object"
+    },
+    "calendar": {
+      "type": "object"
+    },
+    "adjustment_evidence": {
+      "type": "object"
+    },
+    "requests": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 120
+    },
+    "elapsed_seconds": {
+      "type": "number",
+      "minimum": 0
+    },
+    "retained_payload_bytes": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 33554432
+    },
+    "parent_manifest_sha256": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "revisions": {
+      "type": "array"
+    },
+    "accepted_research": {
+      "const": false
+    }
+  }
+}

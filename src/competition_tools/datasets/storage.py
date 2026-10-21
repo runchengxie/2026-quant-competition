@@ -110,8 +110,12 @@ def write_manifest(spec: dict, staging: Path) -> dict:
 
 
 def verify_manifest(manifest_path: Path) -> dict:
+    original_manifest_path = manifest_path
     manifest_path = validate_external(manifest_path)
     value = json.loads(manifest_path.read_text(encoding="utf-8"))
+    if value.get("schema") == "competition.dataset_manifest.v2":
+        from .daily_storage import verify_daily_manifest
+        return verify_daily_manifest(original_manifest_path)
     if value.get("schema") != "competition.dataset_manifest.v1":
         raise ValueError("INVALID_MANIFEST")
     root = manifest_path.parent.resolve()
