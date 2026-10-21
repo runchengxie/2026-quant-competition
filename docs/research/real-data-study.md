@@ -123,3 +123,32 @@ Fee robustness summarizes the primary strategy at all declared fees using only w
 The separate v3 evaluation path replays original controls plus fixed stock frequency and crypto trend overlays. The full matrix is 678 jobs: 318 original controls, 252 stock frequency jobs and 108 crypto overlay jobs, including 36 post-hoc 60% exposure controls. New IDs bind the actual implementation/source snapshot, catalog, origin, inputs, windows and fees. This does not replace the original 318-row snapshot or its daily curves.
 
 The formal run must match every original control and saved exploratory metric within absolute 1e-10, with exact integer/null semantics, before aggregate publication. Migration joins scientific conditions rather than expecting old IDs. Missing or failed tasks remain explicit, not a completed 678-job claim. See the [fixed rules and CLI](strategies.md#formal-ablation) and [forward readiness](forward-observation-readiness.md). The ablation view adds paired-net-change bars and turnover/exposure scatter plots, plus inspectable aggregate tables. No new daily series, raw inputs or broker integration is published.
+
+### Verified formal replay
+
+All 678 jobs completed. The 318 original controls and 360 new jobs matched 8,136 frozen metric values within absolute 1e-10; the largest difference was 1.9041e-14. A separate calculation checked 62 groups and 5,180 values with zero difference. All new jobs/results passed JSON Schema; one period artifact per method was schema-checked, 28 in total. The runner separately verified every period artifact.
+
+| Market | Signal | Policy | bps | Windows | Median net | Median excess | Worst within-window drawdown | Median paired net change (pp) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| US | `sma_cross` | `baseline` | 20 | 11 | 3.63% | 0.78% | 18.01% | +0.00 |
+| US | `sma_cross` | `weekly` | 20 | 11 | 4.95% | 2.10% | 17.73% | +0.93 |
+| US | `sma_cross` | `baseline` | 40 | 11 | 2.77% | 0.12% | 18.43% | +0.00 |
+| US | `sma_cross` | `weekly` | 40 | 11 | 4.42% | 1.77% | 18.10% | +1.07 |
+| HK | `momentum_20d` | `baseline` | 30 | 10 | -0.81% | -6.07% | 25.01% | +0.00 |
+| HK | `momentum_20d` | `monthly` | 30 | 10 | 9.08% | 1.61% | 22.18% | +10.37 |
+| HK | `momentum_20d` | `baseline` | 60 | 10 | -7.65% | -13.11% | 31.63% | +0.00 |
+| HK | `momentum_20d` | `monthly` | 60 | 10 | 7.86% | 0.61% | 22.63% | +15.96 |
+| crypto | `trend_200d` | `baseline` | 10 | 12 | 0.66% | 0.83% | 42.24% | +0.00 |
+| crypto | `trend_200d` | `hysteresis_2pct` | 10 | 12 | 0.50% | -0.89% | 41.78% | -0.15 |
+| crypto | `trend_200d` | `vol_target_40pct` | 10 | 12 | 0.75% | 0.72% | 37.51% | +0.09 |
+| crypto | `trend_200d` | `fixed_exposure_60pct` | 10 | 12 | 1.05% | 1.17% | 27.29% | +0.40 |
+| crypto | `trend_200d` | `baseline` | 25 | 12 | 0.22% | -0.74% | 43.93% | +0.00 |
+| crypto | `trend_200d` | `hysteresis_2pct` | 25 | 12 | 0.18% | -1.43% | 42.43% | -0.04 |
+| crypto | `trend_200d` | `vol_target_40pct` | 25 | 12 | 0.41% | -0.19% | 39.29% | +0.19 |
+| crypto | `trend_200d` | `fixed_exposure_60pct` | 25 | 12 | 0.78% | 0.14% | 28.59% | +0.56 |
+
+Each row summarizes independent windows, not a continuous account. A paired change is the median of same-window differences, not the difference between two medians. The 60% control accounts for 36 jobs across fees and remains `post_hoc_diagnostic`; other policies are `retrospective_ablation`. This table selects the discussed comparisons; the website retains all 678 rows and all costs.
+
+US weekly SMA and HK monthly positive-momentum decisions warrant further validation, not execution approval. The 2% hysteresis band reduced trading but lowered median excess at 10 bps from the original trend control’s 0.83% to -0.89%. The 40% volatility target reduced the worst within-window drawdown alongside lower exposure. The post-hoc 60% control also reduced drawdown, so the reduction cannot be attributed entirely to the volatility algorithm. At 25 bps, the volatility variant’s median excess was -0.19%, leaving weak cost-robustness evidence.
+
+The public aggregate is `site/src/data/ablation-study.v1.json`, with UTC `as_of` 2026-10-21. Executed source: `0952d35a6819442fade139ced03f903af7e2a9c9`. Plan SHA-256: `df7e440cad9e3bc41c413495ee61ed6fcd91992200e52ba9fdffd8f09d0148bb`. The original 318-row snapshot and existing daily curves remain byte-identical. Private inputs, retained source, periods and logs stay outside Git. No fresh data, forward sample or broker connection was added.
