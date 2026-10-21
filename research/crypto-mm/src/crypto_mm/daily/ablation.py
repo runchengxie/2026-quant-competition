@@ -59,6 +59,8 @@ def build_targets(bars: dict, strategy: str, variant_id: str) -> dict:
                 / len(selected)
                 for j in range(decision - 19, decision + 1)
             ]
+            if not all(math.isfinite(v) for v in observed):
+                raise ValueError("INVALID_ABLATION_VOLATILITY")
             volatility = stdev(observed) * math.sqrt(365)
             if not math.isfinite(volatility):
                 raise ValueError("INVALID_ABLATION_VOLATILITY")

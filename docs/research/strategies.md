@@ -55,9 +55,44 @@ Frequent changes near the threshold can incur costs. Volatility and sharp revers
 <a id="trend-200d"></a>
 ## Crypto 200-period trend filter: `trend_200d`
 
-The daily spot model equally weights assets whose prior close is strictly above their trailing 200-period average, or holds cash if none qualify. It does not scale positions by volatility or use a turnover buffer. Those are possible future experiments, not delivered features.
+The daily spot model equally weights assets whose prior close is strictly above their trailing 200-period average, or holds cash if none qualify. This original control does not scale positions by volatility or use a turnover buffer. The separate versioned ablation path below adds fixed overlays without changing this control.
 
 The filter can lag reversals and repeatedly enter or exit near the moving average. Lower exposure does not guarantee a smaller drawdown. Inspect worst windows and higher-fee outcomes rather than selecting one favorable curve. Implementation: [crypto daily study](../../research/crypto-mm/src/crypto_mm/daily/study.py).
+
+
+<a id="formal-ablation"></a>
+## Formal ablation policies
+
+The separate `competition.evaluation_spec.v3` path makes the fixed frequency/risk experiments reproducible. It preserves `self_financing_daily.v1`, independent cash starts, original fees, warmup and scoring lengths. Original v1 jobs and the 318-row published study remain unchanged. New jobs/results use v2 identities that bind policy parameters and provenance. A formal rerun is still retrospective evidence.
+
+| Market | Base signal | `variant_id` | Rule |
+| --- | --- | --- | --- |
+| US/HK | `equal_weight`, `momentum_20d`, `sma_cross` | `weekly` | First observed decision close of each ISO week |
+| US/HK | Same three signals | `monthly` | First observed decision close of each calendar month |
+| crypto | `trend_200d` | `hysteresis_2pct` | Enter above 1.02 × SMA200, exit below 0.98 × SMA200, retain state between thresholds |
+| crypto | `trend_200d` | `vol_target_40pct` | Previous 20 complete selected-basket returns, sample deviation × sqrt(365), multiplier min(1, 0.40 / volatility) |
+| crypto | `trend_200d` | `fixed_exposure_60pct` | Multiply the original trend target weights by 0.60 |
+
+Stock initial entry always occurs on the first scored decision. Other decisions use the prior close. Between scheduled decisions, the model holds actual quantities and cash rather than rebalancing yesterday's weights. Crypto hysteresis warms state from the first complete 200-period mean. Volatility uses the currently selected equal-weight basket with no future returns; zero volatility gives multiplier 1 and an empty selection holds cash. No overlay adds leverage. The 60% rule targets 40% cash immediately after an invested allocation; later marked exposure can exceed 60%.
+
+All original base strategies remain explicit `baseline` controls. Frequency rules and the first two crypto overlays carry `retrospective_ablation`: parameters were fixed before their probe, after earlier historical results were seen. The 60% control carries `post_hoc_diagnostic` because it was chosen after inspecting that probe. Refreezing, filtering or translating a result cannot change its evidence role. This does not establish statistical significance, an optimal parameter or unseen-sample performance.
+
+The v3 specification requires `schema`, `manifests`, `costs`, `variants` and `origin`. Each selected market must include every original strategy with `variant_id: baseline`; additional catalog pairs are explicit. `origin` supplies external `probe_protocol`, `diagnostic_protocol` and `evidence_manifest` paths. The diagnostic must hash its parent protocol, and the manifest must hash both protocols and its listed evidence. Parameter overrides and unknown fields fail. This is an explicit import of experiment provenance, not automatic discovery of private paths.
+
+```sh
+python -m competition_tools.team evaluate --config /external/team.toml --spec /external/ablation-spec.json --output-root /external/new-ablation
+python -m competition_tools.evaluation.ablation_publication --aggregate /external/new-ablation/run/study-results.json --output /external/new-public-ablation.json
+python -m competition_tools.check_ablation_delivery --config /external/team.toml --output-root /external/new-synthetic-ablation
+```
+
+Use a committed checkout and newly named external outputs. The last command creates its own explicitly synthetic inputs and origin evidence, so it needs no private research archive. Root and both leaf environments must resolve to this checkout. Source snapshots retained beside the private run allow later verification after the development worktree is removed. The new plan cap is 768 jobs with one shared 3600-second deadline and batches of at most 384; the original plan cap remains 384. Failed/blocked jobs keep null metrics and explicit reasons, with no automatic retry.
+
+The [ablation section](https://runchengxie.github.io/2026-quant-competition/#ablation) uses the separate `competition.public_ablation.v1` aggregate. It groups independent windows by market, currency, signal, policy and cost. Paired differences use the same exact window and fee against the original control, not the difference between unrelated medians. Missing counterparts stay null. Charts and filters do not recalculate accounting, publish raw input prices or add new daily curves.
+
+<a id="forward-observation"></a>
+## Before forward observation
+
+The current candidates are slower stock decisions and crypto trend risk controls, not approved trading targets. A genuinely new observation phase still needs fresh immutable inputs, a historically defined broader universe, corporate-action assumptions, an executable price model, a fixed decision calendar, account/product eligibility and a protocol fixed before new observations. Existing unscored tails are not a forward test. No collector, scheduler, broker login or order route is enabled by this research. See the [readiness checklist](forward-observation-readiness.md).
 
 ## Reproduce and inspect
 

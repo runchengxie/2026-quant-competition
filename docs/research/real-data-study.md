@@ -105,7 +105,7 @@ python -m competition_tools.evaluation.study_series --aggregate /external/study/
 
 The [integrated documentation](https://runchengxie.github.io/2026-quant-competition/docs/) renders this canonical Markdown and the curated architecture, quickstart and dataset guides directly through Astro. Language switches retain the article. Other source documents remain GitHub links. This avoids a second documentation copy or MkDocs deployment.
 
-Current charts describe strategy effects. IC, rank-IC, quantile spreads, decay and machine-learning out-of-time performance have not been measured. The site labels these as later research, alongside slower stock rebalancing, crypto volatility sizing and a possible runtime adapter. The default packages remain standalone. No external runtime has been connected and no new strategy experiment was run for this display update.
+Current charts describe strategy effects. IC, rank-IC, quantile spreads, decay and machine-learning out-of-time performance have not been measured. Factor/ML checks and a possible runtime adapter remain later research. Fixed slower stock schedules and crypto risk overlays now have a separate versioned ablation path described below. The default packages remain standalone. No external runtime has been connected and no new strategy experiment was run for this display update.
 
 ### Reading the research overview
 
@@ -117,3 +117,9 @@ The homepage lists every strategy at each market's predeclared nonzero one-way c
 The dashboard adds a net NAV overlay and side-by-side metric table for the primary strategy and up to two alternatives. Market, fee, exact scored window, currency, plan and accounting basis must match. Missing results remain unavailable; curves additionally need identical date grids. Single-instrument stock benchmark daily curves remain withheld.
 
 Fee robustness summarizes the primary strategy at all declared fees using only windows with matching input and accounting conditions at every fee. The zero-bps crypto control is explicitly labeled. Positive net and positive excess counts have separate denominators; absent benchmark values are not zero. The [strategy guide](strategies.md) documents signals, fixed pools, failure cases and reproduction. These views reuse the frozen results and do not constitute a new strategy experiment.
+
+## Versioned ablation replay
+
+The separate v3 evaluation path replays original controls plus fixed stock frequency and crypto trend overlays. The full matrix is 678 jobs: 318 original controls, 252 stock frequency jobs and 108 crypto overlay jobs, including 36 post-hoc 60% exposure controls. New IDs bind the actual implementation/source snapshot, catalog, origin, inputs, windows and fees. This does not replace the original 318-row snapshot or its daily curves.
+
+The formal run must match every original control and saved exploratory metric within absolute 1e-10, with exact integer/null semantics, before aggregate publication. Migration joins scientific conditions rather than expecting old IDs. Missing or failed tasks remain explicit, not a completed 678-job claim. See the [fixed rules and CLI](strategies.md#formal-ablation) and [forward readiness](forward-observation-readiness.md). The ablation view adds paired-net-change bars and turnover/exposure scatter plots, plus inspectable aggregate tables. No new daily series, raw inputs or broker integration is published.

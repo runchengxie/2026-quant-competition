@@ -14,7 +14,8 @@
     "research": "策略思路",
     "engineering": "执行边界",
     "repo": "查看源码",
-    "validation": "验证结果"
+    "validation": "验证结果",
+    "ablation": "规则对照"
   },
   "hero": {
     "eyebrow": "可核验的量化研究",
@@ -400,5 +401,66 @@
       "positiveNet": "正净收益窗口",
       "control": "零费用对照"
     }
+  },
+  "ablation": {
+    "title": "调仓频率与趋势风险控制",
+    "intro": "在相同信号、费用和历史窗口下，对比股票调仓周期与加密货币风险控制规则。",
+    "limitation": "这是当前固定标的池的回溯研究。各窗口独立起算，不能拼成账户收益，也不代表实盘或前瞻验证。所有已测试规则均可查看，包括效果较差的规则。",
+    "unavailable": "正式消融研究结果尚未发布，上方仍可查看原有研究。",
+    "roleNote": "60% 仓位控制是在查看前一轮结果后选定的，无论怎样筛选，都属于事后诊断。",
+    "roles": {
+      "retrospective_ablation": "回溯对照研究",
+      "post_hoc_diagnostic": "事后诊断"
+    },
+    "variants": {
+      "baseline": "原始对照",
+      "weekly": "每周调仓",
+      "monthly": "每月调仓",
+      "hysteresis_2pct": "2% 滞回区间",
+      "vol_target_40pct": "40% 波动率目标",
+      "fixed_exposure_60pct": "60% 仓位控制"
+    },
+    "market": "市场",
+    "fee": "单边费用",
+    "strategy": "基础信号",
+    "variant": "规则",
+    "window": "计分窗口",
+    "all": "全部",
+    "count": "任务数",
+    "net": "净收益中位数",
+    "excess": "相对基准收益中位数",
+    "paired": "配对净收益变化中位数",
+    "drawdown": "配对回撤变化中位数",
+    "turnover": "日均换手中位数",
+    "exposure": "仓位中位数",
+    "summary": "独立窗口中位数",
+    "summaryNote": "每组使用相同市场、币种、信号、规则和费用。配对变化只比较同一窗口与原始对照，回撤变化为负表示回撤减小。缺失值保持为空。",
+    "pairedChart": "相对同窗口原始对照的净收益变化",
+    "riskChart": "交易强度与仓位",
+    "riskNote": "每个点对应一种规则和费用组合。坐标是各窗口日均值的中位数，不是优化得到的有效前沿。",
+    "facts": "逐窗口查看",
+    "period": "计分日期",
+    "status": "状态",
+    "returnLabel": "净收益",
+    "drawdownLabel": "最大回撤",
+    "pairedLabel": "配对净收益变化",
+    "costLabel": "基点",
+    "completed": "已完成",
+    "blocked": "已阻塞",
+    "failed": "失败",
+    "ready": "已选择 {count} 个任务，图表仅汇总已完成的有效数值。",
+    "loadError": "互动图表加载失败，仍可查看经过核验的表格。",
+    "provenance": "源码与实验身份",
+    "guide": "方法与复现",
+    "readiness": "前瞻验证还缺什么",
+    "markets": {
+      "US": "美股",
+      "HK": "港股",
+      "crypto": "加密现货",
+      "unknown": "市场不可用"
+    },
+    "coverage": "正式任务数",
+    "baseline": "原始对照",
+    "policies": "新增规则数"
   }
 }

@@ -55,9 +55,44 @@
 <a id="trend-200d"></a>
 ## 加密货币二百期趋势过滤 `trend_200d`
 
-日频现货模型筛选前一日收盘严格高于过去二百期均价的资产并等权配置，无符合资产时持有现金。目前不按波动率缩放仓位，也没有调仓缓冲。这些是可能的后续实验，不是已交付能力。
+日频现货模型筛选前一日收盘严格高于过去二百期均价的资产并等权配置，无符合资产时持有现金。该原始对照不按波动率缩放仓位，也不使用调仓缓冲。下方独立的版本化消融路径增加固定叠加规则，保留原始对照不变。
 
 过滤器可能滞后于反转，也可能在均线附近反复进出。较低仓位不保证较小回撤，应查看最差窗口和较高费用下的结果，不能只选一条有利曲线。实现见[加密货币日频研究](../../research/crypto-mm/src/crypto_mm/daily/study.py)。
+
+
+<a id="formal-ablation"></a>
+## 正式消融研究规则
+
+独立的 `competition.evaluation_spec.v3` 路径支持复现已固定的调仓频率和风险控制实验，沿用 `self_financing_daily.v1`、独立现金起点、原费用、预热和计分长度。原有 v1 任务和已发布的 318 条研究结果保持不变。新任务和结果采用 v2 身份，绑定规则参数与来源。正式重跑仍然属于回溯证据。
+
+| 市场 | 基础信号 | `variant_id` | 规则 |
+| --- | --- | --- | --- |
+| US/HK | `equal_weight`、`momentum_20d`、`sma_cross` | `weekly` | 每个 ISO 周首个实际出现的决策收盘时点 |
+| US/HK | 同上三个信号 | `monthly` | 每个自然月首个实际出现的决策收盘时点 |
+| crypto | `trend_200d` | `hysteresis_2pct` | 高于 1.02 × SMA200 时进入，低于 0.98 × SMA200 时退出，区间内保持状态 |
+| crypto | `trend_200d` | `vol_target_40pct` | 当前入选等权组合此前 20 个完整日收益，用样本标准差 × sqrt(365) 估计波动，乘数为 min(1, 0.40 / 波动率) |
+| crypto | `trend_200d` | `fixed_exposure_60pct` | 原始趋势目标权重乘以 0.60 |
+
+股票在首个计分决策时点建仓，其他决策使用前一收盘信号。非调仓日持有实际份额和现金，不会重新平衡昨日权重。加密滞回规则从首个完整 200 期均值起预热状态。波动率计算不使用未来收益，零波动时乘数为 1，无入选标的时持有现金。所有规则均不加杠杆。60% 规则在有持仓的调仓时点将现金目标设为 40%，随后按市价计算的仓位可能超过 60%。
+
+所有原始策略都保留显式 `baseline` 对照。调仓规则及前两种加密叠加规则标为 `retrospective_ablation`，参数在各自探索前固定，但此前已经查看过历史研究结果。60% 对照是在查看该轮探索后选定，始终标为 `post_hoc_diagnostic`。重新冻结、筛选和翻译均不能改变证据角色。这些结果不代表统计显著性、最优参数或未见样本表现。
+
+v3 配置必须包含 `schema`、`manifests`、`costs`、`variants`、`origin`。每个选中市场都必须包含全部原始策略的 `baseline` 对照，再显式列出额外规则。`origin` 传入仓库外的 `probe_protocol`、`diagnostic_protocol`、`evidence_manifest` 路径。诊断协议必须记录父协议哈希，清单必须核验两个协议及其列出的证据文件。未知字段和参数覆盖会被拒绝，程序不会自动搜寻私人路径。
+
+```sh
+python -m competition_tools.team evaluate --config /external/team.toml --spec /external/ablation-spec.json --output-root /external/new-ablation
+python -m competition_tools.evaluation.ablation_publication --aggregate /external/new-ablation/run/study-results.json --output /external/new-public-ablation.json
+python -m competition_tools.check_ablation_delivery --config /external/team.toml --output-root /external/new-synthetic-ablation
+```
+
+使用已提交的源码和全新的仓库外输出路径。最后一条命令会创建明确标注为合成数据的输入和来源证据，不需要私人研究归档。根工具和两个叶子环境都必须指向当前检出。私有运行目录保留源码快照，开发 worktree 删除后仍可核验。新计划最多 768 个任务，共用 3600 秒期限，每批最多 384 个；原计划仍限制为 384 个。失败或阻塞任务保留空指标和明确原因，不自动重试。
+
+[消融研究展示区](https://runchengxie.github.io/2026-quant-competition/zh-CN/#ablation)使用独立的 `competition.public_ablation.v1` 汇总，按相同市场、币种、信号、规则和费用分组。配对变化仅比较同一窗口及费用下的原始对照，不是两个无关中位数相减。缺失对照保持为空。图表与筛选不重新记账，不公开原始输入价格，也不增加每日曲线。
+
+<a id="forward-observation"></a>
+## 前瞻观察之前
+
+当前候选方向是降低股票调仓频率和控制加密趋势风险，尚未成为获批交易目标。真正的新观察期仍需要新鲜不可变输入、按历史定义的更广标的池、公司行动假设、可执行价格模型、固定决策日历、账户与产品资格，以及在新观察出现前固定的协议。原有未计分尾段不能改名为前瞻测试。本研究不会启动采集器、计划任务、券商登录或下单路径，详见[准备清单](forward-observation-readiness.zh-CN.md)。
 
 ## 复现与检查
 

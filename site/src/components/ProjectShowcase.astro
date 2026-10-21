@@ -2,6 +2,7 @@
 import SiteLayout from "../layouts/SiteLayout.astro";
 import ValidationResults from "./ValidationResults.astro";
 import ExpansionResults from "./ExpansionResults.astro";
+import AblationResults from "./AblationResults.astro";
 import StudyResults from "./StudyResults.astro";
 import ResearchSummary from "./ResearchSummary.astro";
 import PerformanceDashboard from "./PerformanceDashboard.astro";
@@ -25,7 +26,7 @@ const guide = (directory: string) => file(`research/${directory}/README${locale 
 <SiteLayout locale={locale} title={t.meta.title} description={t.meta.description}>
   <nav class="project-nav" aria-label={t.nav.demo}>
     <a class="wordmark" href="#">QUANT / LAB</a>
-    <div><a href="#performance">{t.dashboard.title}</a><a href={docsUrl}>{t.documents.title}</a><a href="#demo">{t.nav.demo}</a><a href="#engineering">{t.nav.engineering}</a></div>
+    <div><a href="#performance">{t.dashboard.title}</a><a href="#ablation">{t.nav.ablation}</a><a href={docsUrl}>{t.documents.title}</a><a href="#demo">{t.nav.demo}</a><a href="#engineering">{t.nav.engineering}</a></div>
     <a class="repo-link" href={repository}>{t.nav.repo}<span aria-hidden="true"> ↗</span></a>
   </nav>
   <header class="showcase-hero performance-hero">
@@ -50,6 +51,7 @@ const guide = (directory: string) => file(`research/${directory}/README${locale 
   <main>
     <ResearchSummary locale={locale} />
     <PerformanceDashboard locale={locale} />
+    <AblationResults locale={locale} />
     <section id="demo" class="demo-section">
       <div class="section-heading"><p class="eyebrow">{t.demo.eyebrow}</p><h2>{t.demo.title}</h2><p>{t.demo.intro}</p></div>
       <div class="demo-switcher">

@@ -81,3 +81,21 @@ def test_baseline_calls_unchanged_evaluator():
         assert evaluate_ablation(
             bars(), s, "baseline", fee_bps=25, quote_currency="USDT"
         ) == evaluate_study(bars(), s, fee_bps=25, quote_currency="USDT")
+
+
+def test_nonfinite_derived_return_is_rejected_with_finite_prices():
+    b = bars()
+    b["close"]["BTCUSDT"][232] = 1e-200
+    b["close"]["BTCUSDT"][233] = 1e200
+    b["close"]["BTCUSDT"][251] = 1e201
+    with pytest.raises(ValueError, match="VOLATILITY"):
+        build_targets(b, "trend_200d", "vol_target_40pct")
+
+
+def test_zero_volatility_uses_unlevered_full_target():
+    b = bars()
+    b["close"]["BTCUSDT"] = [float(2**i) for i in range(342)]
+    assert all(
+        t == {"BTCUSDT": 1.0}
+        for t in build_targets(b, "trend_200d", "vol_target_40pct")["targets"]
+    )

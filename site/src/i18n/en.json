@@ -14,7 +14,8 @@
     "research": "Strategy ideas",
     "engineering": "Execution boundary",
     "repo": "Source code",
-    "validation": "Validation results"
+    "validation": "Validation results",
+    "ablation": "Policy research"
   },
   "hero": {
     "eyebrow": "INSPECTABLE RESEARCH",
@@ -400,5 +401,66 @@
       "positiveNet": "Positive net windows",
       "control": "Zero-cost control"
     }
+  },
+  "ablation": {
+    "title": "Rebalance frequency and trend risk",
+    "intro": "Compare fixed stock schedules and crypto risk controls against the same signal, cost and historical window.",
+    "limitation": "Retrospective research on the current fixed pools. Independent windows are not a compounded account, live PnL or forward validation. All tested variants remain available, including disappointing results.",
+    "unavailable": "Formal ablation results are not published yet. The original study remains available above.",
+    "roleNote": "The 60% exposure control was chosen after inspecting earlier results. It remains a post-hoc diagnostic under every filter.",
+    "roles": {
+      "retrospective_ablation": "Retrospective ablation",
+      "post_hoc_diagnostic": "Post-hoc diagnostic"
+    },
+    "variants": {
+      "baseline": "Original control",
+      "weekly": "Weekly decisions",
+      "monthly": "Monthly decisions",
+      "hysteresis_2pct": "2% hysteresis band",
+      "vol_target_40pct": "40% volatility target",
+      "fixed_exposure_60pct": "60% exposure control"
+    },
+    "market": "Market",
+    "fee": "One-way cost",
+    "strategy": "Base signal",
+    "variant": "Policy",
+    "window": "Scored window",
+    "all": "All",
+    "count": "Jobs",
+    "net": "Median net return",
+    "excess": "Median benchmark excess",
+    "paired": "Median paired net change",
+    "drawdown": "Median paired drawdown change",
+    "turnover": "Median daily turnover",
+    "exposure": "Median exposure",
+    "summary": "Independent-window medians",
+    "summaryNote": "Groups share market, currency, signal, policy and cost. A paired change compares the same exact window with its original control. Negative drawdown change means a smaller drawdown. Missing values remain unavailable.",
+    "pairedChart": "Net change versus the same-window control",
+    "riskChart": "Trading intensity versus exposure",
+    "riskNote": "Each point is one policy/cost group. Axes show medians of daily window averages, not an optimized frontier.",
+    "facts": "Inspect every window",
+    "period": "Scored dates",
+    "status": "Status",
+    "returnLabel": "Net return",
+    "drawdownLabel": "Max drawdown",
+    "pairedLabel": "Paired net change",
+    "costLabel": "bps",
+    "completed": "completed",
+    "blocked": "blocked",
+    "failed": "failed",
+    "ready": "{count} selected jobs. Charts summarize completed numeric results only.",
+    "loadError": "Interactive charts could not load. The reviewed tables remain available.",
+    "provenance": "Source and experiment identity",
+    "guide": "Methods and reproduction",
+    "readiness": "What a forward test still needs",
+    "markets": {
+      "US": "US stocks",
+      "HK": "Hong Kong stocks",
+      "crypto": "Crypto spot",
+      "unknown": "Unavailable market"
+    },
+    "coverage": "Formal jobs",
+    "baseline": "Original controls",
+    "policies": "New policy rules"
   }
 }
