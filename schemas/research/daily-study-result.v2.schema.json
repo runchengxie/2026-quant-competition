@@ -1,0 +1,328 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "job_id",
+    "plan_sha256",
+    "manifest_sha256",
+    "code_commit",
+    "market",
+    "quote_currency",
+    "strategy",
+    "parameters",
+    "fee_bps",
+    "products",
+    "fold",
+    "benchmark",
+    "variant_id",
+    "variant_parameters",
+    "evidence_role",
+    "origin",
+    "catalog_sha256",
+    "schema",
+    "code_sha256",
+    "start",
+    "end",
+    "methods",
+    "metrics",
+    "accepted_research",
+    "artifacts"
+  ],
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "plan_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "manifest_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "code_commit": {
+      "type": "string"
+    },
+    "market": {
+      "type": "string"
+    },
+    "quote_currency": {
+      "type": "string"
+    },
+    "strategy": {
+      "type": "string"
+    },
+    "parameters": {
+      "type": "object"
+    },
+    "fee_bps": {
+      "type": "integer"
+    },
+    "products": {
+      "type": "array"
+    },
+    "fold": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "warmup_start",
+        "start",
+        "end",
+        "warmup_periods",
+        "scoring_periods"
+      ],
+      "properties": {
+        "warmup_start": {
+          "type": "string",
+          "format": "date"
+        },
+        "start": {
+          "type": "string",
+          "format": "date"
+        },
+        "end": {
+          "type": "string",
+          "format": "date"
+        },
+        "warmup_periods": {
+          "const": 252
+        },
+        "scoring_periods": {
+          "enum": [
+            63,
+            90
+          ]
+        }
+      }
+    },
+    "benchmark": {
+      "type": "string"
+    },
+    "variant_id": {
+      "type": "string"
+    },
+    "variant_parameters": {
+      "type": "object"
+    },
+    "evidence_role": {
+      "type": "string"
+    },
+    "origin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "probe_protocol_sha256",
+        "diagnostic_protocol_sha256",
+        "evidence_manifest_sha256",
+        "stage",
+        "retrospective",
+        "accepted_research"
+      ],
+      "properties": {
+        "probe_protocol_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "diagnostic_protocol_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "evidence_manifest_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "stage": {
+          "const": "retrospective"
+        },
+        "retrospective": {
+          "const": true
+        },
+        "accepted_research": {
+          "const": false
+        }
+      }
+    },
+    "catalog_sha256": {
+      "const": "942d0a84cf5b627e19f4f592fb92aad9cfce80080fd1983736ef2efaca63a364"
+    },
+    "schema": {
+      "const": "competition.daily_study_result.v2"
+    },
+    "code_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "start": {
+      "type": "string",
+      "format": "date"
+    },
+    "end": {
+      "type": "string",
+      "format": "date"
+    },
+    "methods": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "method_id",
+        "strategy",
+        "signal_parameters",
+        "signal_lag_periods",
+        "rebalance",
+        "execution_assumption",
+        "warmup_periods",
+        "scoring_periods",
+        "fold_initialization",
+        "cost_model",
+        "terminal_liquidation",
+        "retrospective",
+        "variant_id",
+        "variant_parameters",
+        "evidence_role"
+      ],
+      "properties": {
+        "method_id": {
+          "type": "string"
+        },
+        "strategy": {
+          "type": "string"
+        },
+        "signal_parameters": {
+          "type": "object"
+        },
+        "signal_lag_periods": {
+          "const": 1
+        },
+        "rebalance": {
+          "type": "string"
+        },
+        "execution_assumption": {
+          "const": "lagged_close_proxy"
+        },
+        "warmup_periods": {
+          "const": 252
+        },
+        "scoring_periods": {
+          "enum": [
+            63,
+            90
+          ]
+        },
+        "fold_initialization": {
+          "const": "independent_cash"
+        },
+        "cost_model": {
+          "const": "self_financing_oneway_bps"
+        },
+        "terminal_liquidation": {
+          "const": false
+        },
+        "retrospective": {
+          "const": true
+        },
+        "variant_id": {
+          "type": "string"
+        },
+        "variant_parameters": {
+          "type": "object"
+        },
+        "evidence_role": {
+          "type": "string"
+        }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cost_drag",
+        "flat_days",
+        "gross_return",
+        "max_drawdown",
+        "mean_daily_turnover",
+        "mean_exposure",
+        "net_return",
+        "periods",
+        "sharpe",
+        "total_costs",
+        "turnover",
+        "volatility"
+      ],
+      "properties": {
+        "cost_drag": {
+          "type": "number"
+        },
+        "flat_days": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "gross_return": {
+          "type": "number"
+        },
+        "max_drawdown": {
+          "type": "number"
+        },
+        "mean_daily_turnover": {
+          "type": "number"
+        },
+        "mean_exposure": {
+          "type": "number"
+        },
+        "net_return": {
+          "type": "number"
+        },
+        "periods": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sharpe": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "total_costs": {
+          "type": "number"
+        },
+        "turnover": {
+          "type": "number"
+        },
+        "volatility": {
+          "type": "number"
+        }
+      }
+    },
+    "accepted_research": {
+      "const": false
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "sha256",
+          "bytes"
+        ],
+        "properties": {
+          "path": {
+            "const": "periods.json"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    }
+  }
+}

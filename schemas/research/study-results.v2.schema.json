@@ -1,0 +1,260 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "plan_path",
+    "observed_at",
+    "plan_sha256",
+    "code_commit",
+    "jobs",
+    "accepted_research"
+  ],
+  "properties": {
+    "schema": {
+      "const": "competition.study_results.v2"
+    },
+    "plan_path": {
+      "type": "string"
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "plan_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "code_commit": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "jobs": {
+      "type": "array",
+      "maxItems": 768,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "job_id",
+          "market",
+          "status",
+          "reason",
+          "metrics",
+          "result_path",
+          "result_sha256",
+          "benchmark_excess_return",
+          "blockers",
+          "baseline_job_id",
+          "paired_net_change",
+          "paired_drawdown_change",
+          "paired_turnover_change",
+          "paired_exposure_change"
+        ],
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "market": {
+            "enum": [
+              "US",
+              "HK",
+              "crypto",
+              "unknown"
+            ]
+          },
+          "status": {
+            "enum": [
+              "completed",
+              "blocked",
+              "failed"
+            ]
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "metrics": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "cost_drag",
+                  "flat_days",
+                  "gross_return",
+                  "max_drawdown",
+                  "mean_daily_turnover",
+                  "mean_exposure",
+                  "net_return",
+                  "periods",
+                  "sharpe",
+                  "total_costs",
+                  "turnover",
+                  "volatility"
+                ],
+                "properties": {
+                  "cost_drag": {
+                    "type": "number"
+                  },
+                  "flat_days": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "gross_return": {
+                    "type": "number"
+                  },
+                  "max_drawdown": {
+                    "type": "number"
+                  },
+                  "mean_daily_turnover": {
+                    "type": "number"
+                  },
+                  "mean_exposure": {
+                    "type": "number"
+                  },
+                  "net_return": {
+                    "type": "number"
+                  },
+                  "periods": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "sharpe": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "total_costs": {
+                    "type": "number"
+                  },
+                  "turnover": {
+                    "type": "number"
+                  },
+                  "volatility": {
+                    "type": "number"
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "result_path": {},
+          "result_sha256": {},
+          "benchmark_excess_return": {},
+          "blockers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "baseline_job_id": {},
+          "paired_net_change": {},
+          "paired_drawdown_change": {},
+          "paired_turnover_change": {},
+          "paired_exposure_change": {},
+          "strategy": {
+            "type": "string"
+          },
+          "fee_bps": {
+            "type": "integer"
+          },
+          "fold": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "warmup_start",
+              "start",
+              "end",
+              "warmup_periods",
+              "scoring_periods"
+            ],
+            "properties": {
+              "warmup_start": {
+                "type": "string",
+                "format": "date"
+              },
+              "start": {
+                "type": "string",
+                "format": "date"
+              },
+              "end": {
+                "type": "string",
+                "format": "date"
+              },
+              "warmup_periods": {
+                "const": 252
+              },
+              "scoring_periods": {
+                "enum": [
+                  63,
+                  90
+                ]
+              }
+            }
+          },
+          "quote_currency": {
+            "type": "string"
+          },
+          "variant_id": {
+            "type": "string"
+          },
+          "variant_parameters": {
+            "type": "object"
+          },
+          "evidence_role": {
+            "type": "string"
+          },
+          "origin": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "probe_protocol_sha256",
+              "diagnostic_protocol_sha256",
+              "evidence_manifest_sha256",
+              "stage",
+              "retrospective",
+              "accepted_research"
+            ],
+            "properties": {
+              "probe_protocol_sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "diagnostic_protocol_sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "evidence_manifest_sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "stage": {
+                "const": "retrospective"
+              },
+              "retrospective": {
+                "const": true
+              },
+              "accepted_research": {
+                "const": false
+              }
+            }
+          },
+          "catalog_sha256": {
+            "const": "942d0a84cf5b627e19f4f592fb92aad9cfce80080fd1983736ef2efaca63a364"
+          }
+        }
+      }
+    },
+    "accepted_research": {
+      "const": false
+    }
+  }
+}

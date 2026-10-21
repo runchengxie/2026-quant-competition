@@ -53,6 +53,7 @@ jobs:
           python -m competition_tools.team doctor --config "$RUNNER_TEMP/team.toml"
           "$RUNNER_TEMP/team-envs/root/bin/python" -m competition_tools.check_team_delivery --config "$RUNNER_TEMP/team.toml"
           "$RUNNER_TEMP/team-envs/root/bin/python" -m competition_tools.check_study_delivery --config "$RUNNER_TEMP/team.toml" --output-root "$RUNNER_TEMP/study-contract"
+          "$RUNNER_TEMP/team-envs/root/bin/python" -m competition_tools.check_ablation_delivery --config "$RUNNER_TEMP/team.toml" --output-root "$RUNNER_TEMP/ablation-contract"
           cd "$RUNNER_TEMP"
           export HOME="$RUNNER_TEMP/empty-home"
           "$RUNNER_TEMP/team-envs/root/bin/python" -m competition_tools.team demo equity --config "$RUNNER_TEMP/team.toml" --output-root "$RUNNER_TEMP/equity-demo"

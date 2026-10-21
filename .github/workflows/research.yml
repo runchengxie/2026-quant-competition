@@ -2,10 +2,10 @@ name: Offline research
 
 on:
   pull_request:
-    paths: ["research/**", "src/competition_tools/*acceptance.py", "src/competition_tools/check_research_receipts.py", "src/competition_tools/*accounting*", "src/strategies/hk_low_frequency/backtest.py", "tests/competition_tools/*accounting*", "schemas/research/**", "tests/competition_tools/*research*", "tests/competition_tools/test_experiment_acceptance.py", ".github/workflows/research.yml", "pyproject.toml", "uv.lock"]
+    paths: ["src/competition_tools/evaluation/**", "src/competition_tools/*ablation*", "src/competition_tools/team/evaluate.py", "tests/competition_tools/*ablation*", "research/**", "src/competition_tools/*acceptance.py", "src/competition_tools/check_research_receipts.py", "src/competition_tools/*accounting*", "src/strategies/hk_low_frequency/backtest.py", "tests/competition_tools/*accounting*", "schemas/research/**", "tests/competition_tools/*research*", "tests/competition_tools/test_experiment_acceptance.py", ".github/workflows/research.yml", "pyproject.toml", "uv.lock"]
   push:
     branches: [main]
-    paths: ["research/**", "src/competition_tools/*acceptance.py", "src/competition_tools/check_research_receipts.py", "src/competition_tools/*accounting*", "src/strategies/hk_low_frequency/backtest.py", "tests/competition_tools/*accounting*", "schemas/research/**", "tests/competition_tools/*research*", "tests/competition_tools/test_experiment_acceptance.py", ".github/workflows/research.yml", "pyproject.toml", "uv.lock"]
+    paths: ["src/competition_tools/evaluation/**", "src/competition_tools/*ablation*", "src/competition_tools/team/evaluate.py", "tests/competition_tools/*ablation*", "research/**", "src/competition_tools/*acceptance.py", "src/competition_tools/check_research_receipts.py", "src/competition_tools/*accounting*", "src/strategies/hk_low_frequency/backtest.py", "tests/competition_tools/*accounting*", "schemas/research/**", "tests/competition_tools/*research*", "tests/competition_tools/test_experiment_acceptance.py", ".github/workflows/research.yml", "pyproject.toml", "uv.lock"]
   workflow_dispatch:
 
 permissions:

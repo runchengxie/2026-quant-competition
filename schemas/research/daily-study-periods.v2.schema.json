@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "job_id",
+    "net",
+    "gross"
+  ],
+  "properties": {
+    "schema": {
+      "const": "competition.daily_study_periods.v2"
+    },
+    "job_id": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "net": {
+      "type": "array",
+      "minItems": 63,
+      "maxItems": 90,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "date",
+          "equity",
+          "cash",
+          "turnover",
+          "cost",
+          "net_return",
+          "exposure",
+          "positions",
+          "weights"
+        ],
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "equity": {
+            "type": "number"
+          },
+          "cash": {
+            "type": "number"
+          },
+          "turnover": {
+            "type": "number"
+          },
+          "cost": {
+            "type": "number"
+          },
+          "net_return": {
+            "type": "number"
+          },
+          "exposure": {
+            "type": "number"
+          },
+          "positions": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "weights": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        }
+      }
+    },
+    "gross": {
+      "type": "array",
+      "minItems": 63,
+      "maxItems": 90,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "date",
+          "equity",
+          "cash",
+          "turnover",
+          "cost",
+          "net_return",
+          "exposure",
+          "positions",
+          "weights"
+        ],
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "equity": {
+            "type": "number"
+          },
+          "cash": {
+            "type": "number"
+          },
+          "turnover": {
+            "type": "number"
+          },
+          "cost": {
+            "type": "number"
+          },
+          "net_return": {
+            "type": "number"
+          },
+          "exposure": {
+            "type": "number"
+          },
+          "positions": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "weights": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        }
+      }
+    }
+  }
+}
