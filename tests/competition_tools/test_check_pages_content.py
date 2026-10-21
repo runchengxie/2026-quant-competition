@@ -399,3 +399,15 @@ def test_locales_preserve_validation_machine_facts(tmp_path, translated_return):
     assert any("validation facts differ" in error for error in errors) == (
         translated_return != "0.1"
     )
+
+def test_notice_is_exactly_allowlisted_and_still_scanned(tmp_path):
+    source, built = make_site_trees(tmp_path)
+    notice = source / "public/third-party-notices.txt"
+    output = built / "third-party-notices.txt"
+    notice.write_text("Third-party licenses", encoding="utf-8")
+    output.write_text(notice.read_text(), encoding="utf-8")
+    assert check_site(source, built) == []
+    (source / "public/private.txt").write_text("not public")
+    assert any("unrecognized source path" in e for e in check_site(source, built))
+    notice.write_text('api_key = "sensitive-example-value-1234567890"')
+    assert any("sensitive pattern" in e for e in check_site(source, built))

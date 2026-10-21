@@ -30,7 +30,7 @@ REQUIRED_SOURCE = {
 }
 REQUIRED_OUTPUT = {"index.html", "zh-CN/index.html"}
 IGNORED_SOURCE_DIRS = {"node_modules", ".astro", "dist"}
-TEXT_SUFFIXES = {".astro", ".css", ".html", ".js", ".json", ".mjs", ".svg", ".ts"}
+TEXT_SUFFIXES = {".astro", ".css", ".html", ".js", ".json", ".mjs", ".svg", ".ts", ".txt"}
 PUBLIC_ASSET_SUFFIXES = {
     ".ico",
     ".jpeg",
@@ -83,6 +83,7 @@ def _allowed_source(relative_path: PurePosixPath) -> bool:
     path = relative_path.as_posix()
     if path in {
         "astro.config.mjs",
+        "public/third-party-notices.txt",
         "package.json",
         "package-lock.json",
         "playwright.config.mjs",
@@ -115,7 +116,8 @@ def _allowed_source(relative_path: PurePosixPath) -> bool:
 
 
 def _allowed_output(relative_path: PurePosixPath) -> bool:
-    return relative_path.suffix.lower() in ASSET_SUFFIXES | {".html"}
+    return (relative_path.as_posix() == "third-party-notices.txt"
+            or relative_path.suffix.lower() in ASSET_SUFFIXES | {".html"})
 
 
 def _collect_files(
