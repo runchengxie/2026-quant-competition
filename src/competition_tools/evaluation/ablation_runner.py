@@ -79,7 +79,7 @@ def _verify_period_metrics(job, value, periods):
         raise ValueError("INVALID_STUDY_ARTIFACT")
     peak = 1.0
     dd = 0.0
-    for series in [net, gross]:
+    for series, fee_bps in [(net, job["fee_bps"]), (gross, 0)]:
         before = 1.0
         for expected, p in zip(dates, series):
             if (
@@ -123,6 +123,28 @@ def _verify_period_metrics(job, value, periods):
                 p["equity"],
                 rel_tol=0,
                 abs_tol=1e-10,
+            ):
+                raise ValueError("INVALID_STUDY_ARTIFACT")
+            weights = {
+                product: value / p["equity"]
+                for product, value in p["positions"].items()
+            }
+            if (
+                any(
+                    not math.isclose(
+                        p["weights"][product], weight, rel_tol=0, abs_tol=1e-10
+                    )
+                    for product, weight in weights.items()
+                )
+                or not math.isclose(
+                    p["exposure"], sum(weights.values()), rel_tol=0, abs_tol=1e-10
+                )
+                or not math.isclose(
+                    p["cost"],
+                    fee_bps / 10000 * p["turnover"] * before,
+                    rel_tol=0,
+                    abs_tol=1e-10,
+                )
             ):
                 raise ValueError("INVALID_STUDY_ARTIFACT")
             before = p["equity"]
@@ -184,11 +206,11 @@ def verify_ablation_result(job: dict, destination: Path) -> tuple[dict, Path]:
         or value["schema"] != "competition.daily_study_result.v2"
         or not _finite(value)
         or value["accepted_research"] is not False
-        or any(value[k] != job[k] for k in pairs)
+        or any(canonical_hash(value[k]) != canonical_hash(job[k]) for k in pairs)
         or value["code_sha256"] != job["expected_leaf_sha256"]
         or value["start"] != job["fold"]["start"]
         or value["end"] != job["fold"]["end"]
-        or value["methods"] != methods_for(job)
+        or canonical_hash(value["methods"]) != canonical_hash(methods_for(job))
     ):
         raise ValueError("INVALID_STUDY_RESULT")
     artifacts = value["artifacts"]
@@ -197,6 +219,7 @@ def verify_ablation_result(job: dict, destination: Path) -> tuple[dict, Path]:
         or len(artifacts) != 1
         or set(artifacts[0]) != {"path", "sha256", "bytes"}
         or artifacts[0]["path"] != "periods.json"
+        or type(artifacts[0]["bytes"]) is not int
     ):
         raise ValueError("INVALID_STUDY_ARTIFACT")
     target = safe_path(destination / "periods.json")
@@ -267,9 +290,17 @@ def verify_plan(plan_path):
     return plan
 
 
+def _source_matches(root, expected):
+    try:
+        return source_hash(root) == expected
+    except (OSError, ValueError):
+        return False
+
+
 def _verify_runtime(config, plan, job, remaining):
+    started = time.monotonic()
     root = Path(__file__).resolve().parents[3]
-    if source_hash(root) != plan["code_identity"]["source_sha256"]:
+    if not _source_matches(root, plan["code_identity"]["source_sha256"]):
         raise ValueError("CODE_CHANGED")
     module = (
         "crypto_mm.daily.study_inputs"
@@ -281,6 +312,9 @@ def _verify_runtime(config, plan, job, remaining):
         "-c",
         f"import json; import {module} as m; print(json.dumps([m.__file__,m._source_hash()]))",
     ]
+    remaining -= time.monotonic() - started
+    if remaining <= 0:
+        raise ValueError("TIME_BUDGET")
     child = run_child(command, environment=child_environment(config), timeout=remaining)
     expected = root / "research" / job["project"] / "src"
     if child.returncode:
@@ -396,10 +430,12 @@ def run_ablation(config: TeamConfig, plan_path: Path) -> dict:
                     if remaining <= 0:
                         raise ValueError("TIME_BUDGET")
                     root = Path(__file__).resolve().parents[3]
-                    if source_hash(root) != plan["code_identity"]["source_sha256"]:
+                    if not _source_matches(
+                        root, plan["code_identity"]["source_sha256"]
+                    ):
                         raise ValueError("CODE_CHANGED")
                     if job["project"] not in runtime_verified:
-                        _verify_runtime(config, plan, job, remaining)
+                        _verify_runtime(config, plan, job, remaining_seconds(started))
                         runtime_verified.add(job["project"])
                     _verify_consumed(job)
                     destination = output / job["job_id"]
@@ -433,14 +469,19 @@ def run_ablation(config: TeamConfig, plan_path: Path) -> dict:
                     else:
                         result, path = verify_ablation_result(job, destination)
                         _verify_consumed(job)
-                        if source_hash(root) != plan["code_identity"]["source_sha256"]:
+                        if not _source_matches(
+                            root, plan["code_identity"]["source_sha256"]
+                        ):
                             raise ValueError("CODE_CHANGED")
+                        result_sha256 = digest(path)
+                        if remaining_seconds(started) <= 0:
+                            raise ValueError("TIME_BUDGET")
                         record.update(
                             status="completed",
                             reason=None,
                             metrics=result["metrics"],
                             result_path=str(path),
-                            result_sha256=digest(path),
+                            result_sha256=result_sha256,
                         )
                 except KeyboardInterrupt:
                     interrupted = True
@@ -471,9 +512,8 @@ def run_ablation(config: TeamConfig, plan_path: Path) -> dict:
                 raise ValueError
         except (ValueError, OSError, KeyError, TypeError):
             invalidate_market(records, data["market"], "INPUT_CHANGED_POST_RUN")
-    if (
-        source_hash(Path(__file__).resolve().parents[3])
-        != plan["code_identity"]["source_sha256"]
+    if not _source_matches(
+        Path(__file__).resolve().parents[3], plan["code_identity"]["source_sha256"]
     ):
         for market in {r["market"] for r in records}:
             invalidate_market(records, market, "CODE_CHANGED")
