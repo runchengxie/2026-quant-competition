@@ -243,6 +243,25 @@ def _collect_daily(spec, staging, *, session_factory, clock, sleep):
                     raw_bytes = (
                         json.dumps(rows, allow_nan=False, separators=(",", ":")) + "\n"
                     ).encode()
+                    eligible_rows, excluded_rows = [], []
+                    for row in rows:
+                        if not lower <= row[0] <= upper:
+                            continue
+                        if row[0] not in sessions:
+                            if (
+                                float(row[5]) == 0
+                                and len({float(v) for v in row[1:5]}) == 1
+                            ):
+                                excluded_rows.append(
+                                    {
+                                        "product": product,
+                                        "date": row[0],
+                                        "reason": "CLOSED_SESSION_ZERO_VOLUME_FLAT",
+                                    }
+                                )
+                                continue
+                            raise StopCollection("NONSESSION_BAR")
+                        eligible_rows.append(row)
                     by_date = {r[0]: r for r in rows_by_product[product]}
                     if refresh and product not in state.get("rebuild_products", []):
                         overlap_old = {
@@ -250,7 +269,9 @@ def _collect_daily(spec, staging, *, session_factory, clock, sleep):
                             for day, row in by_date.items()
                             if lower <= day <= upper
                         }
-                        overlap_new = {r[0]: r for r in rows if r[0] in overlap_old}
+                        overlap_new = {
+                            r[0]: r for r in eligible_rows if r[0] in overlap_old
+                        }
                         if overlap_new != overlap_old:
                             state["rebuild_products"].append(product)
                             state["revisions"].append(
@@ -269,7 +290,7 @@ def _collect_daily(spec, staging, *, session_factory, clock, sleep):
                                 w for w in full_windows if w != (lower, upper)
                             )
                             save()
-                    for row in rows:
+                    for row in eligible_rows:
                         if lower <= row[0] <= upper:
                             if row[0] not in sessions:
                                 raise StopCollection("NONSESSION_BAR")
@@ -297,6 +318,10 @@ def _collect_daily(spec, staging, *, session_factory, clock, sleep):
                     raw.write_bytes(raw_bytes)
                     normalized.write_bytes(normalized_bytes)
                     rows_by_product[product] = combined
+                    exclusions = state.setdefault("excluded_non_session_bars", [])
+                    exclusions.extend(
+                        row for row in excluded_rows if row not in exclusions
+                    )
                     expected_chunk = {s for s in sessions if lower <= s <= upper}
                     if expected_chunk <= {r[0] for r in rows}:
                         state["done"].append(key)
@@ -357,6 +382,7 @@ def _collect_daily(spec, staging, *, session_factory, clock, sleep):
         "parent_manifest_sha256": None,
         "revisions": state.get("revisions", []),
         "accepted_research": False,
+        "excluded_non_session_bars": state.get("excluded_non_session_bars", []),
     }
     write_json(staging / "receipt.json", receipt)
     return receipt

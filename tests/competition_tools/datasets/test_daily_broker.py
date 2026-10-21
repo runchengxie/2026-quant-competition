@@ -468,3 +468,58 @@ def test_broker_end_time_is_explicit_utc_after_local_session(upper, zone, expect
     from competition_tools.datasets.daily_broker import request_end
 
     assert request_end(upper, zone) == expected
+
+
+@pytest.mark.parametrize(
+    "volume,flat,complete", [(0, True, True), (1, True, False), (0, False, False)]
+)
+def test_closed_session_placeholders_are_audited_not_used_as_trading_days(
+    tmp_path, monkeypatch, volume, flat, complete
+):
+    spec, _, _, clock = run(tmp_path / "fixture", monkeypatch)
+
+    class Closed(Client):
+        def reqHistoricalData(self, contract, **kwargs):
+            rows = super().reqHistoricalData(contract, **kwargs)
+            rows.append(
+                SimpleNamespace(
+                    date=date(2024, 7, 4),
+                    open=100,
+                    high=100 if flat else 101,
+                    low=100,
+                    close=100,
+                    volume=volume,
+                )
+            )
+            return sorted(rows, key=lambda b: b.date)
+
+    class Session:
+        def __init__(self, *a, **k):
+            pass
+
+        def __enter__(self):
+            return Closed(clock)
+
+        def __exit__(self, *a):
+            pass
+
+    receipt = collect_daily(
+        spec, tmp_path / "new", session_factory=Session, clock=clock, sleep=clock.sleep
+    )
+    if complete:
+        assert receipt["status"] == "acquired"
+        assert receipt["coverage"]["AAPL"]["bars"] == 4
+        assert receipt["excluded_non_session_bars"] == [
+            {
+                "product": p,
+                "date": "2024-07-04",
+                "reason": "CLOSED_SESSION_ZERO_VOLUME_FLAT",
+            }
+            for p in ["AAPL", "SPY"]
+        ]
+        raw = json.loads(next((tmp_path / "new/raw").glob("AAPL-*.json")).read_text())
+        assert any(row[0] == "2024-07-04" for row in raw)
+        assert "2024-07-04" not in (tmp_path / "new/normalized/AAPL.csv").read_text()
+    else:
+        assert receipt["status"] == "partial"
+        assert receipt["issue_codes"] == ["NONSESSION_BAR"]
