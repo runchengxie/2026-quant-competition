@@ -353,6 +353,30 @@
         },
         "overlap_sessions": {
           "const": 5
+        },
+        "excluded_non_session_bars": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "product",
+              "date",
+              "reason"
+            ],
+            "properties": {
+              "product": {
+                "type": "string"
+              },
+              "date": {
+                "type": "string",
+                "format": "date"
+              },
+              "reason": {
+                "const": "CLOSED_SESSION_ZERO_VOLUME_FLAT"
+              }
+            }
+          }
         }
       }
     },

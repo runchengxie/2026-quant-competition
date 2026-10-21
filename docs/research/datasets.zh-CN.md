@@ -64,3 +64,5 @@ python -m competition_tools.team data inspect --config /absolute/private/team.to
 完成的快照包含不可变的 `competition.dataset_manifest.v2` 和 `competition.dataset_receipt.v2`，记录文件哈希、合约身份、日历版本及日程哈希、预算和缺口。`inspect` 返回 `competition.coverage_report.v2`。未完成采集保留在本任务所有的 `.partial` 暂存目录，包含 `receipt.json` 和可校验检查点，暂不发布不可变 manifest。相同 acquire 可在剩余累计预算内继续。配置改变、文件损坏或已收盘交易日范围变化时，需要人工检查或新版本。不会自动删除遗留锁。
 
 刷新需要完整且校验通过的父快照、新版本、保持数据集及产品、起始日期和价格口径不变，并且结束日期不得倒退。刷新将父数据复制到新暂存目录，检查最近五个可用的已收盘交易日，记录父 manifest 哈希，不记录私有路径。重叠区间改变时，重取受影响标的的完整历史；预算不足则保留未完成状态。重叠区间未变也不能排除更早的修订。刷新时保守保留 `last_full_verification`，公司行动及重叠区间外修订仍为 `not_verified`。父数据不会修改，也不更新 latest 指针。v1 `ibkr` 试验和显式启动选项的含义不变，v2 采集不会启动 Gateway 或授权下单。
+
+数据源可能在日历确定休市的日期返回成交量为零、OHLC 完全相同的占位日线。这些记录保留在原始文件中，不计入标准化交易日，并通过 `excluded_non_session_bars` 和 `CLOSED_SESSION_ZERO_VOLUME_FLAT` 记录。休市日若有成交量或价格区间变化，仍会阻止采集。实际观察涉及 2023-07-17，[港交所当日取消了全部交易时段](https://www.hkex.com.hk/News/Market-Communications/2023/2307172news?sc_lang=en)。排除占位记录不等于填充缺失交易日，也不证明公司行动数据正确。

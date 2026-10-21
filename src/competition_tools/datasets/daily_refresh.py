@@ -80,6 +80,9 @@ def _refresh(spec, base_manifest, staging, *, session_factory, clock, sleep):
             },
             "revisions": [],
             "rebuild_products": [],
+            "excluded_non_session_bars": base["receipt"].get(
+                "excluded_non_session_bars", []
+            ),
         }
         write_json(checkpoint, state)
     else:
