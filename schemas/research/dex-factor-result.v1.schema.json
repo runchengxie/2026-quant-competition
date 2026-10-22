@@ -1,0 +1,450 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "status",
+    "dataset",
+    "source_commit",
+    "protocol_sha256",
+    "manifest_sha256",
+    "input_hashes",
+    "source_files",
+    "role",
+    "coverage",
+    "time_series",
+    "cross_sectional",
+    "restrictions"
+  ],
+  "properties": {
+    "schema": {
+      "const": "competition.dex_factor_result.v1"
+    },
+    "status": {
+      "const": "completed"
+    },
+    "dataset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dataset_id",
+        "version",
+        "source",
+        "interval",
+        "quote_currency",
+        "selection",
+        "start",
+        "end",
+        "assets"
+      ],
+      "properties": {
+        "dataset_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "source": {
+          "const": "dexpaprika"
+        },
+        "interval": {
+          "const": "1h"
+        },
+        "quote_currency": {
+          "const": "USD"
+        },
+        "selection": {
+          "const": "fixed_current"
+        },
+        "start": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:00:00Z$",
+          "format": "date-time"
+        },
+        "end": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:00:00Z$",
+          "format": "date-time"
+        },
+        "assets": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "stable_id",
+              "underlying_id",
+              "network",
+              "address"
+            ],
+            "properties": {
+              "stable_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+              },
+              "underlying_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+              },
+              "network": {
+                "enum": [
+                  "ethereum",
+                  "solana"
+                ]
+              },
+              "address": {
+                "type": "string",
+                "minLength": 1
+              },
+              "pool_address": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "network": {
+                      "const": "ethereum"
+                    }
+                  }
+                },
+                "then": {
+                  "properties": {
+                    "address": {
+                      "type": "string",
+                      "pattern": "^0x[0-9a-f]{40}$"
+                    },
+                    "pool_address": {
+                      "type": "string",
+                      "pattern": "^0x[0-9a-f]{40}$"
+                    }
+                  }
+                },
+                "else": {
+                  "properties": {
+                    "address": {
+                      "type": "string",
+                      "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                    },
+                    "pool_address": {
+                      "type": "string",
+                      "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "source_commit": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "protocol_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "manifest_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "input_hashes": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      }
+    },
+    "source_files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "sha256"
+        ],
+        "properties": {
+          "path": {
+            "enum": [
+              "factors/__init__.py",
+              "factors/__main__.py",
+              "factors/inputs.py",
+              "factors/signals.py",
+              "factors/metrics.py",
+              "factors/study.py"
+            ]
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      },
+      "minItems": 6,
+      "maxItems": 6,
+      "uniqueItems": true
+    },
+    "role": {
+      "const": "retrospective"
+    },
+    "coverage": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "asset_id",
+          "observed_intervals",
+          "expected_intervals"
+        ],
+        "properties": {
+          "asset_id": {
+            "type": "string"
+          },
+          "observed_intervals": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 2160
+          },
+          "expected_intervals": {
+            "const": 2160
+          }
+        }
+      },
+      "minItems": 1,
+      "maxItems": 10
+    },
+    "time_series": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "asset_id",
+          "signal_id",
+          "horizon",
+          "sampling",
+          "overall",
+          "slices"
+        ],
+        "properties": {
+          "asset_id": {
+            "type": "string"
+          },
+          "signal_id": {
+            "enum": [
+              "momentum_24h",
+              "momentum_168h",
+              "volume_ratio_24h_7d",
+              "momentum_volume_24h"
+            ]
+          },
+          "horizon": {
+            "enum": [
+              6,
+              24
+            ]
+          },
+          "sampling": {
+            "enum": [
+              "all_valid",
+              "non_overlapping"
+            ]
+          },
+          "overall": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "value",
+              "n",
+              "reason"
+            ],
+            "properties": {
+              "value": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "n": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "reason": {
+                "enum": [
+                  null,
+                  "INSUFFICIENT_OBSERVATIONS",
+                  "CONSTANT_SIGNAL",
+                  "CONSTANT_TARGET"
+                ]
+              }
+            }
+          },
+          "slices": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "index",
+                "value",
+                "n",
+                "reason"
+              ],
+              "properties": {
+                "index": {
+                  "enum": [
+                    0,
+                    1,
+                    2
+                  ]
+                },
+                "value": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "n": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "reason": {
+                  "enum": [
+                    null,
+                    "INSUFFICIENT_OBSERVATIONS",
+                    "CONSTANT_SIGNAL",
+                    "CONSTANT_TARGET"
+                  ]
+                }
+              }
+            },
+            "minItems": 3,
+            "maxItems": 3
+          }
+        }
+      },
+      "minItems": 16,
+      "maxItems": 160
+    },
+    "cross_sectional": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "signal_id",
+          "horizon",
+          "sampling",
+          "candidate_timestamps",
+          "valid_timestamps",
+          "mean_rank_ic",
+          "group_mean_forward_returns",
+          "top_minus_bottom",
+          "reason",
+          "excluded_reasons"
+        ],
+        "properties": {
+          "signal_id": {
+            "enum": [
+              "momentum_24h",
+              "momentum_168h",
+              "volume_ratio_24h_7d",
+              "momentum_volume_24h"
+            ]
+          },
+          "horizon": {
+            "enum": [
+              6,
+              24
+            ]
+          },
+          "sampling": {
+            "enum": [
+              "all_valid",
+              "non_overlapping"
+            ]
+          },
+          "candidate_timestamps": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "valid_timestamps": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "mean_rank_ic": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "group_mean_forward_returns": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "minItems": 3,
+                "maxItems": 3
+              }
+            ]
+          },
+          "top_minus_bottom": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "reason": {
+            "enum": [
+              null,
+              "INSUFFICIENT_UNDERLYINGS",
+              "NO_VALID_GROUPS"
+            ]
+          },
+          "excluded_reasons": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "INSUFFICIENT_UNDERLYINGS": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "INSUFFICIENT_GROUP_SIZE": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        }
+      },
+      "minItems": 16,
+      "maxItems": 16
+    },
+    "restrictions": {
+      "const": [
+        "fixed_current_selection",
+        "bar_close_proxy_unverified",
+        "gross_descriptive_forward_returns",
+        "not_portfolio_pnl",
+        "no_cost_or_execution_model",
+        "no_out_of_sample_or_significance_claim"
+      ]
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

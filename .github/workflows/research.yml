@@ -2,10 +2,10 @@ name: Offline research
 
 on:
   pull_request:
-    paths: ["src/competition_tools/evaluation/**", "src/competition_tools/*ablation*", "src/competition_tools/team/evaluate.py", "tests/competition_tools/*ablation*", "research/**", "src/competition_tools/*acceptance.py", "src/competition_tools/check_research_receipts.py", "src/competition_tools/*accounting*", "src/strategies/hk_low_frequency/backtest.py", "tests/competition_tools/*accounting*", "schemas/research/**", "tests/competition_tools/*research*", "tests/competition_tools/test_experiment_acceptance.py", ".github/workflows/research.yml", "pyproject.toml", "uv.lock"]
+    paths: ["src/competition_tools/evaluation/**", "src/competition_tools/*ablation*", "src/competition_tools/team/evaluate.py", "src/competition_tools/team/factors.py", "src/competition_tools/check_dex_factor_delivery.py", "src/competition_tools/datasets/dex*.py", "tests/competition_tools/test_dex*.py", "tests/competition_tools/test_factor_delivery.py", "tests/competition_tools/*ablation*", "research/**", "src/competition_tools/*acceptance.py", "src/competition_tools/check_research_receipts.py", "src/competition_tools/*accounting*", "src/strategies/hk_low_frequency/backtest.py", "tests/competition_tools/*accounting*", "schemas/research/**", "tests/competition_tools/*research*", "tests/competition_tools/test_experiment_acceptance.py", ".github/workflows/research.yml", "pyproject.toml", "uv.lock"]
   push:
     branches: [main]
-    paths: ["src/competition_tools/evaluation/**", "src/competition_tools/*ablation*", "src/competition_tools/team/evaluate.py", "tests/competition_tools/*ablation*", "research/**", "src/competition_tools/*acceptance.py", "src/competition_tools/check_research_receipts.py", "src/competition_tools/*accounting*", "src/strategies/hk_low_frequency/backtest.py", "tests/competition_tools/*accounting*", "schemas/research/**", "tests/competition_tools/*research*", "tests/competition_tools/test_experiment_acceptance.py", ".github/workflows/research.yml", "pyproject.toml", "uv.lock"]
+    paths: ["src/competition_tools/evaluation/**", "src/competition_tools/*ablation*", "src/competition_tools/team/evaluate.py", "src/competition_tools/team/factors.py", "src/competition_tools/check_dex_factor_delivery.py", "src/competition_tools/datasets/dex*.py", "tests/competition_tools/test_dex*.py", "tests/competition_tools/test_factor_delivery.py", "tests/competition_tools/*ablation*", "research/**", "src/competition_tools/*acceptance.py", "src/competition_tools/check_research_receipts.py", "src/competition_tools/*accounting*", "src/strategies/hk_low_frequency/backtest.py", "tests/competition_tools/*accounting*", "schemas/research/**", "tests/competition_tools/*research*", "tests/competition_tools/test_experiment_acceptance.py", ".github/workflows/research.yml", "pyproject.toml", "uv.lock"]
   workflow_dispatch:
 
 permissions:
@@ -28,7 +28,7 @@ jobs:
         shell: bash
         run: |
           echo "DATA_ROOT=$RUNNER_TEMP/research-data" >> "$GITHUB_ENV"
-          echo "UV_PROJECT_ENVIRONMENT=$RUNNER_TEMP/research-env-${{ matrix.project }}" >> "$GITHUB_ENV"
+          echo "UV_PROJECT_ENVIRONMENT=$RUNNER_TEMP/research-envs/${{ matrix.project }}" >> "$GITHUB_ENV"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -53,5 +53,10 @@ jobs:
       - name: Exercise actual producer and root consumer
         shell: bash
         run: |
-          UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/receipt-root-env" uv run --project ../.. --locked python -m competition_tools.check_research_receipts --project "${{ matrix.project }}" --leaf-python "$RUNNER_TEMP/research-env-${{ matrix.project }}/bin/python" --output-root "$RUNNER_TEMP/receipt-contract-${{ matrix.project }}"
+          UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/receipt-root-env" uv run --project ../.. --locked python -m competition_tools.check_research_receipts --project "${{ matrix.project }}" --leaf-python "$RUNNER_TEMP/research-envs/${{ matrix.project }}/bin/python" --output-root "$RUNNER_TEMP/receipt-contract-${{ matrix.project }}"
+      - name: Exercise synthetic hourly factor producer and root consumer
+        if: matrix.project == 'crypto-mm'
+        shell: bash
+        run: |
+          UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/receipt-root-env" uv run --project ../.. --locked python -m competition_tools.check_dex_factor_delivery --leaf-python "$RUNNER_TEMP/research-envs/crypto-mm/bin/python" --output-root "$RUNNER_TEMP/dex-factor-contract"
       - run: uv build --out-dir "${{ runner.temp }}/wheels-${{ matrix.project }}"

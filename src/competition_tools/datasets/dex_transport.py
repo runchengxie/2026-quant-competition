@@ -185,6 +185,8 @@ class DexTransport:
                 record["status"] = f"HTTP_{error.code}"
                 try:
                     self._read(error)
+                except (URLError, OSError, TimeoutError):
+                    pass  # Error-body transport details are untrusted and never surfaced.
                 finally:
                     error.close()
                 if error.code not in {429, 500, 502, 503, 504}:

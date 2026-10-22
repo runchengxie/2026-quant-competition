@@ -64,6 +64,10 @@ def main(argv: list[str] | None = None) -> int:
     evaluate.add_argument("--config", type=Path, required=True)
     evaluate.add_argument("--spec", type=Path, required=True)
     evaluate.add_argument("--output-root", type=Path, required=True)
+    factors = commands.add_parser("factors", help="Run fixed retrospective hourly factor diagnostics")
+    factors.add_argument("--config", type=Path, required=True)
+    factors.add_argument("--spec", type=Path, required=True)
+    factors.add_argument("--output-root", type=Path, required=True)
     args = parser.parse_args(argv)
     if args.action == "gateway":
         from .gateway_verification import execute
@@ -82,7 +86,11 @@ def main(argv: list[str] | None = None) -> int:
             value = envelope(args.action)
         else:
             config = load_config(args.config)
-            if args.action == "evaluate":
+            if args.action == "factors":
+                from .factors import execute
+
+                value = execute(config, args.spec, args.output_root)
+            elif args.action == "evaluate":
                 from .evaluate import execute
 
                 value = execute(config, args.spec, args.output_root)

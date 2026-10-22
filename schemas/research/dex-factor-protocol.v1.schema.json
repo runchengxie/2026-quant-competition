@@ -1,0 +1,239 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "signals",
+    "horizons",
+    "sampling",
+    "role",
+    "parameter_search",
+    "minimum_overall",
+    "minimum_slice",
+    "slices",
+    "slice_hours",
+    "groups",
+    "minimum_underlyings",
+    "minimum_per_group",
+    "availability",
+    "dataset",
+    "manifest_file",
+    "source_commit",
+    "source_files"
+  ],
+  "properties": {
+    "schema": {
+      "const": "competition.dex_factor_protocol.v1"
+    },
+    "signals": {
+      "const": [
+        "momentum_24h",
+        "momentum_168h",
+        "volume_ratio_24h_7d",
+        "momentum_volume_24h"
+      ]
+    },
+    "horizons": {
+      "const": [
+        6,
+        24
+      ]
+    },
+    "sampling": {
+      "const": [
+        "all_valid",
+        "non_overlapping"
+      ]
+    },
+    "role": {
+      "const": "retrospective"
+    },
+    "parameter_search": {
+      "const": false
+    },
+    "minimum_overall": {
+      "const": 30
+    },
+    "minimum_slice": {
+      "const": 20
+    },
+    "slices": {
+      "const": 3
+    },
+    "slice_hours": {
+      "const": 720
+    },
+    "groups": {
+      "const": 3
+    },
+    "minimum_underlyings": {
+      "const": 9
+    },
+    "minimum_per_group": {
+      "const": 3
+    },
+    "availability": {
+      "const": "bar_close_proxy_unverified"
+    },
+    "dataset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "dataset_id",
+        "version",
+        "source",
+        "interval",
+        "quote_currency",
+        "selection",
+        "start",
+        "end",
+        "assets"
+      ],
+      "properties": {
+        "dataset_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+        },
+        "source": {
+          "const": "dexpaprika"
+        },
+        "interval": {
+          "const": "1h"
+        },
+        "quote_currency": {
+          "const": "USD"
+        },
+        "selection": {
+          "const": "fixed_current"
+        },
+        "start": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:00:00Z$",
+          "format": "date-time"
+        },
+        "end": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:00:00Z$",
+          "format": "date-time"
+        },
+        "assets": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "stable_id",
+              "underlying_id",
+              "network",
+              "address"
+            ],
+            "properties": {
+              "stable_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+              },
+              "underlying_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+              },
+              "network": {
+                "enum": [
+                  "ethereum",
+                  "solana"
+                ]
+              },
+              "address": {
+                "type": "string",
+                "minLength": 1
+              },
+              "pool_address": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "network": {
+                      "const": "ethereum"
+                    }
+                  }
+                },
+                "then": {
+                  "properties": {
+                    "address": {
+                      "type": "string",
+                      "pattern": "^0x[0-9a-f]{40}$"
+                    },
+                    "pool_address": {
+                      "type": "string",
+                      "pattern": "^0x[0-9a-f]{40}$"
+                    }
+                  }
+                },
+                "else": {
+                  "properties": {
+                    "address": {
+                      "type": "string",
+                      "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                    },
+                    "pool_address": {
+                      "type": "string",
+                      "pattern": "^[1-9A-HJ-NP-Za-km-z]{32,44}$"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "manifest_file": {
+      "type": "string",
+      "pattern": "^(?:[A-Za-z]:[/\\\\]|/)"
+    },
+    "source_commit": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "source_files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "sha256"
+        ],
+        "properties": {
+          "path": {
+            "enum": [
+              "factors/__init__.py",
+              "factors/__main__.py",
+              "factors/inputs.py",
+              "factors/signals.py",
+              "factors/metrics.py",
+              "factors/study.py"
+            ]
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      },
+      "minItems": 6,
+      "maxItems": 6,
+      "uniqueItems": true
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

@@ -187,3 +187,17 @@ def test_existing_ledger_never_resets_spent_budget(tmp_path):
     ledger.write_text(json.dumps({"attempt": 1}) + "\n")
     with pytest.raises(ValueError, match="LEDGER_EXISTS"):
         DexTransport(CAPS, tmp_path / "key", ledger)
+
+
+def test_failed_error_body_read_cannot_expose_exception_details(tmp_path):
+    class Broken(io.BytesIO):
+        def read(self, size=-1):
+            raise OSError("fixture-only")
+
+    def handler(request, timeout):
+        raise HTTPError(request.full_url, 403, "private", {}, Broken())
+
+    transport, _ = make(tmp_path, handler)
+    with pytest.raises(ValueError, match="HTTP_403"):
+        transport.get_json("usage")
+    assert transport.requests == 1
