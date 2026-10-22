@@ -317,7 +317,7 @@
     "cryptoNext": "Crypto spot: inspect the fixed trend overlays below and compare risk changes with exposure. Derivative and maker research needs new inputs and a separate protocol.",
     "mlNext": "Machine learning is a later challenger: causal features, chronological validation, fixed costs and a separate forward observation period.",
     "runtimeNext": "Default delivery stays standalone. A future optional runtime adapter must prove clock, cash and cost compatibility; it is not connected here.",
-    "historical": "Earlier snapshots and synthetic demos below retain their original methods and dates.",
+    "historical": "Earlier snapshots and synthetic demos retain their original methods and dates in the project guide.",
     "markets": {
       "US": "US stocks",
       "HK": "Hong Kong stocks",
@@ -400,7 +400,8 @@
       "excluded": "Excluded window/input conditions",
       "positiveNet": "Positive net windows",
       "control": "Zero-cost control"
-    }
+    },
+    "demoGuide": "Project guide and offline demos"
   },
   "ablation": {
     "title": "What changed when we changed one rule?",
@@ -568,7 +569,7 @@
   "factors": {
     "title": "Strategy results are available; factor validation is still pending",
     "conclusion": "Momentum and moving-average rules have been backtested. That does not yet show whether the underlying signals predict later returns consistently.",
-    "boundary": "Momentum and trend filters are tested strategies. IC, rank-IC, quantile spreads, signal decay and machine-learning test results have not been measured here. These charts do not establish independent factor efficacy.",
+    "boundary": "A strategy backtest includes allocation and cost rules; it does not isolate a signal’s predictive ability. IC, rank-IC, grouped-return and signal-decay results have not been published.",
     "markets": [
       "US and Hong Kong stocks",
       "US and Hong Kong stocks",

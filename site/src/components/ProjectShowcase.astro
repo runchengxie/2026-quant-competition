@@ -18,6 +18,7 @@ const view=Astro.props.view??"home";
 const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
 const localePath=({home:'',strategies:'strategies/',factors:'factors/',guide:'docs/project/'})[view];
 const legacy={performance:'strategies/#performance',ablation:'strategies/#ablation',study:'strategies/#study',evidence:'docs/project/#evidence',demo:'docs/project/#demo',research:'docs/project/#research',engineering:'docs/project/#engineering',validation:'docs/project/#validation',expansion:'docs/project/#expansion'};
+Object.assign(legacy,{'title-stock':'docs/project/#title-stock','title-crypto':'docs/project/#title-crypto','research-summary-title':'docs/project/#research-summary-title'});
 const repository = "https://github.com/runchengxie/2026-quant-competition";
 const docsUrl=`/2026-quant-competition/${locale==="zh-CN"?"zh-CN/":""}docs/`;
 const file = (path: string) => `${repository}/blob/main/${path}`;
@@ -86,6 +87,15 @@ const guide = (directory: string) => file(`research/${directory}/README${locale 
   {view==='home'&&<script is:inline define:vars={{prefix,legacy}}>
     const followLegacy=()=>{const key=location.hash.slice(1);if(Object.hasOwn(legacy,key))location.replace(prefix+legacy[key]);};
     followLegacy();window.addEventListener('hashchange',followLegacy);
+  </script>}
+  {view==='guide'&&<script is:inline>
+    const revealTarget=()=>{
+      const key=location.hash.slice(1);
+      if(key==='title-crypto'||key==='title-stock')document.getElementById(key==='title-crypto'?'path-crypto':'path-stock').checked=true;
+      if(key==='research-summary-title')document.querySelector('.baseline-summary').open=true;
+      if(['title-crypto','title-stock','research-summary-title'].includes(key))requestAnimationFrame(()=>document.getElementById(key).scrollIntoView());
+    };
+    revealTarget();window.addEventListener('hashchange',revealTarget);
   </script>}
   <footer><span>{t.footer.project}</span><span>{t.footer.note}</span></footer>
 </SiteLayout>

@@ -1,5 +1,13 @@
 import { test,expect } from "@playwright/test";
 
+test("old nested demo and summary anchors retain their targets",async({page})=>{
+ for(const [fragment,target] of [["title-stock","title-stock"],["title-crypto","title-crypto"],["research-summary-title","research-summary-title"]]){
+  await page.goto(`/2026-quant-competition/#${fragment}`);
+  await expect(page).toHaveURL(`/2026-quant-competition/docs/project/#${target}`);
+  await expect(page.locator(`#${target}`)).toBeVisible();
+ }
+});
+
 test("research pages separate results, factor evidence and offline guides",async({page,browser})=>{
  for(const locale of ["en","zh-CN"]){
   const prefix=`/2026-quant-competition/${locale==="en"?"":"zh-CN/"}`;

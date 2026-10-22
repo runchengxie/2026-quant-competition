@@ -41,7 +41,7 @@ const panels=["nav","drawdown","folds","fees","scatter","turnover","exposure","h
   <div class="chart-grid">{panels.map(key=><figure><figcaption>{t.charts[key]}</figcaption><div class="chart-root" data-chart={key} role="img" aria-label={t.charts[key]}></div><p>{t.chartNotes[key]}</p></figure>)}</div>
   <noscript><p>{t.noJs} <a href="#study">{t.table}</a></p></noscript>
   <div class="research-context"><div><h3>{t.factorTitle}</h3><p>{t.factorNote}</p></div><div><h3>{t.nextTitle}</h3><ul><li>{t.usNext}</li><li>{t.cryptoNext}</li><li>{t.mlNext}</li><li>{t.runtimeNext}</li></ul></div></div>
-  <p class="detail">{t.historical} <a href="#study">{t.table}</a> · <a href={`${prefix}docs/study/`}>{t.method}</a></p>
+  <p class="detail">{t.historical} <a href={`${prefix}docs/project/#demo`}>{t.demoGuide}</a> · <a href="#study">{t.table}</a> · <a href={`${prefix}docs/study/`}>{t.method}</a></p>
   <script type="application/json" data-dashboard-config set:html={JSON.stringify({locale,t}).replaceAll("<","\u003c")} />
 </section>
 <script>
