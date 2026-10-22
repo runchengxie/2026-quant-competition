@@ -15,18 +15,18 @@
     "engineering": "Execution boundary",
     "repo": "Source code",
     "validation": "Validation results",
-    "ablation": "Policy research"
+    "ablation": "Rule comparisons"
   },
   "hero": {
     "eyebrow": "INSPECTABLE RESEARCH",
-    "title": "Strategy returns, costs and risk in view.",
-    "intro": "Compare fixed-plan historical evidence, explore interactive charts and read the methods in one place.",
-    "primary": "Explore performance",
+    "title": "What works, what is uncertain, and what to test next",
+    "intro": "Start with the findings for US stocks, Hong Kong stocks and crypto, then explore the comparisons and inspect the evidence.",
+    "primary": "Read the conclusions",
     "secondary": "Browse the code",
     "note": "Retrospective research · fixed current pools · no live trading record"
   },
   "demo": {
-    "eyebrow": "01 / EXPLORE",
+    "eyebrow": "EXPLORE",
     "title": "Choose a research path",
     "intro": "This is a presentation of the offline tools. Switching paths changes the walkthrough; it does not run Python or place an order in your browser.",
     "legend": "Research path",
@@ -79,7 +79,7 @@
     "limit": "Visible-queue simulation, not an exchange matching engine. Funding is a signal rather than settlement. Signal horizons require an exactly representable sampling grid; audit quality reports invalid numeric values. Commands importing configuration still require data settings before help. Overlapping-order queue realism remains unverified."
   },
   "research": {
-    "eyebrow": "02 / STRATEGY IDEAS",
+    "eyebrow": "STRATEGY IDEAS",
     "title": "Separate an idea from its evidence",
     "intro": "The research framework and the competition strategy are different stages. No competition strategy has been selected or registered.",
     "stockTitle": "U.S. equities & ETF allocation",
@@ -92,7 +92,7 @@
     "cryptoLink": "Read the simulation assumptions"
   },
   "engineering": {
-    "eyebrow": "04 / ENGINEERING",
+    "eyebrow": "ENGINEERING",
     "title": "Research ends at an explicit boundary",
     "body": "The execution project separately validates versioned targets and lineage, applies Paper-first safeguards, and journals broker events. Demo reports are not executable target files.",
     "stages": [
@@ -284,8 +284,8 @@
   },
   "dashboard": {
     "eyebrow": "RESEARCH / PERFORMANCE",
-    "title": "Research performance",
-    "intro": "Explore historical strategy outcomes across US stocks, Hong Kong stocks and crypto spot.",
+    "title": "Explore the original strategies",
+    "intro": "Choose a market, strategy, cost and date window to inspect the original study. These curves do not include the changed-rule results above.",
     "docs": "Read the documentation",
     "jobs": "completed fold/cost jobs",
     "frozen": "Fixed plan · independent windows",
@@ -403,42 +403,42 @@
     }
   },
   "ablation": {
-    "title": "Rebalance frequency and trend risk",
-    "intro": "Compare fixed stock schedules and crypto risk controls against the same signal, cost and historical window.",
+    "title": "What changed when we changed one rule?",
+    "intro": "Compare weekly or monthly stock decisions and crypto risk controls with their original rules, using the same dates and costs.",
     "limitation": "Retrospective research on the current fixed pools. Independent windows are not a compounded account, live PnL or forward validation. All tested variants remain available, including disappointing results.",
     "unavailable": "Formal ablation results are not published yet. The original study remains available above.",
     "roleNote": "The 60% exposure control was chosen after inspecting earlier results. It remains a post-hoc diagnostic under every filter.",
     "roles": {
-      "retrospective_ablation": "Retrospective ablation",
+      "retrospective_ablation": "Historical rule comparison",
       "post_hoc_diagnostic": "Post-hoc diagnostic"
     },
     "variants": {
       "baseline": "Original control",
       "weekly": "Weekly decisions",
       "monthly": "Monthly decisions",
-      "hysteresis_2pct": "2% hysteresis band",
+      "hysteresis_2pct": "2% entry/exit buffer",
       "vol_target_40pct": "40% volatility target",
       "fixed_exposure_60pct": "60% exposure control"
     },
     "market": "Market",
     "fee": "One-way cost",
-    "strategy": "Base signal",
-    "variant": "Policy",
-    "window": "Scored window",
+    "strategy": "Strategy signal",
+    "variant": "Rule change",
+    "window": "Test window",
     "all": "All",
-    "count": "Jobs",
+    "count": "Tests",
     "net": "Median net return",
     "excess": "Median benchmark excess",
-    "paired": "Median paired net change",
-    "drawdown": "Median paired drawdown change",
-    "turnover": "Median daily turnover",
-    "exposure": "Median exposure",
-    "summary": "Independent-window medians",
+    "paired": "Typical same-window return change",
+    "drawdown": "Typical same-window drawdown change",
+    "turnover": "Typical daily trading amount",
+    "exposure": "Typical invested share",
+    "summary": "Typical results across separate windows",
     "summaryNote": "Groups share market, currency, signal, policy and cost. A paired change compares the same exact window with its original control. Negative drawdown change means a smaller drawdown. Missing values remain unavailable.",
     "pairedChart": "Net change versus the same-window control",
     "riskChart": "Trading intensity versus exposure",
-    "riskNote": "Each point is one policy/cost group. Axes show medians of daily window averages, not an optimized frontier.",
-    "facts": "Inspect every window",
+    "riskNote": "Each dot represents a rule and cost combination. It shows the median of each window’s average daily turnover and exposure, not a set of optimized portfolios.",
+    "facts": "Open the results for every window",
     "period": "Scored dates",
     "status": "Status",
     "returnLabel": "Net return",
@@ -450,7 +450,7 @@
     "failed": "failed",
     "ready": "{count} selected jobs. Charts summarize completed numeric results only.",
     "loadError": "Interactive charts could not load. The reviewed tables remain available.",
-    "provenance": "Source and experiment identity",
+    "provenance": "Source version and experiment records",
     "guide": "Methods and reproduction",
     "readiness": "What a forward test still needs",
     "markets": {
@@ -462,6 +462,85 @@
     "coverage": "Formal jobs",
     "baseline": "Original controls",
     "policies": "New policy rules",
-    "eyebrow": "ABLATION / RESEARCH"
+    "eyebrow": "COMPARE THE CHANGES"
+  },
+  "reader": {
+    "eyebrow": "START HERE",
+    "title": "What have we learned so far?",
+    "conclusion": "Weekly stock decisions and monthly momentum decisions deserve more testing. In crypto, taking less risk reduced drawdowns, but we have not established a reliable trading edge.",
+    "scope": "Historical tests on fixed pools, not live account results or a forecast. These examples were selected after seeing the results and need fresh-data validation.",
+    "net": "Typical window return after costs",
+    "drawdown": "Largest peak-to-trough loss in any tested window",
+    "before": "Original rule",
+    "after": "Changed rule",
+    "windows": "independent windows",
+    "fee": "one-way cost",
+    "compare": "Compare the rules",
+    "path": "Choose what to read next",
+    "explore": "Explore rule changes",
+    "curves": "Inspect original strategy curves",
+    "evidence": "Check data and limitations",
+    "run": "Run the project",
+    "readNumbers": "Read the figures separately by market. Stock figures are medians of independent 63-session windows; crypto drawdown is the worst loss within a 90-day window. None is an annual return or a continuous account history.",
+    "cards": [
+      {
+        "market": "US stocks",
+        "title": "A weekly moving-average rule looks promising",
+        "description": "Buy stocks whose short moving average is above their long average. Making decisions weekly rather than daily improved the typical historical window.",
+        "caution": "Only 10 current stocks were tested. This is a candidate for further testing, not evidence that weekly decisions will keep winning."
+      },
+      {
+        "market": "Hong Kong stocks",
+        "title": "Monthly momentum decisions merit a closer look",
+        "description": "Hold stocks whose recent return is positive. Monthly decisions performed better than daily decisions in these windows.",
+        "caution": "The large improvement comes from a small fixed pool. Test a broader historical pool before trusting its size."
+      },
+      {
+        "market": "Crypto spot",
+        "title": "Lower risk helped, but cash may explain much of it",
+        "description": "Reduce the 200-day trend strategy’s positions when recent volatility is high. The worst observed window drawdown fell.",
+        "caution": "This does not show better market timing. At higher costs, median return above the benchmark turned negative. The separate 60% position control was chosen after earlier results."
+      }
+    ],
+    "nav": "Findings",
+    "navCurves": "Original curves",
+    "navEvidence": "Evidence"
+  },
+  "evidence": {
+    "title": "What supports these results?",
+    "intro": "Review the original results, data availability and acquisition checks here. These records explain the evidence; they are not additional performance claims.",
+    "scope": "Fixed current pools: 10 US stocks, 10 Hong Kong stocks and 8 crypto assets. Stock data ends on 20 October 2026; crypto data ends on 30 September 2026. Historical pool membership, dividends and price adjustments, and executable fills remain limitations.",
+    "baseline": "Original daily strategies: full summary",
+    "glossaryTitle": "The terms in plain language",
+    "glossary": [
+      [
+        "Net return",
+        "The change in portfolio value after the model’s trading costs."
+      ],
+      [
+        "Benchmark excess",
+        "Strategy return minus the reference asset’s return in the same window."
+      ],
+      [
+        "Drawdown",
+        "How far portfolio value fell from an earlier peak."
+      ],
+      [
+        "Turnover and exposure",
+        "How much is traded, and how much of the portfolio is invested rather than held in cash."
+      ],
+      [
+        "Paired change",
+        "Compare a changed rule with its original rule over the same dates and cost assumption."
+      ],
+      [
+        "Post-hoc diagnostic",
+        "A comparison chosen after looking at earlier results. It is weaker evidence than a test fixed beforehand."
+      ],
+      [
+        "bps",
+        "A cost unit: 10 bps is 0.10%. One-way costs apply to buys and sells."
+      ]
+    ]
   }
 }

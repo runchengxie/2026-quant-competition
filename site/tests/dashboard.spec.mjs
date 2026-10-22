@@ -1,3 +1,4 @@
+import {summarizeAblations} from "../src/scripts/ablation-state.mjs";
 import { test,expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 const study=JSON.parse(await readFile(new URL("../src/data/real-data-study.v1.json",import.meta.url),"utf8"));
@@ -111,4 +112,23 @@ test('matched strategy comparison and fee robustness preserve published conditio
   await root.locator('[data-strategy-guide]').click();await expect(page.locator('main article h1')).toBeVisible();
   await page.setViewportSize({width:390,height:844});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  }
+});
+
+const ablationSnapshot=JSON.parse(await readFile(new URL("../src/data/ablation-study.v1.json",import.meta.url),"utf8"));
+test("both languages lead with traceable conclusions and retain evidence without JavaScript",async({browser})=>{
+ const context=await browser.newContext({javaScriptEnabled:false});const page=await context.newPage();let canonical;
+ for(const locale of ["en","zh-CN"]){
+  await page.goto(locale==="en"?"/2026-quant-competition/":"/2026-quant-competition/zh-CN/");
+  await expect(page.locator("main > :first-child")).toHaveAttribute("id","takeaways");
+  await expect(page.locator("[data-takeaway]")).toHaveCount(3);
+  const facts=await page.locator("[data-takeaway]").evaluateAll(nodes=>nodes.map(n=>JSON.parse(n.dataset.facts)));
+  if(canonical)expect(facts).toEqual(canonical);else canonical=facts;
+  for(const f of facts){const groups=summarizeAblations(ablationSnapshot,{market:f.market,feeBps:f.feeBps,strategy:f.strategy});expect(f.baseline).toEqual(groups.find(g=>g.variant_id==="baseline"));expect(f.candidate).toEqual(groups.find(g=>g.variant_id===f.variant));}
+  expect(await page.locator("main > [id]").evaluateAll(ns=>ns.map(n=>n.id))).toEqual(["takeaways","ablation","performance","evidence","demo","research","engineering"]);
+  await expect(page.locator("#takeaways [data-scope]")).toBeVisible();
+  await expect(page.locator("#evidence")).toContainText(locale==="en"?"10 US stocks":"10 只美股");
+  await expect(page.locator("[data-study-id]")).toHaveCount(318);await expect(page.locator("[data-ablation-id]")).toHaveCount(678);
+  for(const href of await page.locator("#takeaways a[href^='#']").evaluateAll(ns=>ns.map(n=>n.getAttribute("href"))))await expect(page.locator(href)).toHaveCount(1);
+ }
+ await context.close();
 });
