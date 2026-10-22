@@ -1,10 +1,12 @@
 """Explicit, private single-key migration. Never execute dotenv content."""
 
 import argparse
+import base64
 import json
 import os
 from pathlib import Path
 import re
+import subprocess
 import tempfile
 import tomllib
 import uuid
@@ -13,6 +15,45 @@ from competition_tools.team.config import _restrict_file
 from .dex_spec import safe_path
 
 ASSIGNMENT = re.compile(rb"^[ \t]*(?:export[ \t]+)?DEXPAPRIKA_API_KEY[ \t]*=")
+
+
+def _restrict_owner(fd, path, *, directory=False):
+    if os.name != "nt":
+        os.chmod(path, 0o700 if directory else 0o600)
+        return
+    _restrict_file(fd, path)
+    escaped = str(path).replace("'", "''")
+    script = (
+        "$ErrorActionPreference='Stop'; $sid=[Security.Principal.WindowsIdentity]::GetCurrent().User.Value; "
+        "$acl=Get-Acl -LiteralPath '" + escaped + "'; "
+        "$foreign=@($acl.Access | ForEach-Object {$_.IdentityReference.Translate([Security.Principal.SecurityIdentifier]).Value} | Where-Object {$_ -ne $sid} | Select-Object -Unique); "
+        "ConvertTo-Json -InputObject $foreign -Compress"
+    )
+    environment = {k: v for k, v in os.environ.items() if k.upper() != "PSMODULEPATH"}
+    checked = subprocess.run(
+        [
+            "powershell.exe",
+            "-NoProfile",
+            "-EncodedCommand",
+            base64.b64encode(script.encode("utf-16-le")).decode("ascii"),
+        ],
+        env=environment,
+        capture_output=True,
+        check=True,
+        timeout=30,
+    )
+    foreign = json.loads(checked.stdout.decode("utf-8-sig"))
+    if not isinstance(foreign, list) or any(
+        not re.fullmatch(r"S-1-[0-9-]+", sid) for sid in foreign
+    ):
+        raise ValueError("CREDENTIAL_ACL_INVALID")
+    if foreign:
+        subprocess.run(
+            ["icacls", str(path), "/remove", *["*" + sid for sid in foreign]],
+            capture_output=True,
+            check=True,
+            timeout=30,
+        )
 
 
 def _parse(body: bytes, *, allow_missing: bool = False) -> tuple[str | None, bytes]:
@@ -52,7 +93,7 @@ def load_key(path: Path) -> str:
 def _secure_write(path: Path, body: bytes) -> None:
     fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
     try:
-        _restrict_file(fd, path)
+        _restrict_owner(fd, path)
         with os.fdopen(fd, "wb") as stream:
             fd = -1
             stream.write(body)
@@ -69,7 +110,7 @@ def _replace_source(path: Path, expected: bytes, replacement: bytes) -> None:
     )
     temp = Path(temporary)
     try:
-        _restrict_file(fd, temp)
+        _restrict_owner(fd, temp)
         with os.fdopen(fd, "wb") as stream:
             stream.write(replacement)
             stream.flush()
@@ -100,6 +141,13 @@ def migrate_key(source_env: Path, destination: Path, workspace: Path) -> dict:
         if target.exists():
             existing = load_key(target)
             if key is None:
+                _restrict_owner(-1, target.parent, directory=True)
+                _restrict_owner(-1, target)
+                for recovery in target.parent.glob(".dexpaprika-recovery-*.env"):
+                    if re.fullmatch(
+                        r"\.dexpaprika-recovery-[a-f0-9]{32}\.env", recovery.name
+                    ):
+                        _restrict_owner(-1, safe_path(recovery))
                 return {"status": "already_migrated"}
             if existing != key:
                 raise ValueError("CREDENTIAL_CONFLICT")
@@ -107,18 +155,24 @@ def migrate_key(source_env: Path, destination: Path, workspace: Path) -> dict:
             raise ValueError("INVALID_CREDENTIAL")
         target.parent.mkdir(parents=True, exist_ok=True)
         # This is the dedicated provider directory, not the shared configuration root.
-        _restrict_file(-1, target.parent) if os.name == "nt" else os.chmod(
-            target.parent, 0o700
-        )
+        _restrict_owner(-1, target.parent, directory=True)
         recovery = target.parent / (".dexpaprika-recovery-" + uuid.uuid4().hex + ".env")
         _secure_write(recovery, before)
         if not target.exists():
             _secure_write(target, ("DEXPAPRIKA_API_KEY=" + key + "\n").encode())
+        else:
+            _restrict_owner(-1, target)
         if load_key(target) != key:
             raise ValueError("CREDENTIAL_CONFLICT")
         _replace_source(source, before, remaining)
         return {"status": "migrated"}
-    except (OSError, KeyError, UnicodeError, tomllib.TOMLDecodeError):
+    except (
+        OSError,
+        KeyError,
+        UnicodeError,
+        tomllib.TOMLDecodeError,
+        subprocess.SubprocessError,
+    ):
         raise ValueError("MIGRATION_INTERRUPTED") from None
 
 

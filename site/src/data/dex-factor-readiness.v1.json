@@ -1,0 +1,36 @@
+{
+  "schema": "competition.public_dex_factors.v1",
+  "status": "readiness_only",
+  "as_of": "2026-10-22T11:20:51.456910+00:00",
+  "source_commit": "897a3b5f49b7d59c317c73e19e2feae1c68fff47",
+  "protocol_sha256": "34acc70555c9001756f022f06ba8b49ba9ccf261c70909afe65fe6428508ca39",
+  "manifest_sha256": "8e7bc9a418eeccdfaaeb0e463f3378a167d2022f97ac3cb706d6f4a74bdbc1f1",
+  "asset_ids": [
+    "ethereum-weth",
+    "ethereum-wbtc",
+    "ethereum-link",
+    "ethereum-uni",
+    "ethereum-aave",
+    "ethereum-comp",
+    "ethereum-crv",
+    "ethereum-ldo",
+    "ethereum-sushi"
+  ],
+  "range": {
+    "start": "2026-07-24T11:00:00Z",
+    "end": "2026-10-22T11:00:00Z"
+  },
+  "role": "retrospective",
+  "blockers": [
+    "PUBLICATION_PERMISSION_UNVERIFIED",
+    "DEX_ACQUISITION_BLOCKED"
+  ],
+  "restrictions": [
+    "fixed_current_selection",
+    "bar_close_proxy_unverified",
+    "gross_descriptive_forward_returns",
+    "not_portfolio_pnl",
+    "no_cost_or_execution_model",
+    "no_out_of_sample_or_significance_claim"
+  ]
+}

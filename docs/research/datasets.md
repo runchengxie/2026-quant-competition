@@ -2,7 +2,35 @@
 
 [简体中文](datasets.zh-CN.md)
 
-The competition repository owns these offline preparation tools. They require no quant-series checkout. Root orchestration uses the standard library. Daily crypto evaluation stays in the existing crypto environment; execution packages do not import it.
+The competition repository owns these offline preparation tools. They require no quant-series checkout. Root orchestration uses the standard library. Daily crypto evaluation and hourly factor diagnostics run in the separate crypto environment; execution packages do not import it.
+
+<a id="dexpaprika-hourly-pilot"></a>
+## DexPaprika hourly pilot
+
+No real hourly factor result is available. On 2026-10-22, the first authenticated `/usage` check returned HTTP403. Acquisition stopped after one request, without retry or market-data download. The response does not establish the cause or verify Pro entitlement. Permission to publish derived statistics also remains unverified. Pages publishes the frozen plan and blockers, without metrics or observed coverage.
+
+The separate `competition.dex_dataset_spec.v1` namespace does not change the old daily schema. Copy [the example](../../config/examples/dexpaprika-pilot.json) outside the repository and replace its placeholder paths and protocol hash. Freeze the exact dataset identity, requested range, scientific source hashes and intended manifest location before acquisition. The resulting manifest and report bind actual retained file hashes. An unknown future manifest hash is not precommitted.
+
+Use explicit Ethereum or Solana addresses and distinct `underlying_id` values. There is no ticker search, token substitution, pool discovery or stablecoin selection. An optional frozen `pool_address` is verified against the token. Its metadata is a current snapshot, not historical liquidity coverage.
+
+Requests cover exactly 90 days of completed UTC `1h` candles in three 720-hour chunks per asset with `limit=1000`. Price and volume are USD under the [token OHLCV contract](https://docs.dexpaprika.com/tutorials/token-ohlcv). Normalized rows have exact keys `asset_id`, `time_open`, `interval_end`, `open`, `high`, `low`, `close`, `volume`. Decisions use `interval_end`. Missing hours remain gaps. Conflicting overlaps, duplicates, invalid candles and unknown units are rejected. Historical availability is `bar_close_proxy_unverified`, not an observed publication timestamp. Hourly data does not replace USDT daily candles or maker event inputs.
+
+Hard caps are 100 HTTP attempts, 50MiB, 900 seconds and 20 request starts per minute. Each resource permits two attempts at most. Only transport failures and HTTP429/500/502/503/504 may retry. Failed-response bytes and preflight calls count. Requests use the official Pro host, raw Authorization, no redirects and at most 30 seconds bounded by the remaining deadline. Planning reserves retries and usage checkpoints. Ten assets can exceed the cap; `fits_budget=false` blocks acquisition. The frozen nine-asset pilot reserved 96 attempts.
+
+The [usage gauge](https://docs.dexpaprika.com/tutorials/check-credit-usage) is account-wide and may include purchased or overage credits. Headroom is conservatively the smaller of reported credits left and the unused 5M Pro included allowance. Unknown fields, exhausted headroom, a changed billing period or backward usage block further resources. This is not an atomic reservation or monetary guarantee. No purchase, subscription or autoscaling setting is changed.
+
+Completed and partial snapshots publish exclusively. A blocked attempt remains in owned `<version>.partial` staging. Graceful resume verifies every retained digest and deducts cumulative request, byte and elapsed-time budgets. Unknown interrupted spend, changed specifications or corrupt files require a new version or manual reconciliation. Stale locks are not broken automatically. DEX `refresh` and Gateway flags are unsupported.
+
+Keep `DEXPAPRIKA_API_KEY` in an external `CONFIG_ROOT/projects/<repo>/providers/dexpaprika.env`. The migration CLI uses explicit `workspace.toml`, moves only that assignment from the named primary `.env`, preserves unrelated bytes and retains an owner-restricted recovery copy beside the destination. Conflicts, reparses and source-repository destinations are rejected. A completely empty `.git` placeholder is not a repository; nonempty metadata and Git files remain rejected. Windows migration uses Windows PowerShell and icacls ACL tools. The research child receives neither a credential-file argument nor an inherited `DEXPAPRIKA_API_KEY`.
+
+```sh
+python -m competition_tools.datasets.dex_credentials migrate --workspace /absolute/private/shared/workspace.toml --source-env /absolute/code/2026-quant-competition/.env --destination /absolute/private/projects/2026-quant-competition/providers/dexpaprika.env
+python -m competition_tools.team data plan --config /absolute/private/team.toml --spec /absolute/private/dex-dataset.json
+python -m competition_tools.team data acquire --config /absolute/private/team.toml --spec /absolute/private/dex-dataset.json
+python -m competition_tools.team factors --config /absolute/private/team.toml --spec /absolute/private/factor-protocol.json --output-root /absolute/data/new-factor-run
+```
+
+The last command requires the protocol's immutable manifest to exist. The blocked attempt supplies no research observations. See [factor definitions](strategies.md#hourly-dex-factors). Real-data diagnostics and measured charts were not run or published. Synthetic installed producer/consumer delivery is tested separately.
 
 ## Commands and storage
 
@@ -14,9 +42,9 @@ python -m competition_tools.team data acquire --config /absolute/private/team.to
 python -m competition_tools.team data inspect --config /absolute/private/team.toml --spec /absolute/private/dataset.json --manifest /absolute/data/2026-quant-competition/datasets/spot-study/v1/manifest.json
 ```
 
-`plan` and `inspect` make no network requests. By default, `acquire` does not start Gateway or log in. Only explicit IBKR acquisition may use the optional [Paper login precondition](../operations/gateway-login.md#optional-data-task-login-precondition) with `--ensure-gateway` and an activated private deployment. No mode purchases data or submits orders. The result uses the existing `competition.team_result.v1` envelope. Partial coverage returns exit2 with `PARTIAL_COVERAGE`; it is not a completed acquisition.
+`plan` and `inspect` make no network requests. By default, `acquire` does not start Gateway or log in. Only explicit IBKR acquisition may use the optional [Paper login precondition](../operations/gateway-login.md#optional-data-task-login-precondition) with `--ensure-gateway` and an activated private deployment. No mode purchases data or submits orders. The result uses the existing `competition.team_result.v1` envelope. Daily partial coverage returns exit2 with `PARTIAL_COVERAGE`; DEX uses `PARTIAL_DEX_COVERAGE`. Neither is a completed acquisition.
 
-Data lives below configured `DATA_ROOT/2026-quant-competition/datasets/<dataset-id>/<version>/`. Successful publication is exclusive. Partial runs remain in `<version>.partial` with a manifest, receipt, request ledger and per-file checkpoints. Repeating the identical specification verifies completed hashes and resumes missing downloads. A different specification cannot reuse that staging directory. Existing published versions are never overwritten. A revised upstream archive requires a new version and new acquisition. Resume verifies retained bytes, not whether the upstream publisher has since revised them.
+For the v1 daily archive contract, data lives below configured `DATA_ROOT/2026-quant-competition/datasets/<dataset-id>/<version>/`. Successful publication is exclusive. Partial runs remain in `<version>.partial` with a manifest, receipt, request ledger and per-file checkpoints. Repeating the identical specification verifies completed hashes and resumes missing downloads. A different specification cannot reuse that staging directory. Existing published versions are never overwritten. A revised upstream archive requires a new version and new acquisition. Resume verifies retained bytes, not whether the upstream publisher has since revised them.
 
 An acquisition lock prevents two CLI runs from modifying the same version. After a crash, inspect the owning process and retained checkpoint before manually removing a stale lock. The tools do not break locks automatically or update shared `current`/`latest` pointers.
 

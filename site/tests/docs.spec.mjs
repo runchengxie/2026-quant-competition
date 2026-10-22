@@ -1,5 +1,29 @@
 import { test,expect } from "@playwright/test";
 
+test("hourly factor pilot keeps blocked facts equal across languages without private metrics",async({page,browser})=>{
+ let canonical;
+ for(const locale of ["en","zh-CN"]){
+  const prefix=`/2026-quant-competition/${locale==="en"?"":"zh-CN/"}`;
+  await page.goto(`${prefix}factors/`);
+  const panel=page.locator("#dex-factor-pilot");
+  await expect(panel).toBeVisible();
+  const facts=JSON.parse(await panel.getAttribute("data-dex-facts"));
+  expect(facts.status).toBe("readiness_only");
+  expect(facts.blockers).toContain("DEX_ACQUISITION_BLOCKED");
+  expect(facts).not.toHaveProperty("metrics");expect(facts).not.toHaveProperty("coverage");
+  if(canonical) expect(facts).toEqual(canonical); else canonical=facts;
+  await expect(panel.locator("[data-dex-signal]")).toHaveCount(4);
+  await expect(panel.locator("[data-dex-metric]")).toHaveCount(0);
+  for(const theme of ["light","dark","system"]){await page.getByLabel(locale==="en"?"Appearance":"外观").selectOption(theme);}
+  await page.setViewportSize({width:390,height:844});
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ }
+ const context=await browser.newContext({javaScriptEnabled:false});const nojs=await context.newPage();
+ await nojs.goto("/2026-quant-competition/factors/");await expect(nojs.locator("#dex-factor-pilot")).toBeVisible();
+ expect(JSON.parse(await nojs.locator("#dex-factor-pilot").getAttribute("data-dex-facts"))).toEqual(canonical);
+ await context.close();
+});
+
 test("old nested demo and summary anchors retain their targets",async({page})=>{
  for(const [fragment,target] of [["title-stock","title-stock"],["title-crypto","title-crypto"],["research-summary-title","research-summary-title"]]){
   await page.goto(`/2026-quant-competition/#${fragment}`);

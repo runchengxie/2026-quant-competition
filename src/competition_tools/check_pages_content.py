@@ -64,6 +64,7 @@ class _PageMetadata(HTMLParser):
         self.ablation_facts: list[tuple[str, str | None]] = []
         self.study_facts: list[tuple[str, str | None]] = []
         self.dashboard_facts: list[str | None] = []
+        self.dex_facts: list[str | None] = []
         self.ids: set[str] = set()
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
@@ -72,6 +73,8 @@ class _PageMetadata(HTMLParser):
             self.ids.add(attributes["id"])
         if "data-dashboard-selected" in attributes:
             self.dashboard_facts.append(attributes.get("data-facts"))
+        if "data-dex-facts" in attributes:
+            self.dex_facts.append(attributes.get("data-dex-facts"))
         if ablation_id := attributes.get("data-ablation-id"):
             self.ablation_facts.append((ablation_id, attributes.get("data-facts")))
         if study_id := attributes.get("data-study-id"):
@@ -116,6 +119,7 @@ def _allowed_source(relative_path: PurePosixPath) -> bool:
         "tests/ablation-state.test.mjs",
         "tests/ablation.spec.mjs",
         "src/data/real-data-series.v1.json",
+        "src/data/dex-factor-readiness.v1.json",
         "document-routes.mjs",
         "remark-doc-links.mjs",
         "src/lib/documents.ts",
@@ -334,6 +338,30 @@ def check_site(source_dir: Path, built_dir: Path) -> list[str]:
             )
         except (OSError, ValueError, TypeError, KeyError, AttributeError):
             errors.append("invalid public series snapshot")
+    dex_path = source_dir / "src/data/dex-factor-readiness.v1.json"
+    if dex_path.is_file():
+        from competition_tools.evaluation.dex_factor_publication import (
+            validate_public_dex_factors,
+        )
+
+        try:
+            dex = validate_public_dex_factors(
+                json.loads(dex_path.read_text(encoding="utf-8"))
+            )
+            if dex["status"] != "readiness_only":
+                raise ValueError("Unreviewed measured presentation")
+            for relative in ("factors/index.html", "zh-CN/factors/index.html"):
+                metadata = _PageMetadata()
+                metadata.feed((built_dir / relative).read_text(encoding="utf-8"))
+                if (
+                    len(metadata.dex_facts) != 1
+                    or json.loads(metadata.dex_facts[0]) != dex
+                ):
+                    errors.append(
+                        "DEX readiness facts differ from reviewed source snapshot"
+                    )
+        except (OSError, ValueError, TypeError, KeyError, AttributeError):
+            errors.append("invalid public DEX readiness facts or output")
     if "document-routes.mjs" in source_paths:
         _validate_documentation(built_dir, output_paths, errors)
     _scan_sensitive(source_files, "source", errors)

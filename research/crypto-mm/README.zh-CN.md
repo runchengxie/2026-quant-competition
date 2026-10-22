@@ -35,3 +35,7 @@
 可选的[研究验收工具](../../docs/research/research-acceptance.zh-CN.md)使用显式清单检查输入并生成凭证，新入口不需要全局数据配置。软件检查成功不代表合格研究证据，所有者来源及留出集协议尚未接入。默认策略和既有报告保持不变。
 
 [日频历史对比研究](../../docs/research/real-data-study.zh-CN.md)
+
+## 小时线因子诊断
+
+独立离线 CLI 为 `python -m crypto_mm.factors --spec /absolute/private/factor-protocol.json --output-root /absolute/data/new-factor-run`，需要不可变的小时线 manifest 和匹配的冻结源码。根工具 `team factors` 调用已安装 CLI，不传递服务商凭据。定义与限制见[因子说明](../../docs/research/strategies.zh-CN.md#hourly-dex-factors)，配置见[数据准备](../../docs/research/datasets.zh-CN.md#dexpaprika-hourly-pilot)。合成交付验证已通过；2026-10-22 的真实检查返回 HTTP403，没有获得行情观测或因子结果。

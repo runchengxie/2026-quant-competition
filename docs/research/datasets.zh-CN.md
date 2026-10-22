@@ -2,7 +2,35 @@
 
 [English canonical](datasets.md)
 
-比赛仓库维护离线数据准备工具，不依赖 quant 系列的本地仓库。根工具仅使用标准库，数字货币日线评估留在现有加密研究环境中，执行模块不导入这些研究代码。
+比赛仓库维护离线数据准备工具，不依赖 quant 系列的本地仓库。根工具仅使用标准库，数字货币日线评估和小时线因子诊断在独立的加密研究环境中运行，执行模块不导入这些研究代码。
+
+<a id="dexpaprika-hourly-pilot"></a>
+## DexPaprika 小时线试采集
+
+目前没有真实小时线因子结果。2026-10-22 的首次认证 `/usage` 检查返回 HTTP403，采集在一次请求后停止，没有重试或下载行情。仅凭响应无法确定原因，也未验证 Pro 权限。公开衍生统计的权限同样未确认。Pages 只展示冻结计划和阻断状态，不包含指标或实际覆盖率。
+
+独立的 `competition.dex_dataset_spec.v1` 不改变旧日线 schema。将[示例](../../config/examples/dexpaprika-pilot.json)复制到仓库外，替换占位路径和协议哈希。采集前固定准确的数据集身份、请求区间、研究源码哈希和计划 manifest 位置。生成的 manifest 和报告再绑定实际文件哈希，不会假装事先知道未来 manifest 的哈希。
+
+使用明确的 Ethereum 或 Solana 地址，以及不同的 `underlying_id`。这里不提供代码搜索、代币替换、池子发现或稳定币选择。可选的冻结 `pool_address` 会核对所属代币，其元数据只是当前快照，不代表历史流动性覆盖。
+
+请求准确覆盖 90 天已结束的 UTC `1h` K 线，每个资产分为三段 720 小时，使用 `limit=1000`。根据[代币 OHLCV 契约](https://docs.dexpaprika.com/tutorials/token-ohlcv)，价格和成交额均为 USD。规范化行的字段固定为 `asset_id`、`time_open`、`interval_end`、`open`、`high`、`low`、`close`、`volume`。决策使用 `interval_end`，缺失小时保留为空。变化的重叠数据、重复或无效 K 线及未知单位会被拒绝。历史可用时间标为 `bar_close_proxy_unverified`，并非实际观测到的发布时间。小时线不替代 USDT 日线或做市事件输入。
+
+硬限制为 100 次 HTTP 尝试、50MiB、900 秒，每分钟最多发起 20 次请求。每个资源最多两次尝试，仅传输失败和 HTTP429/500/502/503/504 可以重试。失败响应的字节和预检请求也计入预算。请求只到官方 Pro 主机，直接使用 Authorization，不跟随重定向；单次最多 30 秒，且不能超过剩余期限。计划会预留重试和用量检查，十个资产可能超限，此时 `fits_budget=false` 阻止采集。此次冻结的九资产计划预留 96 次尝试。
+
+[用量读数](https://docs.dexpaprika.com/tutorials/check-credit-usage)覆盖整个账户，可能包含购买或超额额度。工具保守地取返回剩余额度与 Pro 套餐 5M 未用额度中的较小值。字段未知、余量不足、账期变化或累计用量倒退都会阻止后续请求。这不是原子额度预留，也不保证账单金额；工具不购买数据、不改订阅或自动扩容设置。
+
+完成及部分完成的快照以独占方式发布。被阻断的尝试保留在本工具拥有的 `<version>.partial` 工作目录中。正常检查点续跑会验证全部保留文件哈希，并扣除累计请求、字节和耗时预算。中断后支出不明、规格变化或文件损坏，需要新版本或人工核对，不会自动解除旧锁。DEX 不支持 `refresh` 和 Gateway 参数。
+
+将 `DEXPAPRIKA_API_KEY` 保存在仓库外的 `CONFIG_ROOT/projects/<repo>/providers/dexpaprika.env`。迁移 CLI 读取明确指定的 `workspace.toml`，仅从指定原工作区的 `.env` 移走这一项，保留其他字节，并在目标旁保存仅所有者可访问的恢复副本。凭据冲突、重解析路径和源码仓库内的目标会被拒绝。完全为空的 `.git` 占位目录不视为仓库，非空元数据和 Git 文件仍被拒绝。Windows 迁移使用 Windows PowerShell 和 icacls 权限工具。研究子进程既不接收凭据文件参数，也不继承 `DEXPAPRIKA_API_KEY`。
+
+```sh
+python -m competition_tools.datasets.dex_credentials migrate --workspace /absolute/private/shared/workspace.toml --source-env /absolute/code/2026-quant-competition/.env --destination /absolute/private/projects/2026-quant-competition/providers/dexpaprika.env
+python -m competition_tools.team data plan --config /absolute/private/team.toml --spec /absolute/private/dex-dataset.json
+python -m competition_tools.team data acquire --config /absolute/private/team.toml --spec /absolute/private/dex-dataset.json
+python -m competition_tools.team factors --config /absolute/private/team.toml --spec /absolute/private/factor-protocol.json --output-root /absolute/data/new-factor-run
+```
+
+最后一条命令要求协议指定的不可变 manifest 已存在。此次被阻断的尝试没有研究观测，未执行或发布真实数据诊断与图表。定义见[因子说明](strategies.zh-CN.md#hourly-dex-factors)。已安装生产者和消费者的合成交付另行测试。
 
 ## 命令和存储
 
@@ -14,7 +42,7 @@ python -m competition_tools.team data acquire --config /absolute/private/team.to
 python -m competition_tools.team data inspect --config /absolute/private/team.toml --spec /absolute/private/dataset.json --manifest /absolute/data/2026-quant-competition/datasets/spot-study/v1/manifest.json
 ```
 
-`plan` 和 `inspect` 不发起网络请求。`acquire` 默认不启动Gateway或登录。只有显式IBKR取数可通过 `--ensure-gateway` 和已启用的私有部署使用[Paper登录前置步骤](../operations/gateway-login.zh-CN.md#数据任务的可选登录前置步骤)，任何模式均不购买数据或下单。输出沿用 `competition.team_result.v1`。部分覆盖返回退出码2及 `PARTIAL_COVERAGE`，不算下载完成。
+`plan` 和 `inspect` 不发起网络请求。`acquire` 默认不启动Gateway或登录。只有显式IBKR取数可通过 `--ensure-gateway` 和已启用的私有部署使用[Paper登录前置步骤](../operations/gateway-login.zh-CN.md#数据任务的可选登录前置步骤)，任何模式均不购买数据或下单。输出沿用 `competition.team_result.v1`。日线部分覆盖返回退出码2及 `PARTIAL_COVERAGE`；DEX 使用 `PARTIAL_DEX_COVERAGE`，两者都不算下载完成。
 
 数据位于配置的 `DATA_ROOT/2026-quant-competition/datasets/<dataset-id>/<version>/`。成功发布不覆盖已有版本。未完成的任务保留在 `<version>.partial`，包含 manifest、receipt、请求日志和文件断点。相同规格再次运行时校验已完成文件的哈希并补充缺失下载，规格变化不能复用原断点。上游档案修订需建立新版本重新下载，恢复校验只确认本地保留字节，不能证明上游此后没有修订。
 

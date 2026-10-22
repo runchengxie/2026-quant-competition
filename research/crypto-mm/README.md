@@ -6,6 +6,8 @@ An offline event-driven simulator for visible order-book queues, public trades a
 
 ## Quick start
 
+Hourly factor diagnostics are a separate offline CLI, `python -m crypto_mm.factors --spec /absolute/private/factor-protocol.json --output-root /absolute/data/new-factor-run`. They need an immutable hourly manifest and matching frozen source files. The root `team factors` command invokes the installed CLI without provider credentials. See [definitions and limits](../../docs/research/strategies.md#hourly-dex-factors) and [data setup](../../docs/research/datasets.md#dexpaprika-hourly-pilot). Synthetic delivery passes; the 2026-10-22 real-data check returned HTTP403 and produced no market observations or factor results.
+
 From this directory, first configure an external `DATA_ROOT` and `UV_PROJECT_ENVIRONMENT`, then run:
 
 ```sh

@@ -1,4 +1,6 @@
 import json
+import os
+import subprocess
 
 import pytest
 
@@ -35,6 +37,28 @@ def test_migration_preserves_unrelated_bytes_and_recovers(tmp_path, capsys):
         "status": "already_migrated"
     }
     assert list(destination.parent.glob(".dexpaprika-recovery-*"))
+
+
+def test_windows_migration_removes_explicit_foreign_grants(tmp_path):
+    source, destination, workspace = setup(tmp_path)
+    credentials.migrate_key(source, destination, workspace)
+    if os.name != "nt":
+        assert destination.stat().st_mode & 0o777 == 0o600
+        return
+    path = str(destination).replace("'", "''")
+    script = (
+        "$sid=[Security.Principal.WindowsIdentity]::GetCurrent().User.Value; $acl=Get-Acl -LiteralPath '"
+        + path
+        + "'; $foreign=@($acl.Access | Where-Object {$_.AccessControlType -eq 'Allow' -and $_.IdentityReference.Translate([Security.Principal.SecurityIdentifier]).Value -ne $sid}); if (-not $acl.AreAccessRulesProtected -or $foreign.Count -ne 0) {exit 2}"
+    )
+    environment = {k: v for k, v in os.environ.items() if k.upper() != "PSMODULEPATH"}
+    checked = subprocess.run(
+        ["powershell.exe", "-NoProfile", "-Command", script],
+        capture_output=True,
+        timeout=30,
+        env=environment,
+    )
+    assert checked.returncode == 0
 
 
 def test_duplicate_key_is_not_silently_selected(tmp_path):

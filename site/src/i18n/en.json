@@ -595,5 +595,26 @@
     ],
     "noResults": "No IC, grouped-return or signal-decay scores are published here. We will add charts when the underlying tests have been run and reviewed.",
     "method": "Read definitions and research methods"
+  },
+  "dexFactors": {
+    "title": "Hourly crypto factors: no real results yet",
+    "conclusion": "The first authenticated check returned HTTP 403. Acquisition stopped before any market data was downloaded.",
+    "status": "The implementation passed synthetic tests. Provider access remains unverified.",
+    "permission": "Permission to publish derived research statistics has not been verified. No measured factor chart is published.",
+    "scope": "The offline tool checks four fixed signals against 6-hour and 24-hour forward returns. It reports rank correlation and descriptive groups, with sample counts. It does not simulate a traded portfolio.",
+    "signals": [
+      "Price change over the previous 24 complete hours.",
+      "Price change over the previous 168 complete hours.",
+      "Volume in the last 24 hours divided by average daily volume in the preceding seven days.",
+      "Keep positive 24-hour momentum when the volume ratio exceeds one, otherwise zero. Missing inputs remain missing."
+    ],
+    "details": "Planned sample and verification record",
+    "request": "One authenticated request, with no retry. The response alone does not identify the cause of HTTP 403.",
+    "range": "Frozen requested UTC range",
+    "selection": "These nine identities were fixed before the request. They are a planned sample, not nine observed series or the whole crypto market.",
+    "limits": "No real-data IC, grouped returns or backtest PnL is available. Current selection and unverified historical availability would also limit any future interpretation.",
+    "protocol": "Frozen protocol SHA256",
+    "source": "Scientific source commit",
+    "guide": "Data setup and research boundaries"
   }
 }

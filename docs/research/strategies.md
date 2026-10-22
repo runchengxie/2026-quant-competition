@@ -1,8 +1,27 @@
 # Strategy guide
 
+<a id="hourly-dex-factors"></a>
+## Hourly DEX factors: real data blocked
+
+The four fixed hourly diagnostics are implemented and tested on synthetic data. The 2026-10-22 real acquisition stopped at its first authenticated check with HTTP403. No real factor IC, group return or backtest result is available. These signals are separate from the daily strategies below and B0–B3 maker simulations.
+
+At `t = interval_end`, `momentum_24h` is `C[t]/C[t-24]-1` and `momentum_168h` is `C[t]/C[t-168]-1`. `volume_ratio_24h_7d` divides volume summed over `t-23..t` by average daily volume in `t-191..t-24`, which is that 168-hour sum divided by seven. `momentum_volume_24h` keeps positive 24-hour momentum when that ratio exceeds one, otherwise zero. Missing windows and zero volume baselines remain unavailable.
+
+Forward labels are `C[t+h]/C[t]-1` for `h=6,24`. Every feature and label needs a complete hourly grid. Future candles cannot change earlier features. Before acquisition the protocol fixes signals, horizons, current asset identities and three 30-day slices, without parameter search. Exact scientific source bytes are hash-bound; replay requires retained or matching installed files.
+
+Time-series rank IC is Pearson correlation of average ranks within one asset. Overall estimates need 30 pairs, each fixed slice 20. Constant signals or targets return null with a reason. `all_valid` includes overlapping labels. `non_overlapping` uses UTC hour offset from protocol start modulo the horizon; it does not establish statistical independence.
+
+Cross-sectional diagnostics require nine distinct underlyings at the same valid timestamp. Three bins use normalized average rank `(rank-0.5)/n`, never split ties, and each need three assets. Otherwise groups return null. Group mean forward returns and top-minus-bottom spreads are gross descriptive labels, not portfolios, executable profit or fee-adjusted returns. There is no significance or out-of-sample claim.
+
+`competition.dex_factor_result.v1` binds protocol, manifest and input hashes, with sample counts and restrictions. Source mutation invalidates results. Public projection excludes raw data, account metadata and private paths. Unverified publication rights yield `competition.public_dex_factors.v1` with `status=readiness_only` and no metrics. See [data access and commands](datasets.md#dexpaprika-hourly-pilot).
+
+## Daily strategy comparisons
+
 These strategies are fixed daily research comparisons, not approved execution strategies. Read the [study methods](real-data-study.md) and [dataset contract](datasets.md) before interpreting results. The homepage links each strategy to this guide and compares only a common market, fee and scored window.
 
 ## Shared assumptions and evidence
+
+The daily assumptions in this section do not apply to the separate hourly diagnostics described below.
 
 The frozen 2026-10-21 study contains 318 completed strategy/window/cost jobs. Stocks use 63 scored trading periods per window, crypto uses 90 daily periods, each after 252 warmup periods. Windows restart from cash independently. Input pools are fixed current selections, not point-in-time historical index membership. The US pool has ten instruments, HK ten and crypto eight. Dataset identity, coverage, adjustment and selection limitations are documented in the study, not inferred from a strategy name.
 

@@ -1,4 +1,5 @@
 import json
+import html
 from pathlib import Path
 
 import pytest
@@ -53,6 +54,31 @@ def test_allows_bilingual_astro_sources_assets_and_build_output(tmp_path):
     (source / "dist").mkdir()
 
     assert check_site(source, built) == []
+
+
+def test_dex_readiness_requires_exact_bilingual_output(tmp_path):
+    source, built = make_site_trees(tmp_path)
+    canonical = (
+        Path(__file__).resolve().parents[2]
+        / "site/src/data/dex-factor-readiness.v1.json"
+    )
+    value = json.loads(canonical.read_text())
+    path = source / "src/data/dex-factor-readiness.v1.json"
+    path.parent.mkdir()
+    path.write_text(json.dumps(value))
+    for relative in ["factors/index.html", "zh-CN/factors/index.html"]:
+        target = built / relative
+        target.parent.mkdir(parents=True)
+        target.write_text(
+            '<section data-dex-facts="'
+            + html.escape(json.dumps(value), quote=True)
+            + '"></section>'
+        )
+    assert check_site(source, built) == []
+    (built / "zh-CN/factors/index.html").write_text(
+        '<section data-dex-facts="{}"></section>'
+    )
+    assert any("DEX readiness facts" in issue for issue in check_site(source, built))
 
 
 def test_allows_reviewed_expansion_snapshot_but_still_scans_secrets(tmp_path):

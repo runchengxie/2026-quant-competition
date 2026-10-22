@@ -4,7 +4,6 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import re
 
-from competition_tools.team.paths import validate_external
 from .spec import identifier
 
 SCHEMA = "competition.dex_dataset_spec.v1"
@@ -18,7 +17,23 @@ def safe_path(value: str | Path, *, external: bool = True) -> Path:
     for part in (path, *path.parents):
         if part.is_symlink() or (hasattr(part, "is_junction") and part.is_junction()):
             raise ValueError("DEX_REPARSE_PATH")
-    return validate_external(path) if external else path.resolve()
+    resolved = path.resolve()
+    if external:
+        for parent in (resolved, *resolved.parents):
+            marker = parent / ".git"
+            # A completely empty directory is not a Git repository. Preserve such
+            # placeholders, but reject Git files, nonempty metadata and reparses.
+            marked = marker.exists() and (
+                not marker.is_dir()
+                or marker.is_symlink()
+                or (hasattr(marker, "is_junction") and marker.is_junction())
+                or next(marker.iterdir(), None) is not None
+            )
+            if marked or parent.name == ".git":
+                raise ValueError("Source repository destinations are forbidden")
+            if parent != resolved and parent.exists() and not parent.is_dir():
+                raise ValueError("A destination parent is not a directory")
+    return resolved
 
 
 def utc_hour(value: str) -> datetime:

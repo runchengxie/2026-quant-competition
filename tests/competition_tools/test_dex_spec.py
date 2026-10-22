@@ -7,6 +7,17 @@ from jsonschema import Draft202012Validator
 
 from competition_tools.datasets.dex_spec import validate_dex_spec, dataset_identity
 from competition_tools.datasets.spec import load_spec
+from competition_tools.datasets.dex_spec import safe_path
+
+
+def test_empty_ancestor_git_placeholder_is_not_a_repository(tmp_path):
+    (tmp_path / ".git").mkdir()
+    assert (
+        safe_path(tmp_path / "config/provider.env") == tmp_path / "config/provider.env"
+    )
+    (tmp_path / ".git/HEAD").write_text("ref: refs/heads/main\n")
+    with pytest.raises(ValueError, match="Source repository"):
+        safe_path(tmp_path / "config/provider.env")
 
 
 def sample(tmp_path):

@@ -1,0 +1,484 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "status",
+        "as_of",
+        "source_commit",
+        "protocol_sha256",
+        "manifest_sha256",
+        "asset_ids",
+        "range",
+        "role",
+        "blockers",
+        "restrictions"
+      ],
+      "properties": {
+        "schema": {
+          "const": "competition.public_dex_factors.v1"
+        },
+        "status": {
+          "const": "readiness_only"
+        },
+        "as_of": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "source_commit": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        "protocol_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "manifest_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "asset_ids": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+          }
+        },
+        "range": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "start",
+            "end"
+          ],
+          "properties": {
+            "start": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:00:00Z$",
+              "format": "date-time"
+            },
+            "end": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:00:00Z$",
+              "format": "date-time"
+            }
+          }
+        },
+        "role": {
+          "const": "retrospective"
+        },
+        "blockers": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "PUBLICATION_PERMISSION_UNVERIFIED",
+              "DEX_ACQUISITION_BLOCKED",
+              "PARTIAL_DEX_COVERAGE"
+            ]
+          },
+          "uniqueItems": true,
+          "contains": {
+            "const": "PUBLICATION_PERMISSION_UNVERIFIED"
+          }
+        },
+        "restrictions": {
+          "const": [
+            "fixed_current_selection",
+            "bar_close_proxy_unverified",
+            "gross_descriptive_forward_returns",
+            "not_portfolio_pnl",
+            "no_cost_or_execution_model",
+            "no_out_of_sample_or_significance_claim"
+          ]
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "status",
+        "as_of",
+        "source_commit",
+        "protocol_sha256",
+        "manifest_sha256",
+        "asset_ids",
+        "range",
+        "role",
+        "blockers",
+        "restrictions",
+        "coverage",
+        "metrics",
+        "permission"
+      ],
+      "properties": {
+        "schema": {
+          "const": "competition.public_dex_factors.v1"
+        },
+        "status": {
+          "const": "measured"
+        },
+        "as_of": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "source_commit": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        "protocol_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "manifest_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "asset_ids": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"
+          }
+        },
+        "range": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "start",
+            "end"
+          ],
+          "properties": {
+            "start": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:00:00Z$",
+              "format": "date-time"
+            },
+            "end": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:00:00Z$",
+              "format": "date-time"
+            }
+          }
+        },
+        "role": {
+          "const": "retrospective"
+        },
+        "blockers": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "PUBLICATION_PERMISSION_UNVERIFIED",
+              "DEX_ACQUISITION_BLOCKED",
+              "PARTIAL_DEX_COVERAGE"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "restrictions": {
+          "const": [
+            "fixed_current_selection",
+            "bar_close_proxy_unverified",
+            "gross_descriptive_forward_returns",
+            "not_portfolio_pnl",
+            "no_cost_or_execution_model",
+            "no_out_of_sample_or_significance_claim"
+          ]
+        },
+        "coverage": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "asset_id",
+              "observed_intervals",
+              "expected_intervals"
+            ],
+            "properties": {
+              "asset_id": {
+                "type": "string"
+              },
+              "observed_intervals": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 2160
+              },
+              "expected_intervals": {
+                "const": 2160
+              }
+            }
+          },
+          "minItems": 1,
+          "maxItems": 10
+        },
+        "metrics": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "time_series",
+            "cross_sectional"
+          ],
+          "properties": {
+            "time_series": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "asset_id",
+                  "signal_id",
+                  "horizon",
+                  "sampling",
+                  "overall",
+                  "slices"
+                ],
+                "properties": {
+                  "asset_id": {
+                    "type": "string"
+                  },
+                  "signal_id": {
+                    "enum": [
+                      "momentum_24h",
+                      "momentum_168h",
+                      "volume_ratio_24h_7d",
+                      "momentum_volume_24h"
+                    ]
+                  },
+                  "horizon": {
+                    "enum": [
+                      6,
+                      24
+                    ]
+                  },
+                  "sampling": {
+                    "enum": [
+                      "all_valid",
+                      "non_overlapping"
+                    ]
+                  },
+                  "overall": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "value",
+                      "n",
+                      "reason"
+                    ],
+                    "properties": {
+                      "value": {
+                        "type": [
+                          "number",
+                          "null"
+                        ]
+                      },
+                      "n": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "reason": {
+                        "enum": [
+                          null,
+                          "INSUFFICIENT_OBSERVATIONS",
+                          "CONSTANT_SIGNAL",
+                          "CONSTANT_TARGET"
+                        ]
+                      }
+                    }
+                  },
+                  "slices": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "index",
+                        "value",
+                        "n",
+                        "reason"
+                      ],
+                      "properties": {
+                        "index": {
+                          "enum": [
+                            0,
+                            1,
+                            2
+                          ]
+                        },
+                        "value": {
+                          "type": [
+                            "number",
+                            "null"
+                          ]
+                        },
+                        "n": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "reason": {
+                          "enum": [
+                            null,
+                            "INSUFFICIENT_OBSERVATIONS",
+                            "CONSTANT_SIGNAL",
+                            "CONSTANT_TARGET"
+                          ]
+                        }
+                      }
+                    },
+                    "minItems": 3,
+                    "maxItems": 3
+                  }
+                }
+              },
+              "minItems": 16,
+              "maxItems": 160
+            },
+            "cross_sectional": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "signal_id",
+                  "horizon",
+                  "sampling",
+                  "candidate_timestamps",
+                  "valid_timestamps",
+                  "mean_rank_ic",
+                  "group_mean_forward_returns",
+                  "top_minus_bottom",
+                  "reason",
+                  "excluded_reasons"
+                ],
+                "properties": {
+                  "signal_id": {
+                    "enum": [
+                      "momentum_24h",
+                      "momentum_168h",
+                      "volume_ratio_24h_7d",
+                      "momentum_volume_24h"
+                    ]
+                  },
+                  "horizon": {
+                    "enum": [
+                      6,
+                      24
+                    ]
+                  },
+                  "sampling": {
+                    "enum": [
+                      "all_valid",
+                      "non_overlapping"
+                    ]
+                  },
+                  "candidate_timestamps": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "valid_timestamps": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "mean_rank_ic": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "group_mean_forward_returns": {
+                    "oneOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "array",
+                        "items": {
+                          "type": "number"
+                        },
+                        "minItems": 3,
+                        "maxItems": 3
+                      }
+                    ]
+                  },
+                  "top_minus_bottom": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "reason": {
+                    "enum": [
+                      null,
+                      "INSUFFICIENT_UNDERLYINGS",
+                      "NO_VALID_GROUPS"
+                    ]
+                  },
+                  "excluded_reasons": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "INSUFFICIENT_UNDERLYINGS": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "INSUFFICIENT_GROUP_SIZE": {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    }
+                  }
+                }
+              },
+              "minItems": 16,
+              "maxItems": 16
+            }
+          }
+        },
+        "permission": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "scope",
+            "source_url",
+            "source_sha256",
+            "checked_at",
+            "conclusion"
+          ],
+          "properties": {
+            "status": {
+              "const": "verified"
+            },
+            "scope": {
+              "const": "derived_statistics"
+            },
+            "source_url": {
+              "const": "https://dexpaprika.com/api/terms"
+            },
+            "source_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "checked_at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "conclusion": {
+              "const": "aggregate_publication_permitted"
+            }
+          }
+        }
+      }
+    }
+  ]
+}
