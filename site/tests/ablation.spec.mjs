@@ -1,5 +1,15 @@
 import {test,expect} from "@playwright/test";
 import {readFile} from "node:fs/promises";
+for(const section of ["ablation","performance"])test(`${section}: charts cannot widen the mobile page while resize callbacks are delayed`,async({page})=>{
+ await page.addInitScript(()=>{
+  const Native=window.ResizeObserver;
+  window.ResizeObserver=class extends Native{constructor(callback){super((entries,observer)=>setTimeout(()=>callback(entries,observer),1000));}};
+ });
+ await page.goto('/2026-quant-competition/strategies/');
+ const root=page.locator('#'+section);await root.scrollIntoViewIfNeeded();await expect(root).toHaveAttribute('data-ready','true');
+ await page.setViewportSize({width:390,height:844});
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});
 for(const locale of ["en","zh-CN"]){
  test(`${locale}: post_hoc_badge_survives_every_filter_and_locale`,async({page})=>{
   const errors=[];page.on("pageerror",e=>errors.push(e.message));

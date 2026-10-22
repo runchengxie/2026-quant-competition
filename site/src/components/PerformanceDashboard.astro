@@ -76,7 +76,7 @@ const panels=["nav","drawdown","folds","fees","scatter","turnover","exposure","h
 .chart-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1rem; }
 .chart-grid figure { margin:0; min-width:0; padding:1rem; border:1px solid var(--line); border-radius:.75rem; background:var(--surface); }
 figcaption { font-weight:650; }
-.chart-root { height:300px; width:100%; margin-top:.8rem; }
+.chart-root { overflow:hidden; height:300px; width:100%; margin-top:.8rem; }
 .chart-grid figure>p { color:var(--muted); font-size:.8rem; margin:.4rem 0; }
 .chart-status { font-size:.9rem; color:var(--muted); }
 .research-context { display:grid; grid-template-columns:1fr 1fr; gap:2rem; margin-top:2rem; }
