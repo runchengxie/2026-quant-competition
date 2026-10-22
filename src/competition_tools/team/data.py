@@ -33,6 +33,8 @@ def execute(
         p is not None for p in (gateway_config, gateway_workspace, gateway_wrapper)
     ):
         raise ValueError("Gateway arguments require explicit opt-in")
+    if spec["schema"] == "competition.dex_dataset_spec.v1":
+        return _execute_dex(action, config, spec, manifest_path, base_manifest)
     if spec["schema"] == "competition.dataset_spec.v2":
         return _execute_daily(action, config, spec, manifest_path, base_manifest)
     if action == "refresh" or base_manifest is not None:
@@ -103,6 +105,57 @@ def execute(
             }
         ],
     )
+
+
+def _execute_dex(action, config, spec, manifest_path, base_manifest):
+    from competition_tools.datasets.dex_provider import plan_dex
+    from competition_tools.datasets.dex_acquisition import acquire_dex, resume_state
+    from competition_tools.datasets.dex_storage import publish_dex, inspect_dex
+    from competition_tools.datasets.dex_spec import safe_path
+    from competition_tools.datasets.dex_transport import DexTransport
+
+    if action == "refresh" or base_manifest is not None:
+        raise ValueError("DEX_REFRESH_UNSUPPORTED")
+    if action == "plan":
+        return envelope("data", projects=[plan_dex(spec)])
+    if action == "inspect":
+        if manifest_path is None:
+            raise ValueError("MANIFEST_REQUIRED")
+        return envelope("data", projects=[inspect_dex(manifest_path)])
+    if action != "acquire":
+        raise ValueError("INVALID_DATA_ACTION")
+    destination = safe_path(config.data_root / "2026-quant-competition/datasets" / spec["dataset_id"] / spec["version"])
+    if destination.exists():
+        raise ValueError("DATASET_VERSION_EXISTS")
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    lock = destination.with_name(destination.name + ".acquire-lock")
+    try:
+        fd = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+    except FileExistsError:
+        raise ValueError("ACQUISITION_IN_PROGRESS") from None
+    staging = destination.with_name(destination.name + ".partial")
+    try:
+        prior = resume_state(spec, staging)
+        budget = dict(spec["budget"])
+        if prior:
+            import math
+            for key, used in prior["spent"].items():
+                budget[key] -= math.ceil(used)
+                if budget[key] <= 0:
+                    raise ValueError("RESUME_BUDGET_EXHAUSTED")
+        segment = len(list(staging.glob("requests-*.jsonl"))) + 1
+        transport = DexTransport(budget, Path(spec["credential_file"]), staging / f"requests-{segment}.jsonl")
+        receipt = acquire_dex(spec, staging, transport=transport)
+        if receipt["status"] in {"completed", "partial"}:
+            publish_dex(staging, destination)
+            manifest = destination / "manifest.json"
+        else:
+            manifest = staging / "manifest.json"
+    finally:
+        os.close(fd)
+        lock.unlink()
+    return envelope("data", issues=receipt["issues"] + ([] if receipt["status"] == "completed" else ["PARTIAL_DEX_COVERAGE"]),
+                    projects=[{"status": receipt["status"], "manifest": str(manifest), "coverage": receipt["coverage"]}])
 
 
 def _execute_daily(action, config, spec, manifest_path, base_manifest):

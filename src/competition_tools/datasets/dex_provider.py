@@ -53,6 +53,7 @@ def plan_dex(spec):
 
 def usage_preflight(transport, planned_attempts):
     value = transport.get_json("usage")
+    transport.private_usage = value
     blocked = {"status": "blocked", "reason": "CREDIT_CONTRACT_UNVERIFIED"}
     try:
         if (
