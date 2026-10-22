@@ -519,7 +519,7 @@
       ],
       [
         "Benchmark excess",
-        "Strategy return minus the reference asset’s return in the same window."
+        "Strategy return minus the reference investment or portfolio’s return in the same window."
       ],
       [
         "Drawdown",
