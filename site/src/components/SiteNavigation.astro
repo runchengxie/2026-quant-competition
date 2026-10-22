@@ -1,0 +1,13 @@
+---
+import en from '../i18n/en.json';
+import zh from '../i18n/zh-CN.json';
+const locale=Astro.props.locale==='zh-CN'?'zh-CN':'en';
+const t=(locale==='en'?en:zh).pages;
+const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+const active=Astro.props.active;
+---
+<nav class="project-nav" aria-label={t.navigation}>
+ <a class="wordmark" href={prefix}>QUANT / LAB</a>
+ <div>{[['home',''],['strategies','strategies/'],['factors','factors/'],['docs','docs/']].map(([id,path])=><a data-site-nav={id} href={`${prefix}${path}`} aria-current={active===id?'page':undefined}>{t.labels[id as keyof typeof t.labels]}</a>)}</div>
+ <a class="repo-link" href="https://github.com/runchengxie/2026-quant-competition">{t.source} ↗</a>
+</nav>

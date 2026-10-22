@@ -4,6 +4,7 @@ import {summarizeAblations,selectAblations} from '../scripts/ablation-state.mjs'
 import en from '../i18n/en.json';
 import zh from '../i18n/zh-CN.json';
 const locale=Astro.props.locale==='zh-CN'?'zh-CN':'en';
+const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
 const t=(locale==='en'?en:zh).reader;
 const percent=new Intl.NumberFormat(locale,{style:'percent',minimumFractionDigits:2,maximumFractionDigits:2});
 const choices=[{market:'US',feeBps:20,strategy:'sma_cross',variant:'weekly'},{market:'HK',feeBps:30,strategy:'momentum_20d',variant:'monthly'},{market:'crypto',feeBps:10,strategy:'trend_200d',variant:'vol_target_40pct'}];
@@ -22,10 +23,10 @@ const cards=choices.map((choice,index)=>{
   <p class="market-label">{t.cards[c.index].market}</p><h3>{t.cards[c.index].title}</h3><p>{t.cards[c.index].description}</p>
   <p class="metric-label">{c.index===2?t.drawdown:t.net}</p><p class="change"><span>{percent.format(c.before)}</span><span aria-hidden="true"> → </span><strong>{percent.format(c.after)}</strong></p>
   <p class="conditions">{t.before} → {t.after} · {c.candidate.count} {t.windows} · {t.fee} {percent.format(c.feeBps/10000)}</p>
-  <p class="caution">{t.cards[c.index].caution}</p><a href="#ablation">{t.compare} ↓</a>
+  <p class="caution">{t.cards[c.index].caution}</p><a href={`${prefix}strategies/#ablation`}>{t.compare} ↓</a>
  </article>)}</div>
  <p class="scope">{t.readNumbers}</p>
- <nav class="reading-path" aria-label={t.path}><a href="#ablation">{t.explore}</a><a href="#performance">{t.curves}</a><a href="#evidence">{t.evidence}</a><a href="#demo">{t.run}</a></nav>
+ <nav class="reading-path" aria-label={t.path}><a href={`${prefix}strategies/#ablation`}>{t.explore}</a><a href={`${prefix}strategies/#performance`}>{t.curves}</a><a href={`${prefix}docs/project/#evidence`}>{t.evidence}</a><a href={`${prefix}docs/project/#demo`}>{t.run}</a></nav>
 </section>
 <style>
 #takeaways{padding:0 0 2rem}.lead{font-size:1.2rem;max-width:65rem}.scope{color:var(--muted);max-width:70rem}.takeaway-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;margin:1.5rem 0}.takeaway-grid article{min-width:0;border:1px solid var(--line);border-radius:.8rem;padding:1.25rem;background:var(--surface)}.market-label{color:var(--green);font-weight:700;margin:0}.takeaway-grid h3{font-size:1.25rem;margin:.65rem 0}.metric-label{font-size:.85rem;margin:1.5rem 0 .2rem;color:var(--muted)}.change{font-variant-numeric:tabular-nums;font-size:1.9rem;margin:.2rem 0}.change>span:first-child{color:var(--muted)}.conditions{font-size:.8rem;color:var(--muted)}.caution{border-top:1px solid var(--line);padding-top:1rem}.reading-path{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:1.5rem}.reading-path a{border:1px solid var(--line);border-radius:2rem;padding:.6rem 1rem}@media(max-width:900px){.takeaway-grid{grid-template-columns:1fr}}

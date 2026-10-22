@@ -1,4 +1,5 @@
 ---
+import SiteNavigation from "./SiteNavigation.astro";
 import SiteLayout from "../layouts/SiteLayout.astro";
 import { documents } from "../lib/documents";
 import en from "../i18n/en.json";
@@ -9,7 +10,8 @@ const t=(locale==="zh-CN"?zh:en).documents;
 const prefix=`/2026-quant-competition/${locale==="zh-CN"?"zh-CN/":""}`;
 ---
 <SiteLayout locale={locale} localePath="docs/" title={`${t.title} | QUANT / LAB`} description={t.intro}>
-  <main><a href={prefix}>QUANT / LAB ↗</a><h1>{t.title}</h1><p>{t.intro}</p><div class="doc-cards">
+  <SiteNavigation locale={locale} active="docs" />
+  <main><a href={prefix}>QUANT / LAB ↗</a><h1>{t.title}</h1><p>{t.intro}</p><div class="doc-cards"><a data-doc-slug="project" href={`${prefix}docs/project/`}><h2>{(locale==="en"?en:zh).pages.titles.guide}</h2><p>{(locale==="en"?en:zh).pages.guideSummary}</p></a>
     {documents.filter(d=>d.locale===locale).map(d=><a data-doc-slug={d.slug} href={d.route}><h2>{t.titles[d.slug as keyof typeof t.titles]}</h2><p>{t.summaries[d.slug as keyof typeof t.summaries]}</p></a>)}
   </div></main>
 </SiteLayout>

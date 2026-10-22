@@ -57,7 +57,7 @@ test("without JavaScript the system palette remains readable", async ({ browser 
 for (const locale of ["en", "zh-CN"]) {
   for (const theme of ["light", "dark"]) {
     test(`${locale} ${theme}: text, tables and charts contrast; historical rows retained`, async ({ page }) => {
-      await page.goto(locale === "en" ? base : `${base}zh-CN/`);
+      await page.goto(locale === "en" ? `${base}docs/project/` : `${base}zh-CN/docs/project/`);
       await page.getByLabel(locale === "en" ? "Appearance" : "外观").selectOption(theme);
       await expect(page.locator("[data-result-id]")).toHaveCount(24);
       const measureContrast = () => {

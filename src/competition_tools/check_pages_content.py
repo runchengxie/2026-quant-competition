@@ -190,16 +190,16 @@ def _scan_sensitive(files: list[Path], label: str, errors: list[str]) -> None:
 
 
 def _validate_localized_output(
-    built_dir: Path, output_paths: set[str], errors: list[str]
+    built_dir: Path, output_paths: set[str], errors: list[str], route: str = ""
 ) -> None:
     route_requirements = {
-        "index.html": {
+        f"{route}index.html": {
             "language": "en",
-            "locale_switch": f"{PAGES_BASE_PATH}/zh-CN/",
+            "locale_switch": f"{PAGES_BASE_PATH}/zh-CN/{route}",
         },
-        "zh-CN/index.html": {
+        f"zh-CN/{route}index.html": {
             "language": "zh-CN",
-            "locale_switch": f"{PAGES_BASE_PATH}/",
+            "locale_switch": f"{PAGES_BASE_PATH}/{route}",
         },
     }
     validation_facts: list[list[tuple[str, str | None, str | None]]] = []
@@ -264,6 +264,15 @@ def check_site(source_dir: Path, built_dir: Path) -> list[str]:
         errors.append(f"required output file missing: {sorted(missing_output)}")
 
     _validate_localized_output(built_dir, output_paths, errors)
+    multipage = "src/pages/strategies.astro" in source_paths
+    fact_outputs = REQUIRED_OUTPUT
+    if multipage:
+        fact_outputs = {"strategies/index.html", "zh-CN/strategies/index.html"}
+        for route in ("strategies/", "factors/", "docs/project/"):
+            required = {f"{route}index.html", f"zh-CN/{route}index.html"}
+            if missing := required - output_paths:
+                errors.append(f"required research page missing: {sorted(missing)}")
+            _validate_localized_output(built_dir, output_paths, errors, route)
     snapshot = source_dir / "src/data/real-data-study.v1.json"
     if snapshot.is_file():
         from competition_tools.evaluation.study_publication import validate_public_study
@@ -273,7 +282,7 @@ def check_site(source_dir: Path, built_dir: Path) -> list[str]:
                 json.loads(snapshot.read_text(encoding="utf-8"))
             )
             expected = {r["job_id"]: r for r in value["results"]}
-            for relative in REQUIRED_OUTPUT & output_paths:
+            for relative in fact_outputs & output_paths:
                 metadata = _PageMetadata()
                 metadata.feed((built_dir / relative).read_text(encoding="utf-8"))
                 actual = {key: json.loads(facts) for key, facts in metadata.study_facts}
@@ -302,7 +311,7 @@ def check_site(source_dir: Path, built_dir: Path) -> list[str]:
                 json.loads(ablation_path.read_text(encoding="utf-8"))
             )
             expected_ablation = {r["job_id"]: r for r in ablation["results"]}
-            for relative in REQUIRED_OUTPUT & output_paths:
+            for relative in fact_outputs & output_paths:
                 metadata = _PageMetadata()
                 metadata.feed((built_dir / relative).read_text(encoding="utf-8"))
                 actual = {
@@ -350,6 +359,12 @@ def _validate_documentation(
             "strategies",
         )
     }
+    if "strategies/index.html" in output_paths:
+        for prefix, locale, other in (("", "en", "zh-CN/"), ("zh-CN/", "zh-CN", "")):
+            expected[f"{prefix}docs/project/index.html"] = (
+                locale,
+                f"{PAGES_BASE_PATH}/{other}docs/project/",
+            )
     for name in expected.keys() - output_paths:
         errors.append(f"documentation route missing: {name}")
     cache = {}

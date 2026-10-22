@@ -1,4 +1,6 @@
 ---
+import SiteNavigation from "./SiteNavigation.astro";
+import FactorResearch from "./FactorResearch.astro";
 import SiteLayout from "../layouts/SiteLayout.astro";
 import ValidationResults from "./ValidationResults.astro";
 import ExpansionResults from "./ExpansionResults.astro";
@@ -9,9 +11,13 @@ import ResearchSummary from "./ResearchSummary.astro";
 import PerformanceDashboard from "./PerformanceDashboard.astro";
 import en from "../i18n/en.json";
 import zh from "../i18n/zh-CN.json";
-interface Props { locale?: string }
+interface Props { locale?: string; view?: "home"|"strategies"|"factors"|"guide" }
 const locale = Astro.props.locale === "zh-CN" ? "zh-CN" : "en";
 const t = locale === "zh-CN" ? zh : en;
+const view=Astro.props.view??"home";
+const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+const localePath=({home:'',strategies:'strategies/',factors:'factors/',guide:'docs/project/'})[view];
+const legacy={performance:'strategies/#performance',ablation:'strategies/#ablation',study:'strategies/#study',evidence:'docs/project/#evidence',demo:'docs/project/#demo',research:'docs/project/#research',engineering:'docs/project/#engineering',validation:'docs/project/#validation',expansion:'docs/project/#expansion'};
 const repository = "https://github.com/runchengxie/2026-quant-competition";
 const docsUrl=`/2026-quant-competition/${locale==="zh-CN"?"zh-CN/":""}docs/`;
 const file = (path: string) => `${repository}/blob/main/${path}`;
@@ -24,41 +30,21 @@ const paths = [
 ];
 const guide = (directory: string) => file(`research/${directory}/README${locale === "zh-CN" ? ".zh-CN" : ""}.md`);
 ---
-<SiteLayout locale={locale} title={t.meta.title} description={t.meta.description}>
-  <nav class="project-nav" aria-label={t.nav.demo}>
-    <a class="wordmark" href="#">QUANT / LAB</a>
-    <div><a href="#takeaways">{t.reader.nav}</a><a href="#ablation">{t.nav.ablation}</a><a href="#performance">{t.reader.navCurves}</a><a href="#evidence">{t.reader.navEvidence}</a><a href={docsUrl}>{t.documents.title}</a><a href="#demo">{t.nav.demo}</a><a href="#engineering">{t.nav.engineering}</a></div>
-    <a class="repo-link" href={repository}>{t.nav.repo}<span aria-hidden="true"> ↗</span></a>
-  </nav>
-  <header class="showcase-hero performance-hero">
-    <div>
-      <p class="eyebrow">{t.hero.eyebrow}</p>
-      <h1>{t.hero.title}</h1>
-      <p class="intro">{t.hero.intro}</p>
-      <div class="hero-actions"><a class="button" href="#takeaways">{t.hero.primary}<span aria-hidden="true"> ↓</span></a><a class="text-link" href={docsUrl}>{t.documents.title} ↗</a></div>
-      <p class="hero-note">{t.hero.note}</p>
-    </div>
-    <div class="lab-window" aria-label={t.demo.pipeline} hidden>
-      <div class="window-bar"><span class="window-dots" aria-hidden="true">● ● ●</span><span>research / offline</span></div>
-      <div class="window-body">
-        <p class="terminal-label">{t.demo.synthetic}</p>
-        <div class="terminal-row"><span>01</span><code>synthetic_input</code><b aria-hidden="true">→</b></div>
-        <div class="terminal-row"><span>02</span><code>strategy_signal</code><b aria-hidden="true">→</b></div>
-        <div class="terminal-row"><span>03</span><code>simulation</code><b aria-hidden="true">→</b></div>
-        <div class="terminal-row last"><span>04</span><code>inspectable_report</code><span class="terminal-check" aria-hidden="true">✓</span></div>
-      </div>
-    </div>
-  </header>
+<SiteLayout locale={locale} localePath={localePath} title={`${view==="home"?t.meta.title:t.pages.titles[view]} | QUANT / LAB`} description={view==="home"?t.meta.description:t.pages.intros[view]}>
+  <SiteNavigation locale={locale} active={view==="guide"?"docs":view} />
+  <header class="showcase-hero performance-hero"><div>
+    <p class="eyebrow">{t.hero.eyebrow}</p><h1>{view==='home'?t.hero.title:t.pages.titles[view]}</h1>
+    <p class="intro">{view==='home'?t.hero.intro:t.pages.intros[view]}</p><p class="hero-note">{t.hero.note}</p>
+  </div></header>
   <main>
-    <ResearchTakeaways locale={locale} />
-    <AblationResults locale={locale} />
-    <PerformanceDashboard locale={locale} />
-    <section id="evidence" class="evidence-section">
+    {view==='home'&&<><ResearchTakeaways locale={locale} /><details class="legacy-links"><summary>{t.pages.oldLinks}</summary>{Object.entries(legacy).map(([id,target])=><a data-legacy-link={id} href={`${prefix}${target}`}>{id}</a>)}</details></>}
+    {view==='strategies'&&<><AblationResults locale={locale} /><PerformanceDashboard locale={locale} /><StudyResults locale={locale} /></>}
+    {view==='factors'&&<FactorResearch locale={locale} />}
+    {view==='guide'&&<>    <section id="evidence" class="evidence-section">
       <div class="section-heading"><h2>{t.evidence.title}</h2><p>{t.evidence.intro}</p></div>
       <p class="detail">{t.evidence.scope}</p>
       <h3>{t.evidence.glossaryTitle}</h3><dl class="reader-glossary">{t.evidence.glossary.map(([term,meaning])=><div><dt>{term}</dt><dd>{meaning}</dd></div>)}</dl>
       <details class="baseline-summary"><summary>{t.evidence.baseline}</summary><ResearchSummary locale={locale} /></details>
-      <StudyResults locale={locale} />
       <ValidationResults locale={locale} />
       <ExpansionResults locale={locale} />
     </section>
@@ -95,11 +81,17 @@ const guide = (directory: string) => file(`research/${directory}/README${locale 
     </section>
     <section id="engineering" class="engineering-section"><p class="eyebrow">{t.engineering.eyebrow}</p><h2>{t.engineering.title}</h2><p>{t.engineering.body}</p><ol class="flow execution-flow">{t.engineering.stages.map((step,index) => <li><span class="step-number">0{index+1}</span>{step}</li>)}</ol><p class="detail">{t.engineering.warning}</p><a href={file("docs/operations/integration-readiness-2026-10-02.md")}>{t.engineering.link} ↗</a></section>
     <aside class="competition-note"><div><h3>{t.rules.title}</h3><p>{t.rules.body}</p></div><a href={file("docs/competition/schedule-and-checklist.md")}>{t.rules.link} ↗</a></aside>
+</>}
   </main>
+  {view==='home'&&<script is:inline define:vars={{prefix,legacy}}>
+    const followLegacy=()=>{const key=location.hash.slice(1);if(Object.hasOwn(legacy,key))location.replace(prefix+legacy[key]);};
+    followLegacy();window.addEventListener('hashchange',followLegacy);
+  </script>}
   <footer><span>{t.footer.project}</span><span>{t.footer.note}</span></footer>
 </SiteLayout>
 
 <style>
+.legacy-links{margin:2rem 0;color:var(--muted)}.legacy-links a{display:inline-block;margin:.5rem 1rem .5rem 0}
 .showcase-hero.performance-hero{padding-top:1.5rem;padding-bottom:1.5rem}.performance-hero h1{font-size:clamp(1.9rem,3.5vw,3rem);line-height:1.2;max-width:58rem}.performance-hero .hero-actions{margin-top:1.1rem}
 .evidence-section{border-top:1px solid var(--line);padding-top:2rem}.reader-glossary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.reader-glossary div{border-left:2px solid var(--line);padding-left:1rem}.reader-glossary dt{font-weight:650}.reader-glossary dd{margin:.4rem 0;color:var(--muted)}.baseline-summary{margin:2rem 0}.baseline-summary>summary{cursor:pointer;padding:1rem;border:1px solid var(--line);border-radius:.5rem}@media(max-width:700px){.reader-glossary{grid-template-columns:1fr}}
 </style>

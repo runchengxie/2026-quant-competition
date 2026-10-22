@@ -1,4 +1,5 @@
 ---
+import SiteNavigation from "../components/SiteNavigation.astro";
 import SiteLayout from "./SiteLayout.astro";
 import { documents, type DocumentEntry } from "../lib/documents";
 import en from "../i18n/en.json";
@@ -12,7 +13,8 @@ const Content=doc.Content;
 const prefix=`/2026-quant-competition/${locale==="zh-CN"?"zh-CN/":""}`;
 ---
 <SiteLayout locale={locale} localePath={`docs/${doc.slug}/`} title={`${title} | QUANT / LAB`} description={t.intro}>
-  <header class="doc-header"><a href={prefix}>QUANT / LAB</a><a href={`${prefix}#performance`}>{t.dashboard}</a><a href={`${prefix}docs/`}>{t.title}</a></header>
+  <SiteNavigation locale={locale} active="docs" />
+  <header class="doc-header"><a href={prefix}>QUANT / LAB</a><a href={`${prefix}strategies/#performance`}>{t.dashboard}</a><a href={`${prefix}docs/`}>{t.title}</a></header>
   <main class="doc-shell">
     <aside><nav aria-label={t.title}>{documents.filter(d=>d.locale===locale).map(d=><a href={d.route} aria-current={d.slug===doc.slug?"page":undefined}>{t.titles[d.slug as keyof typeof t.titles]}</a>)}</nav></aside>
     <div class="doc-body"><p class="doc-note">{t.canonical} <a href={`https://github.com/runchengxie/2026-quant-competition/blob/main/${doc.source}`}>{t.source} ↗</a></p><article><Content /></article></div>

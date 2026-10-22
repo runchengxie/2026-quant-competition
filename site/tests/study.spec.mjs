@@ -6,7 +6,7 @@ const expected = ["US", "HK", "crypto"].flatMap(market => snapshot.results.filte
 
 test("study facts match the reviewed projection in both languages and themes", async ({ page }) => {
   for (const locale of ["en", "zh-CN"]) {
-    await page.goto(locale === "en" ? "/2026-quant-competition/" : "/2026-quant-competition/zh-CN/");
+    await page.goto(locale === "en" ? "/2026-quant-competition/strategies/" : "/2026-quant-competition/zh-CN/strategies/");
     const rows = page.locator("#study [data-study-id]");
     await expect(rows).toHaveCount(snapshot.results.length);
     expect(await rows.evaluateAll(elements => elements.map(e => JSON.parse(e.dataset.facts)))).toEqual(expected);

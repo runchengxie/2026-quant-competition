@@ -8,7 +8,7 @@ for(const locale of ["en","zh-CN"]){
   test(`${locale}: interactive charts retain published facts across filters and themes`,async({page})=>{
     const errors=[];
     page.on("pageerror",e=>errors.push(e.message));
-    await page.goto(locale==="en"?"/2026-quant-competition/":"/2026-quant-competition/zh-CN/");
+    await page.goto(locale==="en"?"/2026-quant-competition/strategies/":"/2026-quant-competition/zh-CN/strategies/");
     const root=page.locator("#performance");
     await root.scrollIntoViewIfNeeded();
     await expect(root).toHaveAttribute("data-ready","true");
@@ -48,7 +48,7 @@ for(const locale of ["en","zh-CN"]){
 test("published evidence remains readable without JavaScript",async({browser})=>{
   const context=await browser.newContext({javaScriptEnabled:false});
   const page=await context.newPage();
-  await page.goto("/2026-quant-competition/");
+  await page.goto("/2026-quant-competition/strategies/");
   await expect(page.locator("#performance h2")).toBeVisible();
   await expect(page.locator("#performance [data-filter=market]")).toBeDisabled();
   await expect(page.locator("[data-study-id]")).toHaveCount(318);
@@ -58,11 +58,13 @@ test("published evidence remains readable without JavaScript",async({browser})=>
 test('research summaries expose fixed assumptions and localized stable statistics',async({page})=>{
  let canonical;
  for(const locale of ['en','zh-CN']){
-  await page.goto(locale==='en'?'/2026-quant-competition/':'/2026-quant-competition/zh-CN/');
+  await page.goto(locale==='en'?'/2026-quant-competition/strategies/':'/2026-quant-competition/zh-CN/strategies/');
+  await page.goto(locale==='en'?'/2026-quant-competition/docs/project/':'/2026-quant-competition/zh-CN/docs/project/');
   await expect(page.locator('[data-market-summary]')).toHaveCount(3);
   const facts=await page.locator('[data-summary-facts]').evaluateAll(nodes=>nodes.map(n=>JSON.parse(n.dataset.summaryFacts)));
   if(canonical)expect(facts).toEqual(canonical);else canonical=facts;
   for(const fact of facts){expect(fact.feeBps).toBe({US:20,HK:30,crypto:10}[fact.market]);const rows=study.results.filter(r=>r.market===fact.market&&r.strategy===fact.strategy&&r.cost_bps===fact.feeBps);expect(fact.count).toBe(rows.length);expect(fact.worstNetReturn).toBe(Math.min(...rows.map(r=>r.net_return)));}
+  await page.goto(locale==='en'?'/2026-quant-competition/strategies/':'/2026-quant-competition/zh-CN/strategies/');
   const root=page.locator('#performance');await root.scrollIntoViewIfNeeded();await expect(root).toHaveAttribute('data-ready','true');
   await expect(root.locator('[data-stability]')).toHaveAttribute('data-count','11');
   await root.locator('[data-filter=market]').selectOption('crypto');
@@ -77,7 +79,7 @@ test('research summaries expose fixed assumptions and localized stable statistic
 
 
 test('legend choice and panned curve range survive a theme change',async({page})=>{
- await page.goto('/2026-quant-competition/');const root=page.locator('#performance');await root.scrollIntoViewIfNeeded();await expect(root).toHaveAttribute('data-ready','true');
+ await page.goto('/2026-quant-competition/strategies/');const root=page.locator('#performance');await root.scrollIntoViewIfNeeded();await expect(root).toHaveAttribute('data-ready','true');
  const canvas=root.locator('[data-chart=nav] canvas');const box=await canvas.boundingBox();
  await canvas.click({position:{x:box.width/2+40,y:12}});
  await expect(root.locator('[data-toggle-gross]')).not.toBeChecked();
@@ -95,7 +97,7 @@ test('legend choice and panned curve range survive a theme change',async({page})
 test('matched strategy comparison and fee robustness preserve published conditions in both locales',async({page})=>{
  let canonical;
  for(const locale of ['en','zh-CN']){
-  await page.goto(locale==='en'?'/2026-quant-competition/':'/2026-quant-competition/zh-CN/');
+  await page.goto(locale==='en'?'/2026-quant-competition/strategies/':'/2026-quant-competition/zh-CN/strategies/');
   const root=page.locator('#performance');await root.scrollIntoViewIfNeeded();await expect(root).toHaveAttribute('data-ready','true');
   await expect(root.locator('[data-comparison-row]')).toHaveCount(2);
   await root.locator('[data-compare=third]').selectOption('momentum_20d');await expect(root.locator('[data-comparison-row]')).toHaveCount(3);
@@ -124,11 +126,13 @@ test("both languages lead with traceable conclusions and retain evidence without
   const facts=await page.locator("[data-takeaway]").evaluateAll(nodes=>nodes.map(n=>JSON.parse(n.dataset.facts)));
   if(canonical)expect(facts).toEqual(canonical);else canonical=facts;
   for(const f of facts){const groups=summarizeAblations(ablationSnapshot,{market:f.market,feeBps:f.feeBps,strategy:f.strategy});expect(f.baseline).toEqual(groups.find(g=>g.variant_id==="baseline"));expect(f.candidate).toEqual(groups.find(g=>g.variant_id===f.variant));}
-  expect(await page.locator("main > [id]").evaluateAll(ns=>ns.map(n=>n.id))).toEqual(["takeaways","ablation","performance","evidence","demo","research","engineering"]);
+  expect(await page.locator("main > [id]").evaluateAll(ns=>ns.map(n=>n.id))).toEqual(["takeaways"]);
   await expect(page.locator("#takeaways [data-scope]")).toBeVisible();
+  await page.goto(locale==="en"?"/2026-quant-competition/docs/project/":"/2026-quant-competition/zh-CN/docs/project/");
   await expect(page.locator("#evidence")).toContainText(locale==="en"?"10 US stocks":"10 只美股");
+  await page.goto(locale==="en"?"/2026-quant-competition/strategies/":"/2026-quant-competition/zh-CN/strategies/");
   await expect(page.locator("[data-study-id]")).toHaveCount(318);await expect(page.locator("[data-ablation-id]")).toHaveCount(678);
-  for(const href of await page.locator("#takeaways a[href^='#']").evaluateAll(ns=>ns.map(n=>n.getAttribute("href"))))await expect(page.locator(href)).toHaveCount(1);
+
  }
  await context.close();
 });

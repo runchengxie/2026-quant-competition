@@ -542,5 +542,57 @@
         "A cost unit: 10 bps is 0.10%. One-way costs apply to buys and sells."
       ]
     ]
+  },
+  "pages": {
+    "navigation": "Project pages",
+    "source": "Source code",
+    "labels": {
+      "home": "Overview",
+      "strategies": "Strategies",
+      "factors": "Factors",
+      "docs": "Documentation"
+    },
+    "titles": {
+      "strategies": "How did the strategies perform?",
+      "factors": "Do the signals help predict returns?",
+      "guide": "Project guide and offline demos"
+    },
+    "intros": {
+      "strategies": "Compare returns, drawdowns and costs. Rule-change summaries and original strategy curves are separate experiments.",
+      "factors": "Read the signal definitions and see which tests still need evidence.",
+      "guide": "Data, limitations, installation, synthetic demos, research candidates and execution boundaries."
+    },
+    "oldLinks": "Links to sections moved from the old homepage",
+    "guideSummary": "Offline demonstrations, data evidence, research candidates and execution boundaries."
+  },
+  "factors": {
+    "title": "Strategy results are available; factor validation is still pending",
+    "conclusion": "Momentum and moving-average rules have been backtested. That does not yet show whether the underlying signals predict later returns consistently.",
+    "boundary": "Momentum and trend filters are tested strategies. IC, rank-IC, quantile spreads, signal decay and machine-learning test results have not been measured here. These charts do not establish independent factor efficacy.",
+    "markets": [
+      "US and Hong Kong stocks",
+      "US and Hong Kong stocks",
+      "Crypto spot",
+      "Crypto spot"
+    ],
+    "status": "Strategy backtest available · independent factor tests pending",
+    "strategyLink": "See strategy results",
+    "testsTitle": "What would establish stronger evidence?",
+    "tests": [
+      [
+        "IC / rank-IC",
+        "Check whether signal values agree with subsequent returns, using only information available at the decision time."
+      ],
+      [
+        "Grouped returns",
+        "Sort assets by the signal and compare later returns across groups, including costs."
+      ],
+      [
+        "Stability and decay",
+        "Check different periods, markets and holding horizons on fresh data."
+      ]
+    ],
+    "noResults": "No IC, grouped-return or signal-decay scores are published here. We will add charts when the underlying tests have been run and reviewed.",
+    "method": "Read definitions and research methods"
   }
 }

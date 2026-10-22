@@ -421,7 +421,10 @@ def test_notice_is_exactly_allowlisted_and_still_scanned(tmp_path):
     assert any("sensitive pattern" in e for e in check_site(source, built))
 
 
-def test_ablation_facts_have_separate_strict_source_and_locale_parity(tmp_path):
+@pytest.mark.parametrize("multipage", [False, True])
+def test_ablation_facts_have_separate_strict_source_and_locale_parity(
+    tmp_path, multipage
+):
     import html
     from test_ablation_publication import public_fixture
 
@@ -430,7 +433,19 @@ def test_ablation_facts_have_separate_strict_source_and_locale_parity(tmp_path):
     p = source / "src/data/ablation-study.v1.json"
     p.parent.mkdir()
     p.write_text(json.dumps(value))
-    for relative in ["index.html", "zh-CN/index.html"]:
+    if multipage:
+        (source / "src/pages/strategies.astro").write_text("<!-- Strategy results -->")
+        for prefix, locale, other in [("", "en", "zh-CN/"), ("zh-CN/", "zh-CN", "")]:
+            for route in ["strategies/", "factors/", "docs/project/"]:
+                page = built / f"{prefix}{route}index.html"
+                page.parent.mkdir(parents=True, exist_ok=True)
+                page.write_text(rendered_page(locale, f"{BASE_PATH}/{other}{route}"))
+    routes = (
+        ["strategies/index.html", "zh-CN/strategies/index.html"]
+        if multipage
+        else ["index.html", "zh-CN/index.html"]
+    )
+    for relative in routes:
         path = built / relative
         path.write_text(
             path.read_text()
@@ -444,6 +459,6 @@ def test_ablation_facts_have_separate_strict_source_and_locale_parity(tmp_path):
             )
         )
     assert check_site(source, built) == []
-    p = built / "zh-CN/index.html"
+    p = built / routes[1]
     p.write_text(p.read_text().replace("retrospective_ablation", "forward_validated"))
     assert any("ablation facts differ" in e for e in check_site(source, built))

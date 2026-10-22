@@ -1,0 +1,16 @@
+---
+import en from '../i18n/en.json';
+import zh from '../i18n/zh-CN.json';
+const locale=Astro.props.locale==='zh-CN'?'zh-CN':'en';
+const all=locale==='en'?en:zh;const t=all.factors;
+const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+const signals=['momentum_20d','sma_cross','momentum_63d','trend_200d'] as const;
+---
+<section id="factor-research"><h2>{t.title}</h2><p class="lead">{t.conclusion}</p><p class="factor-note">{t.boundary}</p>
+ <div class="signal-grid">{signals.map((id,index)=><article data-factor-signal={id}><p>{t.markets[index]}</p><h3>{all.dashboard.strategies[id]}</h3><p>{all.dashboard.descriptions[id]}</p><p class="factor-status" data-factor-status>{t.status}</p><a href={`${prefix}strategies/`}>{t.strategyLink} ↗</a></article>)}</div>
+ <h2>{t.testsTitle}</h2><dl>{t.tests.map(([title,description])=><div><dt>{title}</dt><dd>{description}</dd></div>)}</dl>
+ <p>{t.noResults}</p><a href={`${prefix}docs/strategies/`}>{t.method} ↗</a>
+</section>
+<style>
+.lead{font-size:1.2rem}.factor-note{border-left:3px solid var(--green);padding:1rem;color:var(--muted)}.signal-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin:2rem 0}.signal-grid article{padding:1.25rem;border:1px solid var(--line);border-radius:.7rem;background:var(--surface)}.factor-status{color:var(--muted);font-size:.9rem}dl{display:grid;gap:1rem}dt{font-weight:650}dd{margin:.4rem 0;color:var(--muted)}@media(max-width:700px){.signal-grid{grid-template-columns:1fr}}
+</style>

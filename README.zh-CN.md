@@ -18,6 +18,8 @@
 
 拿过去的行情试跑策略，通常叫作回测。它可以帮助你检查策略会怎样买卖，结果好看也不能保证以后赚钱。
 
+网站分别展示[策略表现](https://runchengxie.github.io/2026-quant-competition/zh-CN/strategies/)、[因子研究](https://runchengxie.github.io/2026-quant-competition/zh-CN/factors/)和[项目使用与离线演示](https://runchengxie.github.io/2026-quant-competition/zh-CN/docs/project/)。因子页已有信号定义，独立的 IC、分组收益和信号衰减结果尚未发布。
+
 ## 第一次怎么跑
 
 1. 安装 Python 3.12 和 `uv`，后者用来安装项目需要的 Python 软件包。然后下载或克隆本项目。

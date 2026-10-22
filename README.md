@@ -18,6 +18,8 @@ New here? Start with an offline example. It uses made-up data, runs on your comp
 
 Trying a strategy on past prices is called a backtest. It helps you inspect the strategy's behavior, but it cannot promise future returns.
 
+The website separates [strategy performance](https://runchengxie.github.io/2026-quant-competition/strategies/), [factor research](https://runchengxie.github.io/2026-quant-competition/factors/) and the [project guide with offline demos](https://runchengxie.github.io/2026-quant-competition/docs/project/). Factor definitions are available, but independent IC, grouped-return and signal-decay results have not been published.
+
 ## Run your first example
 
 1. Install Python 3.12 and `uv`, which installs the project's Python packages. Download or clone this repository.
