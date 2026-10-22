@@ -30,6 +30,9 @@ def load_spec(path: Path) -> dict:
 
 
 def validate_spec(value: dict) -> None:
+    if isinstance(value, dict) and value.get("schema") == "competition.dex_dataset_spec.v1":
+        from .dex_spec import validate_dex_spec
+        return validate_dex_spec(value)
     if isinstance(value, dict) and value.get("schema") == "competition.dataset_spec.v2":
         from .daily_spec import validate_daily_spec
         return validate_daily_spec(value)

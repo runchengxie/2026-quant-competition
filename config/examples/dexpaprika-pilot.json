@@ -1,0 +1,28 @@
+{
+  "schema": "competition.dex_dataset_spec.v1",
+  "dataset_id": "dex-pilot",
+  "version": "v1",
+  "source": "dexpaprika",
+  "interval": "1h",
+  "quote_currency": "USD",
+  "selection": "fixed_current",
+  "start": "2025-01-01T00:00:00Z",
+  "end": "2025-04-01T00:00:00Z",
+  "credential_file": "<absolute-external-credential-file>",
+  "protocol_file": "<absolute-external-frozen-protocol>",
+  "protocol_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "assets": [
+    {
+      "stable_id": "ethereum-weth",
+      "underlying_id": "eth",
+      "network": "ethereum",
+      "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+    }
+  ],
+  "budget": {
+    "requests": 100,
+    "bytes": 52428800,
+    "seconds": 900,
+    "requests_per_minute": 20
+  }
+}
