@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Fixed Databento daily ingestion pilot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "dataset_id",
+    "source",
+    "dataset",
+    "provider_schema",
+    "symbols",
+    "stype_in",
+    "start",
+    "end",
+    "quote_currency",
+    "price_basis",
+    "universe_status",
+    "budget",
+    "credential_file",
+    "version"
+  ],
+  "properties": {
+    "schema": {
+      "const": "competition.databento_dataset_spec.v1"
+    },
+    "dataset_id": {
+      "const": "databento-us-daily-pilot"
+    },
+    "source": {
+      "const": "databento"
+    },
+    "dataset": {
+      "const": "EQUS.SUMMARY"
+    },
+    "provider_schema": {
+      "const": "ohlcv-1d"
+    },
+    "symbols": {
+      "const": [
+        "SPY",
+        "QQQ",
+        "IWM",
+        "TLT",
+        "GLD",
+        "AAPL",
+        "MSFT",
+        "NVDA",
+        "AMZN",
+        "META"
+      ]
+    },
+    "stype_in": {
+      "const": "raw_symbol"
+    },
+    "start": {
+      "const": "2025-01-01"
+    },
+    "end": {
+      "const": "2026-01-01"
+    },
+    "quote_currency": {
+      "const": "USD"
+    },
+    "price_basis": {
+      "const": "raw"
+    },
+    "universe_status": {
+      "const": "fixed_current"
+    },
+    "budget": {
+      "const": {
+        "metadata_requests": 5,
+        "download_requests": 1,
+        "bytes": 20971520,
+        "seconds": 120,
+        "max_cost_usd": "0.10"
+      }
+    },
+    "credential_file": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "const": "20261023-v1"
+    }
+  }
+}
