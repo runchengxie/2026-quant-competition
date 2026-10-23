@@ -13,6 +13,10 @@ def main(argv: list[str] | None = None) -> int:
         description="Configure and run independent offline research"
     )
     commands = parser.add_subparsers(dest="action", required=True)
+    robustness = commands.add_parser("robustness", help="Run the fixed 66 US and 48 crypto retrospective diagnostics")
+    robustness.add_argument("--config", type=Path, required=True)
+    robustness.add_argument("--spec", type=Path, required=True)
+    robustness.add_argument("--output-root", type=Path, required=True)
     preparation = commands.add_parser("observation-prepare", help="Prepare US refresh inventory or a per-market observation warmup offline")
     preparation.add_argument("operation", choices=["us-refresh", "market"])
     preparation.add_argument("--config", type=Path, required=True)
@@ -114,7 +118,11 @@ def main(argv: list[str] | None = None) -> int:
             value = envelope(args.action)
         else:
             config = load_config(args.config)
-            if args.action == "observation-prepare":
+            if args.action == "robustness":
+                from .robustness import execute
+
+                value = execute(config, args.spec, args.output_root)
+            elif args.action == "observation-prepare":
                 from .observation_prepare import execute
 
                 value = execute(args.operation, config, args.manifest, args.output_root, parent_registry=args.parent_registry)
