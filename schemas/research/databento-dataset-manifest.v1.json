@@ -1,0 +1,125 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "spec",
+    "receipt",
+    "files",
+    "accepted_research"
+  ],
+  "properties": {
+    "schema": {
+      "const": "competition.databento_dataset_manifest.v1"
+    },
+    "spec": {
+      "$ref": "databento-dataset-spec.v1.json"
+    },
+    "receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "accepted_research",
+        "issue_codes",
+        "request_sha256",
+        "observed_at",
+        "historical_availability_verified",
+        "cost",
+        "spent"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "blocked",
+            "partial",
+            "acquired"
+          ]
+        },
+        "accepted_research": {
+          "const": false
+        },
+        "issue_codes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z0-9_]+$"
+          }
+        },
+        "request_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "observed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "historical_availability_verified": {
+          "const": false
+        },
+        "cost": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "spent": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "metadata_requests",
+            "download_requests",
+            "bytes",
+            "seconds"
+          ],
+          "properties": {
+            "metadata_requests": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "download_requests": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "bytes": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "seconds": {
+              "type": "number",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "files": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "sha256"
+        ],
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      }
+    },
+    "accepted_research": {
+      "const": false
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}
