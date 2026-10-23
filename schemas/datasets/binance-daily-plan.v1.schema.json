@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "frozen_at",
+    "parent_manifest",
+    "parent_sha256",
+    "parent_status",
+    "start",
+    "end",
+    "resources",
+    "budget",
+    "accepted_research",
+    "plan_sha256"
+  ],
+  "properties": {
+    "schema": {
+      "const": "competition.binance_daily_plan.v1"
+    },
+    "frozen_at": {
+      "type": "string"
+    },
+    "parent_manifest": {
+      "type": "string"
+    },
+    "parent_sha256": {
+      "type": "string"
+    },
+    "parent_status": {
+      "type": "string"
+    },
+    "start": {
+      "type": "string"
+    },
+    "end": {
+      "type": "string"
+    },
+    "resources": {
+      "type": "array"
+    },
+    "budget": {
+      "type": "object"
+    },
+    "accepted_research": {
+      "const": false
+    },
+    "plan_sha256": {
+      "type": "string"
+    }
+  }
+}

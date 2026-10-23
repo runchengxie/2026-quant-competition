@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "plan_sha256",
+    "attempts",
+    "transferred_bytes",
+    "expanded_bytes",
+    "elapsed_seconds",
+    "in_flight",
+    "status",
+    "issue_codes",
+    "accepted_research"
+  ],
+  "properties": {
+    "schema": {
+      "const": "competition.binance_daily_receipt.v1"
+    },
+    "plan_sha256": {
+      "type": "string"
+    },
+    "attempts": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "transferred_bytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "expanded_bytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "elapsed_seconds": {
+      "type": "number",
+      "minimum": 0
+    },
+    "in_flight": {
+      "type": "boolean"
+    },
+    "status": {
+      "type": "string"
+    },
+    "issue_codes": {
+      "type": "array"
+    },
+    "accepted_research": {
+      "const": false
+    },
+    "collected_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "spend_uncertain": {
+      "type": "boolean"
+    }
+  }
+}

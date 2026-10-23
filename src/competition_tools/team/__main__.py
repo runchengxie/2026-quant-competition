@@ -13,6 +13,14 @@ def main(argv: list[str] | None = None) -> int:
         description="Configure and run independent offline research"
     )
     commands = parser.add_subparsers(dest="action", required=True)
+    extension = commands.add_parser("daily-extension", help="Prepare, inspect or explicitly acquire bounded daily archives")
+    extension.add_argument("operation", choices=["prepare", "inspect", "acquire"])
+    extension.add_argument("--config", type=Path, required=True)
+    extension.add_argument("--spec", type=Path)
+    extension.add_argument("--base-manifest", type=Path)
+    extension.add_argument("--plan", type=Path)
+    extension.add_argument("--manifest", type=Path)
+    extension.add_argument("--output-root", type=Path)
     gateway = commands.add_parser("gateway", help="Verify Paper reading evidence without login or orders")
     gateway_commands = gateway.add_subparsers(dest="operation", required=True)
     verify = gateway_commands.add_parser("verify", help="Check Paper account prefix, contracts and optional history")
@@ -100,7 +108,11 @@ def main(argv: list[str] | None = None) -> int:
             value = envelope(args.action)
         else:
             config = load_config(args.config)
-            if args.action == "observe":
+            if args.action == "daily-extension":
+                from .daily_extension import execute
+
+                value = execute(args.operation, config, spec=args.spec, base_manifest=args.base_manifest, plan=args.plan, manifest=args.manifest, output=args.output_root)
+            elif args.action == "observe":
                 from .observe import execute
 
                 value = execute(args.operation, config, args.registry_root, spec=args.spec, manifest=args.manifest)
