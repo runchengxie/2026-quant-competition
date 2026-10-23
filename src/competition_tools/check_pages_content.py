@@ -66,6 +66,7 @@ class _PageMetadata(HTMLParser):
         self.dashboard_facts: list[str | None] = []
         self.dex_facts: list[str | None] = []
         self.controls_facts: list[str | None] = []
+        self.robustness_facts: list[str | None] = []
         self.readiness_facts: list[str | None] = []
         self.ids: set[str] = set()
 
@@ -79,6 +80,8 @@ class _PageMetadata(HTMLParser):
             self.dex_facts.append(attributes.get("data-dex-facts"))
         if "data-controls-facts" in attributes:
             self.controls_facts.append(attributes.get("data-controls-facts"))
+        if "data-robustness-facts" in attributes:
+            self.robustness_facts.append(attributes.get("data-robustness-facts"))
         if "data-readiness-facts" in attributes:
             self.readiness_facts.append(attributes.get("data-readiness-facts"))
         if ablation_id := attributes.get("data-ablation-id"):
@@ -127,6 +130,11 @@ def _allowed_source(relative_path: PurePosixPath) -> bool:
         "src/data/real-data-series.v1.json",
         "src/data/dex-factor-readiness.v1.json",
         "src/data/strategy-controls.v1.json",
+        "src/data/strategy-robustness.v1.json",
+        "src/scripts/robustness-state.mjs",
+        "src/scripts/robustness-charts.mjs",
+        "tests/robustness-state.test.mjs",
+        "tests/robustness.spec.mjs",
         "src/data/strategy-readiness.v1.json",
         "src/scripts/strategy-controls-charts.mjs",
         "src/scripts/strategy-controls-state.mjs",
@@ -402,6 +410,28 @@ def check_site(source_dir: Path, built_dir: Path) -> list[str]:
                     errors.append("controls facts differ from reviewed source snapshot")
         except (OSError, ValueError, TypeError, KeyError, AttributeError):
             errors.append("invalid public controls facts or output")
+    robustness_path = source_dir / "src/data/strategy-robustness.v1.json"
+    if robustness_path.is_file():
+        from competition_tools.evaluation.robustness.publication import (
+            validate_public_robustness,
+        )
+
+        try:
+            robustness = validate_public_robustness(
+                json.loads(robustness_path.read_text(encoding="utf-8"))
+            )
+            for relative in ("strategies/index.html", "zh-CN/strategies/index.html"):
+                metadata = _PageMetadata()
+                metadata.feed((built_dir / relative).read_text(encoding="utf-8"))
+                if (
+                    len(metadata.robustness_facts) != 1
+                    or json.loads(metadata.robustness_facts[0]) != robustness
+                ):
+                    errors.append(
+                        "robustness facts differ from reviewed source snapshot"
+                    )
+        except (OSError, ValueError, TypeError, KeyError, AttributeError):
+            errors.append("invalid public robustness facts or output")
     readiness_path = source_dir / "src/data/strategy-readiness.v1.json"
     if readiness_path.is_file():
         from competition_tools.evaluation.research_readiness import (
@@ -450,6 +480,9 @@ def _validate_documentation(
             "strategy-controls",
             "execution-evidence",
             "observation-registry",
+            "strategy-robustness",
+            "data-refresh",
+            "native-process-diagnostics",
         )
     }
     if "strategies/index.html" in output_paths:

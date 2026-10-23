@@ -275,7 +275,10 @@
       "strategies": "Strategy guide",
       "strategy-controls": "Strategy controls",
       "execution-evidence": "US execution evidence",
-      "observation-registry": "Manual observation registry"
+      "observation-registry": "Manual observation registry",
+      "strategy-robustness": "Robustness checks",
+      "data-refresh": "Fresh data and observations",
+      "native-process-diagnostics": "Synthetic process timing"
     },
     "summaries": {
       "architecture": "Responsibilities, package boundaries and execution contracts.",
@@ -285,7 +288,10 @@
       "strategies": "Signals, fixed pools, failure cases, costs and reproduction.",
       "strategy-controls": "Fixed comparisons, verification and publication status.",
       "execution-evidence": "What daily caches still need before next-session replay.",
-      "observation-registry": "Freeze candidates and preserve a continuous manual account."
+      "observation-registry": "Freeze candidates and preserve a continuous manual account.",
+      "strategy-robustness": "US exclusions, recomputed crypto fees and ex-post volume checks.",
+      "data-refresh": "Bounded request plans, fresh warmup and per-market protocol handoff.",
+      "native-process-diagnostics": "Separate synthetic startup, exit and timeout evidence."
     }
   },
   "dashboard": {
@@ -757,5 +763,86 @@
         "Original study"
       ]
     }
+  },
+  "robustness": {
+    "eyebrow": "NEW / ROBUSTNESS CHECKS",
+    "title": "What do the returns depend on?",
+    "intro": "114 fixed historical checks, with a separate cash account in every window. These are sensitivity checks of an already inspected sample.",
+    "headlines": {
+      "US": {
+        "title": "US returns are sensitive to a few stocks",
+        "body": "Removing NVDA, GOOGL and META lowered returns in most windows and reduced drawdown."
+      },
+      "crypto": {
+        "title": "The crypto edge is thin at higher costs",
+        "body": "At 50 bps one-way, the trend rule beat its matched-exposure control in fewer than half the windows."
+      }
+    },
+    "median": "Median window return change",
+    "higher": "Higher return",
+    "lower": "Lower drawdown",
+    "windows": "Completed / requested windows",
+    "pp": "pp",
+    "versus": "Compared with",
+    "baselineUS": "the original ten-stock monthly equal-weight pool",
+    "baselineCrypto": "equal weight with the same lagged target exposure",
+    "cost": "One-way total cost",
+    "requested": "Requested",
+    "completed": "Completed",
+    "blocked": "Blocked",
+    "market": "Market",
+    "markets": {
+      "US": "US stocks",
+      "crypto": "Crypto"
+    },
+    "fee": "Cost (bps)",
+    "window": "Window",
+    "allWindows": "All independent windows",
+    "selected": "{count} results selected",
+    "methods": {
+      "exclude_nvda": "Without NVDA",
+      "exclude_three": "Without NVDA, GOOGL and META",
+      "fixed_six": "Fixed six-stock subset",
+      "existing_eight": "Existing eight-coin pool",
+      "trend_vs_matched": "Trend / matched exposure",
+      "trend200_vol40_strict": "Trend with strict volatility scaling",
+      "ew_trend_gross_matched": "Matched-exposure equal weight"
+    },
+    "charts": {
+      "paired": "Median return change against the control",
+      "windows": "Return change in each independent window",
+      "fees": "Cost comparison across all tested fees",
+      "capacity": "Crypto accounts exceeding the volume threshold"
+    },
+    "limits": "These checks do not establish an untouched out-of-sample edge or executable fills. Windows are not joined into one portfolio curve.",
+    "guide": "Methods and full interpretation",
+    "explore": "Explore the new checks",
+    "table": "All requested results and failures",
+    "columns": {
+      "method": "Method",
+      "window": "Window",
+      "cost": "Cost (bps)",
+      "returnValue": "Net return",
+      "drawdown": "Max drawdown",
+      "turnover": "Cumulative turnover",
+      "status": "Status"
+    },
+    "status": {
+      "completed": "Completed",
+      "blocked": "Blocked"
+    },
+    "capacityTitle": "How large are the simulated trades?",
+    "capacityBody": "Crypto only. Reconstructed trades are compared with final daily base-asset volume after the fact, across all 48 replays. This is not decision-time information or proof of order execution.",
+    "notional": "Initial notional (USDT)",
+    "threshold": "Daily volume threshold",
+    "capacitySummary": "{breaches} / {accounts} accounts exceed the threshold. Missing-volume accounts: {missing}.",
+    "volumeLimit": "At 1,000,000 USDT, some historical accounts exceed the selected volume threshold. Spread, order-book depth and maker-fill evidence remain unavailable.",
+    "readiness": "New observations have not started",
+    "readinessBody": "Request plans are prepared. No new market data were downloaded in this stage; accepted new observations remain {observations}.",
+    "dataGuide": "Data refresh and observation steps",
+    "provenance": "Source, assumptions and complete aggregate artifact",
+    "artifact": "View the complete reviewed aggregate JSON",
+    "notAvailable": "Unavailable",
+    "loadError": "Charts could not load. The reviewed table remains available."
   }
 }

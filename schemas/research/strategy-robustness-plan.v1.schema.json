@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "frozen_at",
+    "spec",
+    "catalog_sha256",
+    "source_snapshot",
+    "code_identity",
+    "budget",
+    "jobs",
+    "plan_sha256"
+  ],
+  "properties": {
+    "schema": {
+      "const": "competition.strategy_robustness_plan.v1"
+    },
+    "frozen_at": {
+      "type": "string"
+    },
+    "spec": {
+      "type": "object"
+    },
+    "catalog_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "source_snapshot": {
+      "type": "object"
+    },
+    "code_identity": {
+      "type": "object"
+    },
+    "budget": {
+      "type": "object"
+    },
+    "jobs": {
+      "type": "array",
+      "minItems": 114,
+      "maxItems": 114
+    },
+    "plan_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

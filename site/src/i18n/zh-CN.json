@@ -275,7 +275,10 @@
       "strategies": "策略详解",
       "strategy-controls": "策略对照实验",
       "execution-evidence": "美股成交证据",
-      "observation-registry": "手动观察登记"
+      "observation-registry": "手动观察登记",
+      "strategy-robustness": "收益依赖哪些条件",
+      "data-refresh": "补数据与新观察",
+      "native-process-diagnostics": "合成进程计时"
     },
     "summaries": {
       "architecture": "职责划分、包边界和执行契约。",
@@ -285,7 +288,10 @@
       "strategies": "信号、固定资产池、失效条件、费用与复现方法。",
       "strategy-controls": "固定规则的比较、核验与发布状态。",
       "execution-evidence": "日线缓存接入下一交易日回放前，还缺哪些证据。",
-      "observation-registry": "冻结候选，并保留连续的手动观察账户。"
+      "observation-registry": "冻结候选，并保留连续的手动观察账户。",
+      "strategy-robustness": "美股移除对照、加密费用回放与事后成交量检查。",
+      "data-refresh": "有界请求清单、新鲜预热数据与分市场协议交接。",
+      "native-process-diagnostics": "分别记录合成进程的启动、退出和超时。"
     }
   },
   "dashboard": {
@@ -757,5 +763,86 @@
         "原始研究"
       ]
     }
+  },
+  "robustness": {
+    "eyebrow": "新增 / 稳健性检查",
+    "title": "收益依赖哪些条件？",
+    "intro": "114 项固定的历史对照，每个窗口独立从现金开始。这是对已经看过的历史样本做敏感性检查。",
+    "headlines": {
+      "US": {
+        "title": "美股收益对少数股票较敏感",
+        "body": "移除 NVDA、GOOGL 和 META 后，多数窗口的收益下降，回撤也变小。"
+      },
+      "crypto": {
+        "title": "加密策略的优势对费用很敏感",
+        "body": "单边费用升至 50 bps 后，趋势规则赢过同敞口对照的窗口不到一半。"
+      }
+    },
+    "median": "窗口收益差的中位数",
+    "higher": "收益更高",
+    "lower": "回撤更小",
+    "windows": "完成／计划窗口",
+    "pp": "个百分点",
+    "versus": "对照",
+    "baselineUS": "原来的十只股票月度等权组合",
+    "baselineCrypto": "使用相同滞后目标敞口的等权组合",
+    "cost": "单边总费用",
+    "requested": "计划回放",
+    "completed": "已完成",
+    "blocked": "未完成",
+    "market": "市场",
+    "markets": {
+      "US": "美股",
+      "crypto": "数字货币"
+    },
+    "fee": "费用（bps）",
+    "window": "窗口",
+    "allWindows": "全部独立窗口",
+    "selected": "已选择 {count} 项结果",
+    "methods": {
+      "exclude_nvda": "移除 NVDA",
+      "exclude_three": "移除 NVDA、GOOGL、META",
+      "fixed_six": "固定六只股票",
+      "existing_eight": "既有八币种池",
+      "trend_vs_matched": "趋势与同敞口对照",
+      "trend200_vol40_strict": "趋势与严格波动率缩放",
+      "ew_trend_gross_matched": "同目标敞口等权"
+    },
+    "charts": {
+      "paired": "相对对照的收益差中位数",
+      "windows": "每个独立窗口的收益差",
+      "fees": "全部已测费用下的比较",
+      "capacity": "超过成交量比例阈值的加密账户数"
+    },
+    "limits": "这些检查不能证明未经挑选的样本外优势，也不能证明能够成交。不同窗口不会拼接成一条组合收益曲线。",
+    "guide": "方法与完整解读",
+    "explore": "查看本次对照",
+    "table": "全部计划结果与失败项",
+    "columns": {
+      "method": "方法",
+      "window": "窗口",
+      "cost": "费用（bps）",
+      "returnValue": "净收益",
+      "drawdown": "最大回撤",
+      "turnover": "累计换手",
+      "status": "状态"
+    },
+    "status": {
+      "completed": "已完成",
+      "blocked": "未完成"
+    },
+    "capacityTitle": "模拟交易规模有多大？",
+    "capacityBody": "仅针对加密回放。这里将 48 个回放账户的交易数量与事后得到的当日基础币成交量比较，不能把它当作决策时已知的信息或能够成交的证明。",
+    "notional": "初始规模（USDT）",
+    "threshold": "当日成交量比例阈值",
+    "capacitySummary": "{breaches} / {accounts} 个账户超过阈值，成交量不完整的账户有 {missing} 个。",
+    "volumeLimit": "初始规模为 1,000,000 USDT 时，部分历史账户会超过所选成交量阈值。目前仍缺价差、订单簿深度和挂单成交证据。",
+    "readiness": "尚未开始真正的新观察",
+    "readinessBody": "请求清单已准备好，本阶段没有下载新行情。已接受的新观察仍为 {observations} 条。",
+    "dataGuide": "补数据与开始观察的步骤",
+    "provenance": "来源、假设与完整汇总产物",
+    "artifact": "查看完整的已审查汇总 JSON",
+    "notAvailable": "暂无数据",
+    "loadError": "图表未能加载，仍可查看已审查的结果表格。"
   }
 }

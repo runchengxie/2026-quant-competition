@@ -1,3 +1,9 @@
+import { Content as robustnessEn } from "../../../docs/research/strategy-robustness.md";
+import { Content as robustnessZh } from "../../../docs/research/strategy-robustness.zh-CN.md";
+import { Content as refreshEn } from "../../../docs/research/data-refresh.md";
+import { Content as refreshZh } from "../../../docs/research/data-refresh.zh-CN.md";
+import { Content as nativeEn } from "../../../docs/operations/native-process-diagnostics.md";
+import { Content as nativeZh } from "../../../docs/operations/native-process-diagnostics.zh-CN.md";
 import { Content as architectureEn } from "../../../docs/architecture.md";
 import { Content as architectureZh } from "../../../docs/architecture.zh-CN.md";
 import { Content as quickstartEn } from "../../../docs/operations/team-quickstart.md";
@@ -17,6 +23,12 @@ import { Content as observationEn } from "../../../docs/research/observation-reg
 import { Content as observationZh } from "../../../docs/research/observation-registry.zh-CN.md";
 
 const content={
+  "strategy-robustness.en":robustnessEn,
+  "strategy-robustness.zh-CN":robustnessZh,
+  "data-refresh.en":refreshEn,
+  "data-refresh.zh-CN":refreshZh,
+  "native-process-diagnostics.en":nativeEn,
+  "native-process-diagnostics.zh-CN":nativeZh,
   "architecture.en":architectureEn,"architecture.zh-CN":architectureZh,
   "quickstart.en":quickstartEn,"quickstart.zh-CN":quickstartZh,
   "datasets.en":datasetsEn,"datasets.zh-CN":datasetsZh,

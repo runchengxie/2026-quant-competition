@@ -20,6 +20,6 @@ jobs:
       - name: Install locked test dependencies
         run: uv sync --locked --extra test --extra ibkr
       - name: Check launcher source
-        run: uv run --locked ruff check src/competition_tools/gateway_launcher.py tests/competition_tools/test_gateway_launcher.py tests/operations/test_gateway_powershell.py
+        run: uv run --locked ruff check src/competition_tools/gateway_launcher.py src/competition_tools/check_native_process_delivery.py tests/competition_tools/test_gateway_launcher.py tests/operations/test_gateway_powershell.py tests/operations/test_native_process_diagnostics.py
       - name: Run offline Python and native PowerShell tests
-        run: uv run --locked pytest -q tests/competition_tools/test_gateway_launcher.py tests/operations/test_gateway_powershell.py
+        run: uv run --locked pytest -q tests/competition_tools/test_gateway_launcher.py tests/operations/test_gateway_powershell.py tests/operations/test_native_process_diagnostics.py

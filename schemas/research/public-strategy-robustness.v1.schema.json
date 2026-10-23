@@ -1,0 +1,350 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "as_of",
+    "blockers",
+    "capacity",
+    "code_commit",
+    "coverage",
+    "crypto_pairs",
+    "plan_sha256",
+    "restrictions",
+    "results",
+    "schema",
+    "status",
+    "us_pairs"
+  ],
+  "properties": {
+    "code_commit": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "plan_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requested_jobs",
+        "completed_jobs",
+        "blocked_jobs",
+        "requested_capacity_checks",
+        "completed_capacity_checks"
+      ],
+      "properties": {
+        "requested_jobs": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 114
+        },
+        "completed_jobs": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 114
+        },
+        "blocked_jobs": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 114
+        },
+        "requested_capacity_checks": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 288
+        },
+        "completed_capacity_checks": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 288
+        }
+      }
+    },
+    "us_pairs": {
+      "type": "array"
+    },
+    "crypto_pairs": {
+      "type": "array"
+    },
+    "status": {
+      "enum": [
+        "measured",
+        "readiness_only"
+      ]
+    },
+    "blockers": {
+      "type": "array"
+    },
+    "schema": {
+      "const": "competition.public_strategy_robustness.v1"
+    },
+    "restrictions": {
+      "const": [
+        "retrospective_diagnostic",
+        "fixed_current_pools",
+        "selection_bias",
+        "independent_cash_windows",
+        "lagged_close_proxy",
+        "no_terminal_liquidation",
+        "US_split_adjusted_not_total_return",
+        "USDT_not_USD",
+        "final_volume_ex_post_only",
+        "no_spread_or_orderbook_evidence",
+        "not_execution_authorization"
+      ]
+    },
+    "as_of": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "results": {
+      "type": "array",
+      "maxItems": 114,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "job_id",
+          "market",
+          "arm_id",
+          "pool_id",
+          "fee_bps",
+          "start",
+          "end",
+          "status",
+          "reason",
+          "metrics",
+          "benchmark",
+          "baseline_net_return"
+        ],
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "market": {
+            "enum": [
+              "US",
+              "crypto"
+            ]
+          },
+          "arm_id": {
+            "type": "string"
+          },
+          "pool_id": {
+            "type": "string"
+          },
+          "fee_bps": {
+            "type": "integer",
+            "enum": [
+              20,
+              40,
+              35,
+              50
+            ]
+          },
+          "start": {
+            "type": "string"
+          },
+          "end": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "completed",
+              "blocked"
+            ]
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "metrics": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "cost_drag",
+                  "flat_days",
+                  "gross_return",
+                  "max_drawdown",
+                  "mean_daily_turnover",
+                  "mean_exposure",
+                  "net_return",
+                  "periods",
+                  "sharpe",
+                  "total_costs",
+                  "turnover",
+                  "volatility"
+                ],
+                "properties": {
+                  "sharpe": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "mean_daily_turnover": {
+                    "type": "number"
+                  },
+                  "turnover": {
+                    "type": "number"
+                  },
+                  "net_return": {
+                    "type": "number"
+                  },
+                  "flat_days": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "periods": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "gross_return": {
+                    "type": "number"
+                  },
+                  "cost_drag": {
+                    "type": "number"
+                  },
+                  "total_costs": {
+                    "type": "number"
+                  },
+                  "max_drawdown": {
+                    "type": "number"
+                  },
+                  "volatility": {
+                    "type": "number"
+                  },
+                  "mean_exposure": {
+                    "type": "number"
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "benchmark": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "cost_drag",
+                  "flat_days",
+                  "gross_return",
+                  "max_drawdown",
+                  "mean_daily_turnover",
+                  "mean_exposure",
+                  "net_return",
+                  "periods",
+                  "sharpe",
+                  "total_costs",
+                  "turnover",
+                  "volatility"
+                ],
+                "properties": {
+                  "sharpe": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "mean_daily_turnover": {
+                    "type": "number"
+                  },
+                  "turnover": {
+                    "type": "number"
+                  },
+                  "net_return": {
+                    "type": "number"
+                  },
+                  "flat_days": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "periods": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "gross_return": {
+                    "type": "number"
+                  },
+                  "cost_drag": {
+                    "type": "number"
+                  },
+                  "total_costs": {
+                    "type": "number"
+                  },
+                  "max_drawdown": {
+                    "type": "number"
+                  },
+                  "volatility": {
+                    "type": "number"
+                  },
+                  "mean_exposure": {
+                    "type": "number"
+                  }
+                }
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "baseline_net_return": {
+            "type": [
+              "number",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "capacity": {
+      "type": "array"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "measured"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "results": {
+            "minItems": 114
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "results": {
+            "maxItems": 0
+          },
+          "us_pairs": {
+            "maxItems": 0
+          },
+          "crypto_pairs": {
+            "maxItems": 0
+          },
+          "capacity": {
+            "maxItems": 0
+          }
+        }
+      }
+    }
+  ]
+}

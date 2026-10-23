@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "accepted_research",
+    "catalog_sha256",
+    "code_commit",
+    "expected_leaf_sha256",
+    "fee_bps",
+    "input_job",
+    "job_id",
+    "market",
+    "parent_result",
+    "parent_result_sha256",
+    "plan_sha256",
+    "pool_id",
+    "products",
+    "schema"
+  ],
+  "properties": {
+    "accepted_research": {
+      "const": false
+    },
+    "catalog_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "code_commit": {
+      "type": "string"
+    },
+    "expected_leaf_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "fee_bps": {
+      "type": "integer",
+      "enum": [
+        20,
+        40,
+        35,
+        50
+      ]
+    },
+    "input_job": {
+      "type": "object"
+    },
+    "job_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "market": {
+      "type": "string"
+    },
+    "parent_result": {
+      "type": "string"
+    },
+    "parent_result_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "plan_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "pool_id": {
+      "type": "string"
+    },
+    "products": {
+      "type": "array"
+    },
+    "schema": {
+      "const": "competition.strategy_robustness_job.v1"
+    }
+  }
+}

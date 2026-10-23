@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "job_id",
+    "plan_sha256",
+    "market",
+    "pool_id",
+    "fee_bps",
+    "expected_leaf_sha256",
+    "accepted_research",
+    "schema",
+    "status",
+    "metrics",
+    "benchmark",
+    "diagnostics",
+    "artifact"
+  ],
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "plan_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "market": {
+      "type": "string"
+    },
+    "pool_id": {
+      "type": "string"
+    },
+    "fee_bps": {
+      "type": "integer",
+      "enum": [
+        20,
+        40,
+        35,
+        50
+      ]
+    },
+    "expected_leaf_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "accepted_research": {
+      "const": false
+    },
+    "schema": {
+      "const": "competition.strategy_robustness_result.v1"
+    },
+    "status": {
+      "type": "string"
+    },
+    "metrics": {
+      "type": "object"
+    },
+    "benchmark": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "diagnostics": {
+      "type": "object"
+    },
+    "artifact": {
+      "type": "object"
+    }
+  }
+}

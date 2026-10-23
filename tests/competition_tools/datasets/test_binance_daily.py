@@ -10,7 +10,9 @@ import pytest
 
 def sample(day="2025-01-01", *, body=None, member=None):
     name = f"BTCUSDT-1d-{day}"
-    timestamp = int(datetime.fromisoformat(day).replace(tzinfo=timezone.utc).timestamp())
+    timestamp = int(
+        datetime.fromisoformat(day).replace(tzinfo=timezone.utc).timestamp()
+    )
     timestamp *= 1_000_000 if day >= "2025-01-01" else 1_000
     line = body or f"{timestamp},1,2,0.5,1.5,10,0,15,4,1,2,0\n"
     stream = io.BytesIO()
@@ -29,7 +31,9 @@ def test_daily_units_and_exact_date(day):
     ]
 
 
-@pytest.mark.parametrize("kind", ["date", "duplicate", "nonfinite", "path", "size", "checksum", "product"])
+@pytest.mark.parametrize(
+    "kind", ["date", "duplicate", "nonfinite", "path", "size", "checksum", "product"]
+)
 def test_daily_invalid_payloads(kind):
     from competition_tools.datasets.binance_daily import normalize_daily_archive
 

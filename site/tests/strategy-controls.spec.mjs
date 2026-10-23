@@ -11,7 +11,7 @@ test('dashboard headlines remain explicit and readable on desktop and mobile',as
    await expect(panel.locator('[data-controls-highlight]')).toHaveCount(2);
    const crypto=JSON.parse(await panel.locator('[data-controls-highlight=crypto]').getAttribute('data-highlight-facts'));
    expect([crypto.feeBps,crypto.windows,crypto.returnWins,crypto.drawdownWins]).toEqual([25,12,7,4]);
-   if(route)await expect(page.locator('.section-nav a')).toHaveCount(4);
+   if(route)await expect(page.locator('.section-nav a')).toHaveCount(5);
    else{
     await expect(panel.locator('canvas')).toHaveCount(0);
     expect(await panel.evaluate(n=>n.hasAttribute('data-controls-facts'))).toBe(false);

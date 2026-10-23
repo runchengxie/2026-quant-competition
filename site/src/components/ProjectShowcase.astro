@@ -6,6 +6,7 @@ import ValidationResults from "./ValidationResults.astro";
 import ExpansionResults from "./ExpansionResults.astro";
 import AblationResults from "./AblationResults.astro";
 import StrategyControls from "./StrategyControls.astro";
+import RobustnessResults from "./RobustnessResults.astro";
 import StudyResults from "./StudyResults.astro";
 import ResearchTakeaways from "./ResearchTakeaways.astro";
 import ResearchSummary from "./ResearchSummary.astro";
@@ -39,8 +40,8 @@ const guide = (directory: string) => file(`research/${directory}/README${locale 
     <p class="intro">{view==='home'?t.hero.intro:t.pages.intros[view]}</p><p class="hero-note">{t.hero.note}</p>
   </div></header>
   <main class:list={['showcase-main',`view-${view}`]}>
-    {view==='home'&&<><StrategyControls locale={locale} compact /><p class="previous-series">{t.strategyControls.headlines.previous}</p><ResearchTakeaways locale={locale} /><details class="legacy-links"><summary>{t.pages.oldLinks}</summary>{Object.entries(legacy).map(([id,target])=><a data-legacy-link={id} href={`${prefix}${target}`}>{id}</a>)}</details></>}
-    {view==='strategies'&&<><nav class="section-nav" aria-label={t.strategyControls.headlines.navigation}>{['strategy-controls','ablation','performance','study'].map((id,index)=><a href={`#${id}`}><span>0{index+1}</span>{t.strategyControls.headlines.sections[index]}</a>)}</nav><StrategyControls locale={locale} /><AblationResults locale={locale} /><PerformanceDashboard locale={locale} /><StudyResults locale={locale} /></>}
+    {view==='home'&&<><RobustnessResults locale={locale} compact /><StrategyControls locale={locale} compact /><p class="previous-series">{t.strategyControls.headlines.previous}</p><ResearchTakeaways locale={locale} /><details class="legacy-links"><summary>{t.pages.oldLinks}</summary>{Object.entries(legacy).map(([id,target])=><a data-legacy-link={id} href={`${prefix}${target}`}>{id}</a>)}</details></>}
+    {view==='strategies'&&<><nav class="section-nav" aria-label={t.strategyControls.headlines.navigation}>{['robustness','strategy-controls','ablation','performance','study'].map((id,index)=><a href={`#${id}`}><span>0{index+1}</span>{index===0?t.robustness.title:t.strategyControls.headlines.sections[index-1]}</a>)}</nav><RobustnessResults locale={locale} /><StrategyControls locale={locale} /><AblationResults locale={locale} /><PerformanceDashboard locale={locale} /><StudyResults locale={locale} /></>}
     {view==='factors'&&<FactorResearch locale={locale} />}
     {view==='guide'&&<>    <section id="evidence" class="evidence-section">
       <div class="section-heading"><h2>{t.evidence.title}</h2><p>{t.evidence.intro}</p></div>

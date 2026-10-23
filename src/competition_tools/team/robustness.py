@@ -10,6 +10,14 @@ from .processes import envelope
 
 
 def execute(config, spec_path: Path, output_root: Path) -> dict:
-    freeze_robustness(read_json(spec_path), output_root, code_identity=source_identity(Path(__file__).resolve().parents[3]))
+    freeze_robustness(
+        read_json(spec_path),
+        output_root,
+        code_identity=source_identity(Path(__file__).resolve().parents[3]),
+    )
     result = run_robustness(config, output_root / "plan.json")
-    return envelope("robustness", issues=[] if result["status"] == "completed" else ["ROBUSTNESS_PARTIAL"], projects=[result])
+    return envelope(
+        "robustness",
+        issues=[] if result["status"] == "completed" else ["ROBUSTNESS_PARTIAL"],
+        projects=[result],
+    )

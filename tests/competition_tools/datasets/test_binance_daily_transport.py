@@ -11,11 +11,23 @@ def test_absolute_worker_timeout():
 
     started = time.monotonic()
     with pytest.raises(TimeoutError):
-        run_worker([sys.executable, "-c", "import time; time.sleep(30)"], timeout=0.1, max_bytes=10)
+        run_worker(
+            [sys.executable, "-c", "import time; time.sleep(30)"],
+            timeout=0.1,
+            max_bytes=10,
+        )
     assert time.monotonic() - started < 10
 
 
-@pytest.mark.parametrize("url", ["http://data.binance.vision/x", "https://evil.test/x", "https://user:secret@data.binance.vision/x", "https://data.binance.vision/../private"])
+@pytest.mark.parametrize(
+    "url",
+    [
+        "http://data.binance.vision/x",
+        "https://evil.test/x",
+        "https://user:secret@data.binance.vision/x",
+        "https://data.binance.vision/../private",
+    ],
+)
 def test_transport_rejects_non_allowlisted_urls_without_starting_worker(url):
     from competition_tools.datasets.binance_daily_transport import DailyTransport
 

@@ -42,13 +42,15 @@ def capacity_diagnostics(job: dict, periods: dict, volumes: dict | None) -> dict
     if len(periods["net"]) != len(dates) - 1 or set(closes) != set(products):
         raise ValueError("INVALID_CAPACITY_GRID")
     volumes = load_volumes(job, dates) if volumes is None else volumes
-    previous = {p: 0. for p in products}
-    before, trades = 1., []
+    previous = {p: 0.0 for p in products}
+    before, trades = 1.0, []
     for i, period in enumerate(periods["net"]):
         quantities = {p: period["positions"][p] / closes[p][i + 1] for p in products}
         changes = {p: abs(quantities[p] - previous[p]) for p in products}
         value = sum(changes[p] * closes[p][i] for p in products)
-        if not math.isfinite(value) or not math.isclose(value, period["turnover"] * before, abs_tol=1e-10, rel_tol=1e-10):
+        if not math.isfinite(value) or not math.isclose(
+            value, period["turnover"] * before, abs_tol=1e-10, rel_tol=1e-10
+        ):
             raise ValueError("CAPACITY_TURNOVER_MISMATCH")
         trades.append(changes)
         previous, before = quantities, period["equity"]
@@ -62,13 +64,31 @@ def capacity_diagnostics(job: dict, periods: dict, volumes: dict | None) -> dict
                     continue
                 available = volumes.get(p, [])
                 volume = available[i] if i < len(available) else None
-                if type(volume) not in (int, float) or not math.isfinite(volume) or volume <= 0:
+                if (
+                    type(volume) not in (int, float)
+                    or not math.isfinite(volume)
+                    or volume <= 0
+                ):
                     unavailable = True
                 else:
                     day_ratios.append(change * notional / volume)
             if unavailable:
                 missing += 1
-            ratios.append(max(day_ratios, default=0.) if not unavailable else None)
-        for threshold in (.01, .05):
-            checks.append(dict(job_id=job["job_id"], notional_usdt=notional, threshold=threshold, status="incomplete_volume" if missing else "diagnostic_only", max_participation=max((r for r in ratios if r is not None), default=None), breach_days=sum(r is not None and r > threshold for r in ratios), unavailable_days=missing, ex_post=True, execution_eligible=False))
+            ratios.append(max(day_ratios, default=0.0) if not unavailable else None)
+        for threshold in (0.01, 0.05):
+            checks.append(
+                dict(
+                    job_id=job["job_id"],
+                    notional_usdt=notional,
+                    threshold=threshold,
+                    status="incomplete_volume" if missing else "diagnostic_only",
+                    max_participation=max(
+                        (r for r in ratios if r is not None), default=None
+                    ),
+                    breach_days=sum(r is not None and r > threshold for r in ratios),
+                    unavailable_days=missing,
+                    ex_post=True,
+                    execution_eligible=False,
+                )
+            )
     return dict(schema="competition.strategy_robustness_capacity.v1", checks=checks)

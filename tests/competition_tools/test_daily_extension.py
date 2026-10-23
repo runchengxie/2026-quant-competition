@@ -15,7 +15,20 @@ def test_daily_extension_help_is_configuration_free(capsys):
 
 
 def test_prepare_missing_config_is_sanitized(tmp_path, capsys):
-    code = main(["daily-extension", "prepare", "--config", str(tmp_path / "missing"), "--spec", str(tmp_path / "spec"), "--base-manifest", str(tmp_path / "parent"), "--output-root", str(tmp_path / "out")])
+    code = main(
+        [
+            "daily-extension",
+            "prepare",
+            "--config",
+            str(tmp_path / "missing"),
+            "--spec",
+            str(tmp_path / "spec"),
+            "--base-manifest",
+            str(tmp_path / "parent"),
+            "--output-root",
+            str(tmp_path / "out"),
+        ]
+    )
     assert code == 2
     value = json.loads(capsys.readouterr().out)
     assert value["status"] == "blocked"

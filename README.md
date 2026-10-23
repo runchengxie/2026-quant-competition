@@ -14,6 +14,7 @@ New here? Start with an offline example. It uses made-up data, runs on your comp
 | Try a strategy on past prices | [Research examples](research/README.md) |
 | Prepare a dataset | [Data preparation](docs/research/datasets.md) |
 | Understand the existing results | [Research results and limitations](docs/research/strategy-validation-2026-10-19.md) |
+| Inspect the latest sensitivity checks | [Robustness results](docs/research/strategy-robustness.md) and [fresh-data steps](docs/research/data-refresh.md) |
 | Check how cash, shares and fees affect a result | [Accounting comparison](docs/research/accounting-comparison.md) |
 
 Trying a strategy on past prices is called a backtest. It helps you inspect the strategy's behavior, but it cannot promise future returns.

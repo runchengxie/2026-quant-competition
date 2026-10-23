@@ -66,3 +66,4 @@ jobs:
       - name: Verify independent installed synthetic evidence contracts
         run: |
           "$RUNNER_TEMP/evidence-envs/root/bin/python" -m competition_tools.check_strategy_evidence_delivery --config "$RUNNER_TEMP/evidence-team.toml" --output-root "$RUNNER_TEMP/strategy-evidence-contract"
+          "$RUNNER_TEMP/evidence-envs/root/bin/python" -m competition_tools.check_strategy_robustness_delivery --config "$RUNNER_TEMP/evidence-team.toml" --output-root "$RUNNER_TEMP/strategy-robustness-contract"

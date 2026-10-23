@@ -5,6 +5,9 @@ export const documentRoutes = Object.entries({
   study: "docs/research/real-data-study",
   strategies: "docs/research/strategies",
   "strategy-controls": "docs/research/strategy-controls",
+  "strategy-robustness": "docs/research/strategy-robustness",
+  "data-refresh": "docs/research/data-refresh",
+  "native-process-diagnostics": "docs/operations/native-process-diagnostics",
   "execution-evidence": "docs/research/us-execution-evidence",
   "observation-registry": "docs/research/observation-registry",
 }).flatMap(([slug, source]) => ["en", "zh-CN"].map(locale => ({

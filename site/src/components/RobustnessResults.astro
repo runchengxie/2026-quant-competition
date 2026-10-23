@@ -1,0 +1,65 @@
+---
+import snapshot from '../data/strategy-robustness.v1.json';
+import readiness from '../data/strategy-readiness.v1.json';
+import {validateRobustnessSnapshot,robustnessHeadlines,summarizeRobustness} from '../scripts/robustness-state.mjs';
+import en from '../i18n/en.json';
+import zh from '../i18n/zh-CN.json';
+interface Props {locale?:string;compact?:boolean}
+const locale=Astro.props.locale==='zh-CN'?'zh-CN':'en';
+const compact=Astro.props.compact??false;
+const t=(locale==='zh-CN'?zh:en).robustness;
+validateRobustnessSnapshot(snapshot);
+const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+const number=new Intl.NumberFormat(locale,{maximumFractionDigits:2});
+const percent=(n:number)=>number.format(n*100)+'%';
+const change=(n:number|null)=>n===null?t.notAvailable:number.format(n*100)+' '+t.pp;
+const method=(id:string)=>t.methods[id as keyof typeof t.methods]??id;
+const headlines=robustnessHeadlines(snapshot).filter(h=>h.windows);
+const groups=summarizeRobustness(snapshot,{market:'US',feeBps:20});
+---
+<section id="robustness" class:list={['robustness-section',{'robustness-overview':compact}]} data-ready={compact?'static':'pending'} data-robustness-facts={compact?undefined:JSON.stringify(snapshot)}>
+ <p class="eyebrow">{t.eyebrow}</p><h2>{t.title}</h2><p class="robustness-intro">{t.intro}</p>
+ <div class="robustness-headlines">{headlines.map(h=><article data-robustness-headline-facts={JSON.stringify(h)}>
+  <p class="pill">{t.markets[h.market as 'US'|'crypto']}</p><h3>{t.headlines[h.market as 'US'|'crypto'].title}</h3><p>{t.headlines[h.market as 'US'|'crypto'].body}</p>
+  <p class="robustness-value">{change(h.medianReturnChange)}</p><p class="detail">{t.median}</p>
+  <dl><div><dt>{t.higher}</dt><dd>{h.returnWins} / {h.requestedWindows}</dd></div><div><dt>{t.lower}</dt><dd>{h.drawdownWins} / {h.requestedWindows}</dd></div></dl>
+  <p class="detail">{t.versus} {h.market==='US'?t.baselineUS:t.baselineCrypto}<br/>{t.cost} {h.feeBps} bps</p>
+ </article>)}</div>
+ <p class="detail">{t.limits}</p>
+ <div class="robustness-counts">{(['requested','completed','blocked'] as const).map(k=><p><span>{t[k]}</span><strong data-robustness-count={k}>{snapshot.coverage[`${k}_jobs`]}</strong></p>)}</div>
+ {compact?<a href={`${prefix}strategies/#robustness`}>{t.explore} ↗</a>:<>
+  <div class="robustness-filters" data-robustness-filters hidden>
+   <label>{t.market}<select data-robustness-filter="market"><option value="US">{t.markets.US}</option><option value="crypto">{t.markets.crypto}</option></select></label>
+   <label>{t.fee}<select data-robustness-filter="fee"><option value="20">20</option><option value="40">40</option></select></label>
+   <label>{t.window}<select data-robustness-filter="window"><option value="">{t.allWindows}</option></select></label>
+  </div>
+  <p data-robustness-status aria-live="polite">{t.selected.replace('{count}',String(snapshot.coverage.requested_jobs))}</p>
+  <div class="robustness-charts">{(['paired','windows','fees'] as const).map(id=><figure><figcaption>{t.charts[id]}</figcaption><div data-robustness-chart={id} role="img" aria-label={t.charts[id]} /></figure>)}</div>
+  <div class="robustness-scroll"><table><thead><tr>{[t.columns.method,t.fee,t.windows,t.higher,t.lower,t.median].map(label=><th>{label}</th>)}</tr></thead><tbody data-robustness-summary>{groups.map(g=><tr><th>{method(g.poolId)}</th><td>{g.feeBps}</td><td>{g.windows} / {g.requestedWindows}</td><td>{g.returnWins} / {g.requestedWindows}</td><td>{g.drawdownWins} / {g.requestedWindows}</td><td>{change(g.medianReturnChange)}</td></tr>)}</tbody></table></div>
+  <aside class="robustness-capacity" data-robustness-capacity hidden>
+   <h3>{t.capacityTitle}</h3><p>{t.capacityBody}</p>
+   <div class="robustness-filters"><label>{t.notional}<select data-robustness-notional>{[10000,100000,1000000].map(n=><option value={n} selected={n===100000}>{number.format(n)}</option>)}</select></label><label>{t.threshold}<select data-robustness-threshold><option value="0.01">1%</option><option value="0.05">5%</option></select></label></div>
+   <p data-capacity-summary aria-live="polite" />
+   <figure><figcaption>{t.charts.capacity}</figcaption><div data-robustness-chart="capacity" role="img" aria-label={t.charts.capacity} /></figure>
+   <p class="detail">{t.volumeLimit}</p>
+  </aside>
+  <details class="robustness-results"><summary data-robustness-table-summary>{t.table}</summary><div class="robustness-scroll"><table><thead><tr>{[t.market,t.columns.method,t.columns.cost,t.columns.window,t.columns.returnValue,t.columns.drawdown,t.columns.turnover,t.columns.status].map(label=><th>{label}</th>)}</tr></thead><tbody>{snapshot.results.map(r=><tr data-robustness-row={r.job_id}><td>{t.markets[r.market as 'US'|'crypto']}</td><th>{method(r.market==='US'?r.pool_id:r.arm_id)}</th><td>{r.fee_bps}</td><td>{r.start}<br/>{r.end}</td><td>{r.metrics?percent(r.metrics.net_return):t.notAvailable}</td><td>{r.metrics?percent(r.metrics.max_drawdown):t.notAvailable}</td><td>{r.metrics?number.format(r.metrics.turnover)+'×':t.notAvailable}</td><td>{t.status[r.status as 'completed'|'blocked']}{r.reason&&<code>{r.reason}</code>}</td></tr>)}</tbody></table></div></details>
+  <aside class="robustness-next"><h3>{t.readiness}</h3><p>{t.readinessBody.replace('{observations}',String(readiness.observation.observations))}</p><a href={`${prefix}docs/data-refresh/`}>{t.dataGuide} ↗</a></aside>
+  <p><a href={`${prefix}docs/strategy-robustness/`}>{t.guide} ↗</a></p>
+  <details><summary>{t.provenance}</summary><p><code>{snapshot.code_commit}</code><br/><code>{snapshot.plan_sha256}</code></p><p><a href="https://github.com/runchengxie/2026-quant-competition/blob/main/site/src/data/strategy-robustness.v1.json">{t.artifact} ↗</a></p><ul>{snapshot.restrictions.map(r=><li><code>{r}</code></li>)}</ul></details>
+  <script type="application/json" data-robustness-config set:html={JSON.stringify({locale,t}).replace(/</g,'\u003c')} />
+ </>}
+</section>
+<script>
+ const root=document.getElementById('robustness');
+ if(root?.dataset.ready==='pending'){
+  const observer=new IntersectionObserver(async entries=>{
+   if(!entries.some(e=>e.isIntersecting))return;observer.disconnect();
+   try{const {mountRobustness}=await import('../scripts/robustness-charts.mjs');mountRobustness(root);}
+   catch(error){const config=JSON.parse(root.querySelector('[data-robustness-config]')!.textContent!);root.querySelector('[data-robustness-status]')!.textContent=config.t.loadError;root.dataset.ready='error';console.error('Robustness charts could not load',error);}
+  },{rootMargin:'200px'});observer.observe(root);
+ }
+</script>
+<style>
+.robustness-section{border-top:1px solid var(--line);padding-top:1.5rem;margin-bottom:2rem}.robustness-intro{max-width:60rem;color:var(--muted)}.robustness-headlines{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin:1.5rem 0}.robustness-headlines article{border:1px solid var(--line);border-radius:1rem;padding:1.25rem;background:var(--surface)}.robustness-headlines h3{font-size:1.15rem;margin:.7rem 0}.robustness-headlines article>p{margin:.6rem 0}.robustness-headlines .robustness-value{font-size:clamp(1.6rem,3vw,2.1rem);font-weight:700;letter-spacing:-.025em;color:var(--ask)}.robustness-headlines dl{display:flex;gap:2rem;margin:1rem 0}.robustness-headlines dt{font-size:.85rem;color:var(--muted)}.robustness-headlines dd{margin:0;font-size:1.15rem;font-weight:600}.robustness-counts{display:flex;gap:2rem;flex-wrap:wrap}.robustness-counts p{display:grid;margin:.5rem 0 1rem}.robustness-counts span{font-size:.8rem;color:var(--muted)}.robustness-counts strong{font-size:1.35rem}.robustness-filters{display:flex;flex-wrap:wrap;gap:1rem;margin:1rem 0}.robustness-filters[hidden]{display:none}.robustness-filters label{display:grid;gap:.3rem;font-size:.85rem}.robustness-filters select{background:var(--surface);color:var(--ink);border:1px solid var(--line);padding:.55rem;border-radius:.5rem;max-width:100%}.robustness-charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.robustness-charts figure:last-child{grid-column:1/-1}.robustness-section figure{min-width:0;margin:0;padding:1rem;border:1px solid var(--line);border-radius:.8rem;background:var(--surface)}.robustness-section figcaption{font-weight:600;margin-bottom:.5rem}.robustness-section [data-robustness-chart]{height:340px;width:100%;min-width:0;overflow:hidden}.robustness-scroll{overflow-x:auto;margin:1rem 0}.robustness-section table{border-collapse:collapse;width:100%;font-size:.86rem}.robustness-section th,.robustness-section td{border-bottom:1px solid var(--line);padding:.65rem;text-align:left;white-space:nowrap}.robustness-section details{margin:1.5rem 0}.robustness-section summary{cursor:pointer;font-weight:600}.robustness-capacity,.robustness-next{margin:1.5rem 0;padding:1rem;border:1px solid var(--line);border-radius:.8rem;background:var(--surface)}.robustness-capacity[hidden]{display:none}.robustness-section code{overflow-wrap:anywhere;white-space:normal}.robustness-section a{display:inline-block}.robustness-overview .robustness-headlines{margin:1rem 0}@media(max-width:700px){.robustness-headlines,.robustness-charts{grid-template-columns:minmax(0,1fr)}.robustness-charts figure:last-child{grid-column:auto}.robustness-filters label{max-width:100%}.robustness-section [data-robustness-chart]{height:310px}}
+</style>

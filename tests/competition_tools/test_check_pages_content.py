@@ -56,6 +56,31 @@ def test_allows_bilingual_astro_sources_assets_and_build_output(tmp_path):
     assert check_site(source, built) == []
 
 
+def test_robustness_snapshot_requires_exact_bilingual_facts(tmp_path):
+    source, built = make_site_trees(tmp_path)
+    canonical = (
+        Path(__file__).resolve().parents[2]
+        / "site/src/data/strategy-robustness.v1.json"
+    )
+    value = json.loads(canonical.read_text())
+    path = source / "src/data/strategy-robustness.v1.json"
+    path.parent.mkdir()
+    path.write_text(json.dumps(value))
+    for relative in ("strategies/index.html", "zh-CN/strategies/index.html"):
+        target = built / relative
+        target.parent.mkdir(parents=True)
+        target.write_text(
+            '<section data-robustness-facts="'
+            + html.escape(json.dumps(value), quote=True)
+            + '"></section>'
+        )
+    assert check_site(source, built) == []
+    (built / "zh-CN/strategies/index.html").write_text(
+        '<section data-robustness-facts="{}"></section>'
+    )
+    assert any("robustness facts" in issue for issue in check_site(source, built))
+
+
 def test_dex_readiness_requires_exact_bilingual_output(tmp_path):
     source, built = make_site_trees(tmp_path)
     canonical = (
@@ -235,6 +260,9 @@ def test_documentation_routes_validate_locale_links_and_reject_unlisted_pages(tm
             "strategy-controls",
             "execution-evidence",
             "observation-registry",
+            "strategy-robustness",
+            "data-refresh",
+            "native-process-diagnostics",
         ):
             suffix = f"docs/{slug + '/' if slug else ''}"
             p = built / prefix / suffix / "index.html"

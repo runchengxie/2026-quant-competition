@@ -15,15 +15,19 @@ def validate_url(url: str) -> None:
     for product in PRODUCTS:
         prefix = product + "-1d-"
         if name.startswith(prefix) and name.endswith(".zip"):
-            if stem == daily_archive_url(product, name[len(prefix):-4]):
+            if stem == daily_archive_url(product, name[len(prefix) : -4]):
                 return
     raise ValueError("UNAPPROVED_DAILY_URL")
 
 
-def run_worker(command: list[str], *, timeout: float, max_bytes: int) -> tuple[int, bytes]:
+def run_worker(
+    command: list[str], *, timeout: float, max_bytes: int
+) -> tuple[int, bytes]:
     if timeout <= 0 or max_bytes <= 0:
         raise ValueError("INVALID_DAILY_TRANSPORT_BUDGET")
-    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+    process = subprocess.Popen(
+        command, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
+    )
     try:
         output, _ = process.communicate(timeout=timeout)
     except subprocess.TimeoutExpired as exc:
@@ -38,7 +42,11 @@ def run_worker(command: list[str], *, timeout: float, max_bytes: int) -> tuple[i
 class DailyTransport:
     def fetch(self, url: str, *, max_bytes: int, timeout: float) -> tuple[int, bytes]:
         validate_url(url)
-        return run_worker([sys.executable, "-m", __name__, url, str(max_bytes), str(timeout)], timeout=timeout, max_bytes=max_bytes)
+        return run_worker(
+            [sys.executable, "-m", __name__, url, str(max_bytes), str(timeout)],
+            timeout=timeout,
+            max_bytes=max_bytes,
+        )
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -51,7 +59,12 @@ def main() -> None:
     validate_url(url)
     opener = urllib.request.build_opener(NoRedirect())
     try:
-        response = opener.open(urllib.request.Request(url, headers={"User-Agent": "competition-daily-extension/1"}), timeout=float(timeout))
+        response = opener.open(
+            urllib.request.Request(
+                url, headers={"User-Agent": "competition-daily-extension/1"}
+            ),
+            timeout=float(timeout),
+        )
     except urllib.error.HTTPError as exc:
         response = exc
     with response:
