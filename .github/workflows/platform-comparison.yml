@@ -2,10 +2,10 @@ name: Standalone accounting comparison
 
 on:
   pull_request:
-    paths: ["research/platform-compare/**", "research/equity-lab/**", "src/competition_tools/*accounting*", "src/competition_tools/*acceptance*", "src/strategies/hk_low_frequency/backtest.py", "tests/competition_tools/*accounting*", "schemas/research/**", ".github/workflows/platform-comparison.yml"]
+    paths: ["src/competition_tools/check_*delivery.py", "src/competition_tools/evaluation/**", "src/competition_tools/team/**", "tests/competition_tools/test_*delivery.py", "research/crypto-mm/**", "pyproject.toml", "uv.lock", "research/platform-compare/**", "research/equity-lab/**", "src/competition_tools/*accounting*", "src/competition_tools/*acceptance*", "src/strategies/hk_low_frequency/backtest.py", "tests/competition_tools/*accounting*", "schemas/research/**", ".github/workflows/platform-comparison.yml"]
   push:
     branches: [main]
-    paths: ["research/platform-compare/**", "research/equity-lab/**", "src/competition_tools/*accounting*", "src/competition_tools/*acceptance*", "src/strategies/hk_low_frequency/backtest.py", "tests/competition_tools/*accounting*", "schemas/research/**", ".github/workflows/platform-comparison.yml"]
+    paths: ["src/competition_tools/check_*delivery.py", "src/competition_tools/evaluation/**", "src/competition_tools/team/**", "tests/competition_tools/test_*delivery.py", "research/crypto-mm/**", "pyproject.toml", "uv.lock", "research/platform-compare/**", "research/equity-lab/**", "src/competition_tools/*accounting*", "src/competition_tools/*acceptance*", "src/strategies/hk_low_frequency/backtest.py", "tests/competition_tools/*accounting*", "schemas/research/**", ".github/workflows/platform-comparison.yml"]
   workflow_dispatch:
 
 permissions:
@@ -47,3 +47,22 @@ jobs:
           cd "$RUNNER_TEMP"
           unset PYTHONPATH PYTHONHOME
           "$RUNNER_TEMP/accounting-installed/bin/python" -m pytest accounting-installed-tests/test_standalone.py -q
+
+  strategy-evidence:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: astral-sh/setup-uv@v5
+      - name: Install independent offline environments
+        shell: bash
+        run: |
+          UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/evidence-envs/root" uv sync --locked --extra test --extra daily-data
+          "$RUNNER_TEMP/evidence-envs/root/bin/python" -m competition_tools.team init --config "$RUNNER_TEMP/evidence-team.toml" --data-root "$RUNNER_TEMP/evidence-data" --environment-root "$RUNNER_TEMP/evidence-envs"
+          "$RUNNER_TEMP/evidence-envs/root/bin/python" -m competition_tools.team setup --config "$RUNNER_TEMP/evidence-team.toml" --profile offline
+          "$RUNNER_TEMP/evidence-envs/root/bin/python" -m competition_tools.team setup --config "$RUNNER_TEMP/evidence-team.toml" --profile framework
+      - name: Verify independent installed synthetic evidence contracts
+        run: |
+          "$RUNNER_TEMP/evidence-envs/root/bin/python" -m competition_tools.check_strategy_evidence_delivery --config "$RUNNER_TEMP/evidence-team.toml" --output-root "$RUNNER_TEMP/strategy-evidence-contract"

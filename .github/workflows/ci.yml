@@ -50,12 +50,10 @@ jobs:
           source "$RUNNER_TEMP/team-bootstrap/bin/activate"
           python -m competition_tools.team init --config "$RUNNER_TEMP/team.toml" --data-root "$RUNNER_TEMP/team-data" --environment-root "$RUNNER_TEMP/team-envs"
           python -m competition_tools.team setup --config "$RUNNER_TEMP/team.toml" --profile offline
-          python -m competition_tools.team setup --config "$RUNNER_TEMP/team.toml" --profile framework
           python -m competition_tools.team doctor --config "$RUNNER_TEMP/team.toml"
           "$RUNNER_TEMP/team-envs/root/bin/python" -m competition_tools.check_team_delivery --config "$RUNNER_TEMP/team.toml"
           "$RUNNER_TEMP/team-envs/root/bin/python" -m competition_tools.check_study_delivery --config "$RUNNER_TEMP/team.toml" --output-root "$RUNNER_TEMP/study-contract"
           "$RUNNER_TEMP/team-envs/root/bin/python" -m competition_tools.check_ablation_delivery --config "$RUNNER_TEMP/team.toml" --output-root "$RUNNER_TEMP/ablation-contract"
-          "$RUNNER_TEMP/team-envs/root/bin/python" -m competition_tools.check_strategy_evidence_delivery --config "$RUNNER_TEMP/team.toml" --output-root "$RUNNER_TEMP/strategy-evidence-contract"
           cd "$RUNNER_TEMP"
           export HOME="$RUNNER_TEMP/empty-home"
           "$RUNNER_TEMP/team-envs/root/bin/python" -m competition_tools.team demo equity --config "$RUNNER_TEMP/team.toml" --output-root "$RUNNER_TEMP/equity-demo"

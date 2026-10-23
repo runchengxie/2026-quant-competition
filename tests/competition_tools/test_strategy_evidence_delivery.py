@@ -16,6 +16,6 @@ def test_combined_delivery_has_bound_synthetic_execution_inputs(tmp_path):
 
 def test_combined_delivery_is_exercised_by_ci():
     root = Path(__file__).resolve().parents[2]
-    workflow = (root / ".github/workflows/ci.yml").read_text()
+    workflow = (root / ".github/workflows/platform-comparison.yml").read_text()
     assert "competition_tools.check_strategy_evidence_delivery" in workflow
     assert "--profile framework" in workflow
