@@ -111,7 +111,7 @@ python -m competition_tools.check_ablation_delivery --config /external/team.toml
 <a id="forward-observation"></a>
 ## 前瞻观察之前
 
-当前候选方向是降低股票调仓频率和控制加密趋势风险，尚未成为获批交易目标。真正的新观察期仍需要新鲜不可变输入、按历史定义的更广标的池、公司行动假设、可执行价格模型、固定决策日历、账户与产品资格，以及在新观察出现前固定的协议。原有未计分尾段不能改名为前瞻测试。本研究不会启动采集器、计划任务、券商登录或下单路径，详见[准备清单](forward-observation-readiness.zh-CN.md)。
+[新对照实验](strategy-controls.zh-CN.md)使用独立协议完成了 420 项回顾任务，新增绩效统计仍待发布审阅，暂留本地。六个美股及加密候选已在历史运行前写入[手动观察登记](observation-registry.zh-CN.md)。截至 2026-10-23 的快照，尚未接受真实后续观察，仍需完整的新预热数据和经过审阅的可用性证据；旧缓存尾部仍属于回顾数据。[成交模型](us-execution-evidence.zh-CN.md)另需兼容的原始价格、公司行动、交易单位及上市范围证据。本次没有启用采集器、调度、券商登录或下单路径，详见[当前准备清单](forward-observation-readiness.zh-CN.md)。
 
 ## 复现与检查
 
@@ -129,4 +129,4 @@ python -m competition_tools.evaluation.study_publication --aggregate /external/n
 python -m competition_tools.check_study_delivery --config /external/team.toml --output-root /external/new-synthetic-contract
 ```
 
-[打开业绩看板](https://runchengxie.github.io/2026-quant-competition/zh-CN/#performance)，在相同费用及准确窗口下比较策略，再通过匹配窗口的费用摘要观察费用依赖。独立窗口不会拼成连续复利账户，本次展示更新不重跑或提升任何策略的状态。
+[打开业绩看板](https://runchengxie.github.io/2026-quant-competition/zh-CN/#performance)，在相同费用及准确窗口下比较策略，再通过匹配窗口的费用摘要观察费用依赖。历史窗口不会拼成连续复利账户，原有公开快照保留原始运行，新对照使用独立协议和发布检查。

@@ -111,7 +111,7 @@ The [ablation section](https://runchengxie.github.io/2026-quant-competition/#abl
 <a id="forward-observation"></a>
 ## Before forward observation
 
-The current candidates are slower stock decisions and crypto trend risk controls, not approved trading targets. A genuinely new observation phase still needs fresh immutable inputs, a historically defined broader universe, corporate-action assumptions, an executable price model, a fixed decision calendar, account/product eligibility and a protocol fixed before new observations. Existing unscored tails are not a forward test. No collector, scheduler, broker login or order route is enabled by this research. See the [readiness checklist](forward-observation-readiness.md).
+The [new controls programme](strategy-controls.md) completed 420 retrospective jobs under a separate protocol. Its new performance statistics remain private pending publication review. The six US/crypto candidates were fixed before that run in the [manual observation registry](observation-registry.md). At the 2026-10-23 snapshot, no real forward observation has been accepted. Fresh complete warmup and reviewed availability evidence are still required; cached tails remain retrospective. The [execution model](us-execution-evidence.md) separately requires compatible raw prices, action and lot/listing evidence. No collector, scheduler, broker login or order route was activated. See the [current readiness checklist](forward-observation-readiness.md).
 
 ## Reproduce and inspect
 
@@ -129,4 +129,4 @@ Keep these paths outside the source checkout and use new output paths. The publi
 python -m competition_tools.check_study_delivery --config /external/team.toml --output-root /external/new-synthetic-contract
 ```
 
-[Open the performance dashboard](https://runchengxie.github.io/2026-quant-competition/#performance). Compare strategies at the same fee and exact window. Use fee robustness across matching windows to inspect cost dependence. Independent windows are never compounded into a continuous account, and this presentation update does not rerun or promote any strategy.
+[Open the performance dashboard](https://runchengxie.github.io/2026-quant-competition/#performance). Compare strategies at the same fee and exact window. Use fee robustness across matching windows to inspect cost dependence. Historical windows are never compounded into a continuous account. The published legacy snapshots retain their original runs; the new controls have a separate protocol and publication gate.

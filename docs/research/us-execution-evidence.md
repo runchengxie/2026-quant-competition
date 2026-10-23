@@ -27,8 +27,13 @@ Initial cash is USD 100000. Fractional sizing is explicitly modeled. Integral
 sizing requires a positive integer lot size. `--fee-bps` is a finite nonnegative
 commission scenario below 10000, with zero additional slippage and FX cost. The
 default is 20 bps. Fees are not an estimate of any particular broker's tariff.
+The bundle's `configuration_sha256` binds input configuration bytes and effective
+fee/model parameters, so different fee scenarios have distinct fingerprints.
 
 From the standalone `research/platform-compare` environment:
+
+`/absolute/...` paths are placeholders. On Windows use drive-qualified absolute
+paths resolved from the project configuration.
 
 ```sh
 python -m platform_compare.us_next_session.run --config /absolute/us-inputs.json --output-root /absolute/new-output --fee-bps 20 --json

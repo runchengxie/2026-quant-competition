@@ -1,0 +1,57 @@
+---
+import snapshot from "../data/strategy-controls.v1.json";
+import readiness from "../data/strategy-readiness.v1.json";
+import {validateControlsSnapshot, summarizeControls} from "../scripts/strategy-controls-state.mjs";
+import en from "../i18n/en.json";
+import zh from "../i18n/zh-CN.json";
+interface Props {locale?:string}
+const locale=Astro.props.locale==="zh-CN"?"zh-CN":"en";
+const t=(locale==="zh-CN"?zh:en).strategyControls;
+validateControlsSnapshot(snapshot);
+const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+const number=new Intl.NumberFormat(locale,{maximumFractionDigits:2});
+const percent=(v:number)=>`${number.format(v*100)}%`;
+const date=(v:string|null)=>v?new Intl.DateTimeFormat(locale,{dateStyle:'medium',timeStyle:'short',timeZone:'UTC'}).format(new Date(v)):t.notStarted;
+const arm=(id:string)=>t.arms[id as keyof typeof t.arms]??id;
+const blocker=(id:string)=>t.blockers[id as keyof typeof t.blockers]??id;
+const groups=summarizeControls(snapshot,{market:'US',feeBps:20});
+---
+<section id="strategy-controls" class="strategy-controls" data-ready={snapshot.status==='measured'?'pending':'withheld'} data-controls-facts={JSON.stringify(snapshot)}>
+ <p class="eyebrow">{t.eyebrow}</p><h2>{t.title}</h2>
+ <p class="controls-conclusion" data-controls-conclusion>{snapshot.status==='measured'?t.measured:t.withheld}</p><p>{t.intro}</p>
+ <dl class="control-counts">{(['requested','completed','blocked'] as const).map(key=><div><dt>{t.counts[key]}</dt><dd data-controls-count={key}>{number.format(snapshot.coverage[`${key}_jobs`])}</dd></div>)}</dl>
+ {snapshot.status==='readiness_only'&&<div class="publication-note"><p>{t.publication}</p><ul>{snapshot.blockers.map(code=><li>{blocker(code)}</li>)}</ul></div>}
+ <p class="detail">{t.limits}</p><a href={`${prefix}docs/strategy-controls/`}>{t.guide} ↗</a>
+ {snapshot.status==='measured'&&<>
+  <div class="control-filters" data-controls-filters hidden>
+   <label>{t.market}<select data-controls-filter="market"><option value="US">{t.markets.US}</option><option value="crypto">{t.markets.crypto}</option></select></label>
+   <label>{t.fee}<select data-controls-filter="fee" /></label><label>{t.arm}<select data-controls-filter="arm" /></label><label>{t.window}<select data-controls-filter="window" /></label>
+  </div>
+  <p data-controls-status aria-live="polite">{t.measured}</p>
+  <div class="control-charts">{(['paired','turnover','risk','fees'] as const).map(id=><figure><figcaption>{t.charts[id]}</figcaption><div class="control-chart" data-controls-chart={id} role="img" aria-label={t.charts[id]}></div><p class="detail">{id==='risk'?t.riskNote:id==='fees'?t.costNote:t.chartNote}</p></figure>)}</div>
+  <div class="control-scroll"><table><thead><tr>{[t.columns.strategy,t.columns.cost,t.columns.count,t.columns.return,t.columns.drawdown,t.columns.volatility,t.columns.turnover,t.columns.exposure].map(label=><th>{label}</th>)}</tr></thead><tbody data-controls-summary>{groups.map((g:any)=><tr><th>{arm(g.arm_id)}</th><td>{g.fee_bps}</td><td>{g.count}</td>{['net_return','max_drawdown','volatility','turnover','exposure'].map(k=><td>{percent(g[k])}</td>)}</tr>)}</tbody></table></div>
+  <details class="control-window-values"><summary>{t.facts}</summary><div class="control-scroll"><table><thead><tr>{[t.market,t.columns.strategy,t.columns.window,t.columns.cost,t.columns.return,t.columns.drawdown,t.columns.volatility,t.columns.turnover,t.columns.exposure].map(label=><th>{label}</th>)}</tr></thead><tbody>{snapshot.results.map((r:any)=><tr data-controls-result={JSON.stringify(r)}><td>{t.markets[r.market as 'US'|'crypto']}</td><th>{arm(r.arm_id)}</th><td>{r.start}<br/>{r.end}</td><td>{r.fee_bps}</td>{['net_return','max_drawdown','volatility','mean_daily_turnover','mean_exposure'].map(k=><td>{percent(r.metrics[k])}</td>)}</tr>)}</tbody></table></div></details>
+  <script type="application/json" data-controls-config set:html={JSON.stringify({locale,t}).replace(/</g,'\\u003c')} />
+ </>}
+ <details><summary>{t.methodsTitle}</summary><div class="control-scroll"><table><thead><tr><th>{t.market}</th><th>{t.method}</th><th>{t.parameters}</th></tr></thead><tbody>{snapshot.methods.map(m=><tr data-controls-method={m.arm_id}><td>{t.markets[m.market as 'US'|'crypto']}</td><th>{arm(m.arm_id)}<br/><span class="detail">{t.roles[m.role as keyof typeof t.roles]}</span></th><td><code>{m.arm_id}</code><br/><code>{JSON.stringify(m.parameters)}</code></td></tr>)}</tbody></table></div></details>
+ <aside id="strategy-readiness" data-readiness-facts={JSON.stringify(readiness)}>
+  <h3>{t.readinessTitle}</h3><div class="readiness-cards">
+   <article><p class="pill">{t.blocked}</p><h4>{t.executionTitle}</h4><p>{t.executionBody}</p><p>{t.datasetsChecked}: {number.format(readiness.execution.datasets_checked)}</p><ul>{readiness.execution.blockers.map(code=><li>{blocker(code)}</li>)}</ul><a href={`${prefix}docs/execution-evidence/`}>{t.executionGuide} ↗</a></article>
+   <article><p class="pill">{readiness.observation.status==='awaiting_new_data'?t.awaiting:t.observing}</p><h4>{t.observationTitle}</h4><p>{readiness.observation.status==='awaiting_new_data'?t.observationBody:t.observationActive}</p><dl><dt>{t.observations}</dt><dd>{number.format(readiness.observation.observations)}</dd><dt>{t.frozen}</dt><dd>{date(readiness.observation.freeze_at)}</dd><dt>{t.firstObservation}</dt><dd>{date(readiness.observation.first_eligible_observation_at)}</dd></dl><a href={`${prefix}docs/observation-registry/`}>{t.observationGuide} ↗</a></article>
+  </div>
+ </aside>
+ <details><summary>{t.provenance}</summary><p>{date(snapshot.as_of)}</p><p><code>{snapshot.code_commit}</code><br/><code>{snapshot.plan_sha256}</code><br/><code>{readiness.observation.protocol_id}</code></p></details>
+</section>
+<script>
+ const root=document.getElementById('strategy-controls');
+ if(root?.dataset.ready==='pending'){
+  const observer=new IntersectionObserver(async entries=>{
+   if(!entries.some(e=>e.isIntersecting))return;observer.disconnect();
+   try{const {mountStrategyControls}=await import('../scripts/strategy-controls-charts.mjs');mountStrategyControls(root);}
+   catch(error){const config=JSON.parse(root.querySelector('[data-controls-config]')!.textContent!);root.querySelector('[data-controls-status]')!.textContent=config.t.loadError;root.dataset.ready='error';console.error('Strategy controls charts could not load',error);}
+  },{rootMargin:'200px'});observer.observe(root);
+ }
+</script>
+<style>
+.strategy-controls{border-top:1px solid var(--line);padding:2rem 0;min-width:0}.controls-conclusion{font-size:1.2rem;font-weight:650;max-width:70ch}.control-counts{display:flex;flex-wrap:wrap;gap:2.5rem}.control-counts dt{font-size:.85rem;color:var(--muted)}.control-counts dd{margin:0;font-size:2rem;font-variant-numeric:tabular-nums}.publication-note{border-left:3px solid var(--green);padding:.25rem 1rem;background:var(--surface)}.control-filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.75rem;padding:1rem;border:1px solid var(--line);border-radius:.5rem;margin-top:1.5rem}.control-filters[hidden]{display:none}.control-filters label{display:grid;gap:.4rem;font-size:.85rem;min-width:0}.control-filters select{width:100%;min-width:0;font:inherit;color:var(--ink);background:var(--paper);padding:.5rem;border:1px solid var(--line);border-radius:.3rem}.control-charts,.readiness-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.control-charts figure,.readiness-cards article{margin:0;padding:1rem;border:1px solid var(--line);border-radius:.6rem;min-width:0;background:var(--surface)}.control-charts figcaption{font-weight:650}.control-chart{height:330px;width:100%;overflow:hidden;margin-top:.75rem}.control-scroll{overflow-x:auto;margin:1rem 0;max-width:100%}table{width:100%;min-width:52rem;border-collapse:collapse;text-align:left;font-size:.85rem}td,th{padding:.65rem .5rem;border-bottom:1px solid var(--line);vertical-align:top}thead{color:var(--table-heading);background:var(--table-bg)}details{border-bottom:1px solid var(--line);padding:.6rem 0}summary{cursor:pointer;padding:.4rem 0}code{overflow-wrap:anywhere;font-size:.8rem}.readiness-cards dd{margin:0 0 .75rem}.readiness-cards dt{color:var(--muted);font-size:.85rem}.readiness-cards ul{padding-left:1.2rem}.readiness-cards li{margin:.4rem 0}tr[hidden]{display:none}@media(max-width:800px){.control-charts,.readiness-cards{grid-template-columns:minmax(0,1fr)}.control-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:450px){.control-filters{grid-template-columns:minmax(0,1fr)}.control-counts{gap:1.2rem}}
+</style>

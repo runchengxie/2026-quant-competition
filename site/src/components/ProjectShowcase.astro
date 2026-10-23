@@ -5,6 +5,7 @@ import SiteLayout from "../layouts/SiteLayout.astro";
 import ValidationResults from "./ValidationResults.astro";
 import ExpansionResults from "./ExpansionResults.astro";
 import AblationResults from "./AblationResults.astro";
+import StrategyControls from "./StrategyControls.astro";
 import StudyResults from "./StudyResults.astro";
 import ResearchTakeaways from "./ResearchTakeaways.astro";
 import ResearchSummary from "./ResearchSummary.astro";
@@ -39,7 +40,7 @@ const guide = (directory: string) => file(`research/${directory}/README${locale 
   </div></header>
   <main>
     {view==='home'&&<><ResearchTakeaways locale={locale} /><details class="legacy-links"><summary>{t.pages.oldLinks}</summary>{Object.entries(legacy).map(([id,target])=><a data-legacy-link={id} href={`${prefix}${target}`}>{id}</a>)}</details></>}
-    {view==='strategies'&&<><AblationResults locale={locale} /><PerformanceDashboard locale={locale} /><StudyResults locale={locale} /></>}
+    {view==='strategies'&&<><StrategyControls locale={locale} /><AblationResults locale={locale} /><PerformanceDashboard locale={locale} /><StudyResults locale={locale} /></>}
     {view==='factors'&&<FactorResearch locale={locale} />}
     {view==='guide'&&<>    <section id="evidence" class="evidence-section">
       <div class="section-heading"><h2>{t.evidence.title}</h2><p>{t.evidence.intro}</p></div>

@@ -1,0 +1,161 @@
+{
+  "schema": "competition.public_strategy_controls.v1",
+  "status": "readiness_only",
+  "as_of": "2026-10-23T10:39:17.788533+00:00",
+  "code_commit": "eb3c146911d5708ca02682efa77795f0a077952c",
+  "plan_sha256": "c43419690ea26be3e5217d5aaa7dcf3558dd54448152d47f2a2216d0330ff87c",
+  "coverage": {
+    "requested_jobs": 420,
+    "completed_jobs": 420,
+    "blocked_jobs": 0
+  },
+  "methods": [
+    {
+      "market": "US",
+      "arm_id": "ew_daily",
+      "parameters": {
+        "signal": "equal_weight",
+        "schedule": "daily"
+      },
+      "role": "retrospective_control"
+    },
+    {
+      "market": "US",
+      "arm_id": "ew_monthly",
+      "parameters": {
+        "signal": "equal_weight",
+        "schedule": "monthly"
+      },
+      "role": "retrospective_control"
+    },
+    {
+      "market": "US",
+      "arm_id": "ew_monthly_buffer20",
+      "parameters": {
+        "signal": "equal_weight",
+        "schedule": "monthly",
+        "buffer_l1": 0.2,
+        "include_cash": true,
+        "scheduled_cash_exit": true
+      },
+      "role": "retrospective_control"
+    },
+    {
+      "market": "US",
+      "arm_id": "mom20_daily",
+      "parameters": {
+        "signal": "momentum_20d",
+        "schedule": "daily"
+      },
+      "role": "retrospective_control"
+    },
+    {
+      "market": "US",
+      "arm_id": "mom20_monthly",
+      "parameters": {
+        "signal": "momentum_20d",
+        "schedule": "monthly"
+      },
+      "role": "retrospective_control"
+    },
+    {
+      "market": "US",
+      "arm_id": "mom20_monthly_buffer20",
+      "parameters": {
+        "signal": "momentum_20d",
+        "schedule": "monthly",
+        "buffer_l1": 0.2,
+        "include_cash": true,
+        "scheduled_cash_exit": true
+      },
+      "role": "retrospective_control"
+    },
+    {
+      "market": "crypto",
+      "arm_id": "ew_legacy",
+      "parameters": {},
+      "role": "retrospective_control"
+    },
+    {
+      "market": "crypto",
+      "arm_id": "trend200_legacy",
+      "parameters": {},
+      "role": "retrospective_control"
+    },
+    {
+      "market": "crypto",
+      "arm_id": "trend200_vol40_legacy",
+      "parameters": {},
+      "role": "retrospective_control"
+    },
+    {
+      "market": "crypto",
+      "arm_id": "trend200_fixed60_legacy",
+      "parameters": {},
+      "role": "post_hoc_diagnostic"
+    },
+    {
+      "market": "crypto",
+      "arm_id": "trend200_vol40_strict",
+      "parameters": {
+        "lookback_days": 20,
+        "annual_target": 0.4,
+        "annual_periods": 365,
+        "leverage_cap": 1.0,
+        "zero_volatility": "cash",
+        "sample_ddof": 1
+      },
+      "role": "retrospective_control"
+    },
+    {
+      "market": "crypto",
+      "arm_id": "ew_fixed60",
+      "parameters": {
+        "multiplier": 0.6
+      },
+      "role": "retrospective_control"
+    },
+    {
+      "market": "crypto",
+      "arm_id": "ew_vol40_strict",
+      "parameters": {
+        "lookback_days": 20,
+        "annual_target": 0.4,
+        "annual_periods": 365,
+        "leverage_cap": 1.0,
+        "zero_volatility": "cash",
+        "sample_ddof": 1
+      },
+      "role": "retrospective_control"
+    },
+    {
+      "market": "crypto",
+      "arm_id": "ew_trend_gross_matched",
+      "parameters": {
+        "lookback_days": 20,
+        "annual_target": 0.4,
+        "annual_periods": 365,
+        "leverage_cap": 1.0,
+        "zero_volatility": "cash",
+        "sample_ddof": 1,
+        "exposure_source_arm": "trend200_vol40_strict"
+      },
+      "role": "retrospective_control"
+    }
+  ],
+  "results": [],
+  "pairs": [],
+  "blockers": [
+    "PUBLICATION_PERMISSION_UNVERIFIED"
+  ],
+  "restrictions": [
+    "fixed_current_selection",
+    "retrospective_not_untouched_oos",
+    "lagged_close_proxy",
+    "independent_cash_windows",
+    "no_terminal_liquidation",
+    "not_execution_authorization",
+    "US_split_adjusted_not_total_return",
+    "USDT_not_USD"
+  ]
+}

@@ -16,6 +16,7 @@ from .verification import verify_plan, verify_control_result, validate_results_i
 # Explicit reviewed evidence decisions may be added by reviewed source changes.
 # There is no verified rights decision for this new result family yet.
 TRUSTED_PUBLICATION_REVIEWS = frozenset()
+REVIEWED_PUBLIC_CONTROLS = frozenset()
 RESTRICTIONS = [
     "fixed_current_selection",
     "retrospective_not_untouched_oos",

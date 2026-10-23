@@ -272,14 +272,20 @@
       "quickstart": "Team quickstart",
       "datasets": "Data and snapshots",
       "study": "Study methods and results",
-      "strategies": "Strategy guide"
+      "strategies": "Strategy guide",
+      "strategy-controls": "Strategy controls",
+      "execution-evidence": "US execution evidence",
+      "observation-registry": "Manual observation registry"
     },
     "summaries": {
       "architecture": "Responsibilities, package boundaries and execution contracts.",
       "quickstart": "Install, configure and run the independent offline packages.",
       "datasets": "Daily acquisition, immutable receipts and input validation.",
       "study": "Fixed assumptions, accounting, actual results and limitations.",
-      "strategies": "Signals, fixed pools, failure cases, costs and reproduction."
+      "strategies": "Signals, fixed pools, failure cases, costs and reproduction.",
+      "strategy-controls": "Fixed comparisons, verification and publication status.",
+      "execution-evidence": "What daily caches still need before next-session replay.",
+      "observation-registry": "Freeze candidates and preserve a continuous manual account."
     }
   },
   "dashboard": {
@@ -616,5 +622,112 @@
     "protocol": "Frozen protocol SHA256",
     "source": "Scientific source commit",
     "guide": "Data setup and research boundaries"
+  },
+  "strategyControls": {
+    "eyebrow": "Fixed strategy comparisons",
+    "title": "What do the new controls tell us?",
+    "withheld": "The new return and risk figures are not public yet. Start with the completion status.",
+    "measured": "Compare each strategy with its control at the same cost and dates.",
+    "intro": "Completion, publication and execution readiness are separate checks. This section keeps them separate.",
+    "counts": {
+      "requested": "Experiments planned",
+      "completed": "Calculated and verified",
+      "blocked": "Failed or blocked"
+    },
+    "publication": "Publication requires review of this exact output and its data-use evidence. Completion counts describe successful calculations; strategy effectiveness depends on the matched results.",
+    "limits": "These are retrospective comparisons of separate windows, each starting from cash. They are not a continuous return history or untouched out-of-sample evidence.",
+    "guide": "Comparison guide",
+    "methodsTitle": "Which rules were fixed?",
+    "method": "Rule",
+    "parameters": "Fixed parameters",
+    "market": "Market",
+    "fee": "One-way cost (bps)",
+    "arm": "Strategy",
+    "window": "Window",
+    "allArms": "All strategies",
+    "allWindows": "All windows",
+    "markets": {
+      "US": "US stocks (USD)",
+      "crypto": "Crypto (USDT)"
+    },
+    "columns": {
+      "strategy": "Strategy",
+      "window": "Window",
+      "cost": "Cost (bps)",
+      "return": "Net return",
+      "drawdown": "Largest loss from a peak",
+      "volatility": "Annualized volatility",
+      "turnover": "Average daily turnover",
+      "exposure": "Average invested share",
+      "count": "Windows"
+    },
+    "charts": {
+      "paired": "Change in return versus the matched control",
+      "turnover": "Change in daily turnover versus the control",
+      "risk": "Invested share and annualized volatility",
+      "fees": "Net return at each cost scenario"
+    },
+    "chartNote": "Each bar is the median change across matched windows, in percentage points. Windows are not joined into a return curve.",
+    "riskNote": "Points use median window averages for invested share and median annualized volatility. Equal invested shares can still have different risk.",
+    "selected": "Selected experiment rows: {count}",
+    "outcomes": {
+      "positive": "Every shown comparison had a higher net return than its control.",
+      "negative": "Every shown comparison had a lower net return than its control.",
+      "zero": "The shown net returns match their controls.",
+      "mixed": "Results vary across the shown comparisons. Inspect the strategy, cost and window together.",
+      "none": "This selection has no matched comparison."
+    },
+    "facts": "Inspect the public window values",
+    "provenance": "Source and protocol identities",
+    "loadError": "Interactive charts could not load. The public tables remain available.",
+    "readinessTitle": "What is ready beyond the historical calculation?",
+    "executionTitle": "Next-session execution model",
+    "executionBody": "The cached inputs still lack evidence for a defensible execution replay. No orders were submitted.",
+    "executionGuide": "Execution evidence guide",
+    "datasetsChecked": "Cached datasets checked",
+    "observationTitle": "Forward observation",
+    "observationBody": "The six candidate strategies were fixed in advance. No new data has passed the observation checks yet.",
+    "observationActive": "Admissible price observations are recorded. This remains a valuation-only account.",
+    "observationGuide": "Observation registry guide",
+    "observations": "Accepted market-date observations",
+    "frozen": "Protocol frozen (UTC)",
+    "firstObservation": "First accepted availability (UTC)",
+    "notStarted": "Not started",
+    "blocked": "Evidence missing",
+    "awaiting": "Waiting for new data",
+    "observing": "Valuation observations only",
+    "blockers": {
+      "PUBLICATION_PERMISSION_UNVERIFIED": "Publication evidence is not yet reviewed",
+      "INCOMPLETE_CONTROLS_RUN": "The experiment grid is incomplete",
+      "USD_QUOTE_DECLARED": "USD quote declaration needs verification",
+      "US_MARKET_DECLARED": "US market declaration needs verification",
+      "RAW_EXECUTION_PRICES_REQUIRED": "Compatible raw execution prices are missing",
+      "FIRST_REGULAR_OPEN_EVIDENCE_UNVERIFIED": "First regular-session open is not verified",
+      "AVAILABILITY_EVIDENCE_UNVERIFIED": "Information availability is not verified",
+      "CORPORATE_ACTION_MODEL_UNVERIFIED": "Corporate-action coverage is not verified",
+      "LOT_AND_LISTING_EVIDENCE_UNVERIFIED": "Lot size and listing coverage are not verified"
+    },
+    "arms": {
+      "ew_daily": "Equal weight, daily",
+      "ew_monthly": "Equal weight, monthly",
+      "ew_monthly_buffer20": "Equal weight, monthly with buffer",
+      "mom20_daily": "20-session momentum, daily",
+      "mom20_monthly": "20-session momentum, monthly",
+      "mom20_monthly_buffer20": "20-session momentum, monthly with buffer",
+      "ew_legacy": "Equal-weight buy and hold",
+      "trend200_legacy": "200-day trend",
+      "trend200_vol40_legacy": "Trend with legacy volatility sizing",
+      "trend200_fixed60_legacy": "Trend at 60% exposure (post-hoc)",
+      "trend200_vol40_strict": "Trend with strict volatility sizing",
+      "ew_fixed60": "Equal weight at 60% exposure",
+      "ew_vol40_strict": "Equal weight with strict volatility sizing",
+      "ew_trend_gross_matched": "Equal weight with the trend’s invested share"
+    },
+    "roles": {
+      "post_hoc_diagnostic": "Post-hoc diagnostic",
+      "retrospective_control": "Retrospective control"
+    },
+    "percentagePoints": " pp",
+    "costNote": "Each point is the median return from the same window set at that cost. The line connects cost scenarios, not dates."
   }
 }

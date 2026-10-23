@@ -48,7 +48,7 @@ test("research pages separate results, factor evidence and offline guides",async
 });
 
 test("curated documentation is integrated and language switches retain the article",async({page})=>{
-  for(const slug of ["architecture","quickstart","datasets","study","strategies"]){
+  for(const slug of ["architecture","quickstart","datasets","study","strategies","strategy-controls","execution-evidence","observation-registry"]){
     await page.goto(`/2026-quant-competition/docs/${slug}/`);
     await expect(page.locator("main article h1").first()).toBeVisible();
     await page.getByLabel("Appearance").selectOption("dark");
@@ -60,7 +60,7 @@ test("curated documentation is integrated and language switches retain the artic
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   }
   await page.goto("/2026-quant-competition/docs/");
-  await expect(page.locator("main [data-doc-slug]")).toHaveCount(6);
+  await expect(page.locator("main [data-doc-slug]")).toHaveCount(9);
   const response=await page.goto("/2026-quant-competition/docs/internal-secret/");
   expect(response.status()).toBe(404);
 });

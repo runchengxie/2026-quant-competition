@@ -1,0 +1,33 @@
+{
+  "schema": "competition.public_strategy_evidence_readiness.v1",
+  "as_of": "2026-10-23T11:05:50.529976+00:00",
+  "code_commit": "eb3c146911d5708ca02682efa77795f0a077952c",
+  "execution": {
+    "status": "blocked",
+    "model_id": "us-next-session-price-nav.v1",
+    "return_basis": "usd_price_nav",
+    "orders_submitted": 0,
+    "execution_eligible": false,
+    "total_return": false,
+    "datasets_checked": 2,
+    "blockers": [
+      "AVAILABILITY_EVIDENCE_UNVERIFIED",
+      "CORPORATE_ACTION_MODEL_UNVERIFIED",
+      "FIRST_REGULAR_OPEN_EVIDENCE_UNVERIFIED",
+      "LOT_AND_LISTING_EVIDENCE_UNVERIFIED",
+      "RAW_EXECUTION_PRICES_REQUIRED",
+      "US_MARKET_DECLARED"
+    ],
+    "receipt_sha256": "afb4d4caa172e4207793fb77230b2707be8763717fa3b7e150dde6313b9c6050"
+  },
+  "observation": {
+    "schema": "competition.observation_status.v1",
+    "protocol_id": "2a2c52989de637547f096732804461dc3b520b6e81cec0e33e7b1f2ce95e0aaa",
+    "status": "awaiting_new_data",
+    "freeze_at": "2026-10-23T10:37:23.541371+00:00",
+    "first_eligible_observation_at": null,
+    "observations": 0,
+    "evidence_tier": "readiness_only",
+    "execution_authorized": false
+  }
+}

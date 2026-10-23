@@ -9,6 +9,12 @@ import { Content as studyZh } from "../../../docs/research/real-data-study.zh-CN
 import { Content as strategiesEn } from "../../../docs/research/strategies.md";
 import { Content as strategiesZh } from "../../../docs/research/strategies.zh-CN.md";
 import { documentRoutes } from "../../document-routes.mjs";
+import { Content as controlsEn } from "../../../docs/research/strategy-controls.md";
+import { Content as controlsZh } from "../../../docs/research/strategy-controls.zh-CN.md";
+import { Content as executionEn } from "../../../docs/research/us-execution-evidence.md";
+import { Content as executionZh } from "../../../docs/research/us-execution-evidence.zh-CN.md";
+import { Content as observationEn } from "../../../docs/research/observation-registry.md";
+import { Content as observationZh } from "../../../docs/research/observation-registry.zh-CN.md";
 
 const content={
   "architecture.en":architectureEn,"architecture.zh-CN":architectureZh,
@@ -16,6 +22,9 @@ const content={
   "datasets.en":datasetsEn,"datasets.zh-CN":datasetsZh,
   "study.en":studyEn,"study.zh-CN":studyZh,
   "strategies.en":strategiesEn,"strategies.zh-CN":strategiesZh,
+  "strategy-controls.en":controlsEn,"strategy-controls.zh-CN":controlsZh,
+  "execution-evidence.en":executionEn,"execution-evidence.zh-CN":executionZh,
+  "observation-registry.en":observationEn,"observation-registry.zh-CN":observationZh,
 };
 export const documents=documentRoutes.map(doc=>({...doc,Content:content[`${doc.slug}.${doc.locale}` as keyof typeof content]}));
 export type DocumentEntry=(typeof documents)[number];

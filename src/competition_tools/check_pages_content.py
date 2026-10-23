@@ -65,6 +65,8 @@ class _PageMetadata(HTMLParser):
         self.study_facts: list[tuple[str, str | None]] = []
         self.dashboard_facts: list[str | None] = []
         self.dex_facts: list[str | None] = []
+        self.controls_facts: list[str | None] = []
+        self.readiness_facts: list[str | None] = []
         self.ids: set[str] = set()
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
@@ -75,6 +77,10 @@ class _PageMetadata(HTMLParser):
             self.dashboard_facts.append(attributes.get("data-facts"))
         if "data-dex-facts" in attributes:
             self.dex_facts.append(attributes.get("data-dex-facts"))
+        if "data-controls-facts" in attributes:
+            self.controls_facts.append(attributes.get("data-controls-facts"))
+        if "data-readiness-facts" in attributes:
+            self.readiness_facts.append(attributes.get("data-readiness-facts"))
         if ablation_id := attributes.get("data-ablation-id"):
             self.ablation_facts.append((ablation_id, attributes.get("data-facts")))
         if study_id := attributes.get("data-study-id"):
@@ -120,6 +126,13 @@ def _allowed_source(relative_path: PurePosixPath) -> bool:
         "tests/ablation.spec.mjs",
         "src/data/real-data-series.v1.json",
         "src/data/dex-factor-readiness.v1.json",
+        "src/data/strategy-controls.v1.json",
+        "src/data/strategy-readiness.v1.json",
+        "src/scripts/strategy-controls-charts.mjs",
+        "src/scripts/strategy-controls-state.mjs",
+        "tests/strategy-controls-fixture.mjs",
+        "tests/strategy-controls-state.test.mjs",
+        "tests/strategy-controls.spec.mjs",
         "document-routes.mjs",
         "remark-doc-links.mjs",
         "src/lib/documents.ts",
@@ -362,6 +375,55 @@ def check_site(source_dir: Path, built_dir: Path) -> list[str]:
                     )
         except (OSError, ValueError, TypeError, KeyError, AttributeError):
             errors.append("invalid public DEX readiness facts or output")
+    controls_path = source_dir / "src/data/strategy-controls.v1.json"
+    if controls_path.is_file():
+        from competition_tools.evaluation.controls.publication import (
+            validate_public_controls,
+            REVIEWED_PUBLIC_CONTROLS,
+        )
+        from competition_tools.evaluation.study_identity import canonical_hash
+
+        try:
+            controls = validate_public_controls(
+                json.loads(controls_path.read_text(encoding="utf-8"))
+            )
+            if (
+                controls["status"] == "measured"
+                and canonical_hash(controls) not in REVIEWED_PUBLIC_CONTROLS
+            ):
+                errors.append("unreviewed measured controls snapshot")
+            for relative in ("strategies/index.html", "zh-CN/strategies/index.html"):
+                metadata = _PageMetadata()
+                metadata.feed((built_dir / relative).read_text(encoding="utf-8"))
+                if (
+                    len(metadata.controls_facts) != 1
+                    or json.loads(metadata.controls_facts[0]) != controls
+                ):
+                    errors.append("controls facts differ from reviewed source snapshot")
+        except (OSError, ValueError, TypeError, KeyError, AttributeError):
+            errors.append("invalid public controls facts or output")
+    readiness_path = source_dir / "src/data/strategy-readiness.v1.json"
+    if readiness_path.is_file():
+        from competition_tools.evaluation.research_readiness import (
+            validate_public_readiness,
+        )
+
+        try:
+            readiness = validate_public_readiness(
+                json.loads(readiness_path.read_text(encoding="utf-8"))
+            )
+            for relative in ("strategies/index.html", "zh-CN/strategies/index.html"):
+                metadata = _PageMetadata()
+                metadata.feed((built_dir / relative).read_text(encoding="utf-8"))
+                if (
+                    len(metadata.readiness_facts) != 1
+                    or json.loads(metadata.readiness_facts[0]) != readiness
+                ):
+                    errors.append(
+                        "strategy readiness facts differ from reviewed source snapshot"
+                    )
+        except (OSError, ValueError, TypeError, KeyError, AttributeError):
+            errors.append("invalid public strategy readiness facts or output")
     if "document-routes.mjs" in source_paths:
         _validate_documentation(built_dir, output_paths, errors)
     _scan_sensitive(source_files, "source", errors)
@@ -385,6 +447,9 @@ def _validate_documentation(
             "datasets",
             "study",
             "strategies",
+            "strategy-controls",
+            "execution-evidence",
+            "observation-registry",
         )
     }
     if "strategies/index.html" in output_paths:

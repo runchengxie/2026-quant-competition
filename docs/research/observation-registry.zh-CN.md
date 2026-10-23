@@ -10,6 +10,8 @@
 
 配置、预热 JSON、manifest、源码快照与回执全部放在源码目录外。使用已配置的外部团队环境：
 
+`/absolute/...` 是占位路径，Windows 须使用根据项目配置解析的带盘符绝对路径。回放环境须使用保留源码或字节完全匹配的科学源码；可编辑安装的源码发生变化时，冻结协议的生产者摘要检查会阻塞。
+
 ```sh
 python -m competition_tools.team observe freeze --config /absolute/team.toml --spec /absolute/protocol-template.json --registry-root /absolute/new-registry
 python -m competition_tools.team observe append --config /absolute/team.toml --manifest /absolute/import.json --registry-root /absolute/existing-registry
@@ -21,6 +23,8 @@ CLI 记录当前 UTC 时间，不提供倒填冻结或导入时间的选项。Py
 每份 `competition.observation_import.v1` 包含一个市场完整且不变的 252 行预热数据，以及累计观察数据、逐行可用时间、价格口径和计价币种。美股沿用复权美元价格近似模型，加密使用原始 USDT 价格。USD 与 USDT 不能混用。导入须提供完整前缀，让独立安装的研究包从原初始账户回放。根项目独立复核计算，并在接受扩展前比较此前全部净值及未扣费账本记录。
 
 可用时间须晚于冻结与已知截止时间，晚于对应完整日线，且不晚于导入时钟。应有交易日不能缺失。合成导入明确使用合成逐日网格，真实美股使用 `XNYS`，加密使用连续 UTC 日期。可用时间不明时阻塞导入。真实可用性证据须经过审查，并将摘要登记到源码中的 `TRUSTED_AVAILABILITY_EVIDENCE`，该表初始为空。调用者设置标志不能建立信任。合成证据始终标为 `synthetic_valuation_only`。
+
+`competition.observation_availability_review.v1` 绑定具体协议、市场和归一化导入摘要，并记录核实决定及带时区的审阅时间。计算摘要前，将可用时间统一为 UTC ISO-8601，仅省略 `availability_evidence` 字段，其他导入内容全部计入。其他导入的审阅记录不能借用，检查已接受回执时会重新核验原证据字节。真实美股可在同一个 UTC 日期的交易所收盘后提供数据，加密与合成逐日网格则须等 UTC 当日完成。
 
 不要把旧缓存尾部导入为后续样本。如果预热数据过旧，与首个拟计分日期之间缺少交易日，导入会阻塞。获得已授权的新数据并补齐预热后，应建立新协议，不能修改原协议。仅有价格观察也不等于具备成交证据。
 

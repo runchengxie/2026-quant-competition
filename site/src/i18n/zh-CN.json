@@ -272,14 +272,20 @@
       "quickstart": "队员快速上手",
       "datasets": "数据与快照",
       "study": "研究方法与结果",
-      "strategies": "策略详解"
+      "strategies": "策略详解",
+      "strategy-controls": "策略对照实验",
+      "execution-evidence": "美股成交证据",
+      "observation-registry": "手动观察登记"
     },
     "summaries": {
       "architecture": "职责划分、包边界和执行契约。",
       "quickstart": "安装、配置并运行独立离线研究包。",
       "datasets": "日线采集、不可变回执与输入验证。",
       "study": "固定假设、记账方法、实际结果与限制。",
-      "strategies": "信号、固定资产池、失效条件、费用与复现方法。"
+      "strategies": "信号、固定资产池、失效条件、费用与复现方法。",
+      "strategy-controls": "固定规则的比较、核验与发布状态。",
+      "execution-evidence": "日线缓存接入下一交易日回放前，还缺哪些证据。",
+      "observation-registry": "冻结候选，并保留连续的手动观察账户。"
     }
   },
   "dashboard": {
@@ -616,5 +622,112 @@
     "protocol": "冻结协议 SHA256",
     "source": "研究源码提交",
     "guide": "数据配置与研究边界"
+  },
+  "strategyControls": {
+    "eyebrow": "固定规则的策略对照",
+    "title": "新增对照实验，先看目前能下什么结论",
+    "withheld": "新的收益和风险数字暂未公开，先看实验完成情况。",
+    "measured": "用相同费用和日期，把策略与对应的对照组合放在一起看。",
+    "intro": "计算完成、结果可公开、具备成交证据是三件事，这里分别说明。",
+    "counts": {
+      "requested": "计划实验数",
+      "completed": "已计算并复核",
+      "blocked": "失败或阻塞"
+    },
+    "publication": "按已确认的规则，先核对这一批结果的发布依据，再公开数字。完成数量说明实验已跑通，策略效果还要看对应的配对结果。",
+    "limits": "这些是对已经发生的历史进行的分窗口比较，每个窗口都从现金开始，不能拼成连续业绩，也不是未观察过的样本外证据。",
+    "guide": "对照实验说明",
+    "methodsTitle": "这次固定了哪些规则？",
+    "method": "规则",
+    "parameters": "固定参数",
+    "market": "市场",
+    "fee": "单边费用（bps）",
+    "arm": "策略",
+    "window": "窗口",
+    "allArms": "全部策略",
+    "allWindows": "全部窗口",
+    "markets": {
+      "US": "美股（USD）",
+      "crypto": "加密（USDT）"
+    },
+    "columns": {
+      "strategy": "策略",
+      "window": "窗口",
+      "cost": "费用（bps）",
+      "return": "扣费后收益",
+      "drawdown": "从高点算起的最大跌幅",
+      "volatility": "年化波动率",
+      "turnover": "平均每日换手",
+      "exposure": "平均投入比例",
+      "count": "窗口数"
+    },
+    "charts": {
+      "paired": "相比同窗口对照，收益改变了多少",
+      "turnover": "相比对照，每日换手改变了多少",
+      "risk": "投入比例与年化波动",
+      "fees": "不同费用下的扣费后收益"
+    },
+    "chartNote": "每根柱子为同窗口差值的中位数，单位为百分点（pp）。各窗口不会拼成收益曲线。",
+    "riskNote": "点位使用各窗口平均投入比例的中位数及年化波动率的中位数。投入比例相同，风险仍可能不同。",
+    "selected": "当前选择的实验记录数：{count}",
+    "outcomes": {
+      "positive": "当前展示的每组比较中，策略扣费后收益都高于对照。",
+      "negative": "当前展示的每组比较中，策略扣费后收益都低于对照。",
+      "zero": "当前展示的扣费后收益与对照一致。",
+      "mixed": "当前各组比较结果不同，请同时看策略、费用和日期。",
+      "none": "当前选择没有对应的配对比较。"
+    },
+    "facts": "查看公开的逐窗口数值",
+    "provenance": "源码与协议标识",
+    "loadError": "互动图表未能加载，仍可查看公开表格。",
+    "readinessTitle": "历史计算之外，目前准备到了哪一步？",
+    "executionTitle": "下一交易日成交模型",
+    "executionBody": "现有缓存仍缺少可信成交回放所需的证据，本次没有下单。",
+    "executionGuide": "成交证据说明",
+    "datasetsChecked": "已盘点的缓存数据集",
+    "observationTitle": "后续观察",
+    "observationBody": "六个候选策略已事先固定，还没有新数据通过观察检查。",
+    "observationActive": "已记录符合条件的价格观察，目前仍是仅估值的账户。",
+    "observationGuide": "观察登记说明",
+    "observations": "已接受的市场日期记录数",
+    "frozen": "研究方案固定时间（UTC）",
+    "firstObservation": "首条已接受数据的可用时间（UTC）",
+    "notStarted": "尚未开始",
+    "blocked": "证据未齐",
+    "awaiting": "等待新数据",
+    "observing": "仅作估值观察",
+    "blockers": {
+      "PUBLICATION_PERMISSION_UNVERIFIED": "发布依据尚未完成审阅",
+      "INCOMPLETE_CONTROLS_RUN": "实验网格尚未全部完成",
+      "USD_QUOTE_DECLARED": "美元计价声明仍待核对",
+      "US_MARKET_DECLARED": "美股市场声明仍待核对",
+      "RAW_EXECUTION_PRICES_REQUIRED": "缺少兼容的原始成交价格",
+      "FIRST_REGULAR_OPEN_EVIDENCE_UNVERIFIED": "常规时段首笔开盘价格尚未核实",
+      "AVAILABILITY_EVIDENCE_UNVERIFIED": "信息可用时间尚未核实",
+      "CORPORATE_ACTION_MODEL_UNVERIFIED": "公司行动覆盖尚未核实",
+      "LOT_AND_LISTING_EVIDENCE_UNVERIFIED": "交易单位及上市范围尚未核实"
+    },
+    "arms": {
+      "ew_daily": "等权，每日调整",
+      "ew_monthly": "等权，每月调整",
+      "ew_monthly_buffer20": "等权，每月检查并设置调仓缓冲",
+      "mom20_daily": "看近 20 个交易日涨幅，每日调整",
+      "mom20_monthly": "看近 20 个交易日涨幅，每月调整",
+      "mom20_monthly_buffer20": "近 20 个交易日涨幅，每月检查并设置调仓缓冲",
+      "ew_legacy": "等权买入后持有",
+      "trend200_legacy": "200 日趋势",
+      "trend200_vol40_legacy": "趋势策略，沿用旧波动率规则",
+      "trend200_fixed60_legacy": "趋势策略，投入 60%（事后诊断）",
+      "trend200_vol40_strict": "趋势策略，严格按波动率调整投入",
+      "ew_fixed60": "等权，投入 60%",
+      "ew_vol40_strict": "等权，严格按波动率调整投入",
+      "ew_trend_gross_matched": "等权，投入比例跟随趋势方案"
+    },
+    "roles": {
+      "post_hoc_diagnostic": "事后诊断",
+      "retrospective_control": "回顾对照"
+    },
+    "percentagePoints": " pp",
+    "costNote": "每个点为该费用下、同一组窗口的收益中位数。连线连接费用情景，不表示时间上的收益曲线。"
   }
 }

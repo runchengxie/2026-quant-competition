@@ -10,7 +10,11 @@
 
 初始现金为 100000 美元。碎股模式明确属于模拟。整手模式要求正整数交易单位。`--fee-bps` 表示有限、非负且小于 10000 的佣金情景，额外滑点和换汇成本均为零，默认 20 bps。该费用不代表某一家券商的真实收费标准。
 
+账本的 `configuration_sha256` 同时绑定输入配置字节及有效费用和模型参数，因此不同费用情景会得到不同摘要。
+
 在独立的 `research/platform-compare` 环境中运行：
+
+`/absolute/...` 是占位路径，Windows 须使用根据项目配置解析的带盘符绝对路径。
 
 ```sh
 python -m platform_compare.us_next_session.run --config /absolute/us-inputs.json --output-root /absolute/new-output --fee-bps 20 --json

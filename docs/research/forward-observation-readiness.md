@@ -1,16 +1,32 @@
 # Forward-observation readiness
 
-No forward observation has started. The published experiments reuse already inspected historical data and fixed current pools. Their unscored tails are not an untouched test.
+At the 2026-10-23 snapshot, no real forward observation has been accepted. The
+six-candidate manual protocol was frozen at 10:37:23 UTC, before the new historical
+comparisons ran. Its status is `awaiting_new_data`; the first accepted availability
+time is null. A frozen protocol is not a live performance record.
 
-Candidates are US weekly `sma_cross`, HK monthly `momentum_20d`, and crypto `trend_200d` risk controls. Candidate status is a research question, not approval, an optimized winner or a claim that every variant improved results. The fixed 60% exposure control remains post-hoc. Review all fees and windows in the [strategy guide](strategies.md#formal-ablation).
+The new protocol fixes US `mom20_monthly`, `mom20_monthly_buffer20`, `ew_monthly`
+and crypto `trend200_vol40_strict`, `ew_trend_gross_matched`, `ew_legacy`, at all
+specified fees. Older US weekly `sma_cross` and HK monthly `momentum_20d` remain
+separate research candidates outside this protocol. The 420-job grid supplies no
+new HK experiment or execution evidence.
 
-Before collecting genuinely new evidence:
+The [manual registry](observation-registry.md) uses one continuous modeled account
+per candidate/fee from its first accepted observation. Replays retain every prior
+row and cash state. Historical folds still start independently from cash and are
+never joined into that account. Already inspected tails remain retrospective.
 
-1. Freeze fresh immutable data identities and an observation cutoff. Current stocks stop at 2026-10-20 and the selected crypto slice at 2026-09-30.
-2. Define the universe and membership dates before observing outcomes. The current ten-stock US/HK pools and eight crypto products are not historical S&P 500 or whole-market membership.
-3. Fix corporate-action/dividend assumptions, a tradable execution price, costs, lot sizes and capacity. The present prior-close/close-to-close proxy is insufficient for execution validation.
-4. Declare the exact decision calendar, strategy/parameter set, evaluation metrics, stopping conditions and treatment of missing data before new observations. Retain disappointing results and evidence lineage.
-5. Separately confirm competition, account, venue and product eligibility. Research artifacts are not executable target handoffs.
-6. Authorize any new collector, Paper login, scheduler or order integration separately. None is activated by the retrospective CLI or website.
+The existing warmup is stale relative to a genuinely new observation start.
+Missing intervening sessions block import. After approved fresh data supplies a
+complete causal warmup and reviewed availability evidence, create a new protocol;
+do not rewrite the original warmup or score old cached rows as prospective data.
+Real availability review is not established by caller metadata.
 
-An eventual report must distinguish protocol freeze time from data availability and actual execution time. It must retain independent cash starts unless a separately versioned continuous-account protocol is implemented. Current publication contains aggregate window comparisons only and does not start a live performance track record.
+[Execution evidence](us-execution-evidence.md) remains a separate gate. Cached
+IBKR/Databento inputs lack the required raw-open, availability, action or
+lot/listing evidence. Accepting price valuations would not establish tradable
+fills, capacity, account eligibility or executable target handoffs.
+
+No collector, Gateway login, scheduler or order integration was activated. Those
+operations require separate authorization. See [the new controls](strategy-controls.md)
+and the [existing strategy evidence](strategies.md#formal-ablation).

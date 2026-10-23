@@ -22,6 +22,11 @@ a new registry. Existing protocol and accepted receipts are never overwritten.
 All configuration, warmup JSON, manifests, source snapshots and receipts belong
 outside the checkout. Use the configured external team environment:
 
+`/absolute/...` paths are placeholders. Windows needs drive-qualified absolute
+paths resolved from project configuration. Replay environments must use the
+retained or byte-matching scientific source; a changed editable checkout blocks
+the frozen protocol's producer hash check.
+
 ```sh
 python -m competition_tools.team observe freeze --config /absolute/team.toml --spec /absolute/protocol-template.json --registry-root /absolute/new-registry
 python -m competition_tools.team observe append --config /absolute/team.toml --manifest /absolute/import.json --registry-root /absolute/existing-registry
@@ -46,6 +51,14 @@ Synthetic imports use an explicitly synthetic daily grid. Real US imports use
 Real availability evidence requires a reviewed source-controlled digest in
 `TRUSTED_AVAILABILITY_EVIDENCE`, initially empty. Caller flags cannot grant it.
 Synthetic evidence remains labeled `synthetic_valuation_only`.
+
+`competition.observation_availability_review.v1` binds the exact protocol, market
+and normalized import hash, with a verified decision and aware review time. Hash
+the complete import after normalizing availability times to UTC ISO-8601 and
+omitting only `availability_evidence`. A review for another import cannot be
+reused. Accepted receipts recheck the original evidence bytes on inspection.
+Real US availability may follow the exchange close on the same UTC date; crypto
+and the synthetic daily grid require the completed UTC day.
 
 Do not import old cached tails as prospective data. A stale warmup with missing
 sessions before the first proposed observation blocks the import. When approved

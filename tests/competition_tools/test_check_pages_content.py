@@ -81,6 +81,49 @@ def test_dex_readiness_requires_exact_bilingual_output(tmp_path):
     assert any("DEX readiness facts" in issue for issue in check_site(source, built))
 
 
+def controls_site_fixture(tmp_path, *, measured=False):
+    from test_controls_publication import measured_fixture
+
+    source, built = make_site_trees(tmp_path)
+    value = measured_fixture()
+    if not measured:
+        value.update(
+            status="readiness_only",
+            results=[],
+            pairs=[],
+            blockers=["PUBLICATION_PERMISSION_UNVERIFIED", "INCOMPLETE_CONTROLS_RUN"],
+            coverage=dict(requested_jobs=2, completed_jobs=1, blocked_jobs=1),
+        )
+    path = source / "src/data/strategy-controls.v1.json"
+    path.parent.mkdir()
+    path.write_text(json.dumps(value))
+    for relative in ("strategies/index.html", "zh-CN/strategies/index.html"):
+        target = built / relative
+        target.parent.mkdir(parents=True)
+        target.write_text(
+            '<section data-controls-facts="'
+            + html.escape(json.dumps(value), quote=True)
+            + '"></section>'
+        )
+    return source, built
+
+
+def test_controls_completion_and_failed_denominator_match_both_languages(tmp_path):
+    source, built = controls_site_fixture(tmp_path)
+    assert check_site(source, built) == []
+    (built / "zh-CN/strategies/index.html").write_text(
+        '<section data-controls-facts="{}"></section>'
+    )
+    assert any("controls facts" in issue for issue in check_site(source, built))
+
+
+def test_controls_measured_snapshot_requires_a_source_controlled_review(tmp_path):
+    source, built = controls_site_fixture(tmp_path, measured=True)
+    assert any(
+        "unreviewed measured controls" in issue for issue in check_site(source, built)
+    )
+
+
 def test_allows_reviewed_expansion_snapshot_but_still_scans_secrets(tmp_path):
     source, built = make_site_trees(tmp_path)
     path = source / "src/data/strategy-expansion.v1.json"
@@ -92,6 +135,29 @@ def test_allows_reviewed_expansion_snapshot_but_still_scans_secrets(tmp_path):
     assert check_site(source, built) == []
     path.write_text(json.dumps({"api_key": "sensitive-example-value-1234567890"}))
     assert any("sensitive pattern" in error for error in check_site(source, built))
+
+
+def test_strategy_readiness_has_exact_public_status_in_both_languages(tmp_path):
+    from test_public_research_readiness import public_fixture
+
+    source, built = controls_site_fixture(tmp_path)
+    value = public_fixture()
+    (source / "src/data/strategy-readiness.v1.json").write_text(json.dumps(value))
+    for relative in ("strategies/index.html", "zh-CN/strategies/index.html"):
+        target = built / relative
+        target.write_text(
+            target.read_text()
+            + '<aside data-readiness-facts="'
+            + html.escape(json.dumps(value), quote=True)
+            + '"></aside>'
+        )
+    assert check_site(source, built) == []
+    target.write_text(
+        target.read_text().replace("data-readiness-facts=", "data-ignored-facts=")
+    )
+    assert any(
+        "strategy readiness facts" in issue for issue in check_site(source, built)
+    )
 
 
 def test_expansion_facts_must_match_between_locales(tmp_path):
@@ -166,6 +232,9 @@ def test_documentation_routes_validate_locale_links_and_reject_unlisted_pages(tm
             "datasets",
             "study",
             "strategies",
+            "strategy-controls",
+            "execution-evidence",
+            "observation-registry",
         ):
             suffix = f"docs/{slug + '/' if slug else ''}"
             p = built / prefix / suffix / "index.html"

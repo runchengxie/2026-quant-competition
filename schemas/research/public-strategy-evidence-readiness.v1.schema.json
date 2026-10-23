@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "competition.public_strategy_evidence_readiness.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "as_of",
+    "code_commit",
+    "execution",
+    "observation"
+  ],
+  "properties": {
+    "schema": {
+      "const": "competition.public_strategy_evidence_readiness.v1"
+    },
+    "as_of": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "code_commit": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "model_id",
+        "datasets_checked",
+        "blockers",
+        "return_basis",
+        "orders_submitted",
+        "total_return",
+        "execution_eligible",
+        "receipt_sha256"
+      ],
+      "properties": {
+        "status": {
+          "const": "blocked"
+        },
+        "model_id": {
+          "const": "us-next-session-price-nav.v1"
+        },
+        "datasets_checked": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16
+        },
+        "blockers": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "USD_QUOTE_DECLARED",
+              "US_MARKET_DECLARED",
+              "RAW_EXECUTION_PRICES_REQUIRED",
+              "FIRST_REGULAR_OPEN_EVIDENCE_UNVERIFIED",
+              "AVAILABILITY_EVIDENCE_UNVERIFIED",
+              "CORPORATE_ACTION_MODEL_UNVERIFIED",
+              "LOT_AND_LISTING_EVIDENCE_UNVERIFIED"
+            ]
+          }
+        },
+        "return_basis": {
+          "const": "usd_price_nav"
+        },
+        "orders_submitted": {
+          "type": "integer",
+          "const": 0
+        },
+        "total_return": {
+          "const": false
+        },
+        "execution_eligible": {
+          "const": false
+        },
+        "receipt_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "protocol_id",
+        "status",
+        "freeze_at",
+        "first_eligible_observation_at",
+        "observations",
+        "evidence_tier",
+        "execution_authorized"
+      ],
+      "properties": {
+        "schema": {
+          "const": "competition.observation_status.v1"
+        },
+        "protocol_id": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "status": {
+          "enum": [
+            "awaiting_new_data",
+            "observing"
+          ]
+        },
+        "freeze_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "first_eligible_observation_at": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "format": "date-time"
+        },
+        "observations": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "evidence_tier": {
+          "enum": [
+            "readiness_only",
+            "valuation_only"
+          ]
+        },
+        "execution_authorized": {
+          "const": false
+        }
+      }
+    }
+  }
+}
