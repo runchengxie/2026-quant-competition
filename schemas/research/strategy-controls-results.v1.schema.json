@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "competition.strategy_controls_results.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "plan_sha256",
+    "status",
+    "elapsed_seconds",
+    "jobs"
+  ],
+  "properties": {
+    "schema": {
+      "const": "competition.strategy_controls_results.v1"
+    },
+    "plan_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "status": {
+      "enum": [
+        "completed",
+        "partial"
+      ]
+    },
+    "elapsed_seconds": {
+      "type": "number",
+      "minimum": 0
+    },
+    "jobs": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 512,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "job_id",
+          "market",
+          "arm_id",
+          "fee_bps",
+          "status",
+          "reason",
+          "metrics",
+          "result_path"
+        ],
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "market": {
+            "enum": [
+              "US",
+              "crypto"
+            ]
+          },
+          "arm_id": {
+            "type": "string"
+          },
+          "fee_bps": {
+            "type": "integer",
+            "enum": [
+              0,
+              10,
+              20,
+              25,
+              40
+            ]
+          },
+          "status": {
+            "enum": [
+              "completed",
+              "blocked"
+            ]
+          },
+          "reason": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "metrics": {
+            "type": [
+              "null",
+              "object"
+            ]
+          },
+          "result_path": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

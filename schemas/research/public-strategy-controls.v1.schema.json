@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "competition.public_strategy_controls.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "status",
+    "as_of",
+    "code_commit",
+    "plan_sha256",
+    "coverage",
+    "methods",
+    "results",
+    "pairs",
+    "blockers",
+    "restrictions"
+  ],
+  "properties": {
+    "schema": {
+      "const": "competition.public_strategy_controls.v1"
+    },
+    "status": {
+      "enum": [
+        "measured",
+        "readiness_only"
+      ]
+    },
+    "as_of": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "code_commit": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "plan_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requested_jobs",
+        "completed_jobs",
+        "blocked_jobs"
+      ],
+      "properties": {
+        "requested_jobs": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 512
+        },
+        "completed_jobs": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 512
+        },
+        "blocked_jobs": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 512
+        }
+      }
+    },
+    "methods": {
+      "type": "array",
+      "minItems": 14,
+      "maxItems": 14,
+      "items": {
+        "type": "object"
+      }
+    },
+    "results": {
+      "type": "array",
+      "maxItems": 512,
+      "items": {
+        "type": "object"
+      }
+    },
+    "pairs": {
+      "type": "array",
+      "maxItems": 512,
+      "items": {
+        "type": "object"
+      }
+    },
+    "blockers": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "PUBLICATION_PERMISSION_UNVERIFIED",
+          "INCOMPLETE_CONTROLS_RUN"
+        ]
+      }
+    },
+    "restrictions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "readiness_only"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "results": {
+            "maxItems": 0
+          },
+          "pairs": {
+            "maxItems": 0
+          },
+          "blockers": {
+            "minItems": 1
+          }
+        }
+      }
+    }
+  ]
+}
