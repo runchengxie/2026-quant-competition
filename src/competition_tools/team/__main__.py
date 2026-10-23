@@ -18,9 +18,10 @@ def main(argv: list[str] | None = None) -> int:
     robustness.add_argument("--spec", type=Path, required=True)
     robustness.add_argument("--output-root", type=Path, required=True)
     preparation = commands.add_parser("observation-prepare", help="Prepare US refresh inventory or a per-market observation warmup offline")
-    preparation.add_argument("operation", choices=["us-refresh", "market"])
+    preparation.add_argument("operation", choices=["us-refresh", "market", "freeze-market"])
     preparation.add_argument("--config", type=Path, required=True)
-    preparation.add_argument("--manifest", type=Path, required=True)
+    preparation.add_argument("--manifest", type=Path)
+    preparation.add_argument("--preparation", type=Path)
     preparation.add_argument("--parent-registry", type=Path)
     preparation.add_argument("--output-root", type=Path, required=True)
     extension = commands.add_parser("daily-extension", help="Prepare, inspect or explicitly acquire bounded daily archives")
@@ -125,7 +126,7 @@ def main(argv: list[str] | None = None) -> int:
             elif args.action == "observation-prepare":
                 from .observation_prepare import execute
 
-                value = execute(args.operation, config, args.manifest, args.output_root, parent_registry=args.parent_registry)
+                value = execute(args.operation, config, args.manifest, args.output_root, parent_registry=args.parent_registry, preparation=args.preparation)
             elif args.action == "daily-extension":
                 from .daily_extension import execute
 

@@ -69,3 +69,31 @@ def test_preparation_is_zero_observations_and_requires_fresh_common_warmup(tmp_p
     assert value["new_protocol_id"] is None
     assert json.loads((tmp_path / "prepared/preparation.json").read_text()) == value
     assert not (tmp_path / "prepared/protocol.json").exists()
+
+
+def test_per_market_freeze_keeps_six_candidates_and_external_relationship(tmp_path):
+    from competition_tools.evaluation.observation_preparation import prepare_observation, freeze_prepared_market
+    from competition_tools.evaluation.observation_registry import freeze_observation, TRUSTED_AVAILABILITY_EVIDENCE
+    from test_observation_registry import fixture_protocol
+
+    (tmp_path / "old").mkdir()
+    protocol=fixture_protocol(tmp_path / "old")
+    parent=tmp_path / "parent-registry"
+    freeze_observation(protocol,parent,now=datetime(2025,1,1,tzinfo=timezone.utc))
+    manifest=crypto_parent(tmp_path)
+    config=TeamConfig(tmp_path,tmp_path / "env")
+    now=datetime(2025,1,3,tzinfo=timezone.utc)
+    prepare_observation(config,manifest,tmp_path / "prepared",parent_registry=parent,now=now)
+    status=freeze_prepared_market(config,tmp_path / "prepared/preparation.json",parent,tmp_path / "new-registry",now=now,source_root=__import__('pathlib').Path(protocol["source_identity"]["source_root"]))
+    assert status["observations"]==0
+    frozen=json.loads((tmp_path / "new-registry/protocol.json").read_text())
+    assert frozen["template"]["candidates"]==protocol["candidates"]
+    assert frozen["template"]["known_cutoff"].startswith("2025-01-02")
+    assert set(frozen["template"])==set(protocol)
+    relationship=json.loads((tmp_path / "new-registry/relationship.json").read_text())
+    assert relationship["new_protocol_id"]==status["protocol_id"]
+    assert relationship["market"]=="crypto"
+    assert not TRUSTED_AVAILABILITY_EVIDENCE
+    with pytest.raises(ValueError,match="STALE"):
+        freeze_prepared_market(config,tmp_path / "prepared/preparation.json",parent,tmp_path / "stale-registry",now=datetime(2025,1,4,tzinfo=timezone.utc),source_root=__import__('pathlib').Path(protocol["source_identity"]["source_root"]))
+    assert not (tmp_path / "stale-registry").exists()

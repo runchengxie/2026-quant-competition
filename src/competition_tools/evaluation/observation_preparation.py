@@ -1,6 +1,7 @@
 """Offline request inventories and per-market warmup review candidates."""
 
 import csv
+import copy
 import json
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
@@ -102,3 +103,42 @@ def prepare_observation(config, manifest: Path, output: Path, *, parent_registry
     write_json(out / "preparation.json", result)
     write_json(out / "relationship-candidate.json", dict(schema="competition.observation_relationship.v1", parent_protocol_id=parent["protocol_id"], new_protocol_id=None, preparation_sha256=digest(out / "preparation.json"), market=market, status="not_frozen"))
     return result
+
+
+def freeze_prepared_market(config, preparation: Path, parent_registry: Path, registry_root: Path, *, now: datetime, source_root: Path | None = None) -> dict:
+    """Freeze one eligible market without claiming the other has fresh inputs.
+
+    v1 retains both candidate groups. Its inactive market keeps the parent
+    warmup and cannot import intervening old bars through the cutoff gate.
+    A separately prepared protocol is required for that market to start.
+    """
+    from .observation_registry import freeze_observation
+    from .study_identity import source_identity
+
+    now=utc_time(now)
+    prepared_path=safe_path(preparation)
+    prepared=json.loads(prepared_path.read_text())
+    parent=inspect_observation(parent_registry)
+    if prepared["parent_protocol_id"]!=parent["protocol_id"] or prepared["status"]!="ready_for_freeze_review" or digest(safe_path(Path(prepared["manifest"])))!=prepared["manifest_sha256"]:
+        raise ValueError("PREPARATION_NOT_READY_OR_CHANGED")
+    root=safe_path(registry_root)
+    if root.exists():
+        raise FileExistsError("OBSERVATION_REGISTRY_EXISTS")
+    refreshed=prepare_observation(config,Path(prepared["manifest"]),root.with_name(root.name+"-review"),parent_registry=parent_registry,now=now)
+    if refreshed["status"]!="ready_for_freeze_review":
+        raise ValueError("STALE_OR_INCOMPLETE_PREPARATION")
+    original=json.loads(safe_path(parent_registry / "protocol.json").read_text())
+    template=copy.deepcopy(original["template"])
+    market=refreshed["market"]
+    template["warmup"][market]=refreshed["warmup"]
+    ends=[json.loads(safe_path(Path(record["path"])).read_text())["dates"][-1] for record in template["warmup"].values()]
+    # known_cutoff is the inspected price-date boundary, not a fabricated
+    # collection timestamp. Actual collection/preparation/freeze times persist.
+    boundary=utc_time(max(ends)+"T23:59:59.999999+00:00")
+    template["known_cutoff"]=min(now,boundary).isoformat()
+    if refreshed["next_eligible_date"]<=utc_time(template["known_cutoff"]).date().isoformat():
+        raise ValueError("NO_UNSEEN_NEXT_MARKET_DATE")
+    template["source_identity"]=source_identity(source_root or Path(__file__).resolve().parents[3])
+    status=freeze_observation(template,root,now=now)
+    write_json(root / "relationship.json",dict(schema="competition.observation_relationship.v1",parent_protocol_id=parent["protocol_id"],new_protocol_id=status["protocol_id"],preparation_sha256=digest(root.with_name(root.name+"-review") / "preparation.json"),market=market,status="frozen"))
+    return status
