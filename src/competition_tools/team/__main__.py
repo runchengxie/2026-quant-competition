@@ -72,6 +72,12 @@ def main(argv: list[str] | None = None) -> int:
     readiness.add_argument("--config", type=Path, required=True)
     readiness.add_argument("--spec", type=Path, required=True)
     readiness.add_argument("--output-root", type=Path, required=True)
+    observe = commands.add_parser("observe", help="Freeze, import or inspect manual observations without data acquisition")
+    observe.add_argument("operation", choices=["freeze", "append", "status"])
+    observe.add_argument("--config", type=Path, required=True)
+    observe.add_argument("--registry-root", type=Path, required=True)
+    observe.add_argument("--spec", type=Path)
+    observe.add_argument("--manifest", type=Path)
     factors = commands.add_parser("factors", help="Run fixed retrospective hourly factor diagnostics")
     factors.add_argument("--config", type=Path, required=True)
     factors.add_argument("--spec", type=Path, required=True)
@@ -94,7 +100,11 @@ def main(argv: list[str] | None = None) -> int:
             value = envelope(args.action)
         else:
             config = load_config(args.config)
-            if args.action == "execution-readiness":
+            if args.action == "observe":
+                from .observe import execute
+
+                value = execute(args.operation, config, args.registry_root, spec=args.spec, manifest=args.manifest)
+            elif args.action == "execution-readiness":
                 from .execution_readiness import execute
 
                 value = execute(config, args.spec, args.output_root)

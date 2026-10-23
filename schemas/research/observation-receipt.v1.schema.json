@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "competition.observation_receipt.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "protocol_id",
+    "market",
+    "observations",
+    "previous_receipt_sha256",
+    "import_id",
+    "source_path",
+    "source_sha256",
+    "files",
+    "receipt_sha256"
+  ],
+  "properties": {
+    "schema": {
+      "const": "competition.observation_receipt.v1"
+    },
+    "protocol_id": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "market": {
+      "enum": [
+        "US",
+        "crypto"
+      ]
+    },
+    "observations": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "previous_receipt_sha256": {
+      "oneOf": [
+        {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "import_id": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "source_path": {
+      "type": "string"
+    },
+    "source_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "files": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "sha256"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      }
+    },
+    "receipt_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+}

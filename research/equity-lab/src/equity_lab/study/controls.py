@@ -18,6 +18,24 @@ ARMS = {
 }
 
 
+def replay_observation(
+    bars: dict, arm_id: str, *, score_start: str, fee_bps: float, quote_currency: str
+) -> dict:
+    """Replay one account from its fixed warmup, including every prior score row."""
+    validate_prices(bars)
+    if (
+        arm_id not in {"mom20_monthly", "mom20_monthly_buffer20", "ew_monthly"}
+        or len(bars["dates"]) < 253
+        or bars["dates"][252] != score_start
+        or type(fee_bps) not in (int, float)
+        or fee_bps not in (20, 40)
+    ):
+        raise ValueError("INVALID_OBSERVATION_REPLAY")
+    return evaluate_control(
+        bars, arm_id, fee_bps=fee_bps, quote_currency=quote_currency
+    )
+
+
 def build_control_targets(bars: dict, arm_id: str) -> dict:
     if arm_id not in ARMS:
         raise ValueError("UNKNOWN_EQUITY_CONTROL")

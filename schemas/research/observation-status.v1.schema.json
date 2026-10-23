@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "competition.observation_status.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "protocol_id",
+    "status",
+    "freeze_at",
+    "first_eligible_observation_at",
+    "observations",
+    "evidence_tier",
+    "execution_authorized"
+  ],
+  "properties": {
+    "schema": {
+      "const": "competition.observation_status.v1"
+    },
+    "protocol_id": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "status": {
+      "enum": [
+        "awaiting_new_data",
+        "observing"
+      ]
+    },
+    "freeze_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "first_eligible_observation_at": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date-time"
+    },
+    "observations": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "evidence_tier": {
+      "enum": [
+        "readiness_only",
+        "synthetic_valuation_only",
+        "valuation_only"
+      ]
+    },
+    "execution_authorized": {
+      "const": false
+    }
+  }
+}

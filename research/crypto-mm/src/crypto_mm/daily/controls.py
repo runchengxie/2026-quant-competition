@@ -21,6 +21,24 @@ STRICT = {
 }
 
 
+def replay_observation(
+    bars: dict, arm_id: str, *, score_start: str, fee_bps: float, quote_currency: str
+) -> dict:
+    """Extend a single self-financing account by replaying its immutable prefix."""
+    validate_prices(bars)
+    if (
+        arm_id not in {"trend200_vol40_strict", "ew_trend_gross_matched", "ew_legacy"}
+        or len(bars["dates"]) < 253
+        or bars["dates"][252] != score_start
+        or type(fee_bps) not in (int, float)
+        or fee_bps not in (0, 10, 25)
+    ):
+        raise ValueError("INVALID_OBSERVATION_REPLAY")
+    return evaluate_control(
+        bars, arm_id, fee_bps=fee_bps, quote_currency=quote_currency
+    )
+
+
 def _selected(closes, products, decision):
     selected = []
     for product in products:

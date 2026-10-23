@@ -1,0 +1,194 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "competition.observation_protocol.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "template",
+    "freeze_at",
+    "source_snapshot",
+    "rules",
+    "protocol_id"
+  ],
+  "properties": {
+    "schema": {
+      "const": "competition.observation_protocol.v1"
+    },
+    "template": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "synthetic",
+        "candidates",
+        "costs",
+        "warmup",
+        "source_identity",
+        "known_cutoff",
+        "initial_nav",
+        "valuation",
+        "zero_volatility",
+        "execution_authorized"
+      ],
+      "properties": {
+        "schema": {
+          "const": "competition.observation_protocol.v1"
+        },
+        "synthetic": {
+          "type": "boolean"
+        },
+        "candidates": {
+          "const": {
+            "US": [
+              "mom20_monthly",
+              "mom20_monthly_buffer20",
+              "ew_monthly"
+            ],
+            "crypto": [
+              "trend200_vol40_strict",
+              "ew_trend_gross_matched",
+              "ew_legacy"
+            ]
+          }
+        },
+        "costs": {
+          "const": {
+            "US": [
+              20,
+              40
+            ],
+            "crypto": [
+              0,
+              10,
+              25
+            ]
+          }
+        },
+        "warmup": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "US",
+            "crypto"
+          ],
+          "properties": {
+            "US": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "path",
+                "sha256"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              }
+            },
+            "crypto": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "path",
+                "sha256"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "sha256": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              }
+            }
+          }
+        },
+        "source_identity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "commit",
+            "source_root",
+            "source_sha256"
+          ],
+          "properties": {
+            "commit": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{40}$"
+            },
+            "source_root": {
+              "type": "string"
+            },
+            "source_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        },
+        "known_cutoff": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "initial_nav": {
+          "const": 1
+        },
+        "valuation": {
+          "const": "lagged_close_proxy"
+        },
+        "zero_volatility": {
+          "const": "cash"
+        },
+        "execution_authorized": {
+          "const": false
+        }
+      }
+    },
+    "freeze_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source_snapshot": {
+      "type": "object"
+    },
+    "rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "new_dates_per_import",
+        "seconds_per_import",
+        "stop_conditions",
+        "timestamp_proof"
+      ],
+      "properties": {
+        "new_dates_per_import": {
+          "const": 512
+        },
+        "seconds_per_import": {
+          "const": 3600
+        },
+        "stop_conditions": {
+          "const": [
+            "unknown_availability",
+            "missing_session",
+            "changed_source",
+            "changed_account_prefix",
+            "budget_exhausted"
+          ]
+        },
+        "timestamp_proof": {
+          "const": "local_hash_chain_only"
+        }
+      }
+    },
+    "protocol_id": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+}
