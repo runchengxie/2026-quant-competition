@@ -437,3 +437,115 @@ def test_accepted_receipts_and_original_bytes_are_rechecked(
     target.write_text("{}")
     with pytest.raises(ValueError):
         registry.inspect_observation(root)
+
+
+def real_us_import(
+    tmp_path, monkeypatch, *, available="2025-01-03T00:01:00Z", wrong_context=False
+):
+    from pathlib import Path
+    from competition_tools.datasets.session_calendar import completed_sessions
+    from competition_tools.evaluation import observation_registry as registry
+    from competition_tools.evaluation.controls.contracts import read_json
+    from competition_tools.evaluation.study_identity import canonical_hash
+
+    template = fixture_protocol(tmp_path)
+    template["synthetic"] = False
+    path = Path(template["warmup"]["US"]["path"])
+    dates = completed_sessions(
+        "XNYS",
+        "2023-01-01",
+        "2024-12-31",
+        as_of=datetime(2025, 1, 1, tzinfo=timezone.utc),
+    )["sessions"][-252:]
+    write_json(path, dict(dates=dates, close={"A": [100.0] * 252}))
+    template["warmup"]["US"]["sha256"] = digest(path)
+    root = tmp_path / "registry"
+    status = registry.freeze_observation(
+        template, root, now=datetime(2025, 1, 1, tzinfo=timezone.utc)
+    )
+    bars = read_json(path)
+    bars["dates"].append("2025-01-02")
+    bars["close"]["A"].append(101.0)
+    value = dict(
+        schema="competition.observation_import.v1",
+        protocol_id=status["protocol_id"],
+        market="US",
+        synthetic=False,
+        price_basis="split_adjusted",
+        quote_currency="USD",
+        availability_basis="verified",
+        availability_evidence=None,
+        available_at=[registry.utc_time(available).isoformat()],
+        bars=bars,
+    )
+    evidence = dict(
+        schema="competition.observation_availability_review.v1",
+        protocol_id=value["protocol_id"],
+        market="US",
+        import_sha256="0" * 64
+        if wrong_context
+        else canonical_hash(
+            {k: v for k, v in value.items() if k != "availability_evidence"}
+        ),
+        decision="verified",
+        reviewed_at="2025-01-03T10:00:00Z",
+    )
+    evidence_path = tmp_path / "availability-review.json"
+    write_json(evidence_path, evidence)
+    value["availability_evidence"] = dict(
+        path=str(evidence_path), sha256=digest(evidence_path)
+    )
+    monkeypatch.setattr(
+        registry, "TRUSTED_AVAILABILITY_EVIDENCE", frozenset({digest(evidence_path)})
+    )
+    return root, value
+
+
+def test_reviewed_availability_cannot_be_reused_for_another_import(
+    tmp_path, monkeypatch
+):
+    from competition_tools.evaluation import observation_registry as registry
+
+    root, value = real_us_import(tmp_path, monkeypatch, wrong_context=True)
+    with pytest.raises(ValueError, match="AVAILABILITY_REVIEW_CONTEXT"):
+        registry._normalize_import(
+            value,
+            registry._protocol(root),
+            now=datetime(2025, 1, 3, 12, tzinfo=timezone.utc),
+        )
+
+
+def test_real_us_availability_can_follow_close_on_the_same_utc_date(
+    tmp_path, monkeypatch
+):
+    from competition_tools.evaluation import observation_registry as registry
+
+    root, value = real_us_import(
+        tmp_path, monkeypatch, available="2025-01-02T21:01:00Z"
+    )
+    normalized = registry._normalize_import(
+        value,
+        registry._protocol(root),
+        now=datetime(2025, 1, 3, 12, tzinfo=timezone.utc),
+    )
+    assert normalized["available_at"] == ["2025-01-02T21:01:00+00:00"]
+
+
+def test_real_availability_evidence_is_rehashed_after_acceptance(tmp_path, monkeypatch):
+    from pathlib import Path
+    from competition_tools.evaluation import observation_registry as registry
+    from competition_tools.team.config import TeamConfig
+
+    root, value = real_us_import(tmp_path, monkeypatch)
+    path = tmp_path / "real-import.json"
+    write_json(path, value)
+    monkeypatch.setattr(registry, "_run_replay", cash_replay)
+    registry.append_observation(
+        root,
+        path,
+        config=TeamConfig(tmp_path / "data", tmp_path / "envs"),
+        now=datetime(2025, 1, 3, 12, tzinfo=timezone.utc),
+    )
+    Path(value["availability_evidence"]["path"]).write_text("{}")
+    with pytest.raises(ValueError, match="AVAILABILITY_UNVERIFIED"):
+        registry.inspect_observation(root)

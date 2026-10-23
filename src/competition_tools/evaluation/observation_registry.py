@@ -250,6 +250,75 @@ def _status(value, history):
     )
 
 
+def _review_availability(value, protocol, *, now=None):
+    if value["synthetic"]:
+        if (
+            value["availability_basis"] != "synthetic"
+            or value["availability_evidence"] is not None
+        ):
+            raise ValueError("OBSERVATION_AVAILABILITY_UNVERIFIED")
+        return
+    evidence = value["availability_evidence"]
+    if (
+        value["availability_basis"] != "verified"
+        or not isinstance(evidence, dict)
+        or set(evidence) != {"path", "sha256"}
+        or evidence["sha256"] not in TRUSTED_AVAILABILITY_EVIDENCE
+    ):
+        raise ValueError("OBSERVATION_AVAILABILITY_UNVERIFIED")
+    path = safe_path(Path(evidence["path"]))
+    if digest(path) != evidence["sha256"]:
+        raise ValueError("OBSERVATION_AVAILABILITY_UNVERIFIED")
+    review = read_json(path)
+    normalized = value | {
+        "available_at": [utc_time(v).isoformat() for v in value["available_at"]]
+    }
+    expected = canonical_hash(
+        {k: v for k, v in normalized.items() if k != "availability_evidence"}
+    )
+    if (
+        set(review)
+        != {
+            "schema",
+            "protocol_id",
+            "market",
+            "import_sha256",
+            "decision",
+            "reviewed_at",
+        }
+        or review["schema"] != "competition.observation_availability_review.v1"
+        or review["decision"] != "verified"
+        or review["protocol_id"] != protocol["protocol_id"]
+        or value["protocol_id"] != protocol["protocol_id"]
+        or review["market"] != value["market"]
+        or review["import_sha256"] != expected
+    ):
+        raise ValueError("OBSERVATION_AVAILABILITY_REVIEW_CONTEXT")
+    reviewed = utc_time(review["reviewed_at"])
+    if reviewed < max(utc_time(v) for v in value["available_at"]) or (
+        now is not None and reviewed > utc_time(now)
+    ):
+        raise ValueError("OBSERVATION_AVAILABILITY_REVIEW_TIME")
+
+
+def _completed_bar_at(market, day, *, synthetic):
+    if synthetic or market == "crypto":
+        return datetime.combine(
+            date.fromisoformat(day) + timedelta(days=1),
+            datetime.min.time(),
+            tzinfo=timezone.utc,
+        )
+    from exchange_calendars import get_calendar
+
+    parsed = date.fromisoformat(day)
+    calendar = get_calendar(
+        "XNYS",
+        start=(parsed - timedelta(days=7)).isoformat(),
+        end=(parsed + timedelta(days=7)).isoformat(),
+    )
+    return utc_time(calendar.session_close(day).to_pydatetime())
+
+
 def _normalize_import(value, protocol, *, now):
     keys = {
         "schema",
@@ -287,22 +356,6 @@ def _normalize_import(value, protocol, *, now):
         or any(bars["close"][p][:252] != warmup["close"][p] for p in warmup["close"])
     ):
         raise ValueError("OBSERVATION_WARMUP_OR_BUDGET_MISMATCH")
-    if value["synthetic"]:
-        if (
-            value["availability_basis"] != "synthetic"
-            or value["availability_evidence"] is not None
-        ):
-            raise ValueError("OBSERVATION_AVAILABILITY_UNVERIFIED")
-    else:
-        evidence = value["availability_evidence"]
-        if (
-            value["availability_basis"] != "verified"
-            or not isinstance(evidence, dict)
-            or set(evidence) != {"path", "sha256"}
-            or evidence["sha256"] not in TRUSTED_AVAILABILITY_EVIDENCE
-            or digest(safe_path(Path(evidence["path"]))) != evidence["sha256"]
-        ):
-            raise ValueError("OBSERVATION_AVAILABILITY_UNVERIFIED")
     scored = bars["dates"][252:]
     if not isinstance(value["available_at"], list) or len(value["available_at"]) != len(
         scored
@@ -316,12 +369,13 @@ def _normalize_import(value, protocol, *, now):
         if (
             timestamp <= cutoff
             or timestamp > utc_time(now)
-            or timestamp.date() <= date.fromisoformat(day)
+            or timestamp < _completed_bar_at(market, day, synthetic=value["synthetic"])
             or day <= utc_time(protocol["template"]["known_cutoff"]).date().isoformat()
         ):
             raise ValueError("BACKDATED_OR_UNAVAILABLE_OBSERVATION")
     if available != sorted(available):
         raise ValueError("OUT_OF_ORDER_OBSERVATION_AVAILABILITY")
+    _review_availability(value, protocol, now=now)
     first = date.fromisoformat(bars["dates"][251]) + timedelta(days=1)
     last = date.fromisoformat(scored[-1])
     if market == "crypto" or value["synthetic"]:
@@ -494,8 +548,10 @@ def _history(root, protocol):
         if files != receipt["files"]:
             raise ValueError("OBSERVATION_RECEIPT_ARTIFACT_CHANGED")
         manifest = read_json(directory / "manifest.json")
+        _review_availability(manifest, protocol)
         if (
             canonical_hash(manifest) != receipt["import_id"]
+            or manifest["protocol_id"] != protocol["protocol_id"]
             or manifest["market"] != receipt["market"]
             or len(manifest["bars"]["dates"]) - 252 != receipt["observations"]
         ):

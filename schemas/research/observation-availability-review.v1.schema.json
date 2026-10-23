@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "competition.observation_availability_review.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "protocol_id",
+    "market",
+    "import_sha256",
+    "decision",
+    "reviewed_at"
+  ],
+  "properties": {
+    "schema": {
+      "const": "competition.observation_availability_review.v1"
+    },
+    "protocol_id": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "market": {
+      "enum": [
+        "US",
+        "crypto"
+      ]
+    },
+    "import_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "decision": {
+      "const": "verified"
+    },
+    "reviewed_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}
