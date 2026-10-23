@@ -26,7 +26,7 @@ python -m competition_tools.team data inspect --config /absolute/private/team.to
 
 上限为 0.10 美元、5 次元数据请求、1 次下载尝试、120 秒总活动时间和 20 MiB 未压缩 HTTP 响应。失败请求及其响应字节也计入限制。工具在下载前检查最新报价、计费字节数、记录数和适用单价，确认保守费用上界。服务端限制最多返回 4,000 条记录；触及限制或记录数不一致时拒绝结果。计费按未压缩二进制数据计算，不能用 CSV 文件大小推算账单。无法证明费用边界时会保留阻塞记录，不能当成免费请求。参见[官方 HTTP API](https://databento.com/docs/api-reference-historical?historical=http)。
 
-所有结果，包括阻塞和部分完成的尝试，均保留在 `databento-us-daily-pilot/20261023-v1/`。父目录中的 `.databento-us-2025-pilot.attempt` 在预检前占用本轮授权，`download-attempt.json` 表示计费请求可能已经开始。失败或中断后不自动重试。不要删除记录或换目录重复不确定的请求，应先核对保留证据和账户用量。重复采集会被拒绝，离线 `inspect` 则校验文件哈希和请求、规格身份。
+所有结果，包括阻塞和部分完成的尝试，均保留在 `databento-us-daily-pilot/20261023-v1/`。固定的 `DATA_ROOT/2026-quant-competition/authorizations/databento-us-2025-pilot.attempt.json` 在预检前占用本轮授权，不随输出目录变化。需将 `WORKSPACE_CONFIG` 设为定义权威 `data_root` 的外部 `workspace.toml`；修改团队输出配置不能重置授权。`download-attempt.json` 表示计费请求可能已经开始。失败或中断后不自动重试。不要删除记录或换目录重复不确定的请求，应先核对保留证据和账户用量。重复采集会被拒绝，离线 `inspect` 则校验文件哈希和请求、规格身份。
 
 仓库外保留原始 CSV、带日期的证券映射、逐标的标准化 CSV、覆盖报告、日历来源和 `competition.databento_dataset_manifest.v1`。无法证明上市日历时记录 `LISTING_CALENDAR_UNVERIFIED`，缺失观测不填充。价格保持 `raw`，公司行动仍未核验。所有结果均为 `accepted_research=false`，已有正式研究入口仍要求原有来源和复权契约。
 

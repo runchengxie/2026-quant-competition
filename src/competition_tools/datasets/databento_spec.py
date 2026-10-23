@@ -3,6 +3,7 @@
 import hashlib
 import json
 import os
+from contextlib import contextmanager
 from pathlib import Path
 
 SYMBOLS = ["SPY", "QQQ", "IWM", "TLT", "GLD", "AAPL", "MSFT", "NVDA", "AMZN", "META"]
@@ -27,6 +28,37 @@ def safe_path(path: Path) -> Path:
         if marker.is_file() or (marker.is_dir() and any(marker.iterdir())):
             raise ValueError("REPOSITORY_PATH_REJECTED")
     return path
+
+
+class PathBinding:
+    """Keep existing ancestor identities and recheck newly created components."""
+
+    def __init__(self, path):
+        self.path = safe_path(path)
+        self.identities = {}
+        self.check()
+
+    def check(self):
+        safe_path(self.path)
+        for parent in (self.path, *self.path.parents):
+            if parent.exists():
+                stat = parent.stat(follow_symlinks=False)
+                identity = (stat.st_dev, stat.st_ino)
+                if parent in self.identities and self.identities[parent] != identity:
+                    raise ValueError("PATH_IDENTITY_CHANGED")
+                self.identities[parent] = identity
+        return self.path
+
+
+@contextmanager
+def checked_open(path, mode, **kwargs):
+    binding = PathBinding(path)
+    # Validate before open, then validate the opened handle before any write.
+    with binding.check().open(mode, **kwargs) as stream:
+        binding.check()
+        if os.fstat(stream.fileno()).st_ino != path.stat(follow_symlinks=False).st_ino:
+            raise ValueError("PATH_IDENTITY_CHANGED")
+        yield stream
 
 
 def pilot_spec(credential_file: Path) -> dict:

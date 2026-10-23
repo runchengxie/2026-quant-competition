@@ -13,6 +13,15 @@ from competition_tools.team.config import TeamConfig
 from competition_tools.team.data import execute
 
 
+@pytest.fixture(autouse=True)
+def isolated_authorization(tmp_path, monkeypatch):
+    workspace = tmp_path / "workspace.toml"
+    workspace.write_text(
+        "data_root = " + json.dumps(str(tmp_path / "authority")) + "\n"
+    )
+    monkeypatch.setenv("WORKSPACE_CONFIG", str(workspace))
+
+
 def test_team_databento_plan_offline_and_reject_refresh(tmp_path):
     spec = tmp_path / "spec.json"
     spec.write_text(json.dumps(pilot_spec(tmp_path / "missing.env")))
@@ -27,6 +36,20 @@ def test_team_databento_plan_offline_and_reject_refresh(tmp_path):
     ]:
         with pytest.raises(ValueError):
             execute(action, config, spec, **kwargs)
+
+
+def test_changed_cli_data_root_does_not_reset_authorization(tmp_path, monkeypatch):
+    from competition_tools.datasets import databento_acquisition as module
+    from test_databento_acquisition import FakeTransport
+
+    t = FakeTransport(fail=True)
+    monkeypatch.setattr(module, "DatabentoTransport", lambda *args, **kwargs: t)
+    spec = tmp_path / "spec.json"
+    spec.write_text(json.dumps(pilot_spec(tmp_path / "key.env")))
+    execute("acquire", TeamConfig(tmp_path / "first", tmp_path / "env"), spec)
+    with pytest.raises(ValueError, match="ATTEMPT"):
+        execute("acquire", TeamConfig(tmp_path / "second", tmp_path / "env"), spec)
+    assert t.downloads == 1
 
 
 def test_real_cli_synthetic_delivery(tmp_path):

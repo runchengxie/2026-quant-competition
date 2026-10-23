@@ -4,13 +4,15 @@ import base64
 import json
 import re
 import time
+import threading
+import socket
 import urllib.error
 import urllib.parse
 import urllib.request
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
-from .databento_spec import BUDGET, safe_path
+from .databento_spec import BUDGET, safe_path, PathBinding, checked_open
 
 METHODS = {
     "metadata.get_cost",
@@ -95,14 +97,17 @@ class DatabentoTransport:
             raise ValueError("INVALID_BUDGET")
         self.budget = dict(budget)
         self.ledger = safe_path(ledger)
+        self.ledger_binding = PathBinding(self.ledger)
         if self.ledger.exists():
             raise ValueError("REQUEST_LEDGER_EXISTS")
         self.metadata_requests = self.download_requests = self.bytes = 0
         self.key = self.auth = None
         self.credential_file = safe_path(credential_file)
+        self.credential_binding = PathBinding(self.credential_file)
         self.opener = opener or urllib.request.build_opener(NoRedirect())
 
     def _credentials(self):
+        self.credential_binding.check()
         if self.key is not None:
             return
         values = []
@@ -138,15 +143,55 @@ class DatabentoTransport:
         }
 
     def _log(self, value):
+        self.ledger_binding.check()
+        safe_path(self.ledger)
         self.ledger.parent.mkdir(parents=True, exist_ok=True)
-        with self.ledger.open("a", encoding="utf-8") as stream:
+        with checked_open(self.ledger, "a", encoding="utf-8") as stream:
             stream.write(json.dumps(value, allow_nan=False) + "\n")
+
+    @staticmethod
+    def _cancel(response):
+        try:
+            response.fp.raw._sock.shutdown(socket.SHUT_RDWR)
+        except (AttributeError, OSError):
+            pass
+        threading.Thread(target=response.close, daemon=True).start()
+
+    def _bounded(self, operation, *, response=None):
+        remaining = self.check_time()
+        ready, cancelled = threading.Event(), threading.Event()
+        result = []
+
+        def run():
+            try:
+                value = operation()
+                if cancelled.is_set() and response is None and hasattr(value, "close"):
+                    self._cancel(value)
+                result.append((True, value))
+            except Exception as exc:
+                result.append((False, exc))
+            finally:
+                ready.set()
+
+        threading.Thread(target=run, daemon=True).start()
+        if not ready.wait(remaining):
+            cancelled.set()
+            if response is not None:
+                self._cancel(response)
+            raise ValueError("TIME_BUDGET")
+        self.check_time()
+        ok, value = result[0]
+        if not ok:
+            raise value
+        return value
 
     def _fetch(self, method, parameters):
         download = method == "timeseries.get_range"
         if method not in METHODS and not download:
             raise ValueError("ENDPOINT_REJECTED")
-        remaining = self.check_time()
+        self.check_time()
+        self.ledger_binding.check()
+        self.credential_binding.check()
         counter = "download_requests" if download else "metadata_requests"
         if getattr(self, counter) >= self.budget[counter]:
             raise ValueError("REQUEST_BUDGET")
@@ -169,8 +214,15 @@ class DatabentoTransport:
             },
         )
         raw = bytearray()
+        response = None
         try:
-            with self.opener.open(request, timeout=min(25, remaining)) as response:
+            self.ledger_binding.check()
+            self.credential_binding.check()
+            remaining = self.check_time()
+            response = self._bounded(
+                lambda: self.opener.open(request, timeout=min(25, remaining))
+            )
+            try:
                 if response.status != 200:
                     raise ValueError("PROVIDER_STATUS_REJECTED")
                 if response.headers.get("Content-Encoding", "identity") not in (
@@ -180,8 +232,11 @@ class DatabentoTransport:
                     raise ValueError("ENCODING_REJECTED")
                 while True:
                     self.check_time()
-                    chunk = response.read(
-                        min(65536, self.budget["bytes"] - self.bytes + 1)
+                    chunk = self._bounded(
+                        lambda: response.read(
+                            min(65536, self.budget["bytes"] - self.bytes + 1)
+                        ),
+                        response=response,
                     )
                     if not chunk:
                         break
@@ -189,6 +244,8 @@ class DatabentoTransport:
                     if self.bytes > self.budget["bytes"]:
                         raise ValueError("BYTE_BUDGET")
                     raw.extend(chunk)
+            finally:
+                self._cancel(response)
             self.check_time()
             text = raw.decode("utf-8-sig")
             # Match literal and JSON-escaped secrets; no raw error data is logged.
@@ -199,20 +256,25 @@ class DatabentoTransport:
             ):
                 raise ValueError("SECRET_ECHO_REJECTED")
             self._log({"method": method, "state": "completed", "bytes": len(raw)})
-            return text
+            return bytes(raw)
         except urllib.error.HTTPError as exc:
             # Count error bytes without keeping the body or its text.
             try:
                 while self.bytes <= self.budget["bytes"]:
                     self.check_time()
-                    block = exc.read(min(65536, self.budget["bytes"] - self.bytes + 1))
+                    block = self._bounded(
+                        lambda error_response=exc: error_response.read(
+                            min(65536, self.budget["bytes"] - self.bytes + 1)
+                        ),
+                        response=exc,
+                    )
                     if not block:
                         break
                     self.bytes += len(block)
             except Exception:
                 pass
             finally:
-                exc.close()
+                self._cancel(exc)
             self._log({"method": method, "state": "http_error", "status": exc.code})
             raise ValueError(f"PROVIDER_HTTP_{exc.code}") from None
         except ValueError:
@@ -240,9 +302,10 @@ class DatabentoTransport:
 
     def download_csv(self, parameters: dict, destination: Path) -> None:
         destination = safe_path(destination)
+        binding = PathBinding(destination)
         if destination.exists():
             raise ValueError("RAW_FILE_EXISTS")
-        text = self._fetch(
+        raw = self._fetch(
             "timeseries.get_range",
             {
                 **parameters,
@@ -253,6 +316,8 @@ class DatabentoTransport:
                 "compression": "none",
             },
         )
+        binding.check()
         destination.parent.mkdir(parents=True, exist_ok=True)
-        with destination.open("x", encoding="utf-8", newline="") as stream:
-            stream.write(text)
+        binding.check()
+        with checked_open(destination, "xb") as stream:
+            stream.write(raw)

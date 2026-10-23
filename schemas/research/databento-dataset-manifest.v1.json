@@ -23,6 +23,7 @@
         "accepted_research",
         "issue_codes",
         "request_sha256",
+        "started_at",
         "observed_at",
         "historical_availability_verified",
         "cost",
@@ -50,8 +51,15 @@
           "type": "string",
           "pattern": "^[a-f0-9]{64}$"
         },
-        "observed_at": {
+        "started_at": {
           "type": "string",
+          "format": "date-time"
+        },
+        "observed_at": {
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "date-time"
         },
         "historical_availability_verified": {

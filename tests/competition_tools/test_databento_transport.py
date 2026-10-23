@@ -1,4 +1,7 @@
 import io
+import os
+import subprocess
+import time
 from decimal import Decimal
 from urllib.error import HTTPError
 
@@ -123,3 +126,85 @@ def test_elapsed_time_starts_at_transport_creation(tmp_path):
     with pytest.raises(ValueError, match="TIME_BUDGET"):
         t.get_metadata("metadata.get_cost", {})
     assert not t.opener.calls
+
+
+def test_absolute_deadline_interrupts_inflight_read(tmp_path):
+    class Slow(Response):
+        def read(self, size=-1):
+            time.sleep(0.4)
+            return b"1"
+
+    t = transport(tmp_path, [])
+    t.opener.open = lambda *args, **kwargs: Slow()
+    t.started = time.monotonic() - 119.9
+    started = time.monotonic()
+    with pytest.raises(ValueError, match="TIME_BUDGET"):
+        t.get_metadata("metadata.get_cost", {})
+    assert time.monotonic() - started < 0.3
+
+
+def test_junction_substitution_prevents_request(tmp_path):
+    parent = tmp_path / "late"
+    other = tmp_path / "other"
+    other.mkdir()
+    t = transport(tmp_path, [b"1"])
+    t.ledger = parent / "requests.jsonl"
+    if os.name == "nt":
+        run = subprocess.run(
+            ["cmd", "/c", "mklink", "/J", str(parent), str(other)], capture_output=True
+        )
+        assert run.returncode == 0
+    else:
+        parent.symlink_to(other, target_is_directory=True)
+    with pytest.raises(ValueError, match="REPARSE"):
+        t.get_metadata("metadata.get_cost", {})
+    assert not t.opener.calls
+
+
+def test_raw_csv_preserves_original_response_bytes(tmp_path):
+    raw = b"\xef\xbb\xbfa,b\r\n1,2\r\n"
+    t = transport(tmp_path, [raw])
+    target = tmp_path / "raw.csv"
+    t.download_csv({}, target)
+    assert target.read_bytes() == raw
+
+
+def test_error_body_read_obeys_absolute_deadline(tmp_path):
+    class Slow(Response):
+        def read(self, size=-1):
+            time.sleep(0.4)
+            return b"error"
+
+    t = transport(
+        tmp_path, [HTTPError("https://hist.databento.com", 500, "error", {}, Slow())]
+    )
+    t.started = time.monotonic() - 119.9
+    started = time.monotonic()
+    with pytest.raises(ValueError):
+        t.get_metadata("metadata.get_cost", {})
+    assert time.monotonic() - started < 0.3
+
+
+def test_junction_substitution_during_response_prevents_raw_write(tmp_path):
+    parent = tmp_path / "late"
+    other = tmp_path / "other"
+    other.mkdir()
+
+    class Swap(Response):
+        def read(self, size=-1):
+            if not parent.exists():
+                if os.name == "nt":
+                    run = subprocess.run(
+                        ["cmd", "/c", "mklink", "/J", str(parent), str(other)],
+                        capture_output=True,
+                    )
+                    assert run.returncode == 0
+                else:
+                    parent.symlink_to(other, target_is_directory=True)
+            return super().read(size)
+
+    t = transport(tmp_path, [])
+    t.opener.open = lambda *args, **kwargs: Swap(b"a,b\n1,2\n")
+    with pytest.raises(ValueError, match="REPARSE"):
+        t.download_csv({}, parent / "bars.csv")
+    assert not (other / "bars.csv").exists()
