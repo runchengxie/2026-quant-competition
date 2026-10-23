@@ -46,7 +46,7 @@ def main(argv: list[str] | None = None) -> int:
     run = commands.add_parser(
         "run", help="Run an explicitly configured international experiment"
     )
-    run.add_argument("project", choices=["international", "next-open"])
+    run.add_argument("project", choices=["international", "next-open", "us-next-session"])
     run.add_argument("--config", type=Path, required=True)
     run.add_argument("--experiment-config", type=Path, required=True)
     run.add_argument("--output-root", type=Path, required=True)
@@ -68,6 +68,10 @@ def main(argv: list[str] | None = None) -> int:
     controls.add_argument("--config", type=Path, required=True)
     controls.add_argument("--spec", type=Path, required=True)
     controls.add_argument("--output-root", type=Path, required=True)
+    readiness = commands.add_parser("execution-readiness", help="Inventory missing US execution evidence without network or orders")
+    readiness.add_argument("--config", type=Path, required=True)
+    readiness.add_argument("--spec", type=Path, required=True)
+    readiness.add_argument("--output-root", type=Path, required=True)
     factors = commands.add_parser("factors", help="Run fixed retrospective hourly factor diagnostics")
     factors.add_argument("--config", type=Path, required=True)
     factors.add_argument("--spec", type=Path, required=True)
@@ -90,7 +94,11 @@ def main(argv: list[str] | None = None) -> int:
             value = envelope(args.action)
         else:
             config = load_config(args.config)
-            if args.action == "controls":
+            if args.action == "execution-readiness":
+                from .execution_readiness import execute
+
+                value = execute(config, args.spec, args.output_root)
+            elif args.action == "controls":
                 from .controls import execute
 
                 value = execute(config, args.spec, args.output_root)

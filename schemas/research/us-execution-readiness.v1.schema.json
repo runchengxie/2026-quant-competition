@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "competition.us_execution_readiness.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "status",
+    "scope",
+    "datasets",
+    "model_id",
+    "return_basis",
+    "orders_submitted",
+    "execution_eligible",
+    "total_return"
+  ],
+  "properties": {
+    "schema": {
+      "const": "competition.us_execution_readiness.v1"
+    },
+    "status": {
+      "const": "blocked"
+    },
+    "scope": {
+      "const": "cached_daily_manifest_evidence_inventory"
+    },
+    "datasets": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 16,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "manifest_sha256",
+          "checks"
+        ],
+        "properties": {
+          "manifest_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "checks": {
+            "type": "array",
+            "minItems": 7,
+            "maxItems": 7,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "code",
+                "status"
+              ],
+              "properties": {
+                "code": {
+                  "enum": [
+                    "USD_QUOTE_DECLARED",
+                    "US_MARKET_DECLARED",
+                    "RAW_EXECUTION_PRICES_REQUIRED",
+                    "FIRST_REGULAR_OPEN_EVIDENCE_UNVERIFIED",
+                    "AVAILABILITY_EVIDENCE_UNVERIFIED",
+                    "CORPORATE_ACTION_MODEL_UNVERIFIED",
+                    "LOT_AND_LISTING_EVIDENCE_UNVERIFIED"
+                  ]
+                },
+                "status": {
+                  "enum": [
+                    "passed",
+                    "blocked"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "model_id": {
+      "const": "us-next-session-price-nav.v1"
+    },
+    "return_basis": {
+      "const": "usd_price_nav"
+    },
+    "orders_submitted": {
+      "const": 0
+    },
+    "execution_eligible": {
+      "const": false
+    },
+    "total_return": {
+      "const": false
+    }
+  }
+}

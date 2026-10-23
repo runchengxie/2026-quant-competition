@@ -12,6 +12,7 @@ from .processes import child_environment, envelope, interpreter, run_child
 EXPERIMENTS = {
     "international": ("equity-lab", "equity_lab.international.six_market_run"),
     "next-open": ("platform-compare", "platform_compare.next_open.run"),
+    "us-next-session": ("platform-compare", "platform_compare.us_next_session.run"),
 }
 
 

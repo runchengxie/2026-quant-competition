@@ -33,3 +33,10 @@ def test_unknown_experiment_has_stable_result(tmp_path):
     assert run_experiment("unknown", config, Path("no-config"), tmp_path / "new")[
         "issue_codes"
     ] == ["INVALID_PROJECT"]
+
+
+def test_us_adapter_uses_an_independent_environment(tmp_path):
+    config = TeamConfig(tmp_path / "data", tmp_path / "env")
+    assert run_experiment(
+        "us-next-session", config, tmp_path / "us.json", tmp_path / "new"
+    )["issue_codes"] == ["ENVIRONMENT_UNAVAILABLE"]
