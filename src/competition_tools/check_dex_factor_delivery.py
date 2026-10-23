@@ -135,10 +135,10 @@ def synthetic_delivery(leaf_python, output_root):
                 )
                 first += timedelta(hours=1)
         else:
-            value = {"id": spec["assets"][0]["address"]}
+            value = {"id": spec["assets"][0]["address"], "chain": "solana"}
         return Response(json.dumps(value).encode())
 
-    staging = output / "staging"
+    staging = destination.with_name(destination.name + ".partial")
     transport = DexTransport(
         CAPS,
         credential,

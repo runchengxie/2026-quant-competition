@@ -70,6 +70,7 @@ def cross_section(signal, target):
     result = {
         "n": len(signal),
         "rank_ic": None,
+        "ic_reason": None,
         "group_mean_forward_returns": None,
         "group_counts": None,
         "top_minus_bottom": None,
@@ -84,8 +85,10 @@ def cross_section(signal, target):
     if any(len(group) < 3 for group in bins):
         return result | {"reason": "INSUFFICIENT_GROUP_SIZE"}
     means = [fmean(group) for group in bins]
+    ic = rank_ic(signal, target, minimum=9)
     return result | {
-        "rank_ic": rank_ic(signal, target, minimum=9)["value"],
+        "rank_ic": ic["value"],
+        "ic_reason": ic["reason"],
         "group_counts": [len(g) for g in bins],
         "group_mean_forward_returns": means,
         "top_minus_bottom": means[2] - means[0],

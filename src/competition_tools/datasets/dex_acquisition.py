@@ -1,9 +1,11 @@
 """Frozen-identity hourly acquisition with durable checkpoints and bounded resume."""
 
 import os
+import json
 from datetime import datetime, timezone
 from pathlib import Path
 
+from .dex_protocol import load_factor_protocol
 from .dex_spec import safe_path, validate_dex_spec, dataset_identity
 from .dex_provider import plan_dex, usage_preflight, require_headroom, UNITS_SOURCE
 from .dex_quality import normalize_chunk, validate_hourly_rows, UNITS
@@ -42,7 +44,10 @@ def acquire_dex(spec: dict, staging: Path, *, transport) -> dict:
     protocol_path = safe_path(spec["protocol_file"])
     if digest(protocol_path) != spec["protocol_sha256"]:
         raise ValueError("PROTOCOL_HASH_MISMATCH")
-    protocol = read_json(protocol_path)
+    protocol = load_factor_protocol(protocol_path)
+    planned = safe_path(protocol["manifest_file"]).parent
+    if staging not in {planned, planned.with_name(planned.name + ".partial")}:
+        raise ValueError("PROTOCOL_MANIFEST_MISMATCH")
     if protocol.get("dataset") != dataset_identity(spec):
         raise ValueError("PROTOCOL_DATASET_MISMATCH")
     prior = resume_state(spec, staging)
@@ -87,7 +92,25 @@ def _collect(spec, staging, transport, plan, prior):
         "completed_resources": prior["completed_resources"][:] if prior else [],
     }
     completed = set(receipt["completed_resources"])
-    start = transport.clock()
+    start = transport.started
+    if prior:
+        for record in prior["checkpoints"]:
+            if record["path"].endswith(".jsonl"):
+                for line in (
+                    (staging / record["path"]).read_text(encoding="utf-8").splitlines()
+                ):
+                    entry = json.loads(line)
+                    if (
+                        entry.get("endpoint") != "usage"
+                        and entry.get("status") == "interrupted"
+                    ):
+                        resource = entry.get("resource")
+                        if not isinstance(resource, str):
+                            raise ValueError("UNKNOWN_RESOURCE_ATTEMPTS")
+                        transport.resource_attempts[resource] = max(
+                            transport.resource_attempts.get(resource, 0),
+                            entry["attempt"],
+                        )
 
     def checkpoint():
         receipt["spent"] = {
@@ -95,6 +118,10 @@ def _collect(spec, staging, transport, plan, prior):
             "bytes": spent["bytes"] + transport.bytes,
             "seconds": spent["seconds"] + max(0, transport.clock() - start),
         }
+        if receipt["spent"]["seconds"] >= spec["budget"]["seconds"]:
+            receipt["status"] = "blocked"
+            if "TIME_BUDGET" not in receipt["issues"]:
+                receipt["issues"].append("TIME_BUDGET")
         receipt["checkpoints"] = [
             r for r in file_records(staging) if r["path"] != "receipt.json"
         ]
@@ -138,7 +165,11 @@ def _collect(spec, staging, transport, plan, prior):
                 raise ValueError("NETWORK_NOT_SUPPORTED")
             args = {"network": asset["network"], "address": asset["address"]}
             token = fetch(asset_id + "-metadata", "token", **args)
-            if not isinstance(token, dict) or token.get("id") != asset["address"]:
+            if (
+                not isinstance(token, dict)
+                or token.get("id") != asset["address"]
+                or token.get("chain") != asset["network"]
+            ):
                 raise ValueError("TOKEN_IDENTITY_MISMATCH")
             if "pool_address" in asset:
                 pool = fetch(
@@ -150,8 +181,14 @@ def _collect(spec, staging, transport, plan, prior):
                 if (
                     not isinstance(pool, dict)
                     or pool.get("id") != asset["pool_address"]
-                    or asset["address"]
-                    not in {p.get("id") for p in pool.get("tokens", [])}
+                    or pool.get("chain") != asset["network"]
+                    or not isinstance(pool.get("tokens"), list)
+                    or not all(isinstance(p, dict) for p in pool["tokens"])
+                    or not any(
+                        p.get("id") == asset["address"]
+                        and p.get("chain") == asset["network"]
+                        for p in pool["tokens"]
+                    )
                 ):
                     raise ValueError("POOL_IDENTITY_MISMATCH")
                 if not any(s["asset_id"] == asset_id for s in receipt["snapshots"]):
@@ -234,6 +271,9 @@ def _collect(spec, staging, transport, plan, prior):
                         ),
                     }
                 )
+        checkpoint()
+        write_dex_manifest(spec, staging, receipt)
+        # Charge finalization against the same active origin as network I/O.
         checkpoint()
         write_dex_manifest(spec, staging, receipt)
     return receipt

@@ -75,3 +75,54 @@ def test_actual_leaf_cli(tmp_path):
     )
     assert child.returncode == 0, child.stderr
     assert json.loads(child.stdout)["status"] == "completed"
+
+
+@pytest.mark.parametrize("all_constant", [False, True])
+def test_constant_cross_targets_keep_groups_and_use_separate_ic_count(
+    tmp_path, monkeypatch, all_constant
+):
+    from crypto_mm.factors import study
+
+    assets = [str(i) for i in range(9)]
+    protocol = dict(
+        dataset=dict(
+            start="2025-01-01T00:00:00Z", assets=[{"stable_id": a} for a in assets]
+        ),
+        signals=["momentum_24h"],
+        horizons=[6],
+        sampling=["all_valid"],
+        source_commit="a" * 40,
+        source_files=[],
+    )
+    inputs = dict(
+        rows={a: [int(a)] for a in assets},
+        manifest_sha256="m",
+        protocol_sha256="p",
+        input_hashes=[],
+        code_hashes=[],
+    )
+    monkeypatch.setattr(study, "verify_inputs", lambda _: inputs)
+
+    def series(values):
+        return [
+            {"timestamp": f"2025-01-01T0{i}:00:00Z", "value": v}
+            for i, v in enumerate(values)
+        ]
+
+    monkeypatch.setattr(study, "build_signals", lambda rows, _: series([rows[0]] * 3))
+    monkeypatch.setattr(
+        study,
+        "forward_returns",
+        lambda rows, _: series([0, 0 if all_constant else rows[0], 0]),
+    )
+    record = study.run_factor_study(protocol, tmp_path / "mixed")["cross_sectional"][0]
+    assert record["valid_timestamps"] == 3
+    assert record["ic_valid_timestamps"] == (0 if all_constant else 1)
+    assert record["ic_excluded_reasons"] == {
+        "CONSTANT_TARGET": 3 if all_constant else 2
+    }
+    assert record["mean_rank_ic"] == (None if all_constant else 1)
+    assert record["ic_reason"] == ("CONSTANT_TARGET" if all_constant else None)
+    assert record["group_mean_forward_returns"] == (
+        [0, 0, 0] if all_constant else [1 / 3, 4 / 3, 7 / 3]
+    )

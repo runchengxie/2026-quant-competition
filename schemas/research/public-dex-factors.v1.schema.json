@@ -358,7 +358,10 @@
                   "group_mean_forward_returns",
                   "top_minus_bottom",
                   "reason",
-                  "excluded_reasons"
+                  "excluded_reasons",
+                  "ic_valid_timestamps",
+                  "ic_excluded_reasons",
+                  "ic_reason"
                 ],
                 "properties": {
                   "signal_id": {
@@ -436,6 +439,33 @@
                         "minimum": 0
                       }
                     }
+                  },
+                  "ic_valid_timestamps": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "ic_excluded_reasons": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                      "CONSTANT_SIGNAL": {
+                        "type": "integer",
+                        "minimum": 0
+                      },
+                      "CONSTANT_TARGET": {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    }
+                  },
+                  "ic_reason": {
+                    "enum": [
+                      null,
+                      "CONSTANT_SIGNAL",
+                      "CONSTANT_TARGET",
+                      "INSUFFICIENT_UNDERLYINGS",
+                      "NO_VALID_GROUPS"
+                    ]
                   }
                 }
               },

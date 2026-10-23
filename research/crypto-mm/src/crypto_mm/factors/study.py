@@ -89,6 +89,10 @@ def run_factor_study(protocol, output_root):
                     if len(assets) < 9
                     else "NO_VALID_GROUPS"
                 )
+                ic_frames = [r for r in frames if r["rank_ic"] is not None]
+                ic_excluded = Counter(
+                    r["ic_reason"] for r in frames if r["rank_ic"] is None
+                )
                 cross.append(
                     {
                         "signal_id": signal_id,
@@ -96,8 +100,11 @@ def run_factor_study(protocol, output_root):
                         "sampling": sampling,
                         "candidate_timestamps": len(by_time),
                         "valid_timestamps": len(frames),
-                        "mean_rank_ic": fmean(r["rank_ic"] for r in frames)
-                        if frames
+                        "ic_valid_timestamps": len(ic_frames),
+                        "ic_excluded_reasons": dict(sorted(ic_excluded.items())),
+                        "ic_reason": None if ic_frames else reason or "CONSTANT_TARGET",
+                        "mean_rank_ic": fmean(r["rank_ic"] for r in ic_frames)
+                        if ic_frames
                         else None,
                         "group_mean_forward_returns": [
                             fmean(r["group_mean_forward_returns"][i] for r in frames)

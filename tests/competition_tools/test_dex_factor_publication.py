@@ -108,6 +108,9 @@ def private_factor_case(tmp_path):
                         sampling=sampling,
                         candidate_timestamps=len(times),
                         valid_timestamps=0,
+                        ic_valid_timestamps=0,
+                        ic_excluded_reasons={},
+                        ic_reason="INSUFFICIENT_UNDERLYINGS",
                         mean_rank_ic=None,
                         group_mean_forward_returns=None,
                         top_minus_bottom=None,
@@ -214,7 +217,17 @@ def test_blocked_acquisition_can_publish_readiness_without_invented_result(
     assert "metrics" not in value
 
 
-def test_permitted_synthetic_projection_excludes_private_fields(private_factor_case):
+def test_permitted_synthetic_projection_excludes_private_fields(
+    private_factor_case, monkeypatch
+):
+    from competition_tools.evaluation import dex_factor_publication as publication
+
+    trusted = permission(private_factor_case[0])
+    monkeypatch.setattr(
+        publication,
+        "REVIEWED_PERMISSION_SOURCE_SHA256",
+        frozenset({trusted["source_sha256"]}),
+    )
     value = build_public_dex_factors(
         *private_factor_case, permission(private_factor_case[0])
     )
@@ -280,3 +293,24 @@ def test_mutation_during_projection_invalidates_publication(
         publication.build_public_dex_factors(
             protocol, manifest, result, permission(protocol)
         )
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Redistribution of derived statistics is prohibited.",
+        "This unrelated document says nothing about data rights.",
+        "Publication of derived research statistics is permitted.",
+    ],
+)
+def test_caller_authored_permission_bytes_cannot_create_trust(tmp_path, text):
+    from competition_tools.evaluation.dex_factor_publication import (
+        private_permission_verified,
+    )
+
+    source = tmp_path / "caller-authored.txt"
+    source.write_text(text)
+    value = permission() | dict(
+        source_file=str(source), source_sha256=digest(source), supporting_clause=text
+    )
+    assert not private_permission_verified(value)

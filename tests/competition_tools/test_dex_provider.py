@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 import pytest
 
 from competition_tools.datasets.dex_provider import (
@@ -10,6 +12,7 @@ from test_dex_spec import sample
 
 class Transport:
     requests = 1
+    utc_now = staticmethod(lambda: datetime(2026, 10, 22, tzinfo=timezone.utc))
 
     def __init__(self, value):
         self.value = value
@@ -87,3 +90,11 @@ def test_remaining_batch_is_reserved_locally():
     transport.requests += 3
     with pytest.raises(ValueError, match="INCLUDED_CREDITS_EXHAUSTED"):
         require_headroom(transport, 98)
+
+
+def test_expired_usage_period_is_checked_against_injected_clock():
+    from datetime import datetime, timezone
+
+    transport = Transport(usage())
+    transport.utc_now = lambda: datetime(2030, 1, 1, tzinfo=timezone.utc)
+    assert usage_preflight(transport, 98)["status"] == "blocked"

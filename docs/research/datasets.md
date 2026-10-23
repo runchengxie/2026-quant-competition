@@ -15,7 +15,7 @@ Use explicit Ethereum or Solana addresses and distinct `underlying_id` values. T
 
 Requests cover exactly 90 days of completed UTC `1h` candles in three 720-hour chunks per asset with `limit=1000`. Price and volume are USD under the [token OHLCV contract](https://docs.dexpaprika.com/tutorials/token-ohlcv). Normalized rows have exact keys `asset_id`, `time_open`, `interval_end`, `open`, `high`, `low`, `close`, `volume`. Decisions use `interval_end`. Missing hours remain gaps. Conflicting overlaps, duplicates, invalid candles and unknown units are rejected. Historical availability is `bar_close_proxy_unverified`, not an observed publication timestamp. Hourly data does not replace USDT daily candles or maker event inputs.
 
-Hard caps are 100 HTTP attempts, 50MiB, 900 seconds and 20 request starts per minute. Each resource permits two attempts at most. Only transport failures and HTTP429/500/502/503/504 may retry. Failed-response bytes and preflight calls count. Requests use the official Pro host, raw Authorization, no redirects and at most 30 seconds bounded by the remaining deadline. Planning reserves retries and usage checkpoints. Ten assets can exceed the cap; `fits_budget=false` blocks acquisition. The frozen nine-asset pilot reserved 96 attempts.
+Hard caps are 100 HTTP attempts, 50MiB, 900 seconds and 20 request starts per minute. Each metadata or candle resource permits two attempts at most across resumes. Each required usage checkpoint permits two attempts within the cumulative cap. Only transport failures and HTTP429/500/502/503/504 may retry. Failed-response bytes and preflight calls count. Requests use the official Pro host, raw Authorization, no redirects and at most 30 seconds bounded by the remaining deadline. Planning reserves retries and usage checkpoints. Ten assets can exceed the cap; `fits_budget=false` blocks acquisition. The frozen nine-asset pilot reserved 96 attempts.
 
 The [usage gauge](https://docs.dexpaprika.com/tutorials/check-credit-usage) is account-wide and may include purchased or overage credits. Headroom is conservatively the smaller of reported credits left and the unused 5M Pro included allowance. Unknown fields, exhausted headroom, a changed billing period or backward usage block further resources. This is not an atomic reservation or monetary guarantee. No purchase, subscription or autoscaling setting is changed.
 
@@ -32,6 +32,8 @@ python -m competition_tools.team factors --config /absolute/private/team.toml --
 
 The last command requires the protocol's immutable manifest to exist. The blocked attempt supplies no research observations. See [factor definitions](strategies.md#hourly-dex-factors). Real-data diagnostics and measured charts were not run or published. Synthetic installed producer/consumer delivery is tested separately.
 
+Measured DEX publication is disabled until an authoritative permission source receives explicit human review and its digest is added by a reviewed code change. Caller-written permission files, quoted clauses and checksums alone cannot establish that trust.
+
 ## Commands and storage
 
 Install the locked offline profile using [team quickstart](../operations/team-quickstart.md). Keep `competition.team.v1` unchanged. Create a separate external JSON dataset specification, then run:
@@ -42,7 +44,7 @@ python -m competition_tools.team data acquire --config /absolute/private/team.to
 python -m competition_tools.team data inspect --config /absolute/private/team.toml --spec /absolute/private/dataset.json --manifest /absolute/data/2026-quant-competition/datasets/spot-study/v1/manifest.json
 ```
 
-`plan` and `inspect` make no network requests. By default, `acquire` does not start Gateway or log in. Only explicit IBKR acquisition may use the optional [Paper login precondition](../operations/gateway-login.md#optional-data-task-login-precondition) with `--ensure-gateway` and an activated private deployment. The separate Databento pilot below supports an explicitly authorized metered download. No dataset mode submits orders. The result uses the existing `competition.team_result.v1` envelope. Legacy partial coverage returns exit2 with `PARTIAL_COVERAGE`; it is not a completed acquisition.
+`plan` and `inspect` make no network requests. By default, `acquire` does not start Gateway or log in. Only explicit IBKR acquisition may use the optional [Paper login precondition](../operations/gateway-login.md#optional-data-task-login-precondition) with `--ensure-gateway` and an activated private deployment. The separate Databento pilot below supports an explicitly authorized metered download. No dataset mode submits orders. The result uses the existing `competition.team_result.v1` envelope. Daily partial coverage returns exit2 with `PARTIAL_COVERAGE`; DEX uses `PARTIAL_DEX_COVERAGE`. Neither is a completed acquisition.
 
 Data lives below configured `DATA_ROOT/2026-quant-competition/datasets/<dataset-id>/<version>/`. For the legacy v1/v2 sources, successful publication is exclusive and partial runs remain in `<version>.partial` with a manifest, receipt, request ledger and per-file checkpoints. Repeating the identical specification verifies completed hashes and resumes missing downloads. A different specification cannot reuse that staging directory. Existing published versions are never overwritten. A revised upstream archive requires a new version and new acquisition. Resume verifies retained bytes, not whether the upstream publisher has since revised them. The Databento pilot uses the separate single-attempt behavior below.
 
@@ -73,7 +75,7 @@ Raw CSV, dated instrument mappings, normalized per-symbol CSV, coverage, calenda
 
 The [final Summary daily bar](https://databento.com/docs/datasets/equs-summary) includes post-market volume and is published at approximately 20:15 America/New_York. Its midnight bar timestamp is not its availability time. The receipt distinguishes this publication assumption from observed acquisition time and does not certify historical availability. A future strategy integration must resolve adjustments and execute only after its inputs were available.
 
-CoinPaprika Business remains a separate candidate: local connection checks failed before receiving an API response. This does not establish an invalid key or a verified plan. No CoinPaprika acquisition adapter is delivered here.
+CoinPaprika Business remains a separate candidate. Earlier local checks failed at TLS; a later keyless `/v1/key/info` probe reached an HTTP403 HTML edge response. It was not an authenticated API JSON response and does not establish an invalid key or a verified plan. No CoinPaprika acquisition adapter is delivered here.
 
 An acquisition lock prevents two CLI runs from modifying the same version. After a crash, inspect the owning process and retained checkpoint before manually removing a stale lock. The tools do not break locks automatically or update shared `current`/`latest` pointers.
 

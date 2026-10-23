@@ -32,6 +32,8 @@ python -m competition_tools.team factors --config /absolute/private/team.toml --
 
 最后一条命令要求协议指定的不可变 manifest 已存在。此次被阻断的尝试没有研究观测，未执行或发布真实数据诊断与图表。定义见[因子说明](strategies.zh-CN.md#hourly-dex-factors)。已安装生产者和消费者的合成交付另行测试。
 
+真实 DEX 指标公开功能保持关闭，直至权威许可来源经过明确的人工审查，并通过受审查的代码修改加入来源摘要。调用者自行提供的许可文件、条款摘录和校验值不能建立这种信任。
+
 ## 命令和存储
 
 按[团队快速上手](../operations/team-quickstart.zh-CN.md)安装锁定的 offline 环境。`competition.team.v1` 不变，另行准备外部 JSON 数据规格：
@@ -42,7 +44,7 @@ python -m competition_tools.team data acquire --config /absolute/private/team.to
 python -m competition_tools.team data inspect --config /absolute/private/team.toml --spec /absolute/private/dataset.json --manifest /absolute/data/2026-quant-competition/datasets/spot-study/v1/manifest.json
 ```
 
-`plan` 和 `inspect` 不发起网络请求。`acquire` 默认不启动 Gateway 或登录。只有显式 IBKR 取数可通过 `--ensure-gateway` 和已启用的私有部署使用[Paper 登录前置步骤](../operations/gateway-login.zh-CN.md#数据任务的可选登录前置步骤)。下文独立的 Databento 试点支持事先授权的计费下载。数据工具不下单。输出沿用 `competition.team_result.v1`。原有数据源部分覆盖时返回退出码 2 及 `PARTIAL_COVERAGE`，不算下载完成。
+`plan` 和 `inspect` 不发起网络请求。`acquire` 默认不启动 Gateway 或登录。只有显式 IBKR 取数可通过 `--ensure-gateway` 和已启用的私有部署使用[Paper 登录前置步骤](../operations/gateway-login.zh-CN.md#数据任务的可选登录前置步骤)。下文独立的 Databento 试点支持事先授权的计费下载。数据工具不下单。输出沿用 `competition.team_result.v1`。日线部分覆盖返回退出码 2 及 `PARTIAL_COVERAGE`；DEX 使用 `PARTIAL_DEX_COVERAGE`，两者都不算下载完成。
 
 数据位于配置的 `DATA_ROOT/2026-quant-competition/datasets/<dataset-id>/<version>/`。原有 v1/v2 数据源成功发布时不覆盖已有版本，未完成的任务保留在 `<version>.partial`，包含 manifest、receipt、请求日志和文件断点。相同规格再次运行时校验已完成文件的哈希并补充缺失下载，规格变化不能复用原断点。上游档案修订需建立新版本重新下载，恢复校验只确认本地保留字节，不能证明上游此后没有修订。Databento 试点使用下文的单次尝试规则。
 
@@ -60,7 +62,7 @@ python -m competition_tools.team data inspect --config /absolute/private/team.to
 
 [Summary 最终日线](https://databento.com/docs/datasets/equs-summary)包含盘后成交量，约在美东 20:15 发布。午夜的 bar 时间戳不代表数据可用时间。记录会区分发布时点假设与本次取得数据的时间，不保证历史可用时间。后续策略接入必须处理复权，并在输入实际可用后才能成交。
 
-CoinPaprika Business 是独立候选数据源。本机连接检查在收到 API 响应前失败，尚不能判定密钥无效或确认套餐。本次没有交付 CoinPaprika 采集器。
+CoinPaprika Business 是独立候选数据源。早期本机检查在 TLS 阶段失败；后续不带密钥的 `/v1/key/info` 探测收到 HTTP403 HTML 边缘服务响应。这不是认证后的 API JSON 响应，仍不能判定密钥无效或确认套餐。本次没有交付 CoinPaprika 采集器。
 
 下载锁阻止两个 CLI 同时修改同一版本。进程异常退出后，需先确认进程和断点，再人工处理失效锁。工具不会自动抢锁，也不更新共享 `current` 或 `latest`。
 

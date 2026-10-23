@@ -18,6 +18,9 @@ RESTRICTIONS = [
     "no_out_of_sample_or_significance_claim",
 ]
 HOUR = timedelta(hours=1)
+# No real permission source has been human-reviewed. Populate only through a
+# reviewed code change citing authoritative permission evidence, never a CLI receipt.
+REVIEWED_PERMISSION_SOURCE_SHA256 = frozenset()
 
 
 def keys(value, expected):
@@ -108,6 +111,9 @@ def validate_metrics(temporal, cross, assets):
                 "sampling",
                 "candidate_timestamps",
                 "valid_timestamps",
+                "ic_valid_timestamps",
+                "ic_excluded_reasons",
+                "ic_reason",
                 "mean_rank_ic",
                 "group_mean_forward_returns",
                 "top_minus_bottom",
@@ -133,6 +139,24 @@ def validate_metrics(temporal, cross, assets):
             != record["candidate_timestamps"]
         ):
             raise ValueError("DEX_DENOMINATOR_MISMATCH")
+        integer(record["ic_valid_timestamps"])
+        if set(record["ic_excluded_reasons"]) - {"CONSTANT_SIGNAL", "CONSTANT_TARGET"}:
+            raise ValueError("INVALID_DEX_NULL_REASON")
+        for count in record["ic_excluded_reasons"].values():
+            integer(count)
+        if (
+            record["ic_valid_timestamps"] + sum(record["ic_excluded_reasons"].values())
+            != record["valid_timestamps"]
+        ):
+            raise ValueError("DEX_DENOMINATOR_MISMATCH")
+        if record["ic_valid_timestamps"]:
+            number(record["mean_rank_ic"], correlation=True)
+            if record["ic_reason"] is not None:
+                raise ValueError("INVALID_DEX_NULL_REASON")
+        elif record["mean_rank_ic"] is not None or record["ic_reason"] != (
+            record["reason"] or "CONSTANT_TARGET"
+        ):
+            raise ValueError("INVALID_DEX_NULL_REASON")
         if record["valid_timestamps"] == 0:
             if any(
                 record[k] is not None
@@ -152,7 +176,6 @@ def validate_metrics(temporal, cross, assets):
                 or len(record["group_mean_forward_returns"]) != 3
             ):
                 raise ValueError("INVALID_DEX_GROUPS")
-            number(record["mean_rank_ic"], correlation=True)
             for value in record["group_mean_forward_returns"]:
                 number(value)
             number(record["top_minus_bottom"])
@@ -261,6 +284,7 @@ def verified_permission(value):
         return (
             isinstance(value, dict)
             and set(value) == fields
+            and value["source_sha256"] in REVIEWED_PERMISSION_SOURCE_SHA256
             and value["status"] == "verified"
             and value["scope"] == "derived_statistics"
             and value["source_url"] == "https://dexpaprika.com/api/terms"

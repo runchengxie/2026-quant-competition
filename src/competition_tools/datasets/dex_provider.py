@@ -1,6 +1,6 @@
 """Offline DEX planning and conservative, account-wide included-credit checks."""
 
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 
 from .dex_spec import validate_dex_spec, utc_hour
 
@@ -70,7 +70,7 @@ def usage_preflight(transport, planned_attempts):
             datetime.fromisoformat(value[k].replace("Z", "+00:00"))
             for k in ("period_started_at", "period_ends_at")
         )
-        now = datetime.now(timezone.utc)
+        now = transport.utc_now()
         if (
             start.utcoffset() != timedelta(0)
             or end.utcoffset() != timedelta(0)

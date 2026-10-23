@@ -3,6 +3,7 @@
 import json
 import math
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
@@ -45,7 +46,7 @@ def resource_url(endpoint, network=None, address=None, query=None):
     return (
         "https://api-pro.dexpaprika.com"
         + path
-        + ("?" + urlencode(query) if query else "")
+        + ("?" + urlencode(sorted(query.items())) if query else "")
     )
 
 
@@ -59,6 +60,7 @@ class DexTransport:
         opener=None,
         clock=None,
         sleep=None,
+        utc_now=None,
     ):
         if set(budget) != set(CAPS) or any(
             type(budget[k]) is not int or not 0 < budget[k] <= cap
@@ -70,6 +72,7 @@ class DexTransport:
         if self.ledger.exists():
             raise ValueError("LEDGER_EXISTS")
         self.credential_file = credential_file
+        self.utc_now = utc_now or (lambda: datetime.now(timezone.utc))
         self.clock = clock or time.monotonic
         self.sleep = sleep or time.sleep
         self.started = self.clock()
@@ -77,6 +80,7 @@ class DexTransport:
         self.requests = 0
         self.bytes = 0
         self.credit_state = None
+        self.resource_attempts = {}
         self.opener = opener or build_opener(NoRedirect()).open
 
     def remaining_time(self):
@@ -128,10 +132,15 @@ class DexTransport:
     def get_json(self, endpoint, *, network=None, address=None, query=None):
         url = resource_url(endpoint, network, address, query)
         key = load_key(self.credential_file)
-        for attempt in range(2):
+        for attempt in range(
+            0 if endpoint == "usage" else self.resource_attempts.get(url, 0), 2
+        ):
             self._start()
+            if endpoint != "usage":
+                self.resource_attempts[url] = attempt + 1
             record = {
                 "endpoint": endpoint,
+                "resource": url,
                 "attempt": attempt + 1,
                 "request_number": self.requests,
                 "status": "interrupted",

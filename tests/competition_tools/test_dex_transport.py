@@ -201,3 +201,30 @@ def test_failed_error_body_read_cannot_expose_exception_details(tmp_path):
     with pytest.raises(ValueError, match="HTTP_403"):
         transport.get_json("usage")
     assert transport.requests == 1
+
+
+def test_exhausted_resource_cannot_receive_a_third_attempt(tmp_path):
+    def failed(*args, **kwargs):
+        raise URLError("offline")
+
+    transport, _ = make(tmp_path, failed)
+    with pytest.raises(ValueError, match="RETRIES_EXHAUSTED"):
+        transport.get_json("networks")
+    with pytest.raises(ValueError, match="RETRIES_EXHAUSTED"):
+        transport.get_json("networks")
+    assert transport.requests == 2
+
+
+def test_query_order_does_not_create_a_new_resource_identity():
+    from competition_tools.datasets.dex_transport import resource_url
+
+    query = dict(
+        start="2025-01-01T00:00:00Z",
+        end="2025-01-02T00:00:00Z",
+        interval="1h",
+        limit=1000,
+    )
+    args = ("token_ohlcv", "ethereum", "0x" + "a" * 40)
+    assert resource_url(*args, query) == resource_url(
+        *args, dict(reversed(list(query.items())))
+    )
