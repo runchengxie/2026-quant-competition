@@ -4,6 +4,17 @@ import {readFileSync} from 'node:fs';
 import {controlsFixture} from './strategy-controls-fixture.mjs';
 import {validateControlsSnapshot,selectControls,selectControlPairs,summarizeControls,compareControlCosts} from '../src/scripts/strategy-controls-state.mjs';
 
+test('small percentage-point changes keep distinct readable tick values',async()=>{
+ const {formatControlChange}=await import('../src/scripts/strategy-controls-state.mjs');
+ for(const locale of ['en','zh-CN','unknown']){
+  assert.equal(formatControlChange(.00005,locale),'0.005');
+  assert.equal(formatControlChange(.0001,locale),'0.01');
+  assert.equal(formatControlChange(.00015,locale),'0.015');
+  assert.equal(formatControlChange(.00020489,locale),'0.0205');
+  assert.equal(formatControlChange(0,locale),'0');
+ }
+});
+
 test('headline comparisons preserve paired fee window and risk denominators',async()=>{
  const {controlsHighlights}=await import('../src/scripts/strategy-controls-state.mjs');
  const actual=JSON.parse(readFileSync(new URL('../src/data/strategy-controls.v1.json',import.meta.url),'utf8'));

@@ -18,7 +18,7 @@ const blocker=(id:string)=>t.blockers[id as keyof typeof t.blockers]??id;
 const groups=summarizeControls(snapshot,{market:'US',feeBps:20});
 const highlights=controlsHighlights(snapshot);
 ---
-<section id="strategy-controls" class:list={['strategy-controls',{'controls-overview':compact}]} data-ready={snapshot.status==='measured'&&!compact?'pending':'withheld'} data-controls-facts={JSON.stringify(snapshot)}>
+<section id="strategy-controls" class:list={['strategy-controls',{'controls-overview':compact}]} data-ready={compact?'static':snapshot.status==='measured'?'pending':'withheld'} data-controls-facts={compact?undefined:JSON.stringify(snapshot)}>
  <p class="eyebrow">{t.eyebrow}</p><h2>{t.title}</h2>
  <p class="controls-conclusion" data-controls-conclusion>{snapshot.status==='measured'?t.measured:t.withheld}</p><p>{t.intro}</p>
  {highlights.length>0&&<div class="headline-grid">{highlights.map(h=><article class="headline-card" data-controls-highlight={h.market} data-highlight-facts={JSON.stringify(h)}>

@@ -12,7 +12,10 @@ test('dashboard headlines remain explicit and readable on desktop and mobile',as
    const crypto=JSON.parse(await panel.locator('[data-controls-highlight=crypto]').getAttribute('data-highlight-facts'));
    expect([crypto.feeBps,crypto.windows,crypto.returnWins,crypto.drawdownWins]).toEqual([25,12,7,4]);
    if(route)await expect(page.locator('.section-nav a')).toHaveCount(4);
-   else await expect(panel.locator('canvas')).toHaveCount(0);
+   else{
+    await expect(panel.locator('canvas')).toHaveCount(0);
+    expect(await panel.evaluate(n=>n.hasAttribute('data-controls-facts'))).toBe(false);
+   }
    if(route){
     await panel.scrollIntoViewIfNeeded();await expect(panel).toHaveAttribute('data-ready','true');
     const catalog=JSON.parse(await readFile(new URL(`../src/i18n/${locale}.json`,import.meta.url),'utf8'));
@@ -27,6 +30,17 @@ test('dashboard headlines remain explicit and readable on desktop and mobile',as
    await page.screenshot({path:testInfo.outputPath(`${locale}-${route?'strategies':'home'}-mobile.png`)});
   }
  }
+});
+test('chart controls never cover plotted values after scrolling',async({page},testInfo)=>{
+ await page.setViewportSize({width:1360,height:1000});
+ await page.goto('/2026-quant-competition/strategies/');
+ const panel=page.locator('#strategy-controls');await panel.scrollIntoViewIfNeeded();
+ await expect(panel).toHaveAttribute('data-ready','true');
+ await panel.locator('.control-charts').evaluate(n=>n.scrollIntoView({block:'start'}));
+ await panel.locator('.control-charts').screenshot({path:testInfo.outputPath('unobscured-charts.png')});
+ const filter=await panel.locator('.control-filters').boundingBox();
+ const chart=await panel.locator('.control-charts figure').first().boundingBox();
+ expect(filter.y+filter.height).toBeLessThanOrEqual(chart.y+1);
 });
 for(const locale of ['en','zh-CN'])test(`${locale}: new controls separate completion from public performance`,async({page},testInfo)=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));

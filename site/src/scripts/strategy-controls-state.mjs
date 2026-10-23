@@ -64,6 +64,9 @@ export function controlsHighlights(snapshot){
    drawdownWins:pairs.filter(p=>p.drawdown_change<0).length,medianReturnChange:median(pairs.map(p=>p.net_return_change))}]:[];
  });
 }
+export function formatControlChange(value,locale){
+ return new Intl.NumberFormat(locale==='zh-CN'?'zh-CN':'en',{maximumFractionDigits:4}).format(value*100);
+}
 export function summarizeControls(snapshot,selection){
  const groups=new Map();for(const row of selectControls(snapshot,selection)){if(!groups.has(row.arm_id))groups.set(row.arm_id,[]);groups.get(row.arm_id).push(row);}
  return [...groups].map(([arm,rows])=>({arm_id:arm,fee_bps:selection.feeBps,count:rows.length,net_return:median(rows.map(r=>r.metrics.net_return)),max_drawdown:median(rows.map(r=>r.metrics.max_drawdown)),volatility:median(rows.map(r=>r.metrics.volatility)),turnover:median(rows.map(r=>r.metrics.mean_daily_turnover)),exposure:median(rows.map(r=>r.metrics.mean_exposure))}));

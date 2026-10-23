@@ -2,7 +2,7 @@ import * as echarts from 'echarts/core';
 import {BarChart,ScatterChart,LineChart} from 'echarts/charts';
 import {GridComponent,TooltipComponent,AriaComponent,LegendComponent,DataZoomComponent} from 'echarts/components';
 import {CanvasRenderer} from 'echarts/renderers';
-import {validateControlsSnapshot,selectControls,selectControlPairs,summarizeControls,compareControlCosts} from './strategy-controls-state.mjs';
+import {validateControlsSnapshot,selectControls,selectControlPairs,summarizeControls,compareControlCosts,formatControlChange} from './strategy-controls-state.mjs';
 echarts.use([BarChart,ScatterChart,LineChart,GridComponent,TooltipComponent,AriaComponent,LegendComponent,DataZoomComponent,CanvasRenderer]);
 const median=values=>{const a=[...values].sort((a,b)=>a-b);return a.length%2?a[(a.length-1)/2]:(a[a.length/2-1]+a[a.length/2])/2;};
 
@@ -14,7 +14,7 @@ export function mountStrategyControls(root){
  const charts=Object.fromEntries([...root.querySelectorAll('[data-controls-chart]')].map(n=>[n.dataset.controlsChart,echarts.init(n)]));
  const formatter=new Intl.NumberFormat(locale,{maximumFractionDigits:2});
  const show=value=>formatter.format(value*100)+'%';
- const change=value=>formatter.format(value*100)+t.percentagePoints;
+ const change=value=>formatControlChange(value,locale)+t.percentagePoints;
  const arm=id=>t.arms[id]??id;
  const selection=()=>({market:controls.market.value,feeBps:Number(controls.fee.value),armId:controls.arm.value||undefined,windowStart:controls.window.value||undefined});
  const options=(node,values,wanted,all)=>{node.replaceChildren(...(all?[new Option(all,'')]:[]),...values.map(([v,label])=>new Option(label,String(v))));if(values.some(([v])=>String(v)===wanted)||all&&wanted==='')node.value=wanted;};
@@ -37,7 +37,7 @@ export function mountStrategyControls(root){
   const probe=document.createElement('span');probe.style.visibility='hidden';root.append(probe);
   const color=name=>{probe.style.color=`var(${name})`;return getComputedStyle(probe).color;};
   const ink=color('--ink'),line=color('--line'),green=color('--green'),muted=color('--muted'),paper=color('--surface');probe.remove();root.dataset.chartColors=JSON.stringify({ink,line,green,paper});
-  const common=id=>({animation:false,textStyle:{color:ink},backgroundColor:'transparent',aria:{enabled:true,label:{description:t.charts[id]}},tooltip:{trigger:'item',renderMode:'richText',backgroundColor:paper,borderColor:line,textStyle:{color:ink}},grid:{left:65,right:20,top:30,bottom:100}});
+  const common=id=>({animation:false,textStyle:{color:ink},backgroundColor:'transparent',aria:{enabled:true,label:{description:t.charts[id]}},tooltip:{trigger:'item',renderMode:'richText',backgroundColor:paper,borderColor:line,textStyle:{color:ink}},grid:{left:85,right:20,top:30,bottom:100}});
   const axis={axisLabel:{color:ink,formatter:show},splitLine:{lineStyle:{color:line}}};
   for(const [id,key] of [['paired','net'],['turnover','turnover']])charts[id].setOption({...common(id),xAxis:{type:'category',data:paired.map(p=>p.label),axisLabel:{color:ink,rotate:20,width:130,overflow:'truncate'}},yAxis:{type:'value',...axis,axisLabel:{color:ink,formatter:change}},dataZoom:[{type:'slider',height:16,bottom:0,textStyle:{color:ink}}],series:[{type:'bar',data:paired.map(p=>({name:p.label,value:p[key],itemStyle:{color:p[key]>=0?green:muted}})),tooltip:{valueFormatter:change}}]},true);
   charts.risk.setOption({...common('risk'),grid:{left:65,right:25,top:30,bottom:70},xAxis:{type:'value',name:t.columns.exposure,nameLocation:'middle',nameGap:38,nameTextStyle:{color:ink},...axis},yAxis:{type:'value',...axis},series:[{type:'scatter',symbolSize:14,itemStyle:{color:green},data:groups.map(g=>({name:arm(g.arm_id),value:[g.exposure,g.volatility]})),tooltip:{formatter:p=>`${p.name}\n${t.columns.exposure}: ${show(p.value[0])}\n${t.columns.volatility}: ${show(p.value[1])}`}}]},true);
