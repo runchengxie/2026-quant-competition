@@ -42,9 +42,38 @@ python -m competition_tools.team data acquire --config /absolute/private/team.to
 python -m competition_tools.team data inspect --config /absolute/private/team.toml --spec /absolute/private/dataset.json --manifest /absolute/data/2026-quant-competition/datasets/spot-study/v1/manifest.json
 ```
 
-`plan` and `inspect` make no network requests. By default, `acquire` does not start Gateway or log in. Only explicit IBKR acquisition may use the optional [Paper login precondition](../operations/gateway-login.md#optional-data-task-login-precondition) with `--ensure-gateway` and an activated private deployment. No mode purchases data or submits orders. The result uses the existing `competition.team_result.v1` envelope. Daily partial coverage returns exit2 with `PARTIAL_COVERAGE`; DEX uses `PARTIAL_DEX_COVERAGE`. Neither is a completed acquisition.
+`plan` and `inspect` make no network requests. By default, `acquire` does not start Gateway or log in. Only explicit IBKR acquisition may use the optional [Paper login precondition](../operations/gateway-login.md#optional-data-task-login-precondition) with `--ensure-gateway` and an activated private deployment. The separate Databento pilot below supports an explicitly authorized metered download. No dataset mode submits orders. The result uses the existing `competition.team_result.v1` envelope. Legacy partial coverage returns exit2 with `PARTIAL_COVERAGE`; it is not a completed acquisition.
 
-For the v1 daily archive contract, data lives below configured `DATA_ROOT/2026-quant-competition/datasets/<dataset-id>/<version>/`. Successful publication is exclusive. Partial runs remain in `<version>.partial` with a manifest, receipt, request ledger and per-file checkpoints. Repeating the identical specification verifies completed hashes and resumes missing downloads. A different specification cannot reuse that staging directory. Existing published versions are never overwritten. A revised upstream archive requires a new version and new acquisition. Resume verifies retained bytes, not whether the upstream publisher has since revised them.
+Data lives below configured `DATA_ROOT/2026-quant-competition/datasets/<dataset-id>/<version>/`. For the legacy v1/v2 sources, successful publication is exclusive and partial runs remain in `<version>.partial` with a manifest, receipt, request ledger and per-file checkpoints. Repeating the identical specification verifies completed hashes and resumes missing downloads. A different specification cannot reuse that staging directory. Existing published versions are never overwritten. A revised upstream archive requires a new version and new acquisition. Resume verifies retained bytes, not whether the upstream publisher has since revised them. The Databento pilot uses the separate single-attempt behavior below.
+
+## Databento daily ingestion pilot
+
+This pilot prepares data for inspection; it does not produce new strategy returns. The separate `competition.databento_dataset_spec.v1` contract fixes `EQUS.SUMMARY`, `ohlcv-1d`, USD raw prices and the UTC interval `[2025-01-01, 2026-01-01)`. Its fixed pool is SPY, QQQ, IWM, TLT, GLD, AAPL, MSFT, NVDA, AMZN and META. This is a current fixed pool, not historical S&P 500 membership.
+
+Keep `databento.env` outside Git with one literal `DATABENTO_API_KEY=...` assignment. Create the external specification using the installed root environment:
+
+```python
+import json
+from pathlib import Path
+from competition_tools.datasets.databento_spec import pilot_spec
+
+credential = Path("/absolute/private/providers/databento.env")
+specification = Path("/absolute/private/databento-pilot.json")
+with specification.open("x", encoding="utf-8") as stream:
+    json.dump(pilot_spec(credential), stream, indent=2)
+```
+
+On Windows, use absolute drive paths. Run `team data plan`, `acquire` and `inspect` with the same flags shown above and the new specification. `plan` requires no key or network. Calendar inspection uses the optional locked `daily-data` profile. `refresh`, parent manifests and Gateway options are rejected for this namespace. Review the plan and authorize the metered request before invoking `acquire`.
+
+The cap is USD 0.10, five metadata calls, one download attempt, 120 seconds total active time and 20 MiB of uncompressed HTTP response bytes. All attempts and failed-response bytes count. A fresh quote, billable-size/count checks and applicable unit pricing must support a conservative cost bound before downloading. The server request has a 4,000-record limit; a reached limit or inconsistent count rejects the result. Billing is based on uncompressed binary data, not the CSV file size. An unavailable cost proof produces a blocked receipt rather than an assumed zero cost. See the [official HTTP API](https://databento.com/docs/api-reference-historical?historical=http).
+
+Outputs remain under `databento-us-daily-pilot/20261023-v1/`, including blocked or partial attempts. The fixed `DATA_ROOT/2026-quant-competition/authorizations/databento-us-2025-pilot.attempt.json` marker reserves this pilot authorization before preflight, independently of the selected artifact directory. Set `WORKSPACE_CONFIG` to the explicit external `workspace.toml` defining the authoritative `data_root`; changing the team output configuration cannot reset this authorization. The `download-attempt.json` records that a billable request may have started. Neither failed requests nor interrupted downloads retry automatically. Do not remove those markers or select another directory to repeat an uncertain request; reconcile retained evidence and account usage first. Repeating acquisition is rejected, while offline `inspect` verifies file hashes and request/spec identity.
+
+Raw CSV, dated instrument mappings, normalized per-symbol CSV, coverage, calendar provenance and a `competition.databento_dataset_manifest.v1` receipt are retained externally. Unknown listing-calendar evidence is reported as `LISTING_CALENDAR_UNVERIFIED`; missing observations are never filled. `raw` prices remain unadjusted and corporate actions remain unverified. Every result has `accepted_research=false`. Existing accepted-study inputs still require their original provider and adjustment contracts.
+
+The [final Summary daily bar](https://databento.com/docs/datasets/equs-summary) includes post-market volume and is published at approximately 20:15 America/New_York. Its midnight bar timestamp is not its availability time. The receipt distinguishes this publication assumption from observed acquisition time and does not certify historical availability. A future strategy integration must resolve adjustments and execute only after its inputs were available.
+
+CoinPaprika Business remains a separate candidate: local connection checks failed before receiving an API response. This does not establish an invalid key or a verified plan. No CoinPaprika acquisition adapter is delivered here.
 
 An acquisition lock prevents two CLI runs from modifying the same version. After a crash, inspect the owning process and retained checkpoint before manually removing a stale lock. The tools do not break locks automatically or update shared `current`/`latest` pointers.
 
