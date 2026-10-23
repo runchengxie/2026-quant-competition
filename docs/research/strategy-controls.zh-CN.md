@@ -40,3 +40,5 @@ python -m competition_tools.check_controls_reference --plan /absolute/study/plan
 预算上限为 512 项、每批 384 项、累计 3600 秒，核验与允许的检查点恢复都计入时间。CLI 创建新研究，`run_controls` API 使用原冻结计划检查恢复条件。预算不明或检查点变化时阻塞恢复，已经尝试失败的任务不会获得新预算重试。
 
 继续阅读[成交证据](us-execution-evidence.zh-CN.md)、[手动观察登记](observation-registry.zh-CN.md)和[后续观察状态](forward-observation-readiness.zh-CN.md)。这些研究命令不会下载、启用调度、登录或下单。
+
+美股基准对照单独保存在私有补充产物中，按冻结的 job ID 关联。每个窗口提供 SPY 价格收益、按相同费用计算的买入持有净收益，以及策略相对两者的超额收益。基准包含初次建仓费，不做期末卖出，使用最后一个预热日的收盘价建仓，与首个计分收益区间一致。拆股调整价格不包含股息总回报。补充计算不重跑策略、不修改冻结产物，仍受同一公开发布门槛约束。

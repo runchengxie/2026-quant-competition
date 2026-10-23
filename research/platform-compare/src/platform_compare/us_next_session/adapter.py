@@ -109,7 +109,9 @@ def build_us_replay_request(
             raise ValueError("TARGET_EXCEEDS_CASH")
         execution_times = {}
         for instrument, frame in inputs.assets.items():
-            session = first_open_after("US", decision, tuple(frame["date"]), calendars)
+            session = first_open_after("US", available, tuple(frame["date"]), calendars)
+            if decision >= session.scheduled_open_at:
+                raise ValueError("DECISION_MISSED_FIRST_ELIGIBLE_OPEN")
             row = frame.loc[frame["date"] == session.session_date].iloc[0]
             execution_times[instrument] = session.scheduled_open_at
             opens.append(

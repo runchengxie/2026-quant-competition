@@ -75,6 +75,16 @@ def test_availability_after_monday_open_requires_tuesday(tmp_path):
     )
 
 
+def test_late_decision_cannot_skip_first_available_open(tmp_path):
+    with pytest.raises(ValueError, match="DECISION_MISSED_FIRST_ELIGIBLE_OPEN"):
+        request(
+            tmp_path,
+            mutate=lambda s: s["schedule"][0].update(
+                decision_at="2025-03-10T13:31:00Z"
+            ),
+        )
+
+
 def test_holiday_and_early_close_do_not_create_a_friday_trade(tmp_path):
     import hashlib
     import json

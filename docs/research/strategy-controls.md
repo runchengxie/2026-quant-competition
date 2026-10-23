@@ -92,3 +92,5 @@ See [execution evidence](us-execution-evidence.md), the
 [manual observation registry](observation-registry.md) and
 [forward-observation status](forward-observation-readiness.md). None of these
 research commands downloads data, activates a scheduler, logs in or submits orders.
+
+US benchmark comparisons are a separate private supplement keyed by each frozen job ID. It reports same-window SPY gross price return and fee-matched buy-and-hold net return, including the initial entry fee and no terminal sale, plus strategy net excess against each. Entry uses the last warmup close, matching the first scored return. Split-adjusted prices exclude dividend total return. The supplement does not rerun policies or modify the frozen artifacts and follows the same publication gate.

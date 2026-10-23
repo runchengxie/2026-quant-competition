@@ -10,8 +10,9 @@ submitted and no total-return or execution eligibility is inferred.
 The adapter is separate from the five-market `next-open` experiment. Its model is
 `us-next-session-price-nav.v1`. It requires USD instruments, raw signal and
 execution prices, an explicit `XNYS` calendar version, time-zone-aware signal,
-availability and decision times, and the first regular open strictly after the
-decision. A missing first open blocks the replay rather than moving the trade.
+availability and decision times, and the first regular open strictly after information
+availability. The decision must precede that open. A late decision or missing
+first open blocks the replay rather than moving the trade.
 The signal field records the source cutoff. The ledger's signal clock uses the
 later availability time, before the declared decision. Daily close valuation
 availability remains a modeled date-lag assumption.
