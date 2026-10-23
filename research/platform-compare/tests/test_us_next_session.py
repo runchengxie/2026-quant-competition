@@ -138,13 +138,23 @@ def test_installed_cli_writes_diagnostic_bundle(tmp_path):
     assert (output / "bundle").is_dir()
 
 
-def test_fee_scenarios_have_distinct_configuration_identities(tmp_path):
+@pytest.mark.parametrize(
+    "fees",
+    [
+        (Decimal(20), Decimal(40)),
+        (
+            Decimal("20.00000000000000000000000000001"),
+            Decimal("20.00000000000000000000000000002"),
+        ),
+    ],
+)
+def test_fee_scenarios_have_distinct_configuration_identities(tmp_path, fees):
     import json
     from platform_compare.us_next_session.run import run
 
     path, _ = fixture_spec(tmp_path)
     hashes = []
-    for fee in (Decimal(20), Decimal(40)):
+    for fee in fees:
         target = tmp_path / f"fee-{fee}"
         run(path, target, fee_bps=fee)
         manifest = json.loads((target / "bundle/manifest.json").read_text())

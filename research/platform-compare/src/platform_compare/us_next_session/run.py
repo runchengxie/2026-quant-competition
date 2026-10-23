@@ -9,7 +9,7 @@ from pathlib import Path
 
 from ..accounting.usd_ledger import run_usd_price_replay
 from ..accounting.usd_ledger_bundle import write_usd_price_replay_bundle
-from ..owner_adapter import external_output
+from ..owner_adapter import external_output, decimal_text
 from .adapter import MODEL_ID, build_us_replay_request
 from .inputs import load_us_inputs
 
@@ -36,7 +36,9 @@ def run(config_path, output, *, fee_bps=Decimal(20)):
         "model_id": MODEL_ID,
         "sizing_mode": request.config.sizing_mode,
         **{
-            key: format(getattr(request.config, key).normalize(), "f")
+            key: decimal_text(getattr(request.config, key))
+            if getattr(request.config, key)
+            else "0"
             for key in ("initial_cash", "commission_bps", "slippage_bps", "fx_cost_bps")
         },
     }
