@@ -19,8 +19,8 @@
   },
   "hero": {
     "eyebrow": "INSPECTABLE RESEARCH",
-    "title": "What works, what is uncertain, and what to test next",
-    "intro": "Start with the findings for US stocks, Hong Kong stocks and crypto, then explore the comparisons and inspect the evidence.",
+    "title": "Read the evidence",
+    "intro": "Start with US and crypto comparisons. Earlier Hong Kong studies, methods and runnable examples stay available below.",
     "primary": "Read the conclusions",
     "secondary": "Browse the code",
     "note": "Retrospective research · fixed current pools · no live trading record"
@@ -625,10 +625,10 @@
   },
   "strategyControls": {
     "eyebrow": "Fixed strategy comparisons",
-    "title": "What do the new controls tell us?",
+    "title": "Latest strategy comparisons",
     "withheld": "The new return and risk figures are not public yet. Start with the completion status.",
-    "measured": "Compare each strategy with its control at the same cost and dates.",
-    "intro": "Completion, publication and execution readiness are separate checks. This section keeps them separate.",
+    "measured": "Small turnover gains in stocks. A cost-sensitive edge in crypto.",
+    "intro": "Compare within the same market, fee and window, then inspect risk and trading costs. These are historical experiments, not live returns.",
     "counts": {
       "requested": "Experiments planned",
       "completed": "Calculated and verified",
@@ -728,6 +728,34 @@
       "retrospective_control": "Retrospective control"
     },
     "percentagePoints": " pp",
-    "costNote": "Each point is the median return from the same window set at that cost. The line connects cost scenarios, not dates."
+    "costNote": "Each point is the median return from the same window set at that cost. The line connects cost scenarios, not dates.",
+    "headlines": {
+      "historical": "Historical comparison",
+      "US": {
+        "title": "Trading less adds only a little",
+        "body": "The monthly buffer changes equal-weight returns only slightly. Compare it with the same monthly rule, not a different market."
+      },
+      "crypto": {
+        "title": "Higher returns do not always mean lower risk",
+        "body": "Trend wins more return windows than the matched-exposure control, but improves drawdown in fewer windows."
+      },
+      "medianEdge": "Median paired return difference",
+      "higherReturn": "Higher-return windows",
+      "lowerDrawdown": "Lower-drawdown windows",
+      "versus": "versus",
+      "evidence": "Evidence stage",
+      "evidenceTitle": "Research first. New observations next.",
+      "evidenceBody": "The historical grid is complete. Real forward observation and defensible execution still need new evidence.",
+      "observationLimit": "Historical results are not a live track record.",
+      "explore": "Explore the comparisons",
+      "previous": "Earlier experiments · separate protocols",
+      "navigation": "On this page",
+      "sections": [
+        "Latest controls",
+        "Strategy variants",
+        "Return curves",
+        "Original study"
+      ]
+    }
   }
 }

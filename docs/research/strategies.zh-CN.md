@@ -111,7 +111,7 @@ python -m competition_tools.check_ablation_delivery --config /external/team.toml
 <a id="forward-observation"></a>
 ## 前瞻观察之前
 
-[新对照实验](strategy-controls.zh-CN.md)使用独立协议完成了 420 项回顾任务，新增绩效统计仍待发布审阅，暂留本地。六个美股及加密候选已在历史运行前写入[手动观察登记](observation-registry.zh-CN.md)。截至 2026-10-23 的快照，尚未接受真实后续观察，仍需完整的新预热数据和经过审阅的可用性证据；旧缓存尾部仍属于回顾数据。[成交模型](us-execution-evidence.zh-CN.md)另需兼容的原始价格、公司行动、交易单位及上市范围证据。本次没有启用采集器、调度、券商登录或下单路径，详见[当前准备清单](forward-observation-readiness.zh-CN.md)。
+[新对照实验](strategy-controls.zh-CN.md)使用独立协议完成了 420 项回顾任务，项目所有者确认取得展示授权后，420项汇总结果与224组配对现已公开。六个美股及加密候选已在历史运行前写入[手动观察登记](observation-registry.zh-CN.md)。截至 2026-10-23 的快照，尚未接受真实后续观察，仍需完整的新预热数据和经过审阅的可用性证据；旧缓存尾部仍属于回顾数据。[成交模型](us-execution-evidence.zh-CN.md)另需兼容的原始价格、公司行动、交易单位及上市范围证据。本次没有启用采集器、调度、券商登录或下单路径，详见[当前准备清单](forward-observation-readiness.zh-CN.md)。
 
 ## 复现与检查
 

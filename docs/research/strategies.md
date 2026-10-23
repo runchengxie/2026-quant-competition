@@ -111,7 +111,7 @@ The [ablation section](https://runchengxie.github.io/2026-quant-competition/#abl
 <a id="forward-observation"></a>
 ## Before forward observation
 
-The [new controls programme](strategy-controls.md) completed 420 retrospective jobs under a separate protocol. Its new performance statistics remain private pending publication review. The six US/crypto candidates were fixed before that run in the [manual observation registry](observation-registry.md). At the 2026-10-23 snapshot, no real forward observation has been accepted. Fresh complete warmup and reviewed availability evidence are still required; cached tails remain retrospective. The [execution model](us-execution-evidence.md) separately requires compatible raw prices, action and lot/listing evidence. No collector, scheduler, broker login or order route was activated. See the [current readiness checklist](forward-observation-readiness.md).
+The [new controls programme](strategy-controls.md) completed 420 retrospective jobs under a separate protocol. Its 420 aggregate result rows and 224 matched comparisons are now published under the project owner-confirmed display authorization. The six US/crypto candidates were fixed before that run in the [manual observation registry](observation-registry.md). At the 2026-10-23 snapshot, no real forward observation has been accepted. Fresh complete warmup and reviewed availability evidence are still required; cached tails remain retrospective. The [execution model](us-execution-evidence.md) separately requires compatible raw prices, action and lot/listing evidence. No collector, scheduler, broker login or order route was activated. See the [current readiness checklist](forward-observation-readiness.md).
 
 ## Reproduce and inspect
 

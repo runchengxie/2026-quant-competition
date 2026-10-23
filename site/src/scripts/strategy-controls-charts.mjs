@@ -31,7 +31,7 @@ export function mountStrategyControls(root){
   for(const g of groups){const tr=document.createElement('tr');[arm(g.arm_id),g.fee_bps,g.count,...['net_return','max_drawdown','volatility','turnover','exposure'].map(k=>show(g[k]))].forEach((value,i)=>{const cell=document.createElement(i?'td':'th');cell.textContent=String(value);tr.append(cell);});body.append(tr);}
   root.querySelector('[data-controls-status]').textContent=t.selected.replace('{count}',formatter.format(rows.length));
   const outcome=!pairs.length?'none':pairs.every(p=>p.net_return_change>0)?'positive':pairs.every(p=>p.net_return_change<0)?'negative':pairs.every(p=>p.net_return_change===0)?'zero':'mixed';
-  root.querySelector('[data-controls-conclusion]').textContent=t.outcomes[outcome];
+  root.querySelector('[data-controls-selection-conclusion]').textContent=t.outcomes[outcome];
   const pairGroups=new Map();for(const p of pairs){const key=p.candidate_arm+'|'+p.control_arm;if(!pairGroups.has(key))pairGroups.set(key,[]);pairGroups.get(key).push(p);}
   const paired=[...pairGroups.values()].map(values=>({label:`${arm(values[0].candidate_arm)} / ${arm(values[0].control_arm)}`,net:median(values.map(p=>p.net_return_change)),turnover:median(values.map(p=>p.turnover_change))}));
   const probe=document.createElement('span');probe.style.visibility='hidden';root.append(probe);

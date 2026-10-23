@@ -14,9 +14,14 @@ from .contracts import read_json, is_hash
 from .verification import verify_plan, verify_control_result, validate_results_index
 
 # Explicit reviewed evidence decisions may be added by reviewed source changes.
-# There is no verified rights decision for this new result family yet.
-TRUSTED_PUBLICATION_REVIEWS = frozenset()
-REVIEWED_PUBLIC_CONTROLS = frozenset()
+# The project owner confirmed publication authorization for this exact historical release.
+# Private evidence remains external; this does not authorize future result families.
+TRUSTED_PUBLICATION_REVIEWS = frozenset(
+    {"5b8dee49b1e56a6483edd9f12808d5000de301a97c7315234d40d3eb74934e0e"}
+)
+REVIEWED_PUBLIC_CONTROLS = frozenset(
+    {"152a9e9588274dad2467a2df2341d8da6ac0fac9ff03e5f5d4baeb1168b2bc98"}
+)
 RESTRICTIONS = [
     "fixed_current_selection",
     "retrospective_not_untouched_oos",

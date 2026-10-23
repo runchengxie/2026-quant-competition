@@ -8,6 +8,29 @@ from competition_tools.evaluation.controls.publication import (
 )
 
 
+def test_authorized_release_is_exactly_reviewed_and_retains_full_denominator():
+    import json
+    from pathlib import Path
+    from competition_tools.evaluation.controls.publication import (
+        REVIEWED_PUBLIC_CONTROLS,
+    )
+    from competition_tools.evaluation.study_identity import canonical_hash
+
+    path = (
+        Path(__file__).resolve().parents[2] / "site/src/data/strategy-controls.v1.json"
+    )
+    value = validate_public_controls(json.loads(path.read_text(encoding="utf-8")))
+    assert value["status"] == "measured"
+    assert canonical_hash(value) in REVIEWED_PUBLIC_CONTROLS
+    assert value["coverage"] == dict(
+        requested_jobs=420, completed_jobs=420, blocked_jobs=0
+    )
+    assert len(value["results"]) == 420
+    assert len(value["pairs"]) == 224
+    assert sum(r["market"] == "US" for r in value["results"]) == 132
+    assert sum(r["market"] == "crypto" for r in value["results"]) == 288
+
+
 @pytest.mark.parametrize(
     "value",
     [

@@ -2,6 +2,32 @@ import {test,expect} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
 const snapshot=JSON.parse(await readFile(new URL('../src/data/strategy-controls.v1.json',import.meta.url),'utf8'));
 const readiness=JSON.parse(await readFile(new URL('../src/data/strategy-readiness.v1.json',import.meta.url),'utf8'));
+test('dashboard headlines remain explicit and readable on desktop and mobile',async({page},testInfo)=>{
+ for(const locale of ['en','zh-CN']){
+  const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+  for(const route of ['', 'strategies/']){
+   await page.setViewportSize({width:1360,height:1000});await page.goto(prefix+route);
+   const panel=page.locator('#strategy-controls');
+   await expect(panel.locator('[data-controls-highlight]')).toHaveCount(2);
+   const crypto=JSON.parse(await panel.locator('[data-controls-highlight=crypto]').getAttribute('data-highlight-facts'));
+   expect([crypto.feeBps,crypto.windows,crypto.returnWins,crypto.drawdownWins]).toEqual([25,12,7,4]);
+   if(route)await expect(page.locator('.section-nav a')).toHaveCount(4);
+   else await expect(panel.locator('canvas')).toHaveCount(0);
+   if(route){
+    await panel.scrollIntoViewIfNeeded();await expect(panel).toHaveAttribute('data-ready','true');
+    const catalog=JSON.parse(await readFile(new URL(`../src/i18n/${locale}.json`,import.meta.url),'utf8'));
+    await expect(panel.locator('[data-controls-conclusion]')).toHaveText(catalog.strategyControls.measured);
+   }
+   for(const theme of ['light','dark']){
+    await page.locator('#theme-preference').selectOption(theme);
+    await page.screenshot({path:testInfo.outputPath(`${locale}-${route?'strategies':'home'}-${theme}.png`)});
+   }
+   await page.setViewportSize({width:390,height:844});
+   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+   await page.screenshot({path:testInfo.outputPath(`${locale}-${route?'strategies':'home'}-mobile.png`)});
+  }
+ }
+});
 for(const locale of ['en','zh-CN'])test(`${locale}: new controls separate completion from public performance`,async({page},testInfo)=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto(`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}strategies/`);

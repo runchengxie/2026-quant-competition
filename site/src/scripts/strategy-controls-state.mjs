@@ -53,6 +53,17 @@ export function selectControls(snapshot,selection){
 }
 export function selectControlPairs(snapshot,selection){const ids=new Set(selectControls(snapshot,selection).map(r=>r.job_id));return snapshot.pairs.filter(p=>ids.has(p.candidate_job_id));}
 const median=values=>{const a=[...values].sort((a,b)=>a-b);return a.length%2?a[(a.length-1)/2]:(a[a.length/2-1]+a[a.length/2])/2;};
+export function controlsHighlights(snapshot){
+ if(snapshot.status!=='measured')return [];
+ return [
+  {market:'US',feeBps:20,armId:'ew_monthly_buffer20',control:'ew_monthly'},
+  {market:'crypto',feeBps:25,armId:'trend200_vol40_strict',control:'ew_trend_gross_matched'}
+ ].flatMap(selection=>{
+  const pairs=selectControlPairs(snapshot,selection).filter(p=>p.control_arm===selection.control);
+  return pairs.length?[{...selection,windows:pairs.length,returnWins:pairs.filter(p=>p.net_return_change>0).length,
+   drawdownWins:pairs.filter(p=>p.drawdown_change<0).length,medianReturnChange:median(pairs.map(p=>p.net_return_change))}]:[];
+ });
+}
 export function summarizeControls(snapshot,selection){
  const groups=new Map();for(const row of selectControls(snapshot,selection)){if(!groups.has(row.arm_id))groups.set(row.arm_id,[]);groups.get(row.arm_id).push(row);}
  return [...groups].map(([arm,rows])=>({arm_id:arm,fee_bps:selection.feeBps,count:rows.length,net_return:median(rows.map(r=>r.metrics.net_return)),max_drawdown:median(rows.map(r=>r.metrics.max_drawdown)),volatility:median(rows.map(r=>r.metrics.volatility)),turnover:median(rows.map(r=>r.metrics.mean_daily_turnover)),exposure:median(rows.map(r=>r.metrics.mean_exposure))}));

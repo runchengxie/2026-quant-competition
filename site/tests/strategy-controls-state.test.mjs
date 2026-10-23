@@ -4,6 +4,17 @@ import {readFileSync} from 'node:fs';
 import {controlsFixture} from './strategy-controls-fixture.mjs';
 import {validateControlsSnapshot,selectControls,selectControlPairs,summarizeControls,compareControlCosts} from '../src/scripts/strategy-controls-state.mjs';
 
+test('headline comparisons preserve paired fee window and risk denominators',async()=>{
+ const {controlsHighlights}=await import('../src/scripts/strategy-controls-state.mjs');
+ const actual=JSON.parse(readFileSync(new URL('../src/data/strategy-controls.v1.json',import.meta.url),'utf8'));
+ const rows=controlsHighlights(actual);
+ assert.equal(rows.length,2);
+ assert.deepEqual(rows.map(r=>[r.market,r.feeBps,r.windows,r.returnWins]),[['US',20,11,6],['crypto',25,12,7]]);
+ assert.equal(rows[1].drawdownWins,4);
+ assert.ok(Math.abs(rows[1].medianReturnChange-.004125644533451767)<1e-12);
+ assert.deepEqual(controlsHighlights({...actual,status:'readiness_only',results:[],pairs:[]}),[]);
+});
+
 test('selection cannot mix fees markets or quote currencies',()=>{
  const fixture=controlsFixture();validateControlsSnapshot(fixture);
  assert.equal(selectControls(fixture,{market:'US',feeBps:20}).length,2);

@@ -38,9 +38,9 @@ const guide = (directory: string) => file(`research/${directory}/README${locale 
     <p class="eyebrow">{t.hero.eyebrow}</p><h1>{view==='home'?t.hero.title:t.pages.titles[view]}</h1>
     <p class="intro">{view==='home'?t.hero.intro:t.pages.intros[view]}</p><p class="hero-note">{t.hero.note}</p>
   </div></header>
-  <main>
-    {view==='home'&&<><ResearchTakeaways locale={locale} /><details class="legacy-links"><summary>{t.pages.oldLinks}</summary>{Object.entries(legacy).map(([id,target])=><a data-legacy-link={id} href={`${prefix}${target}`}>{id}</a>)}</details></>}
-    {view==='strategies'&&<><StrategyControls locale={locale} /><AblationResults locale={locale} /><PerformanceDashboard locale={locale} /><StudyResults locale={locale} /></>}
+  <main class:list={['showcase-main',`view-${view}`]}>
+    {view==='home'&&<><StrategyControls locale={locale} compact /><p class="previous-series">{t.strategyControls.headlines.previous}</p><ResearchTakeaways locale={locale} /><details class="legacy-links"><summary>{t.pages.oldLinks}</summary>{Object.entries(legacy).map(([id,target])=><a data-legacy-link={id} href={`${prefix}${target}`}>{id}</a>)}</details></>}
+    {view==='strategies'&&<><nav class="section-nav" aria-label={t.strategyControls.headlines.navigation}>{['strategy-controls','ablation','performance','study'].map((id,index)=><a href={`#${id}`}><span>0{index+1}</span>{t.strategyControls.headlines.sections[index]}</a>)}</nav><StrategyControls locale={locale} /><AblationResults locale={locale} /><PerformanceDashboard locale={locale} /><StudyResults locale={locale} /></>}
     {view==='factors'&&<FactorResearch locale={locale} />}
     {view==='guide'&&<>    <section id="evidence" class="evidence-section">
       <div class="section-heading"><h2>{t.evidence.title}</h2><p>{t.evidence.intro}</p></div>
