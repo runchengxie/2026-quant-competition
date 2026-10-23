@@ -36,3 +36,22 @@ def test_child_environment_drops_provider_key(tmp_path, monkeypatch):
         tmp_path / "out",
     )
     assert result["issue_codes"] == ["FACTOR_CHILD_FAILED"]
+
+
+def test_synthetic_delivery_preserves_symlinked_environment_identity(
+    tmp_path, monkeypatch
+):
+    from competition_tools import check_dex_factor_delivery as delivery
+
+    base = tmp_path / "base-python"
+    base.write_text("synthetic interpreter target")
+    leaf = tmp_path / "envs/crypto-mm/bin/python"
+    leaf.parent.mkdir(parents=True)
+    leaf.symlink_to(base)
+
+    def reached_source(*args, **kwargs):
+        raise RuntimeError("REACHED_SOURCE_CHECK")
+
+    monkeypatch.setattr(delivery.subprocess, "run", reached_source)
+    with pytest.raises(RuntimeError, match="REACHED_SOURCE_CHECK"):
+        delivery.synthetic_delivery(leaf, tmp_path / "delivery")

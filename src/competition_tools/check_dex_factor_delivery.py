@@ -24,7 +24,9 @@ from competition_tools.team.factors import SIGNALS, execute
 
 
 def synthetic_delivery(leaf_python, output_root):
-    leaf_python, output = Path(leaf_python).resolve(), safe_path(output_root)
+    # POSIX venv interpreters are symlinks; resolving the executable loses the
+    # environment identity and runs its base interpreter instead.
+    leaf_python, output = Path(leaf_python).absolute(), safe_path(output_root)
     expected = leaf_python.parents[1].name
     if expected != "crypto-mm":
         raise ValueError("LEAF_ENVIRONMENT_MUST_BE_NAMED_CRYPTO_MM")
