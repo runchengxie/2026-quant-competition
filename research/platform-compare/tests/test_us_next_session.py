@@ -136,3 +136,17 @@ def test_installed_cli_writes_diagnostic_bundle(tmp_path):
     assert value["model_id"] == "us-next-session-price-nav.v1"
     assert value["synthetic"] is True
     assert (output / "bundle").is_dir()
+
+
+def test_fee_scenarios_have_distinct_configuration_identities(tmp_path):
+    import json
+    from platform_compare.us_next_session.run import run
+
+    path, _ = fixture_spec(tmp_path)
+    hashes = []
+    for fee in (Decimal(20), Decimal(40)):
+        target = tmp_path / f"fee-{fee}"
+        run(path, target, fee_bps=fee)
+        manifest = json.loads((target / "bundle/manifest.json").read_text())
+        hashes.append(manifest["artifact_envelope"]["configuration_sha256"])
+    assert hashes[0] != hashes[1]

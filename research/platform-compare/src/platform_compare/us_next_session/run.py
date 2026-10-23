@@ -29,6 +29,20 @@ def run(config_path, output, *, fee_bps=Decimal(20)):
             t for d in request.decisions for t in d.execution_times.values()
         ),
     )
+    configuration = {
+        "input_configuration_sha256": inputs.input_hashes[
+            str(external_output(config_path))
+        ],
+        "model_id": MODEL_ID,
+        "sizing_mode": request.config.sizing_mode,
+        **{
+            key: format(getattr(request.config, key).normalize(), "f")
+            for key in ("initial_cash", "commission_bps", "slippage_bps", "fx_cost_bps")
+        },
+    }
+    configuration_sha256 = hashlib.sha256(
+        json.dumps(configuration, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
     write_usd_price_replay_bundle(
         target / "bundle",
         result=result,
@@ -41,7 +55,7 @@ def run(config_path, output, *, fee_bps=Decimal(20)):
             backend="competition.usd_price_ledger",
             backend_version="1",
         ),
-        configuration_sha256=hashlib.sha256(config_path.read_bytes()).hexdigest(),
+        configuration_sha256=configuration_sha256,
         input_refs=[
             dict(
                 artifact_id=f"us-price:{k}",
