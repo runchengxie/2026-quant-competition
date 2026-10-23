@@ -14,9 +14,25 @@ python -m competition_tools.team data acquire --config /absolute/private/team.to
 python -m competition_tools.team data inspect --config /absolute/private/team.toml --spec /absolute/private/dataset.json --manifest /absolute/data/2026-quant-competition/datasets/spot-study/v1/manifest.json
 ```
 
-`plan` 和 `inspect` 不发起网络请求。`acquire` 默认不启动Gateway或登录。只有显式IBKR取数可通过 `--ensure-gateway` 和已启用的私有部署使用[Paper登录前置步骤](../operations/gateway-login.zh-CN.md#数据任务的可选登录前置步骤)，任何模式均不购买数据或下单。输出沿用 `competition.team_result.v1`。部分覆盖返回退出码2及 `PARTIAL_COVERAGE`，不算下载完成。
+`plan` 和 `inspect` 不发起网络请求。`acquire` 默认不启动 Gateway 或登录。只有显式 IBKR 取数可通过 `--ensure-gateway` 和已启用的私有部署使用[Paper 登录前置步骤](../operations/gateway-login.zh-CN.md#数据任务的可选登录前置步骤)。下文独立的 Databento 试点支持事先授权的计费下载。数据工具不下单。输出沿用 `competition.team_result.v1`。原有数据源部分覆盖时返回退出码 2 及 `PARTIAL_COVERAGE`，不算下载完成。
 
-数据位于配置的 `DATA_ROOT/2026-quant-competition/datasets/<dataset-id>/<version>/`。成功发布不覆盖已有版本。未完成的任务保留在 `<version>.partial`，包含 manifest、receipt、请求日志和文件断点。相同规格再次运行时校验已完成文件的哈希并补充缺失下载，规格变化不能复用原断点。上游档案修订需建立新版本重新下载，恢复校验只确认本地保留字节，不能证明上游此后没有修订。
+数据位于配置的 `DATA_ROOT/2026-quant-competition/datasets/<dataset-id>/<version>/`。原有 v1/v2 数据源成功发布时不覆盖已有版本，未完成的任务保留在 `<version>.partial`，包含 manifest、receipt、请求日志和文件断点。相同规格再次运行时校验已完成文件的哈希并补充缺失下载，规格变化不能复用原断点。上游档案修订需建立新版本重新下载，恢复校验只确认本地保留字节，不能证明上游此后没有修订。Databento 试点使用下文的单次尝试规则。
+
+## Databento 日线数据试点
+
+本试点交付待验收的数据，不产生新的策略收益。独立契约 `competition.databento_dataset_spec.v1` 固定使用 `EQUS.SUMMARY`、`ohlcv-1d`、USD 原始价格和 UTC 区间 `[2025-01-01, 2026-01-01)`。固定标的为 SPY、QQQ、IWM、TLT、GLD、AAPL、MSFT、NVDA、AMZN、META，不代表历史标普 500 成分股。
+
+在仓库外的 `databento.env` 保存唯一一条 `DATABENTO_API_KEY=...`。用已安装的根环境运行英文文档中的 `pilot_spec` 示例，创建外部 JSON 规格；Windows 使用带盘符的绝对路径。随后使用上文相同的 `team data plan`、`acquire` 和 `inspect` 参数。`plan` 不需要密钥或网络。日历检查使用锁定的可选 `daily-data` 环境。此契约拒绝 `refresh`、父 manifest 和 Gateway 参数。运行 `acquire` 前需审阅请求并授权计费下载。
+
+上限为 0.10 美元、5 次元数据请求、1 次下载尝试、120 秒总活动时间和 20 MiB 未压缩 HTTP 响应。失败请求及其响应字节也计入限制。工具在下载前检查最新报价、计费字节数、记录数和适用单价，确认保守费用上界。服务端限制最多返回 4,000 条记录；触及限制或记录数不一致时拒绝结果。计费按未压缩二进制数据计算，不能用 CSV 文件大小推算账单。无法证明费用边界时会保留阻塞记录，不能当成免费请求。参见[官方 HTTP API](https://databento.com/docs/api-reference-historical?historical=http)。
+
+所有结果，包括阻塞和部分完成的尝试，均保留在 `databento-us-daily-pilot/20261023-v1/`。父目录中的 `.databento-us-2025-pilot.attempt` 在预检前占用本轮授权，`download-attempt.json` 表示计费请求可能已经开始。失败或中断后不自动重试。不要删除记录或换目录重复不确定的请求，应先核对保留证据和账户用量。重复采集会被拒绝，离线 `inspect` 则校验文件哈希和请求、规格身份。
+
+仓库外保留原始 CSV、带日期的证券映射、逐标的标准化 CSV、覆盖报告、日历来源和 `competition.databento_dataset_manifest.v1`。无法证明上市日历时记录 `LISTING_CALENDAR_UNVERIFIED`，缺失观测不填充。价格保持 `raw`，公司行动仍未核验。所有结果均为 `accepted_research=false`，已有正式研究入口仍要求原有来源和复权契约。
+
+[Summary 最终日线](https://databento.com/docs/datasets/equs-summary)包含盘后成交量，约在美东 20:15 发布。午夜的 bar 时间戳不代表数据可用时间。记录会区分发布时点假设与本次取得数据的时间，不保证历史可用时间。后续策略接入必须处理复权，并在输入实际可用后才能成交。
+
+CoinPaprika Business 是独立候选数据源。本机连接检查在收到 API 响应前失败，尚不能判定密钥无效或确认套餐。本次没有交付 CoinPaprika 采集器。
 
 下载锁阻止两个 CLI 同时修改同一版本。进程异常退出后，需先确认进程和断点，再人工处理失效锁。工具不会自动抢锁，也不更新共享 `current` 或 `latest`。
 

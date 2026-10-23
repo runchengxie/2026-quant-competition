@@ -25,6 +25,13 @@ def execute(
     base_manifest: Path | None = None,
 ) -> dict:
     spec = load_spec(validate_external(spec_path))
+    if spec.get("schema") == "competition.databento_dataset_spec.v1":
+        from .databento import execute as execute_databento
+
+        if (ensure_gateway or gateway_config or gateway_workspace or gateway_wrapper
+            or base_manifest is not None or action == "refresh"):
+            raise ValueError("UNSUPPORTED_DATABENTO_OPTIONS")
+        return execute_databento(action, config, spec, manifest_path)
     if ensure_gateway and (action != "acquire" or spec["source"] != "ibkr"):
         raise ValueError(
             "Gateway startup is only available for explicit IBKR acquisition"
