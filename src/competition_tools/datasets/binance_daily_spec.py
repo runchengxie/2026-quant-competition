@@ -21,7 +21,15 @@ BUDGET = dict(
 
 def parent_rows(path: Path) -> tuple[dict, dict]:
     path = safe_path(path)
-    manifest = verify_manifest(path)
+    header = json.loads(path.read_text(encoding="utf-8"))
+    if header.get("schema") == "competition.binance_daily_manifest.v1":
+        from .binance_daily_acquisition import inspect_daily_extension
+
+        extension = inspect_daily_extension(path)
+        ancestor, _ = parent_rows(Path(extension["plan"]["parent_manifest"]))
+        manifest = dict(spec=ancestor["spec"], status=extension["parent_status"])
+    else:
+        manifest = verify_manifest(path)
     spec = manifest["spec"]
     if (
         tuple(

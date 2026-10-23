@@ -3,12 +3,13 @@
 import csv
 import io
 import json
+import math
 import time
 import zipfile
 from datetime import datetime, timezone
 from pathlib import Path
 
-from .binance_daily import normalize_daily_archive
+from .binance_daily import PRODUCTS, normalize_daily_archive
 from .binance_daily_spec import load_daily_plan, parent_rows
 from .daily_storage import safe_path
 from .storage import digest, spec_hash, write_json
@@ -16,9 +17,13 @@ from .storage import digest, spec_hash, write_json
 
 def reservation_path(plan: dict) -> Path:
     parent = safe_path(Path(plan["parent_manifest"]))
+    identity = spec_hash({k: plan[k] for k in ("parent_sha256", "start", "end")})
+    header = json.loads(parent.read_text(encoding="utf-8"))
+    if header.get("schema") == "competition.binance_daily_manifest.v1":
+        ancestor = inspect_daily_extension(parent)
+        return safe_path(reservation_path(ancestor["plan"]).parent / identity)
     owners = [p.parent for p in parent.parents if p.name == "datasets"]
     owner = owners[0] if owners else parent.parent.parent
-    identity = spec_hash({k: plan[k] for k in ("parent_sha256", "start", "end")})
     return safe_path(owner / "acquisition-ledgers" / "daily-extension" / identity)
 
 
@@ -155,6 +160,9 @@ def acquire_daily_extension(
             raise ValueError("DAILY_FINALIZATION_DEADLINE")
         manifest["receipt"] = dict(state)
         write_json(out / "manifest.json", manifest)
+        # The owning ledger authenticates the entire immutable publication,
+        # including its inventory and acquisition-time metadata.
+        write_json(reservation / "manifest.json", manifest)
     except (ValueError, OSError, TimeoutError, UnicodeError, zipfile.BadZipFile):
         state.update(
             status="blocked",
@@ -162,11 +170,13 @@ def acquire_daily_extension(
             spend_uncertain=state["in_flight"],
         )
         (out / "manifest.json").unlink(missing_ok=True)
+        (reservation / "manifest.json").unlink(missing_ok=True)
     finally:
         checkpoint()
         if state["elapsed_seconds"] >= budget["seconds"]:
             state.update(status="blocked", issue_codes=["DAILY_FINALIZATION_DEADLINE"])
             (out / "manifest.json").unlink(missing_ok=True)
+            (reservation / "manifest.json").unlink(missing_ok=True)
             checkpoint()
         write_json(out / "receipt.json", state)
     return state
@@ -193,6 +203,40 @@ def inspect_daily_extension(manifest_path: Path) -> dict:
         or value.get("receipt", {}).get("status") != "acquired"
     ):
         raise ValueError("INVALID_DAILY_EXTENSION_MANIFEST")
+    plan = load_daily_plan(path.parent / "plan.json")
+    reservation = reservation_path(plan)
+    authority = json.loads(safe_path(reservation / "manifest.json").read_text())
+    terminal = json.loads(safe_path(reservation / "receipt.json").read_text())
+    local_receipt = json.loads(safe_path(path.parent / "receipt.json").read_text())
+    embedded = value["receipt"]
+    elapsed = embedded.get("elapsed_seconds")
+    final_elapsed = terminal.get("elapsed_seconds")
+    if (
+        value != authority
+        or value["plan"] != plan
+        or local_receipt != terminal
+        or terminal.get("plan_sha256") != plan["plan_sha256"]
+        or {k: v for k, v in embedded.items() if k != "elapsed_seconds"}
+        != {k: v for k, v in terminal.items() if k != "elapsed_seconds"}
+        or not isinstance(elapsed, (int, float))
+        or not isinstance(final_elapsed, (int, float))
+        or not math.isfinite(elapsed)
+        or not math.isfinite(final_elapsed)
+        or not 0 <= elapsed <= final_elapsed < plan["budget"]["seconds"]
+        or set(value["coverage"]) != set(PRODUCTS)
+        or value["parent_status"] != plan["parent_status"]
+    ):
+        raise ValueError("DAILY_MANIFEST_OR_RESERVATION_MISMATCH")
+    expected = {"raw/" + r["url"].rsplit("/", 1)[-1] for r in plan["resources"]}
+    expected.update(f"normalized/{p}.csv" for p in PRODUCTS)
+    listed = [r["path"] for r in value["files"]]
+    actual = {
+        p.relative_to(path.parent).as_posix()
+        for directory in ("raw", "normalized")
+        for p in safe_path(path.parent / directory).iterdir()
+    }
+    if len(listed) != len(expected) or set(listed) != expected or actual != expected:
+        raise ValueError("DAILY_EXTENSION_INVENTORY_MISMATCH")
     for record in value["files"]:
         relative = Path(record["path"])
         if (

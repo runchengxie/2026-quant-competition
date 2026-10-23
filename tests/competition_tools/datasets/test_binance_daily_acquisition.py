@@ -197,3 +197,117 @@ def test_blocked_receipt_is_inspectable_but_tampering_is_rejected(tmp_path):
     receipt.write_text(json.dumps(value))
     with pytest.raises(ValueError):
         inspect_daily_extension(receipt)
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    ["omitted", "duplicate", "extra", "coverage", "receipt", "plan", "rehashed"],
+)
+def test_acquired_manifest_cannot_redefine_verified_inputs(tmp_path, mutation):
+    from competition_tools.datasets.binance_daily_acquisition import (
+        acquire_daily_extension,
+        inspect_daily_extension,
+    )
+
+    config, plan = prepared(tmp_path)
+    out = tmp_path / "acquired"
+    acquire_daily_extension(config, plan, out, transport=ArchiveTransport())
+    manifest = out / "manifest.json"
+    value = json.loads(manifest.read_text())
+    if mutation == "omitted":
+        value["files"] = [
+            r for r in value["files"] if r["path"] != "normalized/BTCUSDT.csv"
+        ]
+        file = out / "normalized/BTCUSDT.csv"
+        file.write_text(file.read_text().replace("1.5", "1.75"))
+    elif mutation == "duplicate":
+        value["files"].append(value["files"][0])
+    elif mutation == "extra":
+        (out / "normalized/UNKNOWN.csv").write_text("unlisted")
+    elif mutation == "coverage":
+        del value["coverage"]["BTCUSDT"]
+    elif mutation == "receipt":
+        value["receipt"]["attempts"] = 0
+        value["receipt"]["collected_at"] = "2000-01-01T00:00:00+00:00"
+    elif mutation == "plan":
+        value["plan"]["parent_status"] = "acquired"
+    else:
+        file = out / "normalized/BTCUSDT.csv"
+        file.write_text(file.read_text().replace("1.5", "1.75"))
+        record = next(
+            r for r in value["files"] if r["path"] == "normalized/BTCUSDT.csv"
+        )
+        record.update(sha256=digest(file), bytes=file.stat().st_size)
+    manifest.write_text(json.dumps(value))
+    with pytest.raises(ValueError):
+        inspect_daily_extension(manifest)
+    from competition_tools.evaluation.observation_preparation import prepare_observation
+
+    # Integrity must fail before consulting the existing protocol or writing
+    # any warmup, even when an otherwise valid CSV omitted from the inventory
+    # would be read independently by that consumer.
+    with pytest.raises(ValueError):
+        prepare_observation(
+            config,
+            manifest,
+            tmp_path / "warmup",
+            parent_registry=tmp_path / "unavailable-parent-registry",
+        )
+    assert not (tmp_path / "warmup").exists()
+
+
+def test_successive_extensions_retain_ancestry_and_reservation_owner(tmp_path):
+    from competition_tools.datasets.binance_daily_acquisition import (
+        acquire_daily_extension,
+        inspect_daily_extension,
+        reservation_path,
+    )
+    from competition_tools.datasets.binance_daily_spec import (
+        freeze_daily_extension,
+        parent_rows,
+    )
+
+    config, plan_path = prepared(tmp_path)
+    plan = json.loads(plan_path.read_text())
+    out = tmp_path / "nested/first"
+    acquire_daily_extension(config, plan_path, out, transport=ArchiveTransport())
+    first = out / "manifest.json"
+    assert inspect_daily_extension(first)["parent_status"] == "partial"
+    next_spec = dict(
+        schema="competition.binance_daily_extension.v1",
+        start="2025-01-03",
+        end="2025-01-03",
+        parent_sha256=digest(first),
+    )
+    second_plan = freeze_daily_extension(
+        next_spec,
+        first,
+        tmp_path / "second-plan",
+        now=datetime(2025, 1, 4, tzinfo=timezone.utc),
+    )
+    assert reservation_path(second_plan).parent == reservation_path(plan).parent
+    assert second_plan["parent_status"] == "partial"
+    second = tmp_path / "another/second"
+    receipt = acquire_daily_extension(
+        config,
+        tmp_path / "second-plan/plan.json",
+        second,
+        transport=ArchiveTransport(),
+    )
+    assert receipt["status"] == "acquired"
+    value = inspect_daily_extension(second / "manifest.json")
+    assert value["plan"]["parent_sha256"] == digest(first)
+    assert value["coverage"]["BTCUSDT"] == dict(
+        rows=3, start="2025-01-01", end="2025-01-03"
+    )
+    source, tables = parent_rows(second / "manifest.json")
+    assert source["spec"]["source"] == "binance_spot"
+    assert source["status"] == "partial"
+    assert [r[0] for r in tables["BTCUSDT"]] == [
+        "2025-01-01",
+        "2025-01-02",
+        "2025-01-03",
+    ]
+    (first.parent / "normalized/BTCUSDT.csv").write_text("changed ancestor")
+    with pytest.raises(ValueError):
+        inspect_daily_extension(second / "manifest.json")

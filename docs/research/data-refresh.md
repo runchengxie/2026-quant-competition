@@ -47,6 +47,8 @@ python -m competition_tools.team daily-extension acquire --config <team.toml> --
 
 A one-time reservation lives under the owning data directory, independently of the output destination. A changed destination, configuration destination or frozen-at timestamp cannot reset it. A failed or uncertain reservation requires explicit investigation and new authorization, not another automatic attempt. Raw ZIPs, checksums, merged normalized files, receipts and manifests remain external. The new `competition.binance_daily_manifest.v1` is inspected through this extension command and observation preparation; it is not automatically accepted by the original historical-study loader.
 
+Inspection requires the exact raw and normalized file inventory, hashes, frozen plan and acquisition metadata retained by the owning ledger. Keep that ledger and all verified ancestors with the dataset. A successfully inspected extension can become the parent of the next contiguous extension. The chain preserves the original source identity, coverage status and reservation owner, even when successive outputs use different directories.
+
 ## US refresh inventory
 
 ```powershell
