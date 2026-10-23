@@ -13,6 +13,12 @@ def main(argv: list[str] | None = None) -> int:
         description="Configure and run independent offline research"
     )
     commands = parser.add_subparsers(dest="action", required=True)
+    preparation = commands.add_parser("observation-prepare", help="Prepare US refresh inventory or a per-market observation warmup offline")
+    preparation.add_argument("operation", choices=["us-refresh", "market"])
+    preparation.add_argument("--config", type=Path, required=True)
+    preparation.add_argument("--manifest", type=Path, required=True)
+    preparation.add_argument("--parent-registry", type=Path)
+    preparation.add_argument("--output-root", type=Path, required=True)
     extension = commands.add_parser("daily-extension", help="Prepare, inspect or explicitly acquire bounded daily archives")
     extension.add_argument("operation", choices=["prepare", "inspect", "acquire"])
     extension.add_argument("--config", type=Path, required=True)
@@ -108,7 +114,11 @@ def main(argv: list[str] | None = None) -> int:
             value = envelope(args.action)
         else:
             config = load_config(args.config)
-            if args.action == "daily-extension":
+            if args.action == "observation-prepare":
+                from .observation_prepare import execute
+
+                value = execute(args.operation, config, args.manifest, args.output_root, parent_registry=args.parent_registry)
+            elif args.action == "daily-extension":
                 from .daily_extension import execute
 
                 value = execute(args.operation, config, spec=args.spec, base_manifest=args.base_manifest, plan=args.plan, manifest=args.manifest, output=args.output_root)

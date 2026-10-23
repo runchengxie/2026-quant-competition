@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "parent_protocol_id",
+    "new_protocol_id",
+    "preparation_sha256",
+    "market",
+    "status"
+  ],
+  "properties": {
+    "parent_protocol_id": {
+      "type": "string"
+    },
+    "new_protocol_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "preparation_sha256": {
+      "type": "string"
+    },
+    "market": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string"
+    },
+    "schema": {
+      "const": "competition.observation_relationship.v1"
+    }
+  }
+}
