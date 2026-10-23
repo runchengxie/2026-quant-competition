@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "competition.strategy_controls_spec.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "manifests",
+    "expected_input_hashes",
+    "arms",
+    "costs",
+    "role",
+    "accepted_research",
+    "budget"
+  ],
+  "properties": {
+    "schema": {
+      "const": "competition.strategy_controls_spec.v1"
+    },
+    "manifests": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "US",
+        "crypto"
+      ],
+      "properties": {
+        "US": {
+          "type": "string"
+        },
+        "crypto": {
+          "type": "string"
+        }
+      }
+    },
+    "expected_input_hashes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "US",
+        "crypto"
+      ],
+      "properties": {
+        "US": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "crypto": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "arms": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "US",
+        "crypto"
+      ],
+      "properties": {
+        "US": {
+          "const": [
+            "ew_daily",
+            "ew_monthly",
+            "ew_monthly_buffer20",
+            "mom20_daily",
+            "mom20_monthly",
+            "mom20_monthly_buffer20"
+          ]
+        },
+        "crypto": {
+          "const": [
+            "ew_legacy",
+            "trend200_legacy",
+            "trend200_vol40_legacy",
+            "trend200_fixed60_legacy",
+            "trend200_vol40_strict",
+            "ew_fixed60",
+            "ew_vol40_strict",
+            "ew_trend_gross_matched"
+          ]
+        }
+      }
+    },
+    "costs": {
+      "const": {
+        "US": [
+          20,
+          40
+        ],
+        "crypto": [
+          0,
+          10,
+          25
+        ]
+      }
+    },
+    "role": {
+      "const": "retrospective"
+    },
+    "accepted_research": {
+      "const": false
+    },
+    "budget": {
+      "const": {
+        "jobs": 512,
+        "seconds": 3600,
+        "batch_jobs": 384
+      }
+    }
+  }
+}

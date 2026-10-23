@@ -64,6 +64,10 @@ def main(argv: list[str] | None = None) -> int:
     evaluate.add_argument("--config", type=Path, required=True)
     evaluate.add_argument("--spec", type=Path, required=True)
     evaluate.add_argument("--output-root", type=Path, required=True)
+    controls = commands.add_parser("controls", help="Run frozen independent strategy-control experiments")
+    controls.add_argument("--config", type=Path, required=True)
+    controls.add_argument("--spec", type=Path, required=True)
+    controls.add_argument("--output-root", type=Path, required=True)
     factors = commands.add_parser("factors", help="Run fixed retrospective hourly factor diagnostics")
     factors.add_argument("--config", type=Path, required=True)
     factors.add_argument("--spec", type=Path, required=True)
@@ -86,7 +90,11 @@ def main(argv: list[str] | None = None) -> int:
             value = envelope(args.action)
         else:
             config = load_config(args.config)
-            if args.action == "factors":
+            if args.action == "controls":
+                from .controls import execute
+
+                value = execute(config, args.spec, args.output_root)
+            elif args.action == "factors":
                 from .factors import execute
 
                 value = execute(config, args.spec, args.output_root)

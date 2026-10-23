@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "competition.strategy_controls_periods.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "job_id",
+    "plan_sha256",
+    "net",
+    "gross"
+  ],
+  "properties": {
+    "schema": {
+      "const": "competition.strategy_controls_periods.v1"
+    },
+    "job_id": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "plan_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "net": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "date",
+          "equity",
+          "cash",
+          "positions",
+          "weights",
+          "turnover",
+          "cost",
+          "net_return",
+          "exposure"
+        ],
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "equity": {
+            "type": "number"
+          },
+          "cash": {
+            "type": "number"
+          },
+          "positions": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "weights": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "turnover": {
+            "type": "number"
+          },
+          "cost": {
+            "type": "number"
+          },
+          "net_return": {
+            "type": "number"
+          },
+          "exposure": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "gross": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "date",
+          "equity",
+          "cash",
+          "positions",
+          "weights",
+          "turnover",
+          "cost",
+          "net_return",
+          "exposure"
+        ],
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "equity": {
+            "type": "number"
+          },
+          "cash": {
+            "type": "number"
+          },
+          "positions": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "weights": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            }
+          },
+          "turnover": {
+            "type": "number"
+          },
+          "cost": {
+            "type": "number"
+          },
+          "net_return": {
+            "type": "number"
+          },
+          "exposure": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  }
+}

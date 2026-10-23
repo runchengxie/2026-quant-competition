@@ -1,0 +1,185 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "competition.strategy_controls_result.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "status",
+    "job_id",
+    "plan_sha256",
+    "manifest_sha256",
+    "expected_leaf_sha256",
+    "code_commit",
+    "market",
+    "arm_id",
+    "fee_bps",
+    "quote_currency",
+    "metrics",
+    "diagnostics",
+    "artifacts",
+    "accepted_research",
+    "issue_codes"
+  ],
+  "properties": {
+    "schema": {
+      "const": "competition.strategy_controls_result.v1"
+    },
+    "status": {
+      "enum": [
+        "completed",
+        "blocked"
+      ]
+    },
+    "job_id": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "plan_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "manifest_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "expected_leaf_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "code_commit": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "market": {
+      "enum": [
+        "US",
+        "crypto"
+      ]
+    },
+    "arm_id": {
+      "type": "string"
+    },
+    "fee_bps": {
+      "type": "integer",
+      "enum": [
+        0,
+        10,
+        20,
+        25,
+        40
+      ]
+    },
+    "quote_currency": {
+      "enum": [
+        "USD",
+        "USDT"
+      ]
+    },
+    "metrics": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "net_return",
+            "gross_return",
+            "cost_drag",
+            "volatility",
+            "max_drawdown",
+            "turnover",
+            "total_costs",
+            "mean_daily_turnover",
+            "mean_exposure",
+            "periods",
+            "flat_days",
+            "sharpe"
+          ],
+          "properties": {
+            "net_return": {
+              "type": "number"
+            },
+            "gross_return": {
+              "type": "number"
+            },
+            "cost_drag": {
+              "type": "number"
+            },
+            "volatility": {
+              "type": "number"
+            },
+            "max_drawdown": {
+              "type": "number"
+            },
+            "turnover": {
+              "type": "number"
+            },
+            "total_costs": {
+              "type": "number"
+            },
+            "mean_daily_turnover": {
+              "type": "number"
+            },
+            "mean_exposure": {
+              "type": "number"
+            },
+            "periods": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "flat_days": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "sharpe": {
+              "type": [
+                "number",
+                "null"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "diagnostics": {
+      "type": "object"
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "path",
+          "bytes",
+          "sha256"
+        ],
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        }
+      }
+    },
+    "accepted_research": {
+      "const": false
+    },
+    "issue_codes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}
