@@ -88,14 +88,26 @@ def score_metrics(frame, prediction, dates, *, ranking=False):
     return result
 
 
-def descriptive_metrics(frame, prediction, dates):
+def descriptive_metrics(frame, prediction, dates, *, eligible=None):
     result = {}
+    eligible = frame if eligible is None else eligible
     # Cut points depend on each feature date's eligible universe, never labels.
     for name, column in [
         ("liquidity", "prior_dollar_volume"),
         ("spread", "median_spread"),
     ]:
-        bins = frame.groupby("date")[column].rank(method="average", pct=True)
+        ranked = eligible[["date", "candidate_id"]].copy()
+        ranked["bin_rank"] = eligible.groupby("date")[column].rank(
+            method="average", pct=True
+        )
+        bins = frame[["date", "candidate_id"]].merge(
+            ranked,
+            on=["date", "candidate_id"],
+            how="left",
+            validate="one_to_one",
+            sort=False,
+        )["bin_rank"]
+        bins.index = frame.index
         masks = {
             "low": bins.le(1 / 3),
             "middle": bins.gt(1 / 3) & bins.le(2 / 3),
@@ -280,7 +292,12 @@ def run_incremental(frame, sessions, output):
                             status="completed",
                             params=best["params"],
                             metrics=score_metrics(test, prediction, dates),
-                            strata=descriptive_metrics(test, prediction, dates),
+                            strata=descriptive_metrics(
+                                test,
+                                prediction,
+                                dates,
+                                eligible=selected[selected.date.isin(dates)],
+                            ),
                         )
                         if spec["kind"] == "ridge":
                             result["standardized_coefficients"] = dict(

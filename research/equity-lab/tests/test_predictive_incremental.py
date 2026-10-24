@@ -84,7 +84,9 @@ def test_fixed_protocol_keeps_three_calendars_shared_rows_and_45_attempts(tmp_pa
                     ticker=str(identity),
                     target=-features["session_return"] + rng.normal(scale=0.1),
                     decision_at=decision,
-                    label_end=pd.Timestamp(decision.to_pydatetime() + timedelta(days=1)),
+                    label_end=pd.Timestamp(
+                        decision.to_pydatetime() + timedelta(days=1)
+                    ),
                     dollar_volume=20_000_000,
                     price_valid=True,
                     close_price=10,
@@ -105,3 +107,24 @@ def test_fixed_protocol_keeps_three_calendars_shared_rows_and_45_attempts(tmp_pa
             for r in m["versus_reversal"]["daily"]
         )
     assert len(list((tmp_path / "run").glob("*-predictions.parquet"))) == 12
+
+
+def test_strata_cutpoints_do_not_depend_on_future_label_availability():
+    from equity_lab.predictive.incremental import descriptive_metrics
+
+    universe = pd.DataFrame(
+        {
+            "date": ["2026-08-03"] * 90,
+            "candidate_id": list(map(str, range(90))),
+            "target": np.arange(90),
+            "prior_dollar_volume": np.arange(90) + 1,
+            "median_spread": np.arange(90) / 1000,
+        }
+    )
+    scored = universe.iloc[30:]
+    result = descriptive_metrics(
+        scored, np.arange(60), ["2026-08-03"], eligible=universe
+    )
+    assert result["liquidity"]["low"]["daily"][0]["count"] == 0
+    assert result["liquidity"]["middle"]["daily"][0]["count"] == 30
+    assert result["liquidity"]["high"]["daily"][0]["count"] == 30
