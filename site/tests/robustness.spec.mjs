@@ -40,7 +40,52 @@ test('robustness charts cannot widen mobile pages while resize callbacks are del
  await page.setViewportSize({width:1360,height:1000});await page.goto('/2026-quant-competition/strategies/');
  const root=page.locator('#robustness');await root.scrollIntoViewIfNeeded();await expect(root).toHaveAttribute('data-ready','true');
  await page.setViewportSize({width:390,height:844});
+ await expect.poll(()=>root.locator('[data-robustness-chart=paired]').evaluate(node=>{
+  const canvas=node.querySelector('canvas');
+  return canvas&&Math.abs(canvas.getBoundingClientRect().width-node.clientWidth)<2;
+ })).toBe(true);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});
+
+// Inspect actual ECharts instances from the shared built module, without adding
+// production debug globals or depending on hashed asset names/export letters.
+async function chartState(page,selector,seed=false){
+ return page.evaluate(async({selector,seed})=>{
+  const url=performance.getEntriesByType('resource').map(r=>r.name).find(url=>/\/installCanvasRenderer\.[^/]+\.js/.test(url));
+  const module=await import(url);
+  const init=Object.values(module).find(value=>typeof value==='function'&&value.toString().includes('afterinit')&&value.toString().includes('.ssr'));
+  if(!init)throw new Error('Cannot locate the shared ECharts init export');
+  const chart=init(document.querySelector(selector));
+  if(seed){
+   chart.dispatchAction({type:'dataZoom',start:25,end:70});
+   const name=chart.getOption().series[0].name;
+   if(name)chart.dispatchAction({type:'legendUnSelect',name});
+  }
+  const option=chart.getOption();
+  const probe=document.createElement('span');probe.style.color='var(--ink)';document.body.append(probe);
+  const paletteMatches=option.textStyle.color===getComputedStyle(probe).color;probe.remove();
+  return {paletteMatches,zoom:option.dataZoom.map(({start,end})=>({start,end})),legend:option.legend?.map(({selected})=>selected)??[]};
+ },{selector,seed});
+}
+
+const targets=[['#robustness','[data-robustness-chart=windows]'],['#strategy-controls','[data-controls-chart=paired]'],['#ablation','[data-ablation-chart=paired]'],['#performance','[data-chart=comparison]']];
+for(const [root,chart] of targets)for(const blockedStorage of [false,true])test(`${root} retains interactions across appearance changes (blocked storage: ${blockedStorage})`,async({page})=>{
+ if(blockedStorage)await page.addInitScript(()=>{Storage.prototype.setItem=()=>{throw new Error('Storage unavailable');};});
+ await page.emulateMedia({colorScheme:'light',reducedMotion:'reduce'});
+ await page.goto('/2026-quant-competition/strategies/');
+  await page.locator(root).scrollIntoViewIfNeeded();
+  await expect(page.locator(root)).toHaveAttribute('data-ready','true');
+  const selector=`${root} ${chart}`,before=await chartState(page,selector,true);
+  expect(before.paletteMatches).toBe(true);
+  expect(before.zoom[0]).toEqual({start:25,end:70});
+  await page.locator('#theme-preference').selectOption('dark');
+  await expect.poll(()=>chartState(page,selector)).toEqual(before);
+  await page.locator('#theme-preference').selectOption('system');
+  await expect.poll(()=>chartState(page,selector)).toEqual(before);
+  await page.emulateMedia({colorScheme:'dark'});
+  await expect.poll(()=>chartState(page,selector)).toEqual(before);
+  await page.emulateMedia({colorScheme:'light'});
+  await page.locator('#theme-preference').selectOption('light');
 });
 
 test('without JavaScript the complete reviewed table remains available',async({browser})=>{

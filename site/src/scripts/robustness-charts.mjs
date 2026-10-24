@@ -54,8 +54,18 @@ export function mountRobustness(root){
  controls.market.addEventListener('change',()=>{controls.window.value='';sync(true);draw();});
  for(const [key,node] of Object.entries(controls))if(key!=='market')node.addEventListener('change',draw);
  for(const node of root.querySelectorAll('[data-robustness-notional],[data-robustness-threshold]'))node.addEventListener('change',draw);
- new ResizeObserver(()=>Object.values(charts).forEach(chart=>chart.resize())).observe(root);
- new MutationObserver(draw).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
- matchMedia('(prefers-color-scheme: dark)').addEventListener('change',draw);
+ const resize=()=>Object.values(charts).forEach(chart=>chart.resize());
+ new ResizeObserver(resize).observe(root);
+ window.addEventListener('resize',resize);
+ function appearance(){
+  const state=Object.entries(charts).map(([id,chart])=>{
+   const option=chart.getOption();
+   return [id,{dataZoom:option.dataZoom?.map(({start,end})=>({start,end})),legend:option.legend?.map(({selected})=>({selected}))}];
+  });
+  draw();
+  for(const [id,option] of state)charts[id].setOption(option);
+ }
+ new MutationObserver(appearance).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+ matchMedia('(prefers-color-scheme: dark)').addEventListener('change',appearance);
  sync(true);draw();root.querySelector('[data-robustness-filters]').hidden=false;
 }

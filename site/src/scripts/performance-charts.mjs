@@ -125,9 +125,19 @@ export async function mountPerformanceDashboard(root){
   gross.addEventListener("change",()=>{root.dataset.grossVisible=String(gross.checked);charts.nav.dispatchAction({type:gross.checked?"legendSelect":"legendUnSelect",name:t.gross});});
   zoom.addEventListener("input",()=>{zoomPercent=Number(zoom.value);zoomStart=100-zoomPercent;zoomEnd=100;root.dataset.zoom=String(zoomPercent);charts.nav.dispatchAction({type:"dataZoom",start:100-zoomPercent,end:100});});
   root.querySelector("[data-reset]").addEventListener("click",()=>{syncControls(true);gross.checked=true;zoomPercent=100;zoomStart=0;zoomEnd=100;zoom.value="100";root.dataset.zoom="100";render();});
-  new MutationObserver(render).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
-  matchMedia("(prefers-color-scheme: dark)").addEventListener("change",render);
-  new ResizeObserver(()=>Object.values(charts).forEach(chart=>chart.resize())).observe(root);
+  function appearance(){
+    const state=Object.entries(charts).map(([id,chart])=>{
+      const option=chart.getOption();
+      return [id,{dataZoom:option.dataZoom?.map(({start,end})=>({start,end})),legend:option.legend?.map(({selected})=>({selected}))}];
+    });
+    render();
+    for(const [id,option] of state)charts[id].setOption(option);
+  }
+  new MutationObserver(appearance).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change",appearance);
+  const resize=()=>Object.values(charts).forEach(chart=>chart.resize());
+  new ResizeObserver(resize).observe(root);
+  window.addEventListener('resize',resize);
   root.querySelector("fieldset").disabled=false;
   root.querySelector("[data-comparison-controls]").disabled=false;
   syncControls();render();
