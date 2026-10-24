@@ -64,17 +64,20 @@ jobs:
   predictive:
     runs-on: ubuntu-latest
     env:
-      DATA_ROOT: ${{ runner.temp }}/predictive-data
-      UV_PROJECT_ENVIRONMENT: ${{ runner.temp }}/predictive-env
       MPLBACKEND: Agg
     defaults:
       run:
         working-directory: research/equity-lab
     steps:
       - uses: actions/checkout@v4
+      - name: Configure external prediction paths
+        shell: bash
+        run: |
+          echo "DATA_ROOT=$RUNNER_TEMP/predictive-data" >> "$GITHUB_ENV"
+          echo "UV_PROJECT_ENVIRONMENT=$RUNNER_TEMP/predictive-env" >> "$GITHUB_ENV"
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - uses: astral-sh/setup-uv@v5
       - run: uv sync --locked --group dev --extra predictive
-      - run: uv run --locked --extra predictive pytest tests/test_predictive_data.py tests/test_predictive_protocol.py -q
+      - run: uv run --locked --extra predictive pytest tests/test_predictive_*.py -q

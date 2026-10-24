@@ -89,3 +89,25 @@ def test_copy_publishes_verified_new_directory_and_preserves_source(tmp_path):
     assert (destination / "transfer-receipt.json").is_file()
     with pytest.raises(FileExistsError):
         copy_manifest(manifest, destination)
+
+
+def test_manifest_requires_complete_owner_receipts_and_exact_file_set(tmp_path):
+    empty = tmp_path / "empty"
+    empty.mkdir()
+    with pytest.raises((ValueError, OSError)):
+        verify_manifest({"schema_version": 1, "source": str(empty), "files": []})
+    source = completed(tmp_path)
+    manifest = build_manifest(source)
+    manifest["files"] = manifest["files"][1:]
+    with pytest.raises(ValueError):
+        verify_manifest(manifest)
+
+
+def test_copy_rejects_truncated_manifest_before_creating_destination(tmp_path):
+    source = completed(tmp_path)
+    manifest = build_manifest(source)
+    manifest["files"] = []
+    destination = tmp_path / "must-not-exist"
+    with pytest.raises(ValueError):
+        copy_manifest(manifest, destination)
+    assert not destination.exists()

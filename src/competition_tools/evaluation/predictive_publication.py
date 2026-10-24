@@ -1,8 +1,32 @@
 """Independent stdlib validation of the public, aggregate-only predictive receipt."""
 
 import math
+import hashlib
+import json
 import re
-from datetime import date
+from datetime import date, timedelta
+
+# This frozen v1 projection received exact-artifact review. Future measurements
+# require a deliberate reviewed pin update as well as passing semantic checks.
+REVIEWED_SHA256 = "2ef0fee7de821e501c4caabb1fa45591584aa2f88e2ccd832f24db49e0de632a"
+
+
+def _reviewed_sessions(start, end):
+    spans = [
+        ("2026-07-27", "2026-08-21"),
+        ("2026-08-24", "2026-09-21"),
+        ("2026-09-22", "2026-10-19"),
+    ]
+    if (start, end) not in spans:
+        raise ValueError("Unreviewed test window")
+    day, last = date.fromisoformat(start), date.fromisoformat(end)
+    dates = []
+    while day <= last:
+        # Labor Day is the only XNYS holiday within these reviewed spans.
+        if day.weekday() < 5 and day.isoformat() != "2026-09-07":
+            dates.append(day.isoformat())
+        day += timedelta(days=1)
+    return dates
 
 
 def _keys(value, keys):
@@ -56,7 +80,7 @@ def _metrics(metrics, start, end):
             if row["count"] == 0:
                 raise ValueError("MSE without observations")
             mses.append(row["mse"])
-    if dates != sorted(set(dates)) or dates[0] != start or dates[-1] != end:
+    if dates != _reviewed_sessions(start, end):
         raise ValueError("Changed test calendar")
     for key, observations, coverage in [
         ("mean_daily_ic", ics, "valid_ic_dates"),
@@ -133,4 +157,16 @@ def validate_public_predictive(data):
             _metrics(model["metrics"], fold["start"], fold["end"])
             if sum(d["count"] for d in model["metrics"]["daily"]) != fold["test_rows"]:
                 raise ValueError("Test row coverage mismatch")
+        reference = fold["models"][0]["metrics"]["daily"]
+        counts = [d["count"] for d in reference]
+        if not max(counts) <= fold["test_candidate_count"] <= fold["test_rows"]:
+            raise ValueError("Impossible distinct identity coverage")
+        for model in fold["models"][1:]:
+            if [d["count"] for d in model["metrics"]["daily"]] != counts:
+                raise ValueError("Model sample counts differ")
+    canonical = json.dumps(
+        data, sort_keys=True, separators=(",", ":"), ensure_ascii=True, allow_nan=False
+    ).encode()
+    if hashlib.sha256(canonical).hexdigest() != REVIEWED_SHA256:
+        raise ValueError("Predictive aggregate differs from exact reviewed artifact")
     return data

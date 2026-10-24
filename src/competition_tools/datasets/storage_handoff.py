@@ -101,10 +101,13 @@ def verify_manifest(manifest):
     root = Path(manifest["source"]).resolve(strict=True)
     if manifest.get("schema_version") != 1:
         raise ValueError("Unsupported manifest version")
-    for item in manifest["files"]:
-        path = _safe(root, item["path"])
-        if path.stat().st_size != item["size"] or _digest(path) != item["sha256"]:
-            raise ValueError("Manifest source changed")
+    # Reconcile the supplied manifest against the owner's complete final index,
+    # including every required receipt, not merely a caller-selected subset.
+    expected = build_manifest(root)
+    if json.dumps(manifest, sort_keys=True, allow_nan=False) != json.dumps(
+        expected, sort_keys=True, allow_nan=False
+    ):
+        raise ValueError("Manifest does not match complete final-layout receipts")
 
 
 def copy_manifest(manifest, destination):

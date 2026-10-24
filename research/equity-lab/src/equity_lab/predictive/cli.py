@@ -25,10 +25,19 @@ def main(argv=None):
     args = parser.parse_args(argv)
     source = args.input.resolve(strict=True)
     destination = args.output.resolve()
-    checkout = Path(__file__).resolve().parents[4]
-    if destination.is_relative_to(checkout) or destination.is_relative_to(
-        source.parent
-    ):
+    # Source checkouts, archives and installed wheels have different depths.
+    # Discover project boundaries rather than assuming a parent index.
+    module = Path(__file__).resolve()
+    candidates = [*module.parents, Path.cwd().resolve(), *Path.cwd().resolve().parents]
+    boundaries = [
+        p
+        for p in candidates
+        if (p / ".git").exists() or (p / "pyproject.toml").is_file()
+    ]
+    boundaries.append(module.parent.parent)
+    if any(
+        destination.is_relative_to(p) for p in boundaries
+    ) or destination.is_relative_to(source.parent):
         parser.error("Output must be outside the checkout and source input directory")
     if not args.worker:
         if destination.exists():

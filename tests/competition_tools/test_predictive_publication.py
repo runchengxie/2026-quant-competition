@@ -26,7 +26,18 @@ def test_reviewed_predictive_projection_reconciles_each_daily_mean():
 
 
 @pytest.mark.parametrize(
-    "mutation", ["bool", "nan", "extra", "mean", "pnl", "coverage"]
+    "mutation",
+    [
+        "bool",
+        "nan",
+        "extra",
+        "mean",
+        "pnl",
+        "coverage",
+        "calendar",
+        "identities",
+        "sample_counts",
+    ],
 )
 def test_predictive_projection_rejects_changed_facts_and_private_fields(mutation):
     data = copy.deepcopy(fixture())
@@ -40,6 +51,13 @@ def test_predictive_projection_rejects_changed_facts_and_private_fields(mutation
         data["folds"][0]["models"][0]["metrics"]["mean_daily_ic"] += 0.1
     elif mutation == "pnl":
         data["pnl_available"] = True
+    elif mutation == "calendar":
+        data["folds"][0]["models"][0]["metrics"]["daily"][4]["date"] = "2026-08-01"
+    elif mutation == "identities":
+        data["folds"][0]["test_candidate_count"] = 1
+    elif mutation == "sample_counts":
+        data["folds"][0]["models"][0]["metrics"]["daily"][0]["count"] -= 1
+        data["folds"][0]["models"][0]["metrics"]["daily"][1]["count"] += 1
     else:
         data["folds"][0]["models"][0]["metrics"]["valid_ic_dates"] = 19
     with pytest.raises(ValueError):
