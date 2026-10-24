@@ -80,6 +80,30 @@ def fit_incremental(kind, params, x, y):
 
 def score_metrics(frame, prediction, dates, *, ranking=False):
     result = daily_metrics(frame, prediction, dates)
+    prediction = np.asarray(prediction, dtype=float)
+    valid_label = np.isfinite(frame.target.to_numpy(dtype=float))
+    changed = False
+    for row in result["daily"]:
+        eligible = (frame.date == row["date"]).to_numpy() & valid_label
+        if not np.isfinite(prediction[eligible]).all():
+            # A partial prediction must not silently select a different cohort.
+            row.update(
+                count=int(eligible.sum()),
+                mse=None,
+                rank_ic=None,
+                ic_reason="missing_predictions",
+            )
+            changed = True
+    if changed:
+        for field, coverage in [
+            ("rank_ic", "valid_ic_dates"),
+            ("mse", "valid_mse_dates"),
+        ]:
+            values = [row[field] for row in result["daily"] if row[field] is not None]
+            result[coverage] = len(values)
+            result["mean_daily_ic" if field == "rank_ic" else "mean_daily_mse"] = (
+                float(np.mean(values)) if values else None
+            )
     if ranking:
         result["mean_daily_mse"] = None
         result["valid_mse_dates"] = 0
@@ -133,10 +157,12 @@ def paired_metrics(metrics, reference):
     other = {r["date"]: r for r in reference["daily"]}
     rows = []
     for row in metrics["daily"]:
-        ref = other[row["date"]]
+        ref = other.get(row["date"], {"rank_ic": None, "count": 0})
         difference = (
             row["rank_ic"] - ref["rank_ic"]
-            if row["rank_ic"] is not None and ref["rank_ic"] is not None
+            if row["rank_ic"] is not None
+            and ref["rank_ic"] is not None
+            and row["count"] == ref["count"]
             else None
         )
         rows.append(
@@ -145,6 +171,13 @@ def paired_metrics(metrics, reference):
                 "difference": difference,
                 "count": row["count"],
                 "reference_count": ref["count"],
+                "reason": (
+                    "coverage_mismatch"
+                    if row["count"] != ref["count"]
+                    else "unavailable_ic"
+                    if difference is None
+                    else None
+                ),
             }
         )
     valid = [r["difference"] for r in rows if r["difference"] is not None]

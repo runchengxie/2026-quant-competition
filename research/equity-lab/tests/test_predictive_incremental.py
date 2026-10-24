@@ -128,3 +128,40 @@ def test_strata_cutpoints_do_not_depend_on_future_label_availability():
     assert result["liquidity"]["low"]["daily"][0]["count"] == 0
     assert result["liquidity"]["middle"]["daily"][0]["count"] == 30
     assert result["liquidity"]["high"]["daily"][0]["count"] == 30
+
+
+@pytest.mark.parametrize("missing", [1, 40])
+def test_missing_predictions_keep_eligible_coverage_and_disable_daily_comparison(
+    missing,
+):
+    from equity_lab.predictive.incremental import score_metrics, paired_metrics
+
+    frame = pd.DataFrame(
+        {
+            "date": ["2026-08-03"] * 40,
+            "candidate_id": list(map(str, range(40))),
+            "target": np.arange(40),
+        }
+    )
+    prediction = np.arange(40, dtype=float)
+    prediction[:missing] = np.nan
+    metric = score_metrics(frame, prediction, ["2026-08-03"])
+    reference = score_metrics(frame, np.arange(40), ["2026-08-03"])
+    assert metric["daily"][0]["count"] == 40
+    assert metric["daily"][0]["rank_ic"] is None
+    assert metric["daily"][0]["ic_reason"] == "missing_predictions"
+    assert metric["valid_mse_dates"] == 0
+    paired = paired_metrics(metric, reference)
+    assert paired["valid_dates"] == 0
+    assert paired["daily"][0]["difference"] is None
+
+
+def test_pairing_rejects_mismatched_nonmissing_coverage():
+    from equity_lab.predictive.incremental import paired_metrics
+
+    result = paired_metrics(
+        {"daily": [{"date": "2026-08-03", "rank_ic": 0.4, "count": 39}]},
+        {"daily": [{"date": "2026-08-03", "rank_ic": 0.2, "count": 40}]},
+    )
+    assert result["valid_dates"] == 0
+    assert result["daily"][0]["difference"] is None

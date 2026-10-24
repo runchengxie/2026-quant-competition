@@ -2,21 +2,34 @@
 
 import json
 import time
+from datetime import date
+from pathlib import Path
 
 from crypto_mm.run_guard import digest, supervise
-from .weekly import evaluate_weekly
+from .weekly import ARMS, evaluate_weekly
 from .study_accounting import validate_prices
 
 PROTOCOL = "crypto.weekly_cost.20261024.v1"
 
 
-def main(argv=None):
-    args, code = supervise("crypto_mm.daily.weekly_cli", PROTOCOL, 600, argv)
-    if code is not None:
-        return code
-    started = time.monotonic()
-    before = digest(args.input)
-    batch = json.loads(args.input.read_text(encoding="utf-8"))
+def _window_id(value):
+    if not isinstance(value, str) or date.fromisoformat(value).isoformat() != value:
+        raise ValueError("Invalid canonical weekly identifier")
+    return value
+
+
+def artifact_path(output, window_id, fee_bps, arm):
+    _window_id(window_id)
+    if fee_bps not in (35, 50) or arm not in ARMS:
+        raise ValueError("Invalid weekly artifact identity")
+    root = Path(output).resolve()
+    path = (root / f"{window_id}-{fee_bps}-{arm}.json").resolve()
+    if path.parent != root:
+        raise ValueError("Weekly artifact escaped reservation")
+    return path
+
+
+def validate_batch(batch):
     if (
         set(batch) != {"schema", "windows"}
         or batch["schema"] != "crypto.weekly_input.v1"
@@ -34,6 +47,22 @@ def main(argv=None):
         validate_prices(window["bars"])
         if len(window["bars"]["dates"]) != 342 or len(window["bars"]["close"]) != 8:
             raise ValueError("Invalid weekly fixed scope")
+        if _window_id(window["window_id"]) != window["bars"]["dates"][252]:
+            raise ValueError("Weekly identifier differs from score start")
+    return batch
+
+
+def main(argv=None):
+    args, code = supervise("crypto_mm.daily.weekly_cli", PROTOCOL, 600, argv)
+    if code is not None:
+        return code
+    started = time.monotonic()
+    before = digest(args.input)
+    batch = validate_batch(json.loads(args.input.read_text(encoding="utf-8")))
+    for window in batch["windows"]:
+        for fee in (35, 50):
+            for arm in ARMS:
+                artifact_path(args.output, window["window_id"], fee, arm)
     args.output.mkdir(parents=True, exist_ok=False)
     report = {
         "schema": "crypto.weekly_private.v1",
@@ -66,10 +95,10 @@ def main(argv=None):
                 stream.flush()
             results = evaluate_weekly(window["bars"], fee)
             for arm, result in results.items():
-                filename = f"{window['window_id']}-{fee}-{arm}.json"
-                (args.output / filename).write_text(
-                    json.dumps(result, allow_nan=False), encoding="utf-8"
-                )
+                path = artifact_path(args.output, window["window_id"], fee, arm)
+                filename = path.name
+                with path.open("x", encoding="utf-8") as stream:
+                    stream.write(json.dumps(result, allow_nan=False))
                 report["jobs"].append(
                     {
                         "window_id": window["window_id"],

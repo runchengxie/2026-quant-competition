@@ -14,6 +14,13 @@ def digest(path):
         return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
+def lock_digest():
+    path = Path(__file__).resolve().parents[2] / "uv.lock"
+    if not path.is_file():
+        raise ValueError("Reserved research requires a source checkout with uv.lock")
+    return digest(path)
+
+
 def source_digest():
     root = Path(__file__).parent
     hasher = hashlib.sha256()
@@ -47,6 +54,7 @@ def claim_reservation(receipt, source, output, protocol, *, claim=True):
         or identity["protocol"] != protocol
         or identity["input_sha256"] != digest(source)
         or identity["code_sha256"] != source_digest()
+        or identity.get("lock_sha256") != lock_digest()
         or receipt.parent != owner / "research-reservations"
         or receipt.name != name
         or Path(data["output"]).resolve() != output

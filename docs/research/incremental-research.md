@@ -71,6 +71,8 @@ All 120 net accounts and 120 corresponding zero-cost accounts completed within t
 
 Set an absolute `DATA_ROOT` and a separate `UV_PROJECT_ENVIRONMENT`. New runs need an owner-scoped reservation bound to protocol, input hash, code, lock and output. The same protocol/input cannot acquire a new budget by changing its output or code. Existing or uncertain starts are refused. The checked-in results are immutable reference measurements, not permission to rerun consumed reservations.
 
+These reserved CLIs require a source checkout with the corresponding `uv.lock`. They check the recorded lock bytes before consuming a start record. They do not verify arbitrary changes inside installed packages. Use the locked environment setup below.
+
 ```powershell
 cd research/equity-lab
 uv sync --locked --group dev --extra predictive

@@ -10,7 +10,7 @@
   "strataTitle": "Where did the ranking work?",
   "strataNote": "Groups use each feature date's eligible pool. Small or constant groups remain unavailable. These comparisons describe this sample and do not identify a cause.",
   "cryptoTitle": "Trading weekly saved costs. Coin selection still needs evidence.",
-  "cryptoLead": "Weekly trend beat daily trend in 7 of 12 windows at 35 bps and 8 of 12 at 50 bps. Against either equal-weight control, it won only 5 of 12 windows at each cost.",
+  "cryptoLead": "Weekly trend beat daily trend in 7/12 windows at 35 bps and 8/12 at 50 bps. It beat each equal-weight control in 5/12 windows at either cost.",
   "cryptoScope": "Eight fixed spot coins, twelve separate 90-day windows, USDT. A cost of 35 bps means 0.35% of each amount bought or sold. These are historical daily-price simulations.",
   "cryptoExplain": "Weekly trading starts with one allocation, then adjusts on Monday UTC decision dates. Holdings drift between adjustments. The calendar control trades on the same dates. The exposure control adjusts daily to match the trend account's current allocation to coins. Their turnover and risks differ.",
   "cryptoChart": "Trading volume and net return",

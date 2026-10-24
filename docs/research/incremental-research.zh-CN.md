@@ -63,6 +63,8 @@ Ridge 对三组特征分别比较 alpha 为 0.1、1、10 的设置。六项原�
 
 先配置绝对路径 `DATA_ROOT`，把 `UV_PROJECT_ENVIRONMENT` 放在仓库外。真实运行需要项目数据目录下的一次性预约，绑定协议、输入哈希、代码、依赖锁和输出位置。同一协议与输入换目录或改代码，都不能自动获得新预算。已有结果或状态不明的启动记录会被拒绝。
 
+这两条预约运行命令需要包含相应 `uv.lock` 的源码目录，启动前会核对记录中的锁文件哈希。它们尚不检查已安装包内部是否被任意修改，请按下面的锁定环境命令安装。
+
 ```powershell
 cd research/equity-lab
 uv sync --locked --group dev --extra predictive
