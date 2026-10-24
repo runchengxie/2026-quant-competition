@@ -3,6 +3,30 @@
 import pytest
 
 
+def test_reference_holding_calendar_keeps_units_and_initial_cash():
+    from competition_tools.evaluation.robustness.reference import reference_account
+
+    prices = dict(
+        dates=["2026-01-01", "2026-01-02", "2026-01-03", "2026-01-04"],
+        close={"A": [100, 200, 400, 100]},
+    )
+    periods = reference_account(
+        prices, [{"A": 1.0}] * 3, fee_bps=50, decision_flags=[False, True, False]
+    )
+    assert periods[0]["equity"] == 1 and periods[0]["turnover"] == 0
+    assert periods[1]["equity"] == pytest.approx(2 / 1.005)
+    assert periods[2]["equity"] == pytest.approx(0.5 / 1.005)
+    assert periods[2]["turnover"] == 0
+
+
+def test_reference_rejects_malformed_decision_calendar():
+    from competition_tools.evaluation.robustness.reference import reference_account
+
+    prices = dict(dates=["2026-01-01", "2026-01-02"], close={"A": [100, 100]})
+    with pytest.raises(ValueError):
+        reference_account(prices, [{"A": 1.0}], fee_bps=0, decision_flags=[1])
+
+
 def test_initial_entry_and_complete_exit_are_self_financing():
     from competition_tools.evaluation.robustness.reference import reference_account
 

@@ -15,7 +15,13 @@ def _number(value):
     return type(value) in (int, float) and math.isfinite(value)
 
 
-def reference_account(prices: dict, targets: list[dict], *, fee_bps: int) -> list[dict]:
+def reference_account(
+    prices: dict,
+    targets: list[dict],
+    *,
+    fee_bps: int,
+    decision_flags: list[bool] | None = None,
+) -> list[dict]:
     dates, close = prices["dates"], prices["close"]
     if (
         not _number(fee_bps)
@@ -28,6 +34,12 @@ def reference_account(prices: dict, targets: list[dict], *, fee_bps: int) -> lis
         )
     ):
         raise ValueError("INVALID_REFERENCE_INPUT")
+    if decision_flags is not None and (
+        not isinstance(decision_flags, list)
+        or len(decision_flags) != len(targets)
+        or any(type(flag) is not bool for flag in decision_flags)
+    ):
+        raise ValueError("INVALID_REFERENCE_DECISIONS")
     fee, cash, shares, result = fee_bps / 10000, 1.0, {p: 0.0 for p in close}, []
     for i, target in enumerate(targets):
         if (
@@ -42,6 +54,8 @@ def reference_account(prices: dict, targets: list[dict], *, fee_bps: int) -> lis
         unchanged = (
             sum(abs(weights[p] * before - values[p]) for p in close) <= 1e-12 * before
         )
+        if decision_flags is not None and not decision_flags[i]:
+            unchanged = True
         if unchanged:
             traded = cost = 0.0
         else:
