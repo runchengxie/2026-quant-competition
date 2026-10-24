@@ -10,16 +10,18 @@ Competition-specific offline research and data preparation belong to this reposi
 
 One repository contains several installable packages with separate lockfiles. Keeping code together does not require a single environment or a broker connection for offline research. The table maps responsibilities to existing code, rather than proposing a new directory for every step.
 
+Paths beginning with `src/` or `research/` are relative to the repository root. Python-package paths use their package source roots. `equity_lab/` is under `research/equity-lab/src/`, `crypto_mm/` under `research/crypto-mm/src/`, and `platform_compare/` under `research/platform-compare/src/`.
+
 | Responsibility | Current owner | Output and boundary |
 | --- | --- | --- |
 | Download data | `src/competition_tools/datasets/*_acquisition.py` and provider transports | Bounded requests and immutable external manifests. Credentials stay outside source. |
-| Validate and normalize data | Dataset quality/storage modules, `equity_lab/data`, `crypto_mm/daily/inputs.py` | Check identity, dates, units and missing observations before consumption. Retain raw inputs; each model documents its own missing-data policy. |
+| Validate and normalize data | Dataset quality/storage modules, `equity_lab/data/preparation.py`, `crypto_mm/daily/inputs.py` | Check identity, dates, units and missing observations before consumption. Retain raw inputs; each model documents its own missing-data policy. |
 | Form factors and signals | `equity_lab/signals`, `equity_lab/predictive`, `crypto_mm/factors` | Timestamped features or scores. Future labels belong to evaluation and cannot enter an earlier decision. |
 | Construct portfolios | `equity_lab/portfolio/construction.py`; study-specific policies remain in equity study and crypto daily modules | Scores become weights under explicit constraints. This is an internal boundary, not a universal allocation API or an executable order. |
 | Backtest strategies | `equity_lab/backtest`, equity study modules, `crypto_mm/daily`, the separate maker simulator | Replay weights or quotes under each model's timing and cost assumptions. Daily candles cannot supply maker queue evidence. |
-| Validate and publish research | `src/competition_tools/evaluation`, acceptance tools and `site` | Root tools invoke leaf CLIs and read versioned artifacts. Pages receives reviewed, allowlisted aggregates. |
+| Validate and publish research | `equity_lab/evaluation/signals.py`, `equity_lab/evaluation/performance.py`, `src/competition_tools/evaluation`, acceptance tools and `site` | Leaf evaluation measures supplied tables. Root tools invoke leaf CLIs and read versioned artifacts. Pages receives reviewed, allowlisted aggregates. |
 | Submit and reconcile orders | `src/apps/execution_runner`, `src/adapters/ibkr`, `src/packages/reconciliation`, `src/packages/audit` | Reviewed targets pass preflight and safety checks. Broker events and fills feed the journal and reconciliation. |
-| Explain performance | Package reporting, `equity_lab/international/six_market_run.py`, `platform_compare/accounting` | Existing return/cost diagnostics and scoped market, FX and dividend contributions. General factor or Brinson attribution is not implemented. |
+| Explain performance | `equity_lab/evaluation/performance.py`, package reporting, `equity_lab/international/six_market_run.py`, `platform_compare/accounting` | Existing return/cost diagnostics and scoped market, FX and dividend contributions. General factor or Brinson attribution is not implemented. |
 
 Research iterates between signals, portfolio policies and backtests. Evaluation reports what happened under a model; a separate decision determines whether a strategy can advance. Execution has its own checks and state.
 
@@ -35,11 +37,17 @@ separate reviewed targets.json + lineage.json
 
 The extracted equity weight policies preserve the existing `BacktestConfig` and `run_equal_weight_backtest` imports, defaults and arithmetic. They retain the legacy target-weight turnover convention; extracting them does not turn it into drift-aware, self-financing accounting. The engine still owns signal lag, returns and fees. Crypto daily and maker policies retain their different models.
 
+The equity demo prepares its market panel in `data/preparation.py`, evaluates signals in `evaluation/signals.py`, and measures portfolio results in `evaluation/performance.py`. These modules import neither replay nor plotting. Services and report writers consume their results. Existing public functions remain available from `backtest.prep` and `backtest.metrics` through explicit re-exports. Those small compatibility modules contain no calculation implementation; removing the old paths requires a separate API migration.
+
+This extraction preserves the demo's existing assumptions. Preparation can fill missing bars and retains source-quality flags; strict predictive and execution-evidence inputs keep their own validation. The legacy IC helper averages valid daily correlations and falls back to a pooled correlation across dates when no daily group qualifies. That fallback is a descriptive demo diagnostic. It does not establish the independent daily factor evidence required by other studies. Annualization, sample conventions and missing metric values remain unchanged.
+
+One inherited error is corrected in regime-return diagnostics. When a portfolio supplies equity without `daily_return`, grouping now uses the same equity-derived returns as the overall metrics. An explicit `daily_return` column still takes priority. This correction changes the formerly failing input path and leaves existing successful calculations unchanged.
+
 Future work should extract a shared mechanism only after two real consumers need the same semantics. Add contract and compatibility tests before changing a boundary. Keep provider differences in adapters, avoid reverse imports from portfolio policy into backtest, and keep research imports out of execution. Optional Quant-family integration requires a pinned interface and comparison evidence. There is no new runtime dependency or repository split.
 
 ## Current ownership
 
-Paths in code spans are repository-relative. The CLI implementation lives in `src/competition_tools/team`, available after installation as `python -m competition_tools.team`. Initial setup uses an external bootstrap environment, as described in the team quickstart. Operational wrappers live in `scripts/windows`. `research` contains independently packaged projects, `config` holds runtime settings and templates, and `schemas` defines artifact contracts.
+Repository and Python-package paths follow the roots above. The CLI implementation lives in `src/competition_tools/team`, available after installation as `python -m competition_tools.team`. Initial setup uses an external bootstrap environment, as described in the team quickstart. Operational wrappers live in `scripts/windows`. `research` contains independently packaged projects, `config` holds runtime settings and templates, and `schemas` defines artifact contracts.
 
 | Capability | Code or contract |
 | --- | --- |

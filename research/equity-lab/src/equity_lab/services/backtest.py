@@ -9,7 +9,7 @@ from typing import Any
 import pandas as pd
 
 from ..backtest.engine import BacktestConfig, run_equal_weight_backtest
-from ..backtest.prep import prepare_market_panel
+from ..data.preparation import prepare_market_panel
 from ..backtest.reporting import write_backtest_artifacts
 from ..contracts.configs import validate_strategy_config
 from ..data.market_data import load_market_panel

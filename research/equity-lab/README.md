@@ -27,6 +27,24 @@ Demo symbols `HK.DEMO_A` and `HK.DEMO_B` are fictional. The generated 90 busines
 
 Outputs include `portfolio_daily.csv`, `positions_daily.csv`, `summary.json`, `monthly_returns.csv`, `drawdown_daily.csv` and an optional `equity_curve.png`, normally under `artifacts/reports/backtests/`. Walk-forward/decile and comparison artifacts are conditional. Reports include configuration/data metadata and may contain absolute custom paths or exception messages. Review them before sharing.
 
+## Workflow modules
+
+Data preparation and evaluation can be used without running a strategy or importing replay and plotting. These pure helpers do not read machine-local configuration.
+
+| Responsibility | Canonical module |
+| --- | --- |
+| Align and fill the demo market panel, retaining quality flags | `equity_lab.data.preparation` |
+| Construct portfolio weights and apply limits | `equity_lab.portfolio.construction` |
+| Calculate descriptive signal correlations and hit rate | `equity_lab.evaluation.signals` |
+| Measure an existing portfolio and optional benchmark | `equity_lab.evaluation.performance` |
+| Replay returns and fees | `equity_lab.backtest.engine` |
+
+The existing `prepare_market_panel` import from `equity_lab.backtest.prep` and the four public metrics functions from `equity_lab.backtest.metrics` remain supported through explicit re-exports. Their implementation lives only in the canonical modules. Old-path removal requires a separate API migration.
+
+The signal IC helper preserves the legacy column priority and averages valid daily correlations. When no daily group qualifies, it falls back to a pooled correlation across dates. That diagnostic does not establish independent daily factor evidence. Preparation preserves the demo's filling policy; strict predictive and execution-evidence inputs retain their own validation.
+
+Regime-return diagnostics now also accept equity-only portfolio tables, using the same equity-derived daily returns as the overall metrics. An explicit `daily_return` column keeps priority. This fixes a previous `KeyError`; existing successful calculations are unchanged.
+
 ## Interpretation and limitations
 
 This is a daily fractional-weight proxy with lagged exposures and close-to-close returns. It does not model HK board lots, auctions, realistic fills, minimum commissions, FX conversion, or broker-specific permissions. Metrics annualize using 252 days. Missing bars can be forward-filled, and calendar configuration can fall back to the observed date union. Data quality flags do not automatically enforce exchange tradability. Adjusted-price/dividend inputs require review to avoid duplicate distributions. Survivorship, delisting and model selection biases are not automatically resolved. Walk-forward metadata contains fixed window assumptions and is not proof that every custom configuration is validated.
@@ -38,7 +56,7 @@ Filled-close provenance is recorded before forward filling: `is_missing_bar` des
 
 ## Configuration and outputs
 
-Use Python 3.12. Set `DATA_ROOT` to an absolute shared data directory before importing the package. It resolves to `DATA_ROOT/2026-quant-competition/research/equity-lab/`. Alternatively set `WORKSPACE_CONFIG` to a TOML file containing an absolute `data_root`. Discovery then checks `CONFIG_ROOT/shared/workspace.toml`, or `XDG_CONFIG_HOME/quant-competition/shared/workspace.toml` (default `~/.config/quant-competition/shared/workspace.toml`). An explicit `DATA_ROOT` takes precedence. Missing or invalid settings raise an error, including for commands that import configuration before parsing `--help`.
+Use Python 3.12. Set `DATA_ROOT` to an absolute shared data directory before using CLI or configuration-dependent modules. It resolves to `DATA_ROOT/2026-quant-competition/research/equity-lab/`. Alternatively set `WORKSPACE_CONFIG` to a TOML file containing an absolute `data_root`. Discovery then checks `CONFIG_ROOT/shared/workspace.toml`, or `XDG_CONFIG_HOME/quant-competition/shared/workspace.toml` (default `~/.config/quant-competition/shared/workspace.toml`). An explicit `DATA_ROOT` takes precedence. Missing or invalid settings raise an error, including for commands that import configuration before parsing `--help`.
 
 Keep virtual environments, inputs, reports, charts and model outputs outside the checkout. For uv, set `UV_PROJECT_ENVIRONMENT` to an external environment path. Demo generation refuses to replace existing data. Demo numbers are fictional software fixtures and provide no investment or competition performance evidence.
 

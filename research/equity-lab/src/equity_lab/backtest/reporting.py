@@ -8,7 +8,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from .metrics import compute_backtest_metrics, compute_drawdown_series
+from ..evaluation.performance import compute_backtest_metrics, compute_drawdown_series
 
 
 @dataclass(frozen=True)

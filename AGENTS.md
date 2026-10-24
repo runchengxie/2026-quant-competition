@@ -58,6 +58,8 @@ Serialize work that depends on execution core, schemas, configuration, or migrat
 Keep this repository as a workflow-oriented monorepo with independently installable research packages. Map changes to acquisition, validation/normalization, signals, portfolio construction, replay, evaluation/publication or execution/reconciliation before adding a module. Use existing owners listed in `docs/architecture.md`; do not add empty layers or require sibling Quant repositories. Portfolio policy must not import replay or broker code. Preserve model-specific timing, accounting and market assumptions when sharing mechanisms. Performance diagnostics do not imply a general attribution engine.
 
 - `research/equity-lab/src/equity_lab/portfolio`: weight construction and constraints, independent of replay accounting. Preserve the public `equity_lab.backtest.engine` imports and defaults.
+- `research/equity-lab/src/equity_lab/data/preparation.py`: the existing demo's panel alignment, filling and source-quality flags. Do not apply this filling policy to strict predictive or execution-evidence inputs.
+- `research/equity-lab/src/equity_lab/evaluation`: measurements of supplied signal and portfolio tables, without strategy execution, plotting or data acquisition. New internal callers use these canonical modules. Preserve the public functions re-exported by `backtest.prep` and `backtest.metrics` until a separately reviewed API migration; do not put implementation back into those compatibility modules.
 
 - `src/packages/contracts`: targets, order intents, order events, and schemas.
 - `src/packages/market_model`: markets, exchanges, currencies, lot sizes, and trading calendars.

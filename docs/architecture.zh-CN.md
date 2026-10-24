@@ -10,16 +10,18 @@
 
 仓库包含多个可安装的包，各自保留 lockfile。代码放在一起，离线研究仍可以使用独立环境，也无需连接券商。下表对应已有代码，每一步都有具体归属。
 
+以 `src/` 或 `research/` 开头的路径相对于仓库根目录。Python 包内路径相对于各包的源码目录。`equity_lab/` 位于 `research/equity-lab/src/` 下，`crypto_mm/` 位于 `research/crypto-mm/src/` 下，`platform_compare/` 位于 `research/platform-compare/src/` 下。
+
 | 职责 | 当前代码归属 | 产物与边界 |
 | --- | --- | --- |
 | 下载数据 | `src/competition_tools/datasets/*_acquisition.py` 及各服务商 transport | 请求有明确上限，外部 manifest 不可覆盖。凭据保存在源码外。 |
-| 校验与标准化数据 | datasets 的质量检查与存储模块、`equity_lab/data`、`crypto_mm/daily/inputs.py` | 消费前检查标的身份、日期、单位和缺失记录。保留原始输入，各模型说明自己的缺失值处理方式。 |
+| 校验与标准化数据 | datasets 的质量检查与存储模块、`equity_lab/data/preparation.py`、`crypto_mm/daily/inputs.py` | 消费前检查标的身份、日期、单位和缺失记录。保留原始输入，各模型说明自己的缺失值处理方式。 |
 | 形成因子与信号 | `equity_lab/signals`、`equity_lab/predictive`、`crypto_mm/factors` | 输出带时间信息的特征或分数。未来收益标签属于评估，不能进入更早的决策。 |
 | 搭建投资组合 | `equity_lab/portfolio/construction.py`，特定研究的规则仍由股票 study 和加密 daily 模块维护 | 根据分数与约束计算权重。这是内部职责边界，尚非通用配置接口，也不是订单。 |
 | 策略回测 | `equity_lab/backtest`、股票 study 模块、`crypto_mm/daily` 及独立做市模拟器 | 按各模型的时间与费用假设回放权重或报价。日线无法提供做市队列证据。 |
-| 验收与发布研究 | `src/competition_tools/evaluation`、验收工具及 `site` | 根工具调用研究包 CLI，读取带版本的产物。网页只接收经过审查、字段明确的汇总。 |
+| 验收与发布研究 | `equity_lab/evaluation/signals.py`、`equity_lab/evaluation/performance.py`、`src/competition_tools/evaluation`、验收工具及 `site` | 研究包评估模块测量传入的数据表。根工具调用研究包 CLI，读取带版本的产物。网页只接收经过审查、字段明确的汇总。 |
 | 下单与对账 | `src/apps/execution_runner`、`src/adapters/ibkr`、`src/packages/reconciliation`、`src/packages/audit` | 已审查目标通过预检和安全检查，券商事件与成交进入日志及对账流程。 |
-| 解释业绩来源 | 各包 reporting、`equity_lab/international/six_market_run.py`、`platform_compare/accounting` | 已有收益与费用诊断，以及特定模型下的市场、汇率和股息贡献。通用因子归因与 Brinson 归因尚未实现。 |
+| 解释业绩来源 | `equity_lab/evaluation/performance.py`、各包 reporting、`equity_lab/international/six_market_run.py`、`platform_compare/accounting` | 已有收益与费用诊断，以及特定模型下的市场、汇率和股息贡献。通用因子归因与 Brinson 归因尚未实现。 |
 
 研究会反复调整信号和组合规则，再用回测检查。评估说明模型下发生了什么，策略能否进入下一阶段需要另行判断。执行流程保留自己的检查和状态。
 
@@ -35,11 +37,17 @@
 
 提取后的股票权重规则保留 `BacktestConfig` 和 `run_equal_weight_backtest` 的导入路径、默认值及计算顺序。换手仍按原来的目标权重差计算，拆分不会使它具备按实际持仓漂移记账或自融资核算的能力。引擎继续负责信号滞后、收益和费用。加密日线与做市规则保留各自的模型。
 
+股票演示在 `data/preparation.py` 整理行情表，在 `evaluation/signals.py` 诊断信号，在 `evaluation/performance.py` 计算组合指标。这些模块无需导入回测或绘图代码，服务入口和报告生成器消费它们的结果。已有公开函数仍可以从 `backtest.prep` 和 `backtest.metrics` 导入。这两个小模块只从新位置导出函数，删除旧路径需要单独安排 API 迁移。
+
+拆分保留了演示原有的假设。行情整理可能填充缺失记录，并保留来源质量标记。严格预测研究和成交证据输入继续使用各自的校验。原有 IC 函数先平均有效的逐日相关系数，如果没有合格的日期组，就回退到跨日期合并计算。这个回退结果用于描述演示信号，尚不足以满足其他研究对独立逐日因子证据的要求。年化、样本统计方式和缺失指标均保持原样。
+
+本轮修复了分组收益诊断中的一个旧错误。组合表只有净值、没有 `daily_return` 时，分组统计现在与总体指标一样，从净值推算收益。如果传入 `daily_return` 列，仍优先使用这列数据。修复针对原来报错的输入，原来成功的计算保持不变。
+
 后续遇到两个真实使用方需要同一套计算语义，再提取共享实现。修改边界前先补契约与兼容性测试。服务商差异留在 adapter，组合规则不反向导入回测，执行代码不导入研究包。可选的 Quant 系列接入需要固定接口与对照证据。本次没有新增 runtime 依赖，也没有拆分仓库。
 
 ## 当前职责
 
-行内代码中的路径均相对于仓库根目录。CLI 实现位于 `src/competition_tools/team`，安装后通过 `python -m competition_tools.team` 使用。首次安装使用外部引导环境，步骤见团队快速开始。运维包装脚本放在 `scripts/windows`。`research` 包含独立打包的研究项目，`config` 保存运行配置和模板，`schemas` 定义 artifact 契约。
+仓库路径与 Python 包内路径分别按上方约定解析。CLI 实现位于 `src/competition_tools/team`，安装后通过 `python -m competition_tools.team` 使用。首次安装使用外部引导环境，步骤见团队快速开始。运维包装脚本放在 `scripts/windows`。`research` 包含独立打包的研究项目，`config` 保存运行配置和模板，`schemas` 定义 artifact 契约。
 
 | 能力 | 代码或契约 |
 | --- | --- |

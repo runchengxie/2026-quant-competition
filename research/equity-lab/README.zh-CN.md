@@ -18,6 +18,24 @@
 
 通常在 `artifacts/reports/backtests/` 生成 `portfolio_daily.csv`、`positions_daily.csv`、`summary.json`、`monthly_returns.csv`、`drawdown_daily.csv` 和可选 `equity_curve.png`，滚动验证、分位数及对比产物按条件生成。报告包含配置和数据元信息，也可能含自定义绝对路径或异常信息，分享前应审查。
 
+## 工作流模块
+
+行情整理和评估可以单独使用，无需运行策略，也无需导入回测或绘图代码。这些纯计算函数不会读取机器本地配置。
+
+| 职责 | 当前实现模块 |
+| --- | --- |
+| 对齐并填充演示行情表，保留质量标记 | `equity_lab.data.preparation` |
+| 分配组合权重并应用限制 | `equity_lab.portfolio.construction` |
+| 计算描述性的信号相关系数和命中率 | `equity_lab.evaluation.signals` |
+| 评估已有组合及可选基准 | `equity_lab.evaluation.performance` |
+| 回放收益和费用 | `equity_lab.backtest.engine` |
+
+`prepare_market_panel` 仍可以从 `equity_lab.backtest.prep` 导入，四个公开指标函数仍可以从 `equity_lab.backtest.metrics` 导入。旧模块从新位置导出函数，计算实现只保留一份。删除旧路径需要单独安排 API 迁移。
+
+信号 IC 函数保留原有的列选择优先级，先平均有效的逐日相关系数。没有合格的日期组时，它会回退到跨日期合并计算。这个诊断尚不足以证明独立的逐日因子效果。行情整理保留演示的填充规则，严格预测研究和成交证据输入继续使用各自的校验。
+
+分组收益诊断现在也支持只有净值的组合表，与总体指标一样从净值推算每日收益。如果传入 `daily_return` 列，仍优先使用这列数据。这修复了原来的 `KeyError`，原来成功的计算保持不变。
+
 ## 结果解释与限制
 
 这是使用滞后仓位、收盘到收盘收益的日频分数权重近似模型。不模拟港股整手、竞价、真实成交、最低佣金、换汇或券商权限。指标按每年 252 天年化，缺失价格可能前向填充，日历配置可能回退到观测日期并集。质量标记不会自动约束可交易性。复权价与分红输入应检查，避免重复计算。模型不会自动消除幸存者、退市和模型选择偏差。滚动验证元信息含固定窗口假设，不代表所有自定义配置已验证。
@@ -29,7 +47,7 @@
 
 ## 配置与输出
 
-使用 Python 3.12。导入模块前，将 `DATA_ROOT` 设置为共享数据目录的绝对路径，项目数据目录为 `DATA_ROOT/2026-quant-competition/research/equity-lab/`。也可以将 `WORKSPACE_CONFIG` 指向包含绝对路径 `data_root` 的 TOML 文件。默认查找 `CONFIG_ROOT/shared/workspace.toml`，或 `XDG_CONFIG_HOME/quant-competition/shared/workspace.toml`，后者默认是 `~/.config/quant-competition/shared/workspace.toml`。显式 `DATA_ROOT` 优先。配置缺失或无效会报错，包括解析 `--help` 前已导入配置的命令。
+使用 Python 3.12。使用 CLI 或需要读取配置的模块前，将 `DATA_ROOT` 设置为共享数据目录的绝对路径，项目数据目录为 `DATA_ROOT/2026-quant-competition/research/equity-lab/`。也可以将 `WORKSPACE_CONFIG` 指向包含绝对路径 `data_root` 的 TOML 文件。默认查找 `CONFIG_ROOT/shared/workspace.toml`，或 `XDG_CONFIG_HOME/quant-competition/shared/workspace.toml`，后者默认是 `~/.config/quant-competition/shared/workspace.toml`。显式 `DATA_ROOT` 优先。配置缺失或无效会报错，包括解析 `--help` 前已导入配置的命令。
 
 虚拟环境、输入数据、报告、图表和模型输出放在源码目录之外。使用 uv 时，将 `UV_PROJECT_ENVIRONMENT` 指向外部环境目录。演示生成器拒绝覆盖已有数据。演示数字仅用于验证软件，不代表投资收益或比赛表现。
 
