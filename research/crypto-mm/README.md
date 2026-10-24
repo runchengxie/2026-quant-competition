@@ -27,6 +27,12 @@ The demo writes nine Parquet files under `raw_data/{orderbook,trades,fundings}/`
 
 Backtest and analysis commands print to stdout. Plotting writes to the external project `figures/` directory and runs all four variants. It supports `--help` and rejects unknown arguments before plotting. No other plotting CLI options are provided; use `generate_figures(output_directory=...)` for an explicit destination. Sensitivity flags are exploratory reruns, not a parameter optimization guarantee. Inspect `StrategyConfig` and `SimulationConfig` in `config.py` for programmatic configuration and validation.
 
+## Daily workflow modules
+
+Daily price validation lives in `crypto_mm.data.daily_prices`, historical trend definitions in `crypto_mm.signals.daily_trend`, and target/calendar policies in `crypto_mm.portfolio`. Existing public helper imports from `crypto_mm.daily` modules remain available. The unchanged daily cash ledger consumes those targets, while the event-driven maker simulator retains its own model.
+
+The optional [offline workflow check](../../docs/operations/workflow-check.md) runs fictional daily inputs through the installed policy and ledger, then verifies root-consumed artifacts, price/cost explanations and an immutable experiment record. These are engineering checks. Existing research protocols and published results remain unchanged.
+
 ## Known limitations
 
 The separate `crypto_mm.daily` CLI consumes checked spot-daily manifests and supports `equal_weight` buy/hold and lagged `momentum_63d` diagnostics. It uses a 365-day calendar, explicit USDT quotes and traded-notional costs; it does not reuse the event receipt or simulate market making. See [dataset preparation](../../docs/research/datasets.md) and [new evaluation evidence](../../docs/research/data-expansion-and-evaluation.md). `python -m crypto_mm.daily --help` needs no workspace configuration.

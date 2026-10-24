@@ -42,6 +42,10 @@ python -m competition_tools.team demo crypto --config /absolute/private/team.tom
 
 命令返回 `competition.team_result.v1` JSON，包含 `action`、`status`、`issue_codes`、`projects` 和 `synthetic`。退出码 `0` 表示完成，`2` 表示阻塞或失败。结果不包含原始子进程日志或私有路径。本地日志可能包含路径，分享前需要检查。演示的 `synthetic` 为 true，其他操作为 null。
 
+## 检查完整离线流程
+
+安装 offline profile 后，可以运行[工作流检查](workflow-check.zh-CN.md)。它跑通两条虚构数据流程，核对文件交接、价格贡献与成本，以及实验记录。这个模式需要匹配且已提交的源码检出和一个新的外部输出目录，不请求服务商或券商。CI 会与原有演示一起运行它。
+
 ## 可选环境与验证
 
 `setup --profile framework` 只安装独立锁定的[记账适配器](../research/accounting-comparison.zh-CN.md)，使用本地账本，不再安装外部框架包。`framework` 名称仅为兼容旧命令保留。`setup --profile broker-data` 只安装根包的 `ibkr` extra，不登录或下单。`setup --profile website` 需要 Node.js 24/npm，为 `site` 运行 `npm ci`。默认离线安装不包含这些环境。

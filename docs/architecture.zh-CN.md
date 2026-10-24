@@ -15,13 +15,13 @@
 | 职责 | 当前代码归属 | 产物与边界 |
 | --- | --- | --- |
 | 下载数据 | `src/competition_tools/datasets/*_acquisition.py` 及各服务商 transport | 请求有明确上限，外部 manifest 不可覆盖。凭据保存在源码外。 |
-| 校验与标准化数据 | datasets 的质量检查与存储模块、`equity_lab/data/preparation.py`、`crypto_mm/daily/inputs.py` | 消费前检查标的身份、日期、单位和缺失记录。保留原始输入，各模型说明自己的缺失值处理方式。 |
-| 形成因子与信号 | `equity_lab/signals`、`equity_lab/predictive`、`crypto_mm/factors` | 输出带时间信息的特征或分数。未来收益标签属于评估，不能进入更早的决策。 |
-| 搭建投资组合 | `equity_lab/portfolio/construction.py`，特定研究的规则仍由股票 study 和加密 daily 模块维护 | 根据分数与约束计算权重。这是内部职责边界，尚非通用配置接口，也不是订单。 |
+| 校验与标准化数据 | datasets 的质量检查与存储模块、`equity_lab/data/preparation.py`、`crypto_mm/data/daily_prices.py`、`crypto_mm/daily/inputs.py` | 消费前检查标的身份、日期、单位和缺失记录。保留原始输入，各模型说明自己的缺失值处理方式。 |
+| 形成因子与信号 | `equity_lab/signals`、`equity_lab/predictive`、`crypto_mm/signals/daily_trend.py` 及独立的小时线 `crypto_mm/factors` | 输出带时间信息的特征或分数。未来收益标签属于评估，不能进入更早的决策。 |
+| 搭建投资组合 | `equity_lab/portfolio/construction.py`、`crypto_mm/portfolio/daily.py` 和 `rebalance.py`，股票 study 保留特定规则 | 根据分数与约束计算权重。内部边界保留模型差异，产物仍是权重。 |
 | 策略回测 | `equity_lab/backtest`、股票 study 模块、`crypto_mm/daily` 及独立做市模拟器 | 按各模型的时间与费用假设回放权重或报价。日线无法提供做市队列证据。 |
 | 验收与发布研究 | `equity_lab/evaluation/signals.py`、`equity_lab/evaluation/performance.py`、`src/competition_tools/evaluation`、验收工具及 `site` | 研究包评估模块测量传入的数据表。根工具调用研究包 CLI，读取带版本的产物。网页只接收经过审查、字段明确的汇总。 |
 | 下单与对账 | `src/apps/execution_runner`、`src/adapters/ibkr`、`src/packages/reconciliation`、`src/packages/audit` | 已审查目标通过预检和安全检查，券商事件与成交进入日志及对账流程。 |
-| 解释业绩来源 | `equity_lab/evaluation/performance.py`、各包 reporting、`equity_lab/international/six_market_run.py`、`platform_compare/accounting` | 已有收益与费用诊断，以及特定模型下的市场、汇率和股息贡献。通用因子归因与 Brinson 归因尚未实现。 |
+| 解释业绩来源 | `src/competition_tools/evaluation/contributions.py`、`equity_lab/evaluation/performance.py`、各包 reporting 及国际研究和记账诊断 | 按指定模型核对价格贡献与成本，另有特定范围的市场、汇率和股息贡献。通用因子归因与 Brinson 归因尚未实现。 |
 
 研究会反复调整信号和组合规则，再用回测检查。评估说明模型下发生了什么，策略能否进入下一阶段需要另行判断。执行流程保留自己的检查和状态。
 
@@ -42,6 +42,10 @@
 拆分保留了演示原有的假设。行情整理可能填充缺失记录，并保留来源质量标记。严格预测研究和成交证据输入继续使用各自的校验。原有 IC 函数先平均有效的逐日相关系数，如果没有合格的日期组，就回退到跨日期合并计算。这个回退结果用于描述演示信号，尚不足以满足其他研究对独立逐日因子证据的要求。年化、样本统计方式和缺失指标均保持原样。
 
 本轮修复了分组收益诊断中的一个旧错误。组合表只有净值、没有 `daily_return` 时，分组统计现在与总体指标一样，从净值推算收益。如果传入 `daily_return` 列，仍优先使用这列数据。修复针对原来报错的输入，原来成功的计算保持不变。
+
+加密日线的价格校验、趋势定义与组合规则现在也各有归属。已有 `daily` 评估入口和公开辅助函数导入仍可用。日线规则保留旧版与严格版的零波动差异，以及日线研究中类似买入持有的等权行为。做市模拟器继续独立维护，CI 使用静态导入检查器核对这些方向。
+
+[离线工作流检查](operations/workflow-check.zh-CN.md)会用两个已安装的研究包实际跑合成流程，再交给只用标准库的根消费者检查。新的实验记录绑定保留源码、输入、参数、实际环境与输出，按模型核对价格贡献和成本。已有研究计划、凭证、schema 和公开快照保持原样，这些新记录不会使研究通过验收，也不授权执行。
 
 后续遇到两个真实使用方需要同一套计算语义，再提取共享实现。修改边界前先补契约与兼容性测试。服务商差异留在 adapter，组合规则不反向导入回测，执行代码不导入研究包。可选的 Quant 系列接入需要固定接口与对照证据。本次没有新增 runtime 依赖，也没有拆分仓库。
 

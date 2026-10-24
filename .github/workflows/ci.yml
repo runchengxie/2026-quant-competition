@@ -23,6 +23,8 @@ jobs:
         run: uv sync --locked --extra test --extra ibkr --extra daily-data
       - name: Lint
         run: uv run --locked ruff check .
+      - name: Check workflow import boundaries
+        run: uv run --locked python -m competition_tools.check_workflow_boundaries --source-root .
       - name: Check formatting
         run: uv run --locked ruff format --check src/adapters/ibkr/events.py src/competition_tools/check_pages_content.py tests/test_source_layout.py tests/competition_tools/test_check_pages_content.py
       - name: Run tests
@@ -54,6 +56,8 @@ jobs:
           "$RUNNER_TEMP/team-envs/root/bin/python" -m competition_tools.check_team_delivery --config "$RUNNER_TEMP/team.toml"
           "$RUNNER_TEMP/team-envs/root/bin/python" -m competition_tools.check_study_delivery --config "$RUNNER_TEMP/team.toml" --output-root "$RUNNER_TEMP/study-contract"
           "$RUNNER_TEMP/team-envs/root/bin/python" -m competition_tools.check_ablation_delivery --config "$RUNNER_TEMP/team.toml" --output-root "$RUNNER_TEMP/ablation-contract"
+          "$RUNNER_TEMP/team-envs/root/bin/python" -m competition_tools.check_workflow_delivery --config "$RUNNER_TEMP/team.toml" --output-root "$RUNNER_TEMP/workflow-contract" --source-root "$GITHUB_WORKSPACE"
+          "$RUNNER_TEMP/team-envs/root/bin/python" -m competition_tools.evaluation.run_record --run-root "$RUNNER_TEMP/workflow-contract"
           cd "$RUNNER_TEMP"
           export HOME="$RUNNER_TEMP/empty-home"
           "$RUNNER_TEMP/team-envs/root/bin/python" -m competition_tools.team demo equity --config "$RUNNER_TEMP/team.toml" --output-root "$RUNNER_TEMP/equity-demo"

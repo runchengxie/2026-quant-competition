@@ -14,6 +14,12 @@
 
 回测和分析打印到 stdout。绘图默认运行四个策略，写入外部项目目录的 `figures/`。绘图支持 `--help`，并在绘图前拒绝未知参数。没有其他绘图 CLI 选项；自定义目录请使用 `generate_figures(output_directory=...)`。敏感性扫描用于探索，不保证得到最优参数。程序化配置及校验见 `config.py` 的 `StrategyConfig` 和 `SimulationConfig`。
 
+## 日线工作流模块
+
+日线价格校验位于 `crypto_mm.data.daily_prices`，历史趋势定义位于 `crypto_mm.signals.daily_trend`，目标权重和调仓日历位于 `crypto_mm.portfolio`。原有 `crypto_mm.daily` 模块的公开辅助函数仍可导入。日线现金账本保留原来的计算方式，消费这些目标；事件驱动的做市模拟器保留自己的模型。
+
+可选的[离线工作流检查](../../docs/operations/workflow-check.zh-CN.md)用虚构日线输入串联已安装的规则与账本，再由根工具核对产物、价格贡献与成本，以及不可覆盖的实验记录。这些记录用于工程检查，已有研究协议和公开结果保持原样。
+
 ## 已知限制
 
 独立的 `crypto_mm.daily` CLI 消费已校验的现货日线 manifest，支持 `equal_weight` 建仓后持有及滞后的 `momentum_63d` 诊断。它使用365天年化、明确的USDT报价及按成交金额计算的成本，不复用事件 receipt，也不模拟做市。见[数据准备](../../docs/research/datasets.zh-CN.md)和[新评估证据](../../docs/research/data-expansion-and-evaluation.zh-CN.md)。`python -m crypto_mm.daily --help` 不需要工作区配置。

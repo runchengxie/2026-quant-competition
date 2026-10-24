@@ -1,6 +1,6 @@
 """Fixed weekly trend and distinct calendar/exposure controls."""
 
-from datetime import date
+from crypto_mm.portfolio.rebalance import weekly_flags as weekly_flags
 
 from .controls import build_control_targets
 from .study_accounting import account_periods, summarize
@@ -12,13 +12,6 @@ ARMS = (
     "weekly_calendar_matched",
     "weekly_exposure_matched",
 )
-
-
-def weekly_flags(decision_dates):
-    return [
-        i == 0 or date.fromisoformat(day).weekday() == 0
-        for i, day in enumerate(decision_dates)
-    ]
 
 
 def _exposures(account, targets, flags):

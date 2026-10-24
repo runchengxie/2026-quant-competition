@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "competition.workflow_leaf_result.v1",
+  "title": "Synthetic workflow leaf result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "status", "project", "synthetic", "accounting_model", "quote_currency", "initial_equity", "parameters", "input_sha256", "code_sha256", "environment", "metrics", "evidence", "artifacts"],
+  "properties": {
+    "schema": {"const": "competition.workflow_leaf_result.v1"},
+    "status": {"const": "completed"},
+    "project": {"enum": ["equity-lab", "crypto-mm"]},
+    "synthetic": {"const": true},
+    "accounting_model": {"enum": ["equity_fractional_proxy.v1", "self_financing_daily.v1"]},
+    "quote_currency": {"enum": ["USD", "HKD", "USDT"]},
+    "initial_equity": {"type": "number", "exclusiveMinimum": 0},
+    "parameters": {"type": "object"},
+    "input_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "code_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "environment": {
+      "type": "object", "additionalProperties": false, "required": ["python", "distributions"],
+      "properties": {
+        "python": {"type": "string", "pattern": "^3\\.12\\."},
+        "distributions": {"type": "object", "minProperties": 1, "additionalProperties": {"type": "string", "minLength": 1}}
+      }
+    },
+    "metrics": {"type": "object"},
+    "evidence": {"type": "object"},
+    "artifacts": {
+      "type": "array", "minItems": 1, "items": {
+        "type": "object", "additionalProperties": false, "required": ["path", "sha256", "bytes"],
+        "properties": {
+          "path": {"type": "string", "pattern": "^[a-z][a-z0-9-]*\\.(csv|json)$"},
+          "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+          "bytes": {"type": "integer", "minimum": 0}
+        }
+      }
+    }
+  },
+  "allOf": [
+    {"if": {"properties": {"project": {"const": "equity-lab"}}}, "then": {
+      "properties": {"accounting_model": {"const": "equity_fractional_proxy.v1"}, "quote_currency": {"enum": ["USD", "HKD"]},
+        "evidence": {"required": ["portfolio", "positions", "gross_portfolio"], "additionalProperties": false,
+          "properties": {"portfolio": {"type": "array", "minItems": 1}, "positions": {"type": "array", "minItems": 1}, "gross_portfolio": {"type": "array", "minItems": 1}}}}
+    }},
+    {"if": {"properties": {"project": {"const": "crypto-mm"}}}, "then": {
+      "properties": {"accounting_model": {"const": "self_financing_daily.v1"}, "quote_currency": {"const": "USDT"}, "initial_equity": {"const": 1},
+        "evidence": {"required": ["prices", "net", "gross"], "additionalProperties": false,
+          "properties": {"prices": {"type": "object"}, "net": {"type": "object"}, "gross": {"type": "object"}}}}
+    }}
+  ]
+}

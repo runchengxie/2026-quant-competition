@@ -42,6 +42,10 @@ Each demo requires a new external output directory. It runs existing leaf comman
 
 Commands emit `competition.team_result.v1` JSON with `action`, `status`, `issue_codes`, `projects` and `synthetic`. Exit `0` means completed; `2` means blocked or failed. Envelopes exclude raw child logs and private paths. Local logs can contain paths, so review them before sharing. `synthetic` is true for demos and null for other actions.
 
+## Check the complete offline workflow
+
+After the offline profile is installed, the [workflow check](workflow-check.md) runs two fictional pipelines and validates their file handoff, price/cost explanation and experiment record. It requires a matching committed source checkout and a new external output directory. It makes no data-provider or broker request. CI runs this check alongside the existing demos.
+
 ## Optional profiles and validation
 
 `setup --profile framework` installs only the separately locked [accounting package](../research/accounting-comparison.md), with a local ledger and no external framework packages. The profile name is retained for compatibility. `setup --profile broker-data` installs the root `ibkr` extra without logging in or submitting orders. `setup --profile website` requires Node.js 24/npm and runs `npm ci` for `site`. These explicit profiles are excluded from offline setup.

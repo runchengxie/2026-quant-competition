@@ -29,6 +29,8 @@ Outputs include `portfolio_daily.csv`, `positions_daily.csv`, `summary.json`, `m
 
 ## Workflow modules
 
+The optional [offline workflow check](../../docs/operations/workflow-check.md) connects these installed modules using fictional inputs. Its root consumer verifies source and output identity, price/cost reconciliation and a portable experiment record. It does not replace the default demo or publish synthetic results as research performance.
+
 Data preparation and evaluation can be used without running a strategy or importing replay and plotting. These pure helpers do not read machine-local configuration.
 
 | Responsibility | Canonical module |

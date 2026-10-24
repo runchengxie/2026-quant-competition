@@ -1,33 +1,9 @@
 """Long-only daily holdings with cash-funded fees and marked weight drift."""
 
 import math
-from datetime import date
 from statistics import mean, stdev
 
-
-def _number(value):
-    return type(value) in (int, float) and math.isfinite(value)
-
-
-def validate_prices(prices: dict) -> None:
-    try:
-        dates, closes = prices["dates"], prices["close"]
-        if (
-            not isinstance(dates, list)
-            or len(dates) < 2
-            or dates != sorted(set(dates))
-            or not isinstance(closes, dict)
-            or not closes
-            or any(date.fromisoformat(d).isoformat() != d for d in dates)
-        ):
-            raise ValueError
-        if any(
-            len(v) != len(dates) or any(not _number(x) or x <= 0 for x in v)
-            for v in closes.values()
-        ):
-            raise ValueError
-    except (KeyError, TypeError, ValueError):
-        raise ValueError("INVALID_ACCOUNTING_PRICES") from None
+from crypto_mm.data.daily_prices import _number, validate_prices as validate_prices
 
 
 def account_periods(
