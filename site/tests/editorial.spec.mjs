@@ -1,6 +1,7 @@
 import {test,expect} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
 const snapshot=JSON.parse(await readFile(new URL('../src/data/strategy-robustness.v1.json',import.meta.url),'utf8'));
+test.beforeEach(async({page})=>{await page.emulateMedia({reducedMotion:'reduce'});});
 
 for(const locale of ['en','zh-CN']){
  const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
@@ -59,4 +60,63 @@ test('editorial facts and native history remain available without JavaScript',as
  await expect(page.locator('#takeaways')).toBeVisible();
  await expect(page.locator('a[data-legacy-link=demo]')).toHaveAttribute('href','/2026-quant-competition/docs/project/#demo');
  await context.close();
+});
+
+for(const locale of ['en','zh-CN'])test(`${locale}: editorial topic pages retain navigation, evidence and readable contrast`,async({page},info)=>{
+ const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+ for(const route of ['', 'strategies/','factors/','docs/','docs/project/','docs/strategy-robustness/']){
+  await page.setViewportSize({width:1440,height:1000});await page.goto(prefix+route);
+  await expect(page.locator('main h1')).toHaveCount(1,{timeout:3000});
+  if(route==='strategies/'){
+   await expect(page.locator('.section-nav a')).toHaveCount(5);
+   await expect(page.locator('#robustness')).toHaveAttribute('data-ready','true');
+   await page.evaluate(()=>window.scrollTo(0,0));
+   expect(await page.evaluate(()=>scrollY)).toBe(0);
+   const core=await page.locator('[data-robustness-chart=paired]').boundingBox();
+   expect(core.y).toBeLessThan(800);
+   await expect(page.locator('[data-study-id]')).toHaveCount(318);
+   await expect(page.locator('[data-ablation-id]')).toHaveCount(678);
+  }
+  if(route==='factors/'){
+   await expect(page.locator('[data-factor-score],[data-dex-metric]')).toHaveCount(0);
+   expect(JSON.parse(await page.locator('[data-dex-facts]').getAttribute('data-dex-facts')).status).toBe('readiness_only');
+  }
+  if(route==='docs/')await expect(page.locator('main [data-doc-slug]')).toHaveCount(12);
+  for(const theme of ['light','dark']){
+   await page.locator('#theme-preference').selectOption(theme);
+   await expect(page.locator('body')).toHaveCSS('background-color',theme==='light'?'rgb(246, 244, 239)':'rgb(23, 27, 32)');
+   const failures=await page.evaluate(()=>{
+    const rgb=c=>c.match(/[\d.]+/g).slice(0,3).map(Number);
+    const luminance=c=>rgb(c).map(v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4;}).reduce((s,v,i)=>s+v*[.2126,.7152,.0722][i],0);
+    const ratio=(a,b)=>{const [hi,lo]=[luminance(a),luminance(b)].sort((a,b)=>b-a);return (hi+.05)/(lo+.05);};
+    const background=el=>{for(let n=el;n;n=n.parentElement){const c=getComputedStyle(n).backgroundColor;if(c!=='rgba(0, 0, 0, 0)')return c;}return 'rgb(255,255,255)';};
+    const failures=[];
+    for(const el of document.querySelectorAll('.editorial-dek,.editorial-scope,.figure-condition,.editorial-figure-note,.topic-index,.topic-stat span,.edition-line,.doc-note,.doc-cards p,.project-nav a,.theme-control,main select')){
+     if(!el.checkVisibility())continue;const r=ratio(getComputedStyle(el).color,background(el));
+     if(r<4.5)failures.push(el.className+': '+r.toFixed(2));
+    }
+    for(const el of document.querySelectorAll('.bar-fill'))if(el.checkVisibility()){
+     const r=ratio(getComputedStyle(el).backgroundColor,background(el.parentElement));if(r<3)failures.push('bar: '+r.toFixed(2));
+    }
+    return failures;
+   });
+   expect(failures).toEqual([]);
+   await page.evaluate(()=>window.scrollTo(0,0));
+   await page.screenshot({path:info.outputPath(`${locale}-${route.replaceAll('/','-')||'home'}-${theme}.png`)});
+  }
+  await page.setViewportSize({width:390,height:844});
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  await page.screenshot({path:info.outputPath(`${locale}-${route.replaceAll('/','-')||'home'}-mobile.png`)});
+ }
+});
+
+test('long localized plot labels and unavailable storage retain a usable homepage',async({page})=>{
+ await page.addInitScript(()=>{Object.defineProperty(window,'localStorage',{get(){throw new Error('blocked');}});});
+ await page.setViewportSize({width:390,height:844});await page.goto('/2026-quant-competition/zh-CN/');
+ await page.locator('.pool-label').first().evaluate(el=>el.textContent+='较长的研究标签'.repeat(15));
+ await page.locator('#theme-preference').selectOption('dark');
+ await expect(page.locator('body')).toHaveCSS('background-color','rgb(23, 27, 32)');
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ await page.locator('#theme-preference').focus();
+ expect(await page.locator('#theme-preference').evaluate(el=>getComputedStyle(el).outlineStyle)).not.toBe('none');
 });

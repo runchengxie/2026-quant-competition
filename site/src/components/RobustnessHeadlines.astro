@@ -1,0 +1,19 @@
+---
+import en from '../i18n/en.json';
+import zh from '../i18n/zh-CN.json';
+type Headline={market:string;medianReturnChange:number|null;returnWins:number;drawdownWins:number;requestedWindows:number;feeBps:number};
+interface Props {locale:string;headlines:Headline[]}
+const {locale,headlines}=Astro.props;
+const t=(locale==='zh-CN'?zh:en).robustness;
+const number=new Intl.NumberFormat(locale,{maximumFractionDigits:2});
+const change=(value:number|null)=>value===null?t.notAvailable:number.format(value*100)+' '+t.pp;
+---
+<div class="robustness-headlines">{headlines.map(h=><article data-robustness-headline-facts={JSON.stringify(h)}>
+ <p class="market-label">{t.markets[h.market as 'US'|'crypto']}</p><h3>{t.headlines[h.market as 'US'|'crypto'].title}</h3><p>{t.headlines[h.market as 'US'|'crypto'].body}</p>
+ <p class="robustness-value">{change(h.medianReturnChange)}</p><p class="detail">{t.median}</p>
+ <dl><div><dt>{t.higher}</dt><dd>{h.returnWins} / {h.requestedWindows}</dd></div><div><dt>{t.lower}</dt><dd>{h.drawdownWins} / {h.requestedWindows}</dd></div></dl>
+ <p class="detail">{t.versus} {h.market==='US'?t.baselineUS:t.baselineCrypto}<br/>{t.cost} {h.feeBps} bps</p>
+</article>)}</div>
+<style>
+.robustness-headlines{display:grid;gap:1.5rem;border-left:1px solid var(--line);padding-left:1.7rem}.robustness-headlines article{background:transparent;border:0;border-radius:0;padding:0}.market-label{font-size:.75rem;color:var(--muted);margin:0 0 .5rem}.robustness-headlines h3{font-size:1.08rem;line-height:1.6;font-weight:600;margin:0 0 .5rem}.robustness-headlines article>p{font-size:.85rem;color:var(--muted);line-height:1.8}.robustness-headlines .robustness-value{font:400 1.7rem/1.5 Georgia,'SimSun',serif;color:var(--ink);margin:.8rem 0 .2rem}.robustness-headlines .detail{font-size:.73rem}.robustness-headlines dl{display:flex;gap:1.5rem;margin:.8rem 0}.robustness-headlines dt{font-size:.75rem;color:var(--muted)}.robustness-headlines dd{font-size:1rem;font-variant-numeric:tabular-nums;margin:.25rem 0}article+article{border-top:1px solid var(--line);padding-top:1.3rem}@media(max-width:700px){.robustness-headlines{border-left:0;border-top:1px solid var(--line);padding:1.2rem 0 0}}
+</style>

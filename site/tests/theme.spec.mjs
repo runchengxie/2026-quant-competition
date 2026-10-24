@@ -6,29 +6,29 @@ test("system is the default and tracks OS changes", async ({ page }) => {
   await page.emulateMedia({ colorScheme: "dark" });
   await page.goto(base);
   await expect(page.getByLabel("Appearance")).toHaveValue("system");
-  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(16, 27, 24)");
+  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(23, 27, 32)");
   await page.emulateMedia({ colorScheme: "light" });
-  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(250, 251, 248)");
+  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(246, 244, 239)");
 });
 
 test("explicit preferences survive reload and language navigation, then return to system", async ({ page }) => {
   await page.emulateMedia({ colorScheme: "dark" });
   await page.goto(base);
   await page.getByLabel("Appearance").selectOption("light");
-  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(250, 251, 248)");
+  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(246, 244, 239)");
   await page.reload();
   await expect(page.getByLabel("Appearance")).toHaveValue("light");
   await page.getByRole("link", { name: "简体中文", exact: true }).click();
   await expect(page.getByLabel("外观")).toHaveValue("light");
   await page.getByLabel("外观").selectOption("dark");
   await page.emulateMedia({ colorScheme: "light" });
-  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(16, 27, 24)");
+  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(23, 27, 32)");
   await page.reload();
   await expect(page.getByLabel("外观")).toHaveValue("dark");
   await page.getByLabel("外观").selectOption("system");
-  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(250, 251, 248)");
+  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(246, 244, 239)");
   await page.emulateMedia({ colorScheme: "dark" });
-  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(16, 27, 24)");
+  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(23, 27, 32)");
   await page.getByRole("link", { name: "English", exact: true }).click();
   await expect(page.getByLabel("Appearance")).toHaveValue("system");
 });
@@ -42,14 +42,14 @@ test("invalid or unavailable storage still permits a usable theme selector", asy
   });
   await page.reload();
   await page.getByLabel("Appearance").selectOption("dark");
-  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(16, 27, 24)");
+  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(23, 27, 32)");
 });
 
 test("without JavaScript the system palette remains readable", async ({ browser }) => {
   const context = await browser.newContext({ javaScriptEnabled: false, colorScheme: "dark" });
   const page = await context.newPage();
   await page.goto(`http://127.0.0.1:4397${base}`);
-  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(16, 27, 24)");
+  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(23, 27, 32)");
   await expect(page.locator("#theme-preference")).toBeHidden();
   await context.close();
 });

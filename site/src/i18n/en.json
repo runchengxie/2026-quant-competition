@@ -566,12 +566,12 @@
       "docs": "Documentation"
     },
     "titles": {
-      "strategies": "How did the strategies perform?",
+      "strategies": "Strategy research",
       "factors": "Do the signals help predict returns?",
       "guide": "Project guide and offline demos"
     },
     "intros": {
-      "strategies": "Compare returns, drawdowns and costs. Rule-change summaries and original strategy curves are separate experiments.",
+      "strategies": "Historical returns, trading costs and the assumptions still under test.",
       "factors": "Read the signal definitions and see which tests still need evidence.",
       "guide": "Data, limitations, installation, synthetic demos, research candidates and execution boundaries."
     },
