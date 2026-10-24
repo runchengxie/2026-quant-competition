@@ -4,7 +4,7 @@
 
 克隆本仓库并安装 Python 3.12 和 `uv`。默认离线流程不需要 `quant-*` 仓库、框架包、券商连接或数据服务凭据。在仓库根目录运行以下命令，将绝对路径替换为自己的外部目录，Windows 可使用 `D:/data/team-demo`。
 
-先创建并激活源码目录外的引导环境。Windows PowerShell 使用，
+先创建并激活源码目录外的引导环境。在 Windows PowerShell 中运行以下命令。
 
 ```powershell
 $bootstrap = 'D:/data/team-bootstrap'
@@ -13,7 +13,7 @@ uv pip install --python "$bootstrap/Scripts/python.exe" --no-deps -e .
 & "$bootstrap/Scripts/Activate.ps1"
 ```
 
-POSIX shell 使用，
+在 POSIX shell 中运行以下命令。
 
 ```sh
 uv venv /absolute/data/team-bootstrap --python 3.12
@@ -21,7 +21,7 @@ uv pip install --python /absolute/data/team-bootstrap/bin/python --no-deps -e .
 . /absolute/data/team-bootstrap/bin/activate
 ```
 
-根包没有默认运行依赖。原根目录 `team.py` 包装入口已删除，在激活的环境中统一使用模块入口，
+根包没有默认运行依赖。原根目录 `team.py` 包装入口已删除，在激活的环境中统一使用以下模块入口。
 
 ```sh
 python -m competition_tools.team --help

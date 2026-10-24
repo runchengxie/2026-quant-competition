@@ -12,7 +12,7 @@
 
 账本的 `configuration_sha256` 同时绑定输入配置字节及有效费用和模型参数，因此不同费用情景会得到不同摘要。
 
-在独立的 `research/platform-compare` 环境中运行，
+在独立的 `research/platform-compare` 环境中运行以下命令。
 
 `/absolute/...` 是占位路径，Windows 须使用根据项目配置解析的带盘符绝对路径。
 
@@ -22,7 +22,7 @@ python -m platform_compare.us_next_session.run --config /absolute/us-inputs.json
 
 配置 schema 为 `competition.us_next_session_inputs.v1`，用 SHA-256 绑定 CSV 和公司行动证据文件。CSV 列为 `date`、`open`、`close`。输入与输出都放在源码目录外。命令在计算后重新核验全部绑定文件，写出诊断账本和 `run.json`。
 
-根命令通过子进程调度，不导入账本研究包，
+根命令通过子进程调度账本研究包，保持独立安装。使用以下命令。
 
 ```sh
 python -m competition_tools.team run us-next-session --config /absolute/team.toml --experiment-config /absolute/us-inputs.json --output-root /absolute/new-output

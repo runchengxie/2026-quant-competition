@@ -5,13 +5,31 @@ import {editorialSummary} from '../src/scripts/editorial-summary.mjs';
 const load=async name=>JSON.parse(await readFile(new URL(`../src/data/${name}.v1.json`,import.meta.url),'utf8'));
 const snapshot=await load('strategy-robustness');
 const readiness=await load('strategy-readiness');
+// Contextual terms, factual negation and preferred punctuation need human
+// review. Fail only recognizable rhetorical pivots and explicit hard bans.
+const forbiddenCopy=/(?:并)?不是[^。！？\n]{0,90}(?:而是|，是)|并非[^。！？\n]{0,90}而是|不在于[^。！？\n]{0,90}而在于|你以为[^。！？\n]{0,90}其实|表面上[^。！？\n]{0,90}实际上|与其说[^。！？\n]{0,90}不如说|(?:^|[。！？])\s*而是|不重要，重要的是|说白了|值得注意的是|先说结论|赋能|抓手|底层逻辑|[—–]/u;
+
+test('style checks permit factual negation, technical terms and direct quotations',()=>{
+ for(const text of ['这不是连续账户收益。','命令实际上读取本地文件。','闭环控制器是模块名称。','读者问：“这个数值按什么期限计算？”','引语保留原有分号；具体限制另行说明。'])assert.equal(forbiddenCopy.test(text),false,text);
+ for(const text of ['这不是研究，而是未来。','你以为是价格，其实是风险。','不在于收益，而在于风险。'])assert.equal(forbiddenCopy.test(text),true,text);
+});
+
+test('Chinese documentation introductions end as complete sentences',async()=>{
+ const {documentRoutes}=await import('../document-routes.mjs');
+ const failures=[];
+ for(const doc of documentRoutes.filter(doc=>doc.locale==='zh-CN')){
+  const text=(await readFile(new URL('../../'+doc.source,import.meta.url),'utf8')).replace(/```[\s\S]*?```/g,'');
+  for(const [index,line] of text.split(/\r?\n/).entries())if(/[\u4e00-\u9fff]/u.test(line)&&/，\s*$/u.test(line))failures.push(doc.source+':'+(index+1));
+ }
+ assert.deepEqual(failures,[]);
+});
 
 test('Chinese reader copy uses direct statements and prose punctuation',async()=>{
  const catalog=JSON.parse(await readFile(new URL('../src/i18n/zh-CN.json',import.meta.url),'utf8'));
  const failures=[];
  const visit=(value,path)=>{
   if(typeof value==='string'){
-   if(/不是|而是|不在于|你以为|表面上|实际上|与其说|说白了|值得注意的是|先说结论|赋能|抓手|闭环|底层逻辑|[：；—“”]/u.test(value))failures.push(path+': '+value);
+   if(forbiddenCopy.test(value))failures.push(path+': '+value);
   }else if(value&&typeof value==='object')for(const [key,item] of Object.entries(value))visit(item,path+'.'+key);
  };
  visit(catalog,'zh-CN');assert.deepEqual(failures,[]);

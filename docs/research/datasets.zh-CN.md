@@ -36,7 +36,7 @@ python -m competition_tools.team factors --config /absolute/private/team.toml --
 
 ## 命令和存储
 
-按[团队快速上手](../operations/team-quickstart.zh-CN.md)安装锁定的 offline 环境。`competition.team.v1` 不变，另行准备外部 JSON 数据规格，
+按[团队快速上手](../operations/team-quickstart.zh-CN.md)安装锁定的 offline 环境。`competition.team.v1` 不变，另行准备外部 JSON 数据规格，再运行以下命令。
 
 ```sh
 python -m competition_tools.team data plan --config /absolute/private/team.toml --spec /absolute/private/dataset.json

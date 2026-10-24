@@ -40,7 +40,7 @@
 
 原始输入、私有配置、凭证、报告、模型和图表均保存在源码之外，使用配置指定的所有者数据目录。凭证将元信息及相对文件引用与原始字节哈希绑定。这可以检测变化，不提供独立服务商认证或原子快照隔离。输入检查、实验验收和执行交接属于不同契约，详见[验收指南](research/research-acceptance.zh-CN.md)。
 
-执行流程保持为，
+执行流程如下。
 
 ```text
 targets.json + lineage.json → OrderIntent → BrokerCommand

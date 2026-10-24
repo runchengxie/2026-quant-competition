@@ -53,7 +53,7 @@ for(const locale of ['en','zh-CN']){
   await expect(history.locator('[data-takeaway]')).toHaveCount(3);
   const crypto=JSON.parse(await history.locator('[data-controls-highlight=crypto]').getAttribute('data-highlight-facts'));
   expect([crypto.feeBps,crypto.windows,crypto.returnWins]).toEqual([25,12,7]);
-  for(const fragment of ['strategy-controls','takeaways','%74akeaways']){
+  for(const fragment of ['strategy-controls','takeaways','%74akeaways','takeaways-title','%74akeaways-title']){
    await page.goto(prefix+'#'+fragment);
    await expect(page.locator('#'+decodeURIComponent(fragment))).toBeVisible();
   }

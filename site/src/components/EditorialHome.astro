@@ -44,7 +44,7 @@ const cryptoJobs=snapshot.results.filter(r=>r.market==='crypto').length;
    {facts.evidenceRange.US&&<p class="evidence-range">{t.range}: <time>{facts.evidenceRange.US.start}</time> – <time>{facts.evidenceRange.US.end}</time></p>}
   </figure>
  </div>
- <div class="editorial-section-title"><h2>{t.directory}</h2><span>{t.directoryNote}</span></div>
+ <div class="editorial-section-title"><h2 id="takeaways-title">{t.directory}</h2><span>{t.directoryNote}</span></div>
  <div id="takeaways" class="editorial-topics">
   <p data-scope class="editorial-figure-note">{(locale==='en'?en:zh).reader.scope}</p>
   <article id="strategy-controls" class="editorial-topic" data-market-topic="US"><p class="topic-index">01 / {(locale==='en'?en:zh).robustness.markets.US}</p><div><h3><a data-topic="US" href={`${prefix}strategies/#robustness`}>{t.usTitle}</a></h3><p>{us?interpolate(t.usBody,{wins:us.returnWins,windows:us.requestedWindows,drawdowns:us.drawdownWins}):t.unavailable}</p></div><div class="topic-stat"><strong>{us?change(us.medianReturnChange):t.unavailable}</strong><span>{t.usMetric}</span></div><MarketEvidence locale={locale} market="US" /></article>

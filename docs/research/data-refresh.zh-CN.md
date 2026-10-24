@@ -17,7 +17,7 @@
 
 数据源仍为 Binance Vision 现货 `1d` K 线，沿用 BTCUSDT、ETHUSDT、BNBUSDT、SOLUSDT、XRPUSDT、ADAUSDT、DOGEUSDT、LINKUSDT 八币种池。逐日 ZIP 使用独立身份和解析器，不改变原来的月度归档。按照[官方说明](https://github.com/binance/binance-public-data)，逐日文件次日提供，2025 年起现货时间戳为微秒，之前为毫秒。
 
-扩展 spec 只有四个字段，
+扩展 spec 包含以下四个字段。
 
 ```json
 {
@@ -32,14 +32,14 @@
 
 工具只接受准确的官方 HTTPS 路径，拒绝跳转、URL 中的凭据、错误校验值、意外 ZIP 成员、未支持币种、错误时间戳、多根日线及无效 OHLCV。父数据保留原来的 partial/acquired 状态，扩展切片完整不代表更早的不完整历史也自动完整。
 
-先解析配置中的根目录、使用已安装的根解释器，再将尖括号占位替换为仓库外绝对路径，
+先解析配置中的根目录，将尖括号占位替换为仓库外绝对路径，再用已安装的根解释器运行以下命令。
 
 ```powershell
 python -m competition_tools.team daily-extension prepare --config <team.toml> --spec <extension.json> --base-manifest <parent-manifest.json> --output-root <new-plan-directory>
 python -m competition_tools.team daily-extension inspect --config <team.toml> --manifest <new-dataset/manifest.json>
 ```
 
-这两条命令离线运行。下面这条会发起真实请求，只能在准确的冻结请求清单获批后使用，
+以上两条命令离线运行。下列命令会发起真实请求，须先取得对准确冻结清单的授权。
 
 ```powershell
 python -m competition_tools.team daily-extension acquire --config <team.toml> --plan <plan-directory/plan.json> --output-root <new-dataset-directory>
@@ -67,7 +67,7 @@ python -m competition_tools.team observation-prepare market --config <team.toml>
 
 结果要求 252 期共同且已完成的数据、完整市场日历、向后延伸的预热期及新鲜的已核验数据。它记录采集时间、输入哈希、下一个可观察市场日期、原有候选和费用，以及零条观察。旧数据、缺日期或修订后的输入保持阻塞。补齐的历史数据用于预热，不能当作前瞻观察。
 
-某个市场通过这些检查后，显式冻结已审阅的准备记录，
+某个市场通过这些检查后，使用下列命令显式冻结已审阅的准备记录。
 
 ```powershell
 python -m competition_tools.team observation-prepare freeze-market --config <team.toml> --preparation <preparation.json> --parent-registry <old-registry-directory> --output-root <new-registry-directory>

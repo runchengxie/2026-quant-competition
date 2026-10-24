@@ -2,7 +2,7 @@
 
 这个工具分别记录进程启动、重定向输出收集、子进程退出和外层 PowerShell 超时。它只启动固定的合成 PowerShell 子进程，不检查或启动 Gateway、Java、账户或券商连接，也不修改生产超时和运行锁规则。
 
-在仓库根目录使用已安装的根环境运行，输出路径必须是仓库外尚不存在的绝对路径，
+使用已安装的根环境，在仓库根目录运行以下命令。输出路径必须是仓库外尚不存在的绝对路径。
 
 ```powershell
 python -m competition_tools.check_native_process_delivery --output-root D:/data/2026-quant-competition/task-results/process-check --timeout-seconds 10
