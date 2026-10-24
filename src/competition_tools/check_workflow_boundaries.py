@@ -18,6 +18,16 @@ LEAVES = (
     "quant_research",
     "research_contracts",
 )
+EXECUTION = (
+    "adapters",
+    "apps",
+    "packages",
+    "strategies",
+    "competition_tools",
+    "ib_insync",
+    "ibapi",
+    "nautilus_trader",
+)
 
 
 def _prefix(name, prefixes):
@@ -77,7 +87,8 @@ def _rule(relative):
             return (
                 f"{package}-{layer}-boundary",
                 tuple(f"{package}.{n}" for n in forbidden)
-                + tuple(n for n in LEAVES if n != package),
+                + tuple(n for n in LEAVES if n != package)
+                + EXECUTION,
                 True,
             )
     return None, (), False
@@ -124,7 +135,11 @@ def _imports(tree, package):
         )
         if not dynamic:
             continue
-        argument = node.args[0] if node.args else None
+        argument = (
+            node.args[0]
+            if node.args
+            else next((k.value for k in node.keywords if k.arg == "name"), None)
+        )
         name = argument.value if isinstance(argument, ast.Constant) else None
         if (
             isinstance(argument, ast.JoinedStr)

@@ -108,6 +108,37 @@ def test_pure_leaf_cannot_import_the_other_independent_package(tmp_path):
     assert check_boundaries(root)["status"] == "failed"
 
 
+@pytest.mark.parametrize("layer", ["data", "signals", "portfolio", "evaluation"])
+@pytest.mark.parametrize(
+    "project, package", [("equity-lab", "equity_lab"), ("crypto-mm", "crypto_mm")]
+)
+@pytest.mark.parametrize(
+    "module", ["adapters.ibkr.connection", "apps.execution_runner.preflight", "ib_insync"]
+)
+def test_pure_layers_cannot_depend_on_execution_or_broker_modules(
+    tmp_path, layer, project, package, module
+):
+    root = source(
+        tmp_path,
+        f"research/{project}/src/{package}/{layer}/x.py",
+        f"import {module}\n",
+    )
+    assert check_boundaries(root)["status"] == "failed"
+
+
+@pytest.mark.parametrize(
+    "statement",
+    [
+        "import importlib\nimportlib.import_module(name='crypto_mm.daily')\n",
+        "from importlib import import_module as load\nload(name='crypto_mm.daily')\n",
+        "__import__(name='crypto_mm.daily')\n",
+    ],
+)
+def test_root_keyword_dynamic_imports_cannot_cross_leaf_boundary(tmp_path, statement):
+    root = source(tmp_path, "src/apps/runner.py", statement)
+    assert check_boundaries(root)["status"] == "failed"
+
+
 def test_missing_tree_and_invalid_python_fail(tmp_path):
     assert check_boundaries(tmp_path)["status"] == "failed"
     root = source(tmp_path, "src/example.py", "def broken(\n")
