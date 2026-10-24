@@ -2,6 +2,7 @@
 import SiteNavigation from "./SiteNavigation.astro";
 import FactorResearch from "./FactorResearch.astro";
 import PredictiveResearch from "./PredictiveResearch.astro";
+import IncrementalResearch from "./IncrementalResearch.astro";
 import SiteLayout from "../layouts/SiteLayout.astro";
 import ValidationResults from "./ValidationResults.astro";
 import ExpansionResults from "./ExpansionResults.astro";
@@ -14,9 +15,12 @@ import ResearchSummary from "./ResearchSummary.astro";
 import PerformanceDashboard from "./PerformanceDashboard.astro";
 import en from "../i18n/en.json";
 import zh from "../i18n/zh-CN.json";
+import incrementalEn from "../i18n/incremental-en.json";
+import incrementalZh from "../i18n/incremental-zh-CN.json";
 interface Props { locale?: string; view?: "home"|"strategies"|"factors"|"guide" }
 const locale = Astro.props.locale === "zh-CN" ? "zh-CN" : "en";
 const t = locale === "zh-CN" ? zh : en;
+const incrementalText = locale === "zh-CN" ? incrementalZh : incrementalEn;
 const view=Astro.props.view??"home";
 const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
 const localePath=({home:'',strategies:'strategies/',factors:'factors/',guide:'docs/project/'})[view];
@@ -42,8 +46,15 @@ const guide = (directory: string) => file(`research/${directory}/README${locale 
     <p class="intro">{view==='home'?t.hero.intro:t.pages.intros[view]}</p><p class="hero-note">{t.hero.note}</p>
   </div></header>}
     {view==='home'&&<EditorialHome locale={locale} />}
-    {view==='strategies'&&<><nav class="section-nav" aria-label={t.strategyControls.headlines.navigation}>{['robustness','strategy-controls','ablation','performance','study'].map((id,index)=><a href={`#${id}`}><span>0{index+1}</span>{index===0?t.robustness.title:t.strategyControls.headlines.sections[index-1]}</a>)}</nav><RobustnessResults locale={locale} /><StrategyControls locale={locale} /><AblationResults locale={locale} /><PerformanceDashboard locale={locale} /><StudyResults locale={locale} /></>}
-    {view==='factors'&&<><PredictiveResearch locale={locale} /><FactorResearch locale={locale} /></>}
+    {view==='strategies'&&<>
+      <nav class="section-nav" aria-label={t.strategyControls.headlines.navigation}>
+        <a href="#incremental-crypto"><span>01</span>{incrementalText.latest}</a>
+        {['robustness','strategy-controls','ablation','performance','study'].map((id,index)=><a href={`#${id}`}><span>0{index+2}</span>{index===0?t.robustness.title:t.strategyControls.headlines.sections[index-1]}</a>)}
+      </nav>
+      <IncrementalResearch locale={locale} view="crypto" />
+      <RobustnessResults locale={locale} /><StrategyControls locale={locale} /><AblationResults locale={locale} /><PerformanceDashboard locale={locale} /><StudyResults locale={locale} />
+    </>}
+    {view==='factors'&&<><IncrementalResearch locale={locale} view="equity" /><PredictiveResearch locale={locale} /><FactorResearch locale={locale} /></>}
     {view==='guide'&&<>    <section id="evidence" class="evidence-section">
       <div class="section-heading"><h2>{t.evidence.title}</h2><p>{t.evidence.intro}</p></div>
       <p class="detail">{t.evidence.scope}</p>

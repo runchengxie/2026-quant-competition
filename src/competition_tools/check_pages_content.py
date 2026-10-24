@@ -71,6 +71,7 @@ class _PageMetadata(HTMLParser):
         self.readiness_facts: list[str | None] = []
         self.editorial_facts: list[str | None] = []
         self.predictive_facts: list[str | None] = []
+        self.incremental_facts: list[str | None] = []
         self.ids: set[str] = set()
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
@@ -91,6 +92,8 @@ class _PageMetadata(HTMLParser):
             self.editorial_facts.append(attributes.get("data-editorial-facts"))
         if "data-predictive-facts" in attributes:
             self.predictive_facts.append(attributes.get("data-predictive-facts"))
+        if "data-incremental-facts" in attributes:
+            self.incremental_facts.append(attributes.get("data-incremental-facts"))
         if ablation_id := attributes.get("data-ablation-id"):
             self.ablation_facts.append((ablation_id, attributes.get("data-facts")))
         if study_id := attributes.get("data-study-id"):
@@ -147,6 +150,13 @@ def _allowed_source(relative_path: PurePosixPath) -> bool:
         "tests/editorial.spec.mjs",
         "src/data/strategy-readiness.v1.json",
         "src/data/equity-predictive.v1.json",
+        "src/data/incremental-research.v1.json",
+        "src/scripts/incremental-charts.mjs",
+        "src/scripts/incremental-state.mjs",
+        "src/i18n/incremental-en.json",
+        "src/i18n/incremental-zh-CN.json",
+        "tests/incremental-state.test.mjs",
+        "tests/incremental.spec.mjs",
         "src/scripts/reader-charts.mjs",
         "src/scripts/predictive-charts.mjs",
         "tests/reader-charts.test.mjs",
@@ -608,6 +618,33 @@ def check_site(source_dir: Path, built_dir: Path) -> list[str]:
                     raise ValueError("Changed predictive facts")
         except (OSError, ValueError, TypeError, KeyError, AttributeError):
             errors.append("invalid public predictive facts or output")
+    incremental_path = source_dir / "src/data/incremental-research.v1.json"
+    if incremental_path.is_file():
+        from competition_tools.evaluation.incremental_publication import (
+            validate_public_incremental,
+        )
+
+        try:
+            expected = validate_public_incremental(
+                json.loads(incremental_path.read_text(encoding="utf-8"))
+            )
+            for name in (
+                "factors/index.html",
+                "zh-CN/factors/index.html",
+                "strategies/index.html",
+                "zh-CN/strategies/index.html",
+            ):
+                page = _PageMetadata()
+                page.feed((built_dir / name).read_text(encoding="utf-8"))
+                if len(page.incremental_facts) != 1:
+                    raise ValueError("Missing incremental facts")
+                actual = validate_public_incremental(
+                    json.loads(page.incremental_facts[0])
+                )
+                if actual != expected:
+                    raise ValueError("Changed incremental facts")
+        except (OSError, ValueError, TypeError, KeyError, AttributeError):
+            errors.append("invalid public incremental facts or output")
     if "document-routes.mjs" in source_paths:
         _validate_documentation(built_dir, output_paths, errors)
     _scan_sensitive(source_files, "source", errors)
@@ -638,6 +675,7 @@ def _validate_documentation(
             "data-refresh",
             "native-process-diagnostics",
             "equity-predictive",
+            "incremental-research",
         )
     }
     if "strategies/index.html" in output_paths:

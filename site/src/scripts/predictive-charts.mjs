@@ -2,13 +2,14 @@ import * as echarts from 'echarts/core';
 import {BarChart} from 'echarts/charts';
 import {GridComponent,TooltipComponent,LegendComponent,AriaComponent} from 'echarts/components';
 import {CanvasRenderer} from 'echarts/renderers';
+import {formatResearchNumber} from './incremental-state.mjs';
 echarts.use([BarChart,GridComponent,TooltipComponent,LegendComponent,AriaComponent,CanvasRenderer]);
 
 export function mountPredictive(root){
  const facts=JSON.parse(root.dataset.predictiveFacts);
  const {locale,t}=JSON.parse(root.querySelector('[data-predictive-config]').textContent);
  const chart=echarts.init(root.querySelector('[data-predictive-chart]'));
- const number=new Intl.NumberFormat(locale,{maximumFractionDigits:4});
+ const number={format:value=>formatResearchNumber(value,locale)};
  const ids=['ridge','elastic_net','constant_zero','session_return_rank'];
  function render(){
   const probe=document.createElement('span');probe.style.visibility='hidden';root.append(probe);

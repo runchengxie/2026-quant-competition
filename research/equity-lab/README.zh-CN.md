@@ -6,6 +6,8 @@
 
 ## 快速开始
 
+[本轮研究](../../docs/research/incremental-research.zh-CN.md)在相同冻结日期上比较简单反转、三组 Ridge 特征和浅层梯度提升树。真实运行需要一次性预约，结果衡量排序，交易收益仍待验证。
+
 可选的[股票预测研究](../../docs/research/equity-predictive.zh-CN.md)使用冻结的候选日频汇总，检验Ridge和Elastic Net。执行`uv sync --locked --group dev --extra predictive`安装。结果衡量预测效果，交易收益还需单独验证。默认引擎保持现状。
 
 进入本目录，配置外部 `DATA_ROOT` 和 `UV_PROJECT_ENVIRONMENT`，然后执行英文 README 的安装、`list`、`demo`、`backtest --strategy equal_weight` 和测试命令。

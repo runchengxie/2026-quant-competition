@@ -2,9 +2,10 @@
 import facts from '../data/equity-predictive.v1.json';
 import en from '../i18n/en.json';
 import zh from '../i18n/zh-CN.json';
+import {formatResearchNumber} from '../scripts/incremental-state.mjs';
 const locale=Astro.props.locale==='zh-CN'?'zh-CN':'en';
 const t=(locale==='en'?en:zh).predictive;
-const format=new Intl.NumberFormat(locale,{maximumFractionDigits:4});
+const format={format:(value:number)=>formatResearchNumber(value,locale)};
 const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
 ---
 <section id="equity-predictive" data-predictive-facts={JSON.stringify(facts)}>

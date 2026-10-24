@@ -279,7 +279,8 @@
       "strategy-robustness": "Robustness checks",
       "data-refresh": "Fresh data and observations",
       "native-process-diagnostics": "Synthetic process timing",
-      "equity-predictive": "Equity prediction study"
+      "equity-predictive": "Equity prediction study",
+      "incremental-research": "Reversal, models and weekly trading"
     },
     "summaries": {
       "architecture": "Responsibilities, package boundaries and execution contracts.",
@@ -293,7 +294,8 @@
       "strategy-robustness": "US exclusions, recomputed crypto fees and ex-post volume checks.",
       "data-refresh": "Bounded request plans, fresh warmup and per-market protocol handoff.",
       "native-process-diagnostics": "Separate synthetic startup, exit and timeout evidence.",
-      "equity-predictive": "Read the source-candidate pool, fixed model protocol and three-period results."
+      "equity-predictive": "Read the source-candidate pool, fixed model protocol and three-period results.",
+      "incremental-research": "Check what learned models add and how less frequent crypto trading changes costs."
     }
   },
   "dashboard": {

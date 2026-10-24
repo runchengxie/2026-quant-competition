@@ -279,7 +279,8 @@
       "strategy-robustness": "收益依赖哪些条件",
       "data-refresh": "补数据与新观察",
       "native-process-diagnostics": "合成进程计时",
-      "equity-predictive": "股票预测研究"
+      "equity-predictive": "股票预测研究",
+      "incremental-research": "反转、模型与每周调仓"
     },
     "summaries": {
       "architecture": "职责划分、包边界和执行契约。",
@@ -293,7 +294,8 @@
       "strategy-robustness": "美股移除对照、加密费用回放与事后成交量检查。",
       "data-refresh": "有界请求清单、新鲜预热数据与分市场协议交接。",
       "native-process-diagnostics": "分别记录合成进程的启动、退出和超时。",
-      "equity-predictive": "查看候选池、模型检验方法和三段实际结果。"
+      "equity-predictive": "查看候选池、模型检验方法和三段实际结果。",
+      "incremental-research": "查看模型增加了多少排序信息，以及加密少交易以后省下多少成本。"
     }
   },
   "dashboard": {

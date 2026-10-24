@@ -6,6 +6,8 @@ A daily CSV/YAML backtest laboratory with eight offline strategies: `sma_cross`,
 
 ## Quick start
 
+[Incremental research](../../docs/research/incremental-research.md) compares simple reversal, three Ridge feature sets and a shallow boosting tree on the same frozen dates. It requires an explicit one-time reservation and reports ranking evidence, not trading PnL.
+
 The optional [equity prediction study](../../docs/research/equity-predictive.md) adds a bounded Ridge/Elastic Net experiment over frozen source-candidate daily summaries. Install with `uv sync --locked --group dev --extra predictive`. Its aggregate prediction scores are separate from trading PnL. The default engine remains unchanged.
 
 From this directory, configure external `DATA_ROOT` and `UV_PROJECT_ENVIRONMENT`, then run:

@@ -56,6 +56,35 @@ def test_allows_bilingual_astro_sources_assets_and_build_output(tmp_path):
     assert check_site(source, built) == []
 
 
+def test_incremental_aggregate_must_be_present_and_equal_on_both_topic_pages(tmp_path):
+    source, built = make_site_trees(tmp_path)
+    snapshot = (
+        Path(__file__).resolve().parents[2]
+        / "site/src/data/incremental-research.v1.json"
+    )
+    target = source / "src/data/incremental-research.v1.json"
+    target.parent.mkdir(parents=True)
+    target.write_text(snapshot.read_text())
+    assert "invalid public incremental facts or output" in check_site(source, built)
+    facts = html.escape(snapshot.read_text(), quote=True)
+    for topic in ("factors", "strategies"):
+        for prefix, locale, other in (("", "en", "zh-CN/"), ("zh-CN/", "zh-CN", "")):
+            page = built / f"{prefix}{topic}/index.html"
+            page.parent.mkdir(parents=True, exist_ok=True)
+            page.write_text(
+                rendered_page(locale, f"{BASE_PATH}/{other}{topic}/").replace(
+                    "</body>",
+                    f'<section data-incremental-facts="{facts}"></section></body>',
+                )
+            )
+    assert check_site(source, built) == []
+    chinese = built / "zh-CN/factors/index.html"
+    chinese.write_text(
+        chinese.read_text().replace("data-incremental-facts=", "data-removed-facts=")
+    )
+    assert "invalid public incremental facts or output" in check_site(source, built)
+
+
 def editorial_site_fixture(tmp_path):
     from competition_tools.check_pages_content import _expected_editorial_summary
 
@@ -374,6 +403,7 @@ def test_documentation_routes_validate_locale_links_and_reject_unlisted_pages(tm
             "data-refresh",
             "native-process-diagnostics",
             "equity-predictive",
+            "incremental-research",
         ):
             suffix = f"docs/{slug + '/' if slug else ''}"
             p = built / prefix / suffix / "index.html"

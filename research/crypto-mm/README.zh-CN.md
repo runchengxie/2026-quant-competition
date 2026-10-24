@@ -6,6 +6,8 @@
 
 ## 快速开始
 
+[每周调仓研究](../../docs/research/incremental-research.zh-CN.md)使用日线比较趋势策略与同日历、同决策敞口的等权对照。这部分独立于做市事件模拟器，真实历史运行需要一次性预约。
+
 进入本目录，先配置外部 `DATA_ROOT` 和 `UV_PROJECT_ENVIRONMENT`，再执行英文 README 中的可复制命令。`uv sync --locked --group dev` 安装锁定依赖，`python -m crypto_mm.demo` 生成演示数据，随后可运行审计、B0 回测、信号分析、绘图和测试。
 
 演示在 `raw_data/{orderbook,trades,fundings}/` 下生成九个 Parquet 文件，并在同级写入 `demo-manifest.json`。文件名是 `YYYY-MM-DD.parquet`。当前读取器固定要求 `2026-03-19` 至 `2026-03-21` 三个日期标签，它们不代表提供了真实历史行情。读取器将 datetime 的存储单位转换成纳秒事件。字段包括 `datetime`、20 档 `bid_price_N`/`ask_price_N`/`bid_qty_N`/`ask_qty_N`、成交 `price`/`size`/`is_maker_ask` 和 `funding_rate`，类型和生成示例见 `market_data.py` 与 `demo.py`。
