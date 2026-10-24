@@ -272,6 +272,23 @@ def _validate_localized_output(
         errors.append("study facts differ between localized output pages")
 
 
+def _same_editorial_facts(actual, expected) -> bool:
+    """JSON numbers can differ in notation, but booleans are never numbers."""
+    if type(expected) in (int, float):
+        return type(actual) in (int, float) and actual == expected
+    if type(actual) is not type(expected):
+        return False
+    if isinstance(expected, dict):
+        return actual.keys() == expected.keys() and all(
+            _same_editorial_facts(actual[key], value) for key, value in expected.items()
+        )
+    if isinstance(expected, list):
+        return len(actual) == len(expected) and all(
+            _same_editorial_facts(a, b) for a, b in zip(actual, expected)
+        )
+    return actual == expected
+
+
 def _expected_editorial_summary(snapshot: dict, readiness: dict) -> dict:
     """Independently project reviewed public rows into the compact home facts."""
 
@@ -553,9 +570,8 @@ def check_site(source_dir: Path, built_dir: Path) -> list[str]:
             )
             expected = _expected_editorial_summary(snapshot, readiness)
             for page in home_metadata:
-                if (
-                    len(page.editorial_facts) != 1
-                    or json.loads(page.editorial_facts[0]) != expected
+                if len(page.editorial_facts) != 1 or not _same_editorial_facts(
+                    json.loads(page.editorial_facts[0]), expected
                 ):
                     errors.append(
                         "editorial facts differ from reviewed source snapshot"

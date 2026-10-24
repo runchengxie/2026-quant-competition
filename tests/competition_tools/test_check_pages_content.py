@@ -108,7 +108,7 @@ def test_editorial_summary_matches_reviewed_source(tmp_path):
 
 
 @pytest.mark.parametrize(
-    "mutation", ["count", "median", "extra", "missing", "duplicate"]
+    "mutation", ["count", "median", "extra", "missing", "duplicate", "boolean"]
 )
 def test_editorial_summary_rejects_mutated_or_extra_fields(tmp_path, mutation):
     source, built, summary = editorial_site_fixture(tmp_path)
@@ -119,6 +119,8 @@ def test_editorial_summary_rejects_mutated_or_extra_fields(tmp_path, mutation):
         summary["us"][0]["medianReturnChange"] = 0
     elif mutation == "extra":
         summary["private_path"] = "not-public"
+    elif mutation == "boolean":
+        summary["observation"]["observations"] = False
     original = target.read_text()
     section = f'<section data-editorial-facts="{html.escape(json.dumps(summary), quote=True)}"></section>'
     import re
@@ -150,6 +152,18 @@ def test_editorial_summary_requires_locale_equivalence(tmp_path):
         )
     )
     assert any("editorial" in issue for issue in check_site(source, built))
+
+
+def test_editorial_numbers_preserve_json_number_semantics(tmp_path):
+    source, built, _ = editorial_site_fixture(tmp_path)
+    for relative in ("index.html", "zh-CN/index.html"):
+        path = built / relative
+        path.write_text(
+            path.read_text().replace(
+                "&quot;observations&quot;: 0", "&quot;observations&quot;: 0.0"
+            )
+        )
+    assert check_site(source, built) == []
 
 
 def test_robustness_snapshot_requires_exact_bilingual_facts(tmp_path):
