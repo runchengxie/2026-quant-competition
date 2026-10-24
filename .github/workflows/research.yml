@@ -60,3 +60,21 @@ jobs:
         run: |
           UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/receipt-root-env" uv run --project ../.. --locked python -m competition_tools.check_dex_factor_delivery --leaf-python "$RUNNER_TEMP/research-envs/crypto-mm/bin/python" --output-root "$RUNNER_TEMP/dex-factor-contract"
       - run: uv build --out-dir "${{ runner.temp }}/wheels-${{ matrix.project }}"
+
+  predictive:
+    runs-on: ubuntu-latest
+    env:
+      DATA_ROOT: ${{ runner.temp }}/predictive-data
+      UV_PROJECT_ENVIRONMENT: ${{ runner.temp }}/predictive-env
+      MPLBACKEND: Agg
+    defaults:
+      run:
+        working-directory: research/equity-lab
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --locked --group dev --extra predictive
+      - run: uv run --locked --extra predictive pytest tests/test_predictive_data.py tests/test_predictive_protocol.py -q

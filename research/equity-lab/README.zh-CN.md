@@ -6,6 +6,8 @@
 
 ## 快速开始
 
+可选的[股票预测研究](../../docs/research/equity-predictive.zh-CN.md)使用冻结的候选日频汇总，检验Ridge和Elastic Net。执行`uv sync --locked --group dev --extra predictive`安装。结果衡量预测效果，交易收益还需单独验证。默认引擎保持现状。
+
 进入本目录，配置外部 `DATA_ROOT` 和 `UV_PROJECT_ENVIRONMENT`，然后执行英文 README 的安装、`list`、`demo`、`backtest --strategy equal_weight` 和测试命令。
 
 `HK.DEMO_A` 和 `HK.DEMO_B` 是虚构代码。演示生成 90 个工作日的数据，不代表交易所日历或历史行情。CSV 字段为 `date,open,high,low,close,volume,code`，文件名将代码中的点替换成下划线。每日数据位于外部项目目录的 `artifacts/data/processed/market/`。

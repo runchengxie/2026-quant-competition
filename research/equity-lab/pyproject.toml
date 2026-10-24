@@ -11,6 +11,14 @@ license = "MIT"
 license-files = ["LICENSE"]
 dependencies = ["pandas>=2.2,<3", "numpy>=2,<3", "PyYAML>=6,<7", "matplotlib>=3.10,<4"]
 
+[project.optional-dependencies]
+predictive = [
+    "exchange-calendars==4.13.2",
+    "pyarrow==23.0.1",
+    "scikit-learn==1.7.2",
+    "threadpoolctl==3.6.0",
+]
+
 [dependency-groups]
 dev = ["pytest>=9.1.1", "ruff>=0.11"]
 

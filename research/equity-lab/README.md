@@ -6,6 +6,8 @@ A daily CSV/YAML backtest laboratory with eight offline strategies: `sma_cross`,
 
 ## Quick start
 
+The optional [equity prediction study](../../docs/research/equity-predictive.md) adds a bounded Ridge/Elastic Net experiment over frozen source-candidate daily summaries. Install with `uv sync --locked --group dev --extra predictive`. Its aggregate prediction scores are separate from trading PnL. The default engine remains unchanged.
+
 From this directory, configure external `DATA_ROOT` and `UV_PROJECT_ENVIRONMENT`, then run:
 
 ```sh
