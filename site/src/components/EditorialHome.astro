@@ -1,0 +1,56 @@
+---
+import snapshot from '../data/strategy-robustness.v1.json';
+import readiness from '../data/strategy-readiness.v1.json';
+import {editorialSummary} from '../scripts/editorial-summary.mjs';
+import en from '../i18n/en.json';
+import zh from '../i18n/zh-CN.json';
+interface Props {locale?:string}
+const locale=Astro.props.locale==='zh-CN'?'zh-CN':'en';
+const t=(locale==='en'?en:zh).editorial;
+const facts=editorialSummary(snapshot,readiness);
+const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+const number=new Intl.NumberFormat(locale,{maximumFractionDigits:2});
+const change=(value:number|null)=>value===null?t.unavailable:number.format(value*100)+' '+t.pp;
+const us=facts.us.find(g=>g.poolId==='exclude_three');
+const crypto=facts.crypto.find(g=>g.feeBps===50);
+const values=facts.us.map(g=>g.medianReturnChange).filter(v=>v!==null);
+const extent=Math.max(.001,...values.map(Math.abs));
+const domain=Math.ceil(extent*1000)/1000;
+const date=new Intl.DateTimeFormat(locale,{year:'numeric',month:'short',day:'numeric',timeZone:'UTC'}).format(new Date(facts.asOf));
+const interpolate=(text:string,values:Record<string,string|number>)=>Object.entries(values).reduce((s,[key,value])=>s.replaceAll('{'+key+'}',String(value)),text);
+const usJobs=snapshot.results.filter(r=>r.market==='US').length;
+const cryptoJobs=snapshot.results.filter(r=>r.market==='crypto').length;
+---
+<section id="robustness" class="editorial-home" data-editorial-facts={JSON.stringify(facts)}>
+ <div class="edition-line"><span>{t.publication} <time datetime={facts.asOf}>{date}</time> · {t.utc}</span><span>{t.state} / {t.observations} {facts.observation.observations}</span></div>
+ <div class="editorial-lead">
+  <div class="lead-story" data-robustness-headline-facts={us?JSON.stringify({market:'US',...us}):undefined}>
+   <p class="editorial-kicker">{t.kicker}</p><h1>{t.title}</h1><p class="editorial-dek">{t.intro}</p>
+   <a class="editorial-link" href={`${prefix}strategies/#robustness`}>{t.read} →</a>
+   <p class="editorial-scope">{interpolate(t.counts,{us:usJobs,crypto:cryptoJobs})}<br/>{t.scope}</p>
+  </div>
+  <figure class="editorial-figure">
+   <figcaption>{t.figureTitle}</figcaption><p class="figure-condition">{t.figureCondition}</p>
+   {facts.us.length?<>
+    <div class="editorial-bars">{facts.us.map((group,index)=><div class="editorial-bar-row" data-editorial-pool={JSON.stringify(group)}>
+     <span class="pool-label">{t.poolLabels[index]}</span>
+     <span class="bar-track" aria-hidden="true"><span class="bar-fill" style={`width:${group.medianReturnChange===null?0:Math.abs(group.medianReturnChange)/domain*100}%`} /></span>
+     <span class="bar-value" data-editorial-value>{change(group.medianReturnChange)}</span>
+    </div>)}</div>
+    <div class="editorial-axis" aria-hidden="true"><span>{change(-domain)}</span><span>0</span></div>
+   </>:<p>{t.unavailable}</p>}
+   <p class="editorial-figure-note">{t.figureNote}</p>
+   {facts.evidenceRange.US&&<p class="evidence-range">{t.range}: <time>{facts.evidenceRange.US.start}</time> – <time>{facts.evidenceRange.US.end}</time></p>}
+  </figure>
+ </div>
+ <div class="editorial-section-title"><h2>{t.directory}</h2><span>{t.directoryNote}</span></div>
+ <div class="editorial-topics">
+  <article class="editorial-topic"><p class="topic-index">01 / {(locale==='en'?en:zh).robustness.markets.US}</p><div><h3><a data-topic="US" href={`${prefix}strategies/#robustness`}>{t.usTitle}</a></h3><p>{us?interpolate(t.usBody,{wins:us.returnWins,windows:us.requestedWindows,drawdowns:us.drawdownWins}):t.unavailable}</p></div><div class="topic-stat"><strong>{us?change(us.medianReturnChange):t.unavailable}</strong><span>{t.usMetric}</span></div></article>
+  <article class="editorial-topic" data-robustness-headline-facts={crypto?JSON.stringify({market:'crypto',...crypto}):undefined}><p class="topic-index">02 / {(locale==='en'?en:zh).robustness.markets.crypto}</p><div><h3><a data-topic="crypto" href={`${prefix}strategies/#robustness`}>{t.cryptoTitle}</a></h3><p>{t.cryptoBody}</p></div><div class="topic-stat"><strong>{crypto?`${crypto.returnWins} / ${crypto.requestedWindows}`:t.unavailable}</strong><span>{t.cryptoMetric}</span></div></article>
+  <article class="editorial-topic"><p class="topic-index">03 / {(locale==='en'?en:zh).pages.labels.factors}</p><div><h3><a data-topic="factors" href={`${prefix}factors/`}>{t.factorTitle}</a></h3><p>{t.factorBody}</p></div><div class="topic-stat"><strong class="text-stat">{t.factorState}</strong><span>{t.factorMetric}</span></div></article>
+ </div>
+ <div class="editorial-bottom"><div><h2>{t.nextTitle}</h2><p>{interpolate(t.nextBody,{count:facts.observation.observations})}</p><a class="editorial-link" href={`${prefix}docs/data-refresh/`}>{t.nextLink} →</a></div><div><h2>{t.methodTitle}</h2><p>{interpolate(t.methodBody,{jobs:facts.coverage.requested_jobs,checks:facts.coverage.requested_capacity_checks})}</p><a class="editorial-link" href={`${prefix}docs/strategy-robustness/`}>{t.methodLink} →</a></div></div>
+</section>
+<style>
+.editorial-home{margin:0}.edition-line{display:flex;justify-content:space-between;gap:1rem;border-bottom:1px solid var(--line);padding:.8rem 0;font-size:.75rem;color:var(--muted)}.editorial-lead{display:grid;grid-template-columns:1fr 1.03fr;gap:4rem;padding:3.5rem 0 3rem;border-bottom:1px solid var(--ink)}.editorial-kicker{font-size:.75rem;letter-spacing:.07em;color:var(--green);font-weight:650;margin-bottom:1.2rem}.editorial-home h1{font:400 clamp(1.9rem,2.8vw,2.5rem)/1.55 Georgia,'Noto Serif SC','SimSun',serif;letter-spacing:-.035em;white-space:pre-line;margin:0 0 1.5rem}.editorial-dek{color:var(--muted);line-height:1.95;margin:0 0 1.6rem}.editorial-link{font-size:.88rem;text-decoration:none;border-bottom:1px solid var(--ink);padding-bottom:.2rem;display:inline-block}.editorial-scope{font-size:.76rem;color:var(--muted);line-height:1.8;margin:1.5rem 0 0}.editorial-figure{margin:0;min-width:0}.editorial-figure figcaption{font-size:1.08rem;font-weight:600;line-height:1.6}.figure-condition,.evidence-range{font-size:.74rem;color:var(--muted)}.figure-condition{margin:.5rem 0 1.8rem}.editorial-bar-row{display:grid;grid-template-columns:9rem minmax(0,1fr) 7.3rem;gap:.7rem;align-items:center;margin:1.2rem 0;font-size:.75rem}.bar-track{height:1.4rem;background:var(--picker);display:flex;justify-content:flex-end;border-right:1px solid var(--ink)}.bar-fill{background:var(--green);height:100%}.bar-value{text-align:right;font-variant-numeric:tabular-nums}.editorial-axis{display:flex;justify-content:space-between;margin-left:9.7rem;margin-right:8rem;font-size:.7rem;color:var(--muted)}.editorial-figure-note{border-top:1px solid var(--line);padding-top:1rem;margin:1.5rem 0 .7rem;font-size:.76rem;line-height:1.85;color:var(--muted)}.editorial-section-title{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;padding:1.6rem 0 1.1rem}.editorial-section-title h2{font:400 1.45rem/1.5 Georgia,'SimSun',serif;margin:0}.editorial-section-title>span{font-size:.75rem;color:var(--muted)}.editorial-topic{display:grid;grid-template-columns:6rem minmax(0,1fr) 13rem;gap:1.7rem;border-top:1px solid var(--line);padding:1.6rem 0}.topic-index{font-size:.75rem;color:var(--muted)}.editorial-topic h3{font-size:1.25rem;font-weight:500;line-height:1.6;margin:0 0 .5rem}.editorial-topic h3 a{text-decoration:none;color:var(--ink)}.editorial-topic p:not(.topic-index){font-size:.88rem;color:var(--muted);margin:0}.topic-stat{border-left:1px solid var(--line);padding-left:1.6rem}.topic-stat strong{display:block;font:400 1.7rem/1.6 Georgia,'SimSun',serif;font-variant-numeric:tabular-nums;white-space:normal}.topic-stat .text-stat{font-size:1.15rem}.topic-stat>span{font-size:.75rem;color:var(--muted)}.editorial-bottom{display:grid;grid-template-columns:1.5fr 1fr;gap:4rem;border-top:1px solid var(--ink);padding:1.8rem 0 2rem;margin-top:1rem}.editorial-bottom h2{font-size:1.15rem;line-height:1.6;font-weight:500;margin-bottom:.7rem}.editorial-bottom p{font-size:.85rem;color:var(--muted)}@media(max-width:900px){.editorial-lead{gap:2rem}.editorial-bar-row{grid-template-columns:7rem minmax(0,1fr) 5.7rem;gap:.5rem}.editorial-axis{margin-left:7.5rem;margin-right:6.2rem}.editorial-topic{grid-template-columns:4.5rem minmax(0,1fr) 10rem;gap:1rem}}@media(max-width:700px){.edition-line{font-size:.65rem}.editorial-lead{grid-template-columns:1fr;padding:2rem 0;gap:2.4rem}.editorial-home h1{font-size:1.85rem}.editorial-bar-row{grid-template-columns:6.8rem minmax(0,1fr) 5.7rem;font-size:.7rem}.editorial-axis{margin-left:7.3rem}.editorial-topic{grid-template-columns:1fr;gap:.5rem}.topic-index{margin:0}.topic-stat{border:0;padding:0;display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap}.topic-stat strong{font-size:1.35rem}.editorial-bottom{grid-template-columns:1fr;gap:1.7rem}.editorial-section-title>span{font-size:.65rem}}
+</style>

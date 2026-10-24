@@ -35,7 +35,7 @@ test("old nested demo and summary anchors retain their targets",async({page})=>{
 test("research pages separate results, factor evidence and offline guides",async({page,browser})=>{
  for(const locale of ["en","zh-CN"]){
   const prefix=`/2026-quant-competition/${locale==="en"?"":"zh-CN/"}`;
-  await page.goto(prefix);await expect(page.locator("#takeaways")).toBeVisible();await expect(page.locator("#demo,#performance,#ablation")).toHaveCount(0);
+  await page.goto(prefix);await page.locator('#research-history > summary').click();await expect(page.locator("#takeaways")).toBeVisible();await expect(page.locator("#demo,#performance,#ablation")).toHaveCount(0);
   await page.locator("[data-site-nav=strategies]").click();await expect(page).toHaveURL(`${prefix}strategies/`);
   await expect(page.locator("[data-study-id]")).toHaveCount(318);await expect(page.locator("[data-ablation-id]")).toHaveCount(678);
   await page.locator("[data-site-nav=factors]").click();await expect(page.locator("[data-factor-signal]")).toHaveCount(4);await expect(page.locator("[data-factor-status]")).toHaveCount(4);await expect(page.locator("[data-factor-score]")).toHaveCount(0);
