@@ -1,0 +1,30 @@
+---
+import snapshot from '../data/strategy-controls.v1.json';
+import {validateControlsSnapshot,controlsHighlights} from '../scripts/strategy-controls-state.mjs';
+import ResearchTakeaways from './ResearchTakeaways.astro';
+import en from '../i18n/en.json';
+import zh from '../i18n/zh-CN.json';
+interface Props {locale:string;market:'US'|'HK'|'crypto'}
+const {locale,market}=Astro.props;
+const t=(locale==='zh-CN'?zh:en).strategyControls;
+const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+validateControlsSnapshot(snapshot);
+const highlight=controlsHighlights(snapshot).find(h=>h.market===market);
+const number=new Intl.NumberFormat(locale,{maximumFractionDigits:2});
+const arm=(id:string)=>t.arms[id as keyof typeof t.arms]??id;
+---
+<div class="market-evidence">
+ {highlight&&<article data-controls-highlight={market} data-highlight-facts={JSON.stringify(highlight)}>
+  <p class="evidence-label">{t.headlines.historical}</p>
+  <h4>{t.headlines[market as 'US'|'crypto'].title}</h4><p>{t.headlines[market as 'US'|'crypto'].body}</p>
+  <p class="market-value">{number.format(highlight.medianReturnChange*100)} <span>{t.percentagePoints}</span></p><p>{t.headlines.medianEdge}</p>
+  <p>{t.headlines.higherReturn} {highlight.returnWins} / {highlight.windows} · {t.headlines.lowerDrawdown} {highlight.drawdownWins} / {highlight.windows}</p>
+  <p class="conditions">{arm(highlight.armId)} · {t.headlines.versus} {arm(highlight.control)} · {t.fee} {highlight.feeBps}</p>
+  <p class="conditions">{t.limits}</p>
+  <a href={`${prefix}strategies/#strategy-controls`}>{t.headlines.explore} →</a>
+ </article>}
+ <ResearchTakeaways locale={locale} market={market} compact />
+</div>
+<style>
+.market-evidence{grid-column:2/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2rem;padding-top:.7rem;min-width:0}.market-evidence>article{border-right:1px solid var(--line);padding-right:2rem;min-width:0}.market-evidence h4{font-size:1rem;margin:.8rem 0}.market-evidence p,.market-evidence a{font-size:.85rem;color:var(--muted);line-height:1.85}.market-evidence .evidence-label{font-size:.73rem}.market-evidence .market-value{font:400 1.6rem/1.6 Georgia,'SimSun',serif;color:var(--ink);margin:1rem 0 .2rem}.market-value span{font-size:.8rem}.conditions{font-size:.75rem}.market-evidence:not(:has(>article)){grid-template-columns:1fr}.market-evidence a{color:var(--ink)}@media(max-width:700px){.market-evidence{grid-column:1;grid-template-columns:1fr;gap:1.5rem}.market-evidence>article{border-right:0;border-bottom:1px solid var(--line);padding:0 0 1.2rem}}
+</style>

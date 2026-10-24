@@ -122,13 +122,12 @@ test("both languages lead with traceable conclusions and retain evidence without
  for(const locale of ["en","zh-CN"]){
   await page.goto(locale==="en"?"/2026-quant-competition/":"/2026-quant-competition/zh-CN/");
   await expect(page.locator("main > :first-child")).toHaveAttribute("id","robustness");
-  await expect(page.locator("#strategy-controls [data-controls-highlight]")).toHaveCount(2);
+  await expect(page.locator("#takeaways [data-controls-highlight]")).toHaveCount(2);
   await expect(page.locator("[data-takeaway]")).toHaveCount(3);
   const facts=await page.locator("[data-takeaway]").evaluateAll(nodes=>nodes.map(n=>JSON.parse(n.dataset.facts)));
   if(canonical)expect(facts).toEqual(canonical);else canonical=facts;
   for(const f of facts){const groups=summarizeAblations(ablationSnapshot,{market:f.market,feeBps:f.feeBps,strategy:f.strategy});expect(f.baseline).toEqual(groups.find(g=>g.variant_id==="baseline"));expect(f.candidate).toEqual(groups.find(g=>g.variant_id===f.variant));}
-  expect(await page.locator("main > [id]").evaluateAll(ns=>ns.map(n=>n.id))).toEqual(["robustness","research-history"]);
-  await page.locator('#research-history > summary').click();
+  expect(await page.locator("main > [id]").evaluateAll(ns=>ns.map(n=>n.id))).toEqual(["robustness"]);
   await expect(page.locator("#takeaways [data-scope]")).toBeVisible();
   await page.goto(locale==="en"?"/2026-quant-competition/docs/project/":"/2026-quant-competition/zh-CN/docs/project/");
   await expect(page.locator("#evidence")).toContainText(locale==="en"?"10 US stocks":"10 只美股");

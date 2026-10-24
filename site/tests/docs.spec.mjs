@@ -35,7 +35,7 @@ test("old nested demo and summary anchors retain their targets",async({page})=>{
 test("research pages separate results, factor evidence and offline guides",async({page,browser})=>{
  for(const locale of ["en","zh-CN"]){
   const prefix=`/2026-quant-competition/${locale==="en"?"":"zh-CN/"}`;
-  await page.goto(prefix);await page.locator('#research-history > summary').click();await expect(page.locator("#takeaways")).toBeVisible();await expect(page.locator("#demo,#performance,#ablation")).toHaveCount(0);
+  await page.goto(prefix);await expect(page.locator("#takeaways")).toBeVisible();await expect(page.locator("#demo,#performance,#ablation")).toHaveCount(0);
   await page.locator("[data-site-nav=strategies]").click();await expect(page).toHaveURL(`${prefix}strategies/`);
   await expect(page.locator("[data-study-id]")).toHaveCount(318);await expect(page.locator("[data-ablation-id]")).toHaveCount(678);
   await page.locator("[data-site-nav=factors]").click();await expect(page.locator("[data-factor-signal]")).toHaveCount(4);await expect(page.locator("[data-factor-status]")).toHaveCount(4);await expect(page.locator("[data-factor-score]")).toHaveCount(0);
@@ -44,7 +44,7 @@ test("research pages separate results, factor evidence and offline guides",async
   await page.setViewportSize({width:390,height:844});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   await page.goto(`${prefix}#demo`);await expect(page).toHaveURL(`${prefix}docs/project/#demo`);
  }
- const context=await browser.newContext({javaScriptEnabled:false});const p=await context.newPage();await p.goto('/2026-quant-competition/');await expect(p.locator('a[data-legacy-link=demo]')).toHaveAttribute('href','/2026-quant-competition/docs/project/#demo');await context.close();
+ const context=await browser.newContext({javaScriptEnabled:false});const p=await context.newPage();await p.goto('/2026-quant-competition/');await expect(p.locator('a[data-run-guide]').first()).toHaveAttribute('href','/2026-quant-competition/docs/project/#demo');await context.close();
 });
 
 test("curated documentation is integrated and language switches retain the article",async({page})=>{

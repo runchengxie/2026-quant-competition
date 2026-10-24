@@ -11,13 +11,13 @@
 | 加密 | 2026-09-30 | 2026-10-01 至 2026-10-22 UTC | 176 个 ZIP + 176 个校验文件，共 352 个资源 | 未启动 |
 | 美股 | 2026-10-20 | 从 2026-10-14 开始的五交易日重叠复核，至 2026-10-22 | 11 次资格确认 + 11 次历史调用，共 22 次 | 未启动 |
 
-这些带日期的清单保留在私有数据目录。准备好清单不代表供应商已经提供数据，也不保证请求能完成。实际启动前应再次核对准确日期；新增日期需要明确审查新清单，不能静默扩大现有请求范围。
+这些带日期的清单保留在私有数据目录。准备好清单不代表供应商已经提供数据，也不保证请求能完成。实际启动前应再次核对准确日期。新增日期需要明确审查新清单，不能静默扩大现有请求范围。
 
 ## 加密逐日扩展
 
 数据源仍为 Binance Vision 现货 `1d` K 线，沿用 BTCUSDT、ETHUSDT、BNBUSDT、SOLUSDT、XRPUSDT、ADAUSDT、DOGEUSDT、LINKUSDT 八币种池。逐日 ZIP 使用独立身份和解析器，不改变原来的月度归档。按照[官方说明](https://github.com/binance/binance-public-data)，逐日文件次日提供，2025 年起现货时间戳为微秒，之前为毫秒。
 
-扩展 spec 只有四个字段：
+扩展 spec 只有四个字段，
 
 ```json
 {
@@ -32,14 +32,14 @@
 
 工具只接受准确的官方 HTTPS 路径，拒绝跳转、URL 中的凭据、错误校验值、意外 ZIP 成员、未支持币种、错误时间戳、多根日线及无效 OHLCV。父数据保留原来的 partial/acquired 状态，扩展切片完整不代表更早的不完整历史也自动完整。
 
-先解析配置中的根目录、使用已安装的根解释器，再将尖括号占位替换为仓库外绝对路径：
+先解析配置中的根目录、使用已安装的根解释器，再将尖括号占位替换为仓库外绝对路径，
 
 ```powershell
 python -m competition_tools.team daily-extension prepare --config <team.toml> --spec <extension.json> --base-manifest <parent-manifest.json> --output-root <new-plan-directory>
 python -m competition_tools.team daily-extension inspect --config <team.toml> --manifest <new-dataset/manifest.json>
 ```
 
-这两条命令离线运行。下面这条会发起真实请求，只能在准确的冻结请求清单获批后使用：
+这两条命令离线运行。下面这条会发起真实请求，只能在准确的冻结请求清单获批后使用，
 
 ```powershell
 python -m competition_tools.team daily-extension acquire --config <team.toml> --plan <plan-directory/plan.json> --output-root <new-dataset-directory>
@@ -55,7 +55,7 @@ python -m competition_tools.team daily-extension acquire --config <team.toml> --
 python -m competition_tools.team observation-prepare us-refresh --config <team.toml> --manifest <complete-US-parent-manifest.json> --output-root <new-inventory-directory>
 ```
 
-命令生成 `us-refresh-plan.json` 清单，不是可以直接用于下载的 acquisition spec。它保留父数据的起点和身份，选择已经完成的 XNYS 交易日，并包含既有的五交易日重叠复核。11 个标的包含 SPY，上限为 22 次计数调用、最多 11 次历史请求、含父数据在内保留 10 MiB、累计 300 秒，每个请求尝试一次。仅限速间隔就约需 210 秒，因此不保证能完成。价格修订若需要超出预算的重建，应停止并准备新的有界清单。
+命令生成 `us-refresh-plan.json` 清单。下载前仍需将它转为 acquisition spec 并审查。它保留父数据的起点和身份，选择已经完成的 XNYS 交易日，并包含既有的五交易日重叠复核。11 个标的包含 SPY，上限为 22 次计数调用、最多 11 次历史请求、含父数据在内保留 10 MiB、累计 300 秒，每个请求尝试一次。仅限速间隔就约需 210 秒，因此不保证能完成。价格修订若需要超出预算的重建，应停止并准备新的有界清单。
 
 真实获取仍需启动审查后使用现有的明确配置日线刷新入口，另有 v2 acquisition spec 和私有 connection-file 引用。不要把新清单 JSON 直接当作那个 spec。准备阶段不会创建券商连接，也不启动自动登录或使用 `--ensure-gateway`。
 
@@ -67,7 +67,7 @@ python -m competition_tools.team observation-prepare market --config <team.toml>
 
 结果要求 252 期共同且已完成的数据、完整市场日历、向后延伸的预热期及新鲜的已核验数据。它记录采集时间、输入哈希、下一个可观察市场日期、原有候选和费用，以及零条观察。旧数据、缺日期或修订后的输入保持阻塞。补齐的历史数据用于预热，不能当作前瞻观察。
 
-某个市场通过这些检查后，显式冻结已审阅的准备记录：
+某个市场通过这些检查后，显式冻结已审阅的准备记录，
 
 ```powershell
 python -m competition_tools.team observation-prepare freeze-market --config <team.toml> --preparation <preparation.json> --parent-registry <old-registry-directory> --output-root <new-registry-directory>

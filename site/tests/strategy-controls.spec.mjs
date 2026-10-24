@@ -7,8 +7,7 @@ test('dashboard headlines remain explicit and readable on desktop and mobile',as
   const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
   for(const route of ['', 'strategies/']){
    await page.setViewportSize({width:1360,height:1000});await page.goto(prefix+route);
-   if(!route)await page.locator('#research-history > summary').click();
-   const panel=page.locator('#strategy-controls');
+   const panel=page.locator(route?'#strategy-controls':'#takeaways');
    await expect(panel.locator('[data-controls-highlight]')).toHaveCount(2);
    const crypto=JSON.parse(await panel.locator('[data-controls-highlight=crypto]').getAttribute('data-highlight-facts'));
    expect([crypto.feeBps,crypto.windows,crypto.returnWins,crypto.drawdownWins]).toEqual([25,12,7,4]);

@@ -1,6 +1,8 @@
 import {test,expect} from '@playwright/test';
 import {readFile} from 'node:fs/promises';
+import {controlsHighlights} from '../src/scripts/strategy-controls-state.mjs';
 const snapshot=JSON.parse(await readFile(new URL('../src/data/strategy-robustness.v1.json',import.meta.url),'utf8'));
+const controls=JSON.parse(await readFile(new URL('../src/data/strategy-controls.v1.json',import.meta.url),'utf8'));
 test.beforeEach(async({page})=>{await page.emulateMedia({reducedMotion:'reduce'});});
 
 for(const locale of ['en','zh-CN']){
@@ -34,17 +36,25 @@ for(const locale of ['en','zh-CN']){
   await page.screenshot({path:info.outputPath(`${locale}-home-mobile.png`),fullPage:true});
  });
 
- test(`${locale}: history preserves prior facts and local fragments reveal their targets`,async({page})=>{
+ test(`${locale}: market topics integrate prior facts without disclosures or migration links`,async({page})=>{
   await page.goto(prefix);
-  const history=page.locator('#research-history');await expect(history).toHaveCount(1,{timeout:3000});
-  await history.locator(':scope > summary').focus();await page.keyboard.press('Enter');
-  await expect(history).toHaveAttribute('open','');
+  const history=page.locator('#takeaways');
+  await expect(page.locator('#research-history,.legacy-links,[data-legacy-link]')).toHaveCount(0);
+  for(const market of ['US','HK','crypto']){
+   const topic=page.locator(`[data-market-topic=${market}]`);
+   await expect(topic).toBeVisible();
+   await expect(topic.locator(`[data-takeaway=${market}]`)).toBeVisible();
+   expect(await topic.evaluate(n=>n.closest('details')===null)).toBe(true);
+  }
   await expect(history.locator('[data-controls-highlight]')).toHaveCount(2);
+  const highlights=await history.locator('[data-controls-highlight]').evaluateAll(nodes=>nodes.map(n=>JSON.parse(n.dataset.highlightFacts)));
+  expect(highlights).toEqual(controlsHighlights(controls));
+  for(const highlight of highlights)await expect(page.locator(`[data-market-topic=${highlight.market}] [data-controls-highlight=${highlight.market}]`)).toBeVisible();
   await expect(history.locator('[data-takeaway]')).toHaveCount(3);
   const crypto=JSON.parse(await history.locator('[data-controls-highlight=crypto]').getAttribute('data-highlight-facts'));
   expect([crypto.feeBps,crypto.windows,crypto.returnWins]).toEqual([25,12,7]);
   for(const fragment of ['strategy-controls','takeaways','%74akeaways']){
-   await page.goto(prefix+'#'+fragment);await expect(page.locator('#research-history')).toHaveAttribute('open','');
+   await page.goto(prefix+'#'+fragment);
    await expect(page.locator('#'+decodeURIComponent(fragment))).toBeVisible();
   }
   await page.goto(prefix+'#title-crypto');await expect(page).toHaveURL(prefix+'docs/project/#title-crypto');
@@ -52,13 +62,13 @@ for(const locale of ['en','zh-CN']){
  });
 }
 
-test('editorial facts and native history remain available without JavaScript',async({browser})=>{
+test('all market evidence remains directly available without JavaScript',async({browser})=>{
  const context=await browser.newContext({javaScriptEnabled:false});const page=await context.newPage();
  await page.goto('/2026-quant-competition/');
  await expect(page.locator('[data-editorial-pool]')).toHaveCount(3,{timeout:3000});
- await page.locator('#research-history > summary').click();
  await expect(page.locator('#takeaways')).toBeVisible();
- await expect(page.locator('a[data-legacy-link=demo]')).toHaveAttribute('href','/2026-quant-competition/docs/project/#demo');
+ for(const market of ['US','HK','crypto'])await expect(page.locator(`[data-market-topic=${market}] [data-takeaway]`)).toBeVisible();
+ await expect(page.locator('.legacy-links')).toHaveCount(0);
  await context.close();
 });
 

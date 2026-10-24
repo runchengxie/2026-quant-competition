@@ -4,7 +4,7 @@
 
 克隆本仓库并安装 Python 3.12 和 `uv`。默认离线流程不需要 `quant-*` 仓库、框架包、券商连接或数据服务凭据。在仓库根目录运行以下命令，将绝对路径替换为自己的外部目录，Windows 可使用 `D:/data/team-demo`。
 
-先创建并激活源码目录外的引导环境。Windows PowerShell 使用：
+先创建并激活源码目录外的引导环境。Windows PowerShell 使用，
 
 ```powershell
 $bootstrap = 'D:/data/team-bootstrap'
@@ -13,7 +13,7 @@ uv pip install --python "$bootstrap/Scripts/python.exe" --no-deps -e .
 & "$bootstrap/Scripts/Activate.ps1"
 ```
 
-POSIX shell 使用：
+POSIX shell 使用，
 
 ```sh
 uv venv /absolute/data/team-bootstrap --python 3.12
@@ -21,7 +21,7 @@ uv pip install --python /absolute/data/team-bootstrap/bin/python --no-deps -e .
 . /absolute/data/team-bootstrap/bin/activate
 ```
 
-根包没有默认运行依赖。原根目录 `team.py` 包装入口已删除，在激活的环境中统一使用模块入口：
+根包没有默认运行依赖。原根目录 `team.py` 包装入口已删除，在激活的环境中统一使用模块入口，
 
 ```sh
 python -m competition_tools.team --help
@@ -44,7 +44,7 @@ python -m competition_tools.team demo crypto --config /absolute/private/team.tom
 
 ## 可选环境与验证
 
-`setup --profile framework` 只安装独立锁定的[记账适配器](../research/accounting-comparison.zh-CN.md)，使用本地账本，不再安装外部框架包；`framework` 名称仅为兼容旧命令保留。`setup --profile broker-data` 只安装根包的 `ibkr` extra，不登录或下单。`setup --profile website` 需要 Node.js 24/npm，为 `site` 运行 `npm ci`。默认离线安装不包含这些环境。
+`setup --profile framework` 只安装独立锁定的[记账适配器](../research/accounting-comparison.zh-CN.md)，使用本地账本，不再安装外部框架包。`framework` 名称仅为兼容旧命令保留。`setup --profile broker-data` 只安装根包的 `ibkr` extra，不登录或下单。`setup --profile website` 需要 Node.js 24/npm，为 `site` 运行 `npm ci`。默认离线安装不包含这些环境。
 
 默认 CI 检查根包和两个研究包，并在无框架依赖的环境中运行团队演示。独立的 `platform-comparison.yml` 检查适配器及记账相关改动，也支持手动运行。参见[开发检查](../../README.md#development-checks)。原有输入验收、来源限制和执行安全规则仍然适用。这个入口不下载全市场数据、不登记策略、不将研究接入下单，也不启用 Gateway 自动化。历史公开结果快照保持不变。
 
@@ -53,7 +53,7 @@ python -m competition_tools.team demo crypto --config /absolute/private/team.tom
 使用显式 `run international` 或可选 `run next-open` 命令运行[国际实验](../research/international-experiments.zh-CN.md).
 ## 数据准备与历史评估
 
-独立外部规格、预算、不可覆盖的receipt及实际来源支持见[数据准备](../research/datasets.zh-CN.md)。`python -m competition_tools.team data plan`、`data acquire`、`data inspect`不改变团队配置schema。`python -m competition_tools.team evaluate`按配置 schema 分派：v1 运行加密日线矩阵，v2 运行固定股票与加密研究，v3 运行[版本化消融规则](../research/strategies.zh-CN.md#formal-ablation)。各叶子项目使用独立安装环境，做市实验保留单独 API。结果与限制见[新评估证据](../research/data-expansion-and-evaluation.zh-CN.md)。默认不启动Gateway。显式IBKR取数可选择[Paper登录前置步骤](gateway-login.zh-CN.md#数据任务的可选登录前置步骤)，这些命令均不下单。
+独立外部规格、预算、不可覆盖的receipt及实际来源支持见[数据准备](../research/datasets.zh-CN.md)。`python -m competition_tools.team data plan`、`data acquire`、`data inspect`不改变团队配置schema。`python -m competition_tools.team evaluate`按配置 schema 分派，v1 运行加密日线矩阵，v2 运行固定股票与加密研究，v3 运行[版本化消融规则](../research/strategies.zh-CN.md#formal-ablation)。各叶子项目使用独立安装环境，做市实验保留单独 API。结果与限制见[新评估证据](../research/data-expansion-and-evaluation.zh-CN.md)。默认不启动Gateway。显式IBKR取数可选择[Paper登录前置步骤](gateway-login.zh-CN.md#数据任务的可选登录前置步骤)，这些命令均不下单。
 
 需要分别检查 Paper 账户前缀、合约和可选历史读取时，请使用[只读验收](gateway-login.zh-CN.md#只读验收)。该命令不需要团队配置，不会登录或下单。
 

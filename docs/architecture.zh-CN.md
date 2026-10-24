@@ -24,7 +24,7 @@
 
 执行代码不导入这些研究包。根验收工具消费 JSON/CSV 和 CLI 输出，不依赖研究包 Python 对象。研究报告成功不代表可执行命令。公开的执行 v1 target schema 支持 JP/US，运行时标准化还识别 HK，这一既有差异尚未解决。加密研究不会扩展执行契约。
 
-股票包还维护独立的六市场国际诊断；五市场 next-open 回放只属于可选记账包。契约与模型限制见[国际实验](research/international-experiments.zh-CN.md)，两者都不替换默认轮动或执行交接。
+股票包还维护独立的六市场国际诊断。五市场 next-open 回放只属于可选记账包。契约与模型限制见[国际实验](research/international-experiments.zh-CN.md)，两者都不替换默认轮动或执行交接。
 
 ## 数据流与身份
 
@@ -40,7 +40,7 @@
 
 原始输入、私有配置、凭证、报告、模型和图表均保存在源码之外，使用配置指定的所有者数据目录。凭证将元信息及相对文件引用与原始字节哈希绑定。这可以检测变化，不提供独立服务商认证或原子快照隔离。输入检查、实验验收和执行交接属于不同契约，详见[验收指南](research/research-acceptance.zh-CN.md)。
 
-执行流程保持为：
+执行流程保持为，
 
 ```text
 targets.json + lineage.json → OrderIntent → BrokerCommand

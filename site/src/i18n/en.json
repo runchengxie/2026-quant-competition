@@ -40,7 +40,7 @@
     "setup": "From the repository root, set an absolute DATA_ROOT and an external UV_PROJECT_ENVIRONMENT first. The guide explains configuration. Demo generation refuses to overwrite existing data.",
     "guide": "Configuration & guide",
     "source": "Read the implementation",
-    "sampleNote": "Values below come from the deterministic demo generators. They are input examples, not market observations or performance results."
+    "sampleNote": "These values are fictional inputs from a deterministic demo. Market prices and return results require separate data and calculation."
   },
   "stock": {
     "title": "From daily bars to portfolio diagnostics",
@@ -265,7 +265,7 @@
     "title": "Documentation",
     "intro": "Methods, data contracts and reproducible commands, alongside the research evidence.",
     "dashboard": "Performance",
-    "canonical": "Rendered from the canonical repository document.",
+    "canonical": "This page renders the documentation maintained in the repository.",
     "source": "View source",
     "titles": {
       "architecture": "Architecture",
@@ -481,7 +481,7 @@
     "eyebrow": "START HERE",
     "title": "What have we learned so far?",
     "conclusion": "Weekly stock decisions and monthly momentum decisions deserve more testing. In crypto, taking less risk reduced drawdowns, but we have not established a reliable trading edge.",
-    "scope": "Historical tests on fixed pools, not live account results or a forecast. These examples were selected after seeing the results and need fresh-data validation.",
+    "scope": "These examples come from fixed-pool historical backtests and were selected after inspecting results. Live performance and future effects require new-data validation. Each experiment retains its own fees and dates.",
     "net": "Typical window return after costs",
     "drawdown": "Largest peak-to-trough loss in any tested window",
     "before": "Original rule",
@@ -494,23 +494,23 @@
     "curves": "Inspect original strategy curves",
     "evidence": "Check data and limitations",
     "run": "Run the project",
-    "readNumbers": "Read the figures separately by market. Stock figures are medians of independent 63-session windows; crypto drawdown is the worst loss within a 90-day window. None is an annual return or a continuous account history.",
+    "readNumbers": "Stock rule-change examples show median returns across separate 63-session windows. The crypto example shows the worst drawdown across 90-day windows. Values retain the window horizon without annualization. A continuous account needs separate accounting.",
     "cards": [
       {
         "market": "US stocks",
-        "title": "A weekly moving-average rule looks promising",
+        "title": "Weekly moving-average decisions improved historical window returns",
         "description": "Buy stocks whose short moving average is above their long average. Making decisions weekly rather than daily improved the typical historical window.",
         "caution": "Only 10 current stocks were tested. This is a candidate for further testing, not evidence that weekly decisions will keep winning."
       },
       {
         "market": "Hong Kong stocks",
-        "title": "Monthly momentum decisions merit a closer look",
+        "title": "Monthly Hong Kong momentum improved historical results",
         "description": "Hold stocks whose recent return is positive. Monthly decisions performed better than daily decisions in these windows.",
         "caution": "The large improvement comes from a small fixed pool. Test a broader historical pool before trusting its size."
       },
       {
         "market": "Crypto spot",
-        "title": "Lower risk helped, but cash may explain much of it",
+        "title": "Lower crypto exposure reduced the worst window drawdown",
         "description": "Reduce the 200-day trend strategy’s positions when recent volatility is high. The worst observed window drawdown fell.",
         "caution": "This does not show better market timing. At higher costs, median return above the benchmark turned negative. The separate 60% position control was chosen after earlier results."
       }
@@ -575,7 +575,6 @@
       "factors": "Read the signal definitions and see which tests still need evidence.",
       "guide": "Data, limitations, installation, synthetic demos, research candidates and execution boundaries."
     },
-    "oldLinks": "Links to sections moved from the old homepage",
     "guideSummary": "Offline demonstrations, data evidence, research candidates and execution boundaries."
   },
   "factors": {
@@ -742,7 +741,7 @@
         "body": "The monthly buffer changes equal-weight returns only slightly. Compare it with the same monthly rule, not a different market."
       },
       "crypto": {
-        "title": "Higher returns do not always mean lower risk",
+        "title": "More return wins, fewer drawdown improvements",
         "body": "Trend wins more return windows than the matched-exposure control, but improves drawdown in fewer windows."
       },
       "medianEdge": "Median paired return difference",
@@ -754,7 +753,6 @@
       "evidenceBody": "The historical grid is complete. Real forward observation and defensible execution still need new evidence.",
       "observationLimit": "Historical results are not a live track record.",
       "explore": "Explore the comparisons",
-      "previous": "Earlier experiments · separate protocols",
       "navigation": "On this page",
       "sections": [
         "Latest controls",
@@ -832,7 +830,7 @@
       "blocked": "Blocked"
     },
     "capacityTitle": "How large are the simulated trades?",
-    "capacityBody": "Crypto only. Reconstructed trades are compared with final daily base-asset volume after the fact, across all 48 replays. This is not decision-time information or proof of order execution.",
+    "capacityBody": "For the crypto replays, compare trades in 48 replay accounts with the base-asset volume recorded after each trading day. This ex-post volume is unavailable at decision time and cannot establish executable fills.",
     "notional": "Initial notional (USDT)",
     "threshold": "Daily volume threshold",
     "capacitySummary": "{breaches} / {accounts} accounts exceed the threshold. Missing-volume accounts: {missing}.",
@@ -855,7 +853,7 @@
     "state": "Historical research",
     "observations": "New observations",
     "counts": "{us} US comparisons · {crypto} crypto replays",
-    "scope": "Sensitivity checks on an already inspected historical sample. Each window starts a separate cash account; this is not new out-of-sample evidence.",
+    "scope": "These replays reuse inspected historical samples. Each window starts from cash; untouched out-of-sample validation remains outstanding.",
     "figureTitle": "What changes when a few stocks are removed?",
     "figureCondition": "Versus the original ten-stock monthly equal-weight pool · total one-way fee 20 bps",
     "poolLabels": [
@@ -864,11 +862,11 @@
       "Fixed six-stock subset"
     ],
     "pp": "pp",
-    "range": "Scoring-window coverage",
+    "range": "Backtest-window coverage",
     "figureNote": "Median return difference across 11 independent windows, in percentage points, not annualized return. Drawdown is also lower in most windows. Fixed six: AAPL, MSFT, JPM, JNJ, XOM, PG. These fixed-current-pool exclusions are retrospective sensitivity checks, not causal stock contributions.",
     "directory": "Research topics",
     "directoryNote": "Read the finding, then inspect the evidence",
-    "usTitle": "Concentration, returns and drawdown",
+    "usTitle": "Removing strong stocks often lowers returns and drawdown",
     "usBody": "{wins}/{windows} windows have higher returns after removing NVDA, GOOGL and META; {drawdowns}/{windows} have smaller drawdown. Inspect the original controls, fees and windows.",
     "usMetric": "Median return difference · 20 bps",
     "cryptoTitle": "How much trend advantage survives higher costs?",
@@ -877,14 +875,15 @@
     "factorTitle": "Which signals have evidence, and which still need testing?",
     "factorBody": "Strategy backtests and independent factor tests remain separate. The DEX factor pilot has readiness records, without published effect metrics.",
     "factorState": "Awaiting tests",
-    "factorMetric": "Readiness is not measured performance",
-    "nextTitle": "From historical explanations to new observations",
-    "nextBody": "Refresh and verify data, freeze the research rules, then record unseen samples. Accepted new observations remain {count}.",
+    "factorMetric": "Independent factor effects await testing",
+    "nextTitle": "Next, collect verified observations",
+    "nextBody": "Refresh data and verify availability, then record new samples under the fixed rules. Accepted new observations remain {count}.",
     "nextLink": "Data refresh and observations",
     "methodTitle": "Methods and complete records",
     "methodBody": "This round contains {jobs} historical jobs and {checks} ex-post volume checks. Original strategy controls are retained separately.",
     "methodLink": "Read methods and all outcomes",
-    "history": "Earlier research and original comparisons",
-    "unavailable": "Unavailable"
+    "unavailable": "Unavailable",
+    "hkTitle": "Rebalancing frequency in Hong Kong momentum",
+    "hkBody": "Daily and monthly rules have been compared within a fixed stock pool. The original windows and fees remain below; the strategy page retains the full comparison."
   }
 }

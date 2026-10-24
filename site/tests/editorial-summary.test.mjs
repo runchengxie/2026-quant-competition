@@ -6,6 +6,17 @@ const load=async name=>JSON.parse(await readFile(new URL(`../src/data/${name}.v1
 const snapshot=await load('strategy-robustness');
 const readiness=await load('strategy-readiness');
 
+test('Chinese reader copy uses direct statements and prose punctuation',async()=>{
+ const catalog=JSON.parse(await readFile(new URL('../src/i18n/zh-CN.json',import.meta.url),'utf8'));
+ const failures=[];
+ const visit=(value,path)=>{
+  if(typeof value==='string'){
+   if(/不是|而是|不在于|你以为|表面上|实际上|与其说|说白了|值得注意的是|先说结论|赋能|抓手|闭环|底层逻辑|[：；—“”]/u.test(value))failures.push(path+': '+value);
+  }else if(value&&typeof value==='object')for(const [key,item] of Object.entries(value))visit(item,path+'.'+key);
+ };
+ visit(catalog,'zh-CN');assert.deepEqual(failures,[]);
+});
+
 test('derives exact published editorial facts',()=>{
  const value=editorialSummary(snapshot,readiness);
  assert.deepEqual(value.us.map(g=>g.poolId),['exclude_nvda','exclude_three','fixed_six']);
