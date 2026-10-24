@@ -2,7 +2,9 @@
 
 [简体中文](strategy-controls.zh-CN.md)
 
-All 420 fixed historical experiments completed and passed artifact and arithmetic
+All 420 historical controls completed. They support comparisons between the fixed rules under stated costs. Real forward observations remain zero, so these results cannot establish performance on newly arriving data.
+
+The experiments passed artifact and arithmetic
 checks on 2026-10-23. The project owner confirmed authorization to display this exact result set. Pages
 now publishes its 420 aggregate result rows and 224 matched comparisons, alongside
 completion counts and evidence gaps. No real forward observation has started.

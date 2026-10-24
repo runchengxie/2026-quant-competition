@@ -55,9 +55,13 @@ Serialize work that depends on execution core, schemas, configuration, or migrat
 
 ## Code organization
 
+Keep this repository as a workflow-oriented monorepo with independently installable research packages. Map changes to acquisition, validation/normalization, signals, portfolio construction, replay, evaluation/publication or execution/reconciliation before adding a module. Use existing owners listed in `docs/architecture.md`; do not add empty layers or require sibling Quant repositories. Portfolio policy must not import replay or broker code. Preserve model-specific timing, accounting and market assumptions when sharing mechanisms. Performance diagnostics do not imply a general attribution engine.
+
+- `research/equity-lab/src/equity_lab/portfolio`: weight construction and constraints, independent of replay accounting. Preserve the public `equity_lab.backtest.engine` imports and defaults.
+
 - `src/packages/contracts`: targets, order intents, order events, and schemas.
 - `src/packages/market_model`: markets, exchanges, currencies, lot sizes, and trading calendars.
-- `src/packages/risk`: pre-trade checks and kill switch.
+- `src/apps/execution_runner/preflight.py` and `safety.py`: execution preflight checks and kill switch.
 - `src/packages/audit`: event logs, audit records, and competition evidence.
 - `src/adapters/ibkr`: IBKR Gateway contracts, market data, orders, and response mapping.
 - `src/apps/execution_runner`: resident execution process on Windows.

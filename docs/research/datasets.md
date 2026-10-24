@@ -2,7 +2,9 @@
 
 [简体中文](datasets.zh-CN.md)
 
-The competition repository owns these offline preparation tools. They require no quant-series checkout. Root orchestration uses the standard library. Daily crypto evaluation and hourly factor diagnostics run in the separate crypto environment; execution packages do not import it.
+Daily data preparation is available without a quant-series checkout. The hourly DEX pilot remains blocked after an authenticated HTTP403 response, so it has no real factor results. Choose the dataset type and inspect its required evidence before downloading.
+
+The competition repository owns these offline preparation tools. Root orchestration uses the standard library. Daily crypto evaluation and hourly factor diagnostics run in the separate crypto environment; execution packages do not import it.
 
 <a id="dexpaprika-hourly-pilot"></a>
 ## DexPaprika hourly pilot

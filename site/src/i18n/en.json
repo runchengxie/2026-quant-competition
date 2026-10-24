@@ -263,7 +263,7 @@
   },
   "documents": {
     "title": "Documentation",
-    "intro": "Methods, data contracts and reproducible commands, alongside the research evidence.",
+    "intro": "To run the project, start with the team quickstart. The research guides explain existing results and the evidence still missing.",
     "dashboard": "Performance",
     "canonical": "This page renders the documentation maintained in the repository.",
     "source": "View source",
@@ -283,7 +283,7 @@
       "incremental-research": "Reversal, models and weekly trading"
     },
     "summaries": {
-      "architecture": "Responsibilities, package boundaries and execution contracts.",
+      "architecture": "One repository, workflow modules and a separate reviewed execution handoff.",
       "quickstart": "Install, configure and run the independent offline packages.",
       "datasets": "Daily acquisition, immutable receipts and input validation.",
       "study": "Fixed assumptions, accounting, actual results and limitations.",
@@ -606,9 +606,9 @@
       "guide": "Project guide and offline demos"
     },
     "intros": {
-      "strategies": "Historical returns, trading costs and the assumptions still under test.",
-      "factors": "Read the signal definitions and see which tests still need evidence.",
-      "guide": "Data, limitations, installation, synthetic demos, research candidates and execution boundaries."
+      "strategies": "Weekly crypto trading cut turnover. Its edge over equal weight is unclear.",
+      "factors": "Extra features added little to Ridge in this sample. No dependable trading advantage is established.",
+      "guide": "Start with an offline demo using made-up data. Broker execution needs separate setup and supervised checks."
     },
     "guideSummary": "Offline demonstrations, data evidence, research candidates and execution boundaries."
   },

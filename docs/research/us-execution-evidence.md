@@ -2,7 +2,9 @@
 
 [简体中文](us-execution-evidence.zh-CN.md)
 
-The new US next-session adapter is an offline price-NAV diagnostic. Synthetic
+Existing US daily caches still lack the evidence required for next-session replay. The adapter has passed synthetic checks, but real-data replay remains blocked. It submits no orders.
+
+The US next-session adapter is an offline price-NAV diagnostic. Synthetic
 contract tests pass through the existing USD cash ledger. Existing daily caches
 still need execution evidence before they can support this replay. No orders are
 submitted and no total-return or execution eligibility is inferred.

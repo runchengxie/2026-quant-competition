@@ -20,7 +20,7 @@
 
 拿过去的行情试跑策略，通常叫作回测。它可以帮助你检查策略会怎样买卖，结果好看也不能保证以后赚钱。
 
-网站分别展示[策略表现](https://runchengxie.github.io/2026-quant-competition/zh-CN/strategies/)、[因子研究](https://runchengxie.github.io/2026-quant-competition/zh-CN/factors/)和[项目使用与离线演示](https://runchengxie.github.io/2026-quant-competition/zh-CN/docs/project/)。因子页已有信号定义，独立的 IC、分组收益和信号衰减结果尚未发布。
+网站分别展示[策略表现](https://runchengxie.github.io/2026-quant-competition/zh-CN/strategies/)、[因子研究](https://runchengxie.github.io/2026-quant-competition/zh-CN/factors/)和[项目使用与离线演示](https://runchengxie.github.io/2026-quant-competition/zh-CN/docs/project/)。股票预测研究已经公开排序结果。另外四类日线规则信号仍需独立的 IC、分组收益和信号衰减检验。代码按工作流划分职责，见[模块归属](docs/architecture.zh-CN.md#一个仓库里的工作流模块)，整个仓库保留独立交付能力。
 
 ## 第一次怎么跑
 

@@ -1,6 +1,8 @@
 # Retrospective daily study
 
-This optional study compares fixed strategies on immutable daily snapshots. It is retrospective research with a fixed current pool, not a historical index reconstruction or an accepted execution strategy. Original engines, the 24-result snapshot and the expanded daily snapshot retain their original accounting and results.
+The 318 fixed daily backtests completed across US stocks, Hong Kong stocks and crypto. Their results describe separate historical windows in current fixed pools. Future performance and execution readiness remain unproven.
+
+This optional study compares fixed strategies on immutable daily snapshots. Historical index membership has not been reconstructed, and the strategies have not been accepted for execution. Original engines, the 24-result snapshot and the expanded daily snapshot retain their original accounting and results.
 
 ## Inputs and strategies
 

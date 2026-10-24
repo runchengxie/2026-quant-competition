@@ -20,7 +20,7 @@ New here? Start with an offline example. It uses made-up data, runs on your comp
 
 Trying a strategy on past prices is called a backtest. It helps you inspect the strategy's behavior, but it cannot promise future returns.
 
-The website separates [strategy performance](https://runchengxie.github.io/2026-quant-competition/strategies/), [factor research](https://runchengxie.github.io/2026-quant-competition/factors/) and the [project guide with offline demos](https://runchengxie.github.io/2026-quant-competition/docs/project/). Factor definitions are available, but independent IC, grouped-return and signal-decay results have not been published.
+The website separates [strategy performance](https://runchengxie.github.io/2026-quant-competition/strategies/), [factor research](https://runchengxie.github.io/2026-quant-competition/factors/) and the [project guide with offline demos](https://runchengxie.github.io/2026-quant-competition/docs/project/). The equity prediction study publishes ranking results. The four separate daily rule signals still need independent IC, grouped-return and signal-decay tests. See [workflow modules](docs/architecture.md#workflow-modules-in-one-repository) for code ownership inside this independently deliverable repository.
 
 ## Run your first example
 

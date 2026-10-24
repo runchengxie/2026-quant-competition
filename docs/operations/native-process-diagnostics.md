@@ -1,6 +1,8 @@
 # Synthetic process timing
 
-This diagnostic separates process launch, redirected-stream collection, child exit, and the outer PowerShell deadline. It starts only a fixed synthetic PowerShell child. It does not inspect or start Gateway, Java, accounts, or broker sessions, and it changes no production timeout or lease rule.
+Use this synthetic check to see where a child process spends time or exceeds its deadline. Its results cannot establish real Gateway startup or login performance.
+
+The diagnostic separates process launch, redirected-stream collection, child exit, and the outer PowerShell deadline. It starts only a fixed synthetic PowerShell child. It does not inspect or start Gateway, Java, accounts, or broker sessions, and it changes no production timeout or lease rule.
 
 Run from the repository root with an installed root environment and an absolute external destination that does not exist:
 

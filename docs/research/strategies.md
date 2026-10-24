@@ -1,5 +1,7 @@
 # Strategy guide
 
+Daily stock and crypto strategies and the B0–B3 maker simulations are available for offline research. Their accounting and data requirements differ. The hourly DEX signals have synthetic checks only; real-data validation remains blocked.
+
 <a id="hourly-dex-factors"></a>
 ## Hourly DEX factors: real data blocked
 

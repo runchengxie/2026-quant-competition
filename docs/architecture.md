@@ -2,9 +2,40 @@
 
 [简体中文](architecture.zh-CN.md)
 
-This repository contains a Paper-first execution boundary, competition operations material, three independent offline research packages and a bilingual project demo. External quantitative providers remain independent repositories. No submodules or provider source imports are required by the offline packages.
+The project stays in one repository so a teammate can install and run it without other `quant-*` checkouts. Modules follow the research and trading workflow. Research produces evidence; only a separately reviewed target handoff can enter the Paper-first execution path.
 
 Competition-specific offline research and data preparation belong to this repository. Shared production datasets remain with their authoritative external owners. The team entry configures external paths and never discovers sibling source.
+
+## Workflow modules in one repository
+
+One repository contains several installable packages with separate lockfiles. Keeping code together does not require a single environment or a broker connection for offline research. The table maps responsibilities to existing code, rather than proposing a new directory for every step.
+
+| Responsibility | Current owner | Output and boundary |
+| --- | --- | --- |
+| Download data | `src/competition_tools/datasets/*_acquisition.py` and provider transports | Bounded requests and immutable external manifests. Credentials stay outside source. |
+| Validate and normalize data | Dataset quality/storage modules, `equity_lab/data`, `crypto_mm/daily/inputs.py` | Check identity, dates, units and missing observations before consumption. Retain raw inputs; each model documents its own missing-data policy. |
+| Form factors and signals | `equity_lab/signals`, `equity_lab/predictive`, `crypto_mm/factors` | Timestamped features or scores. Future labels belong to evaluation and cannot enter an earlier decision. |
+| Construct portfolios | `equity_lab/portfolio/construction.py`; study-specific policies remain in equity study and crypto daily modules | Scores become weights under explicit constraints. This is an internal boundary, not a universal allocation API or an executable order. |
+| Backtest strategies | `equity_lab/backtest`, equity study modules, `crypto_mm/daily`, the separate maker simulator | Replay weights or quotes under each model's timing and cost assumptions. Daily candles cannot supply maker queue evidence. |
+| Validate and publish research | `src/competition_tools/evaluation`, acceptance tools and `site` | Root tools invoke leaf CLIs and read versioned artifacts. Pages receives reviewed, allowlisted aggregates. |
+| Submit and reconcile orders | `src/apps/execution_runner`, `src/adapters/ibkr`, `src/packages/reconciliation`, `src/packages/audit` | Reviewed targets pass preflight and safety checks. Broker events and fills feed the journal and reconciliation. |
+| Explain performance | Package reporting, `equity_lab/international/six_market_run.py`, `platform_compare/accounting` | Existing return/cost diagnostics and scoped market, FX and dividend contributions. General factor or Brinson attribution is not implemented. |
+
+Research iterates between signals, portfolio policies and backtests. Evaluation reports what happened under a model; a separate decision determines whether a strategy can advance. Execution has its own checks and state.
+
+```text
+download → validate/normalize → factors/signals → portfolio policy → backtest
+                                   ↑                ↑                │
+                                   └──── research iteration ─────────┘
+backtest → evaluation and scoped attribution → reviewed public aggregates
+
+separate reviewed targets.json + lineage.json
+  → execution preflight/safety → broker adapter → events/fills → reconciliation
+```
+
+The extracted equity weight policies preserve the existing `BacktestConfig` and `run_equal_weight_backtest` imports, defaults and arithmetic. They retain the legacy target-weight turnover convention; extracting them does not turn it into drift-aware, self-financing accounting. The engine still owns signal lag, returns and fees. Crypto daily and maker policies retain their different models.
+
+Future work should extract a shared mechanism only after two real consumers need the same semantics. Add contract and compatibility tests before changing a boundary. Keep provider differences in adapters, avoid reverse imports from portfolio policy into backtest, and keep research imports out of execution. Optional Quant-family integration requires a pinned interface and comparison evidence. There is no new runtime dependency or repository split.
 
 ## Current ownership
 
@@ -14,7 +45,7 @@ Paths in code spans are repository-relative. The CLI implementation lives in `sr
 | --- | --- |
 | Portable setup, local readiness and synthetic demo orchestration | `src/competition_tools/team`, [team quickstart](operations/team-quickstart.md) |
 | Target handoff and order/event contracts | `src/packages/contracts` |
-| Market normalization, risk, audit and reconciliation | `src/packages/market_model`, `src/packages/risk`, `src/packages/audit`, `src/packages/reconciliation` |
+| Market normalization, execution checks, audit and reconciliation | `src/packages/market_model`, `src/apps/execution_runner/preflight.py`, `src/apps/execution_runner/safety.py`, `src/packages/audit`, `src/packages/reconciliation` |
 | IBKR mapping and execution application | `src/adapters/ibkr`, `src/apps/execution_runner` |
 | External Nira signal handoff | `src/strategies/nira`, versioned `targets.json` and `lineage.json` |
 | Fractional-weight daily equity research | `research/equity-lab`, its own dependencies, lockfile and reports |
