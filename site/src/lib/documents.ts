@@ -3,6 +3,8 @@ import { Content as predictiveEn } from "../../../docs/research/equity-predictiv
 import { Content as predictiveZh } from "../../../docs/research/equity-predictive.zh-CN.md";
 import { Content as incrementalEn } from "../../../docs/research/incremental-research.md";
 import { Content as incrementalZh } from "../../../docs/research/incremental-research.zh-CN.md";
+import { Content as comparisonEn } from "../../../docs/research/strategy-comparison.md";
+import { Content as comparisonZh } from "../../../docs/research/strategy-comparison.zh-CN.md";
 import { Content as robustnessZh } from "../../../docs/research/strategy-robustness.zh-CN.md";
 import { Content as refreshEn } from "../../../docs/research/data-refresh.md";
 import { Content as refreshZh } from "../../../docs/research/data-refresh.zh-CN.md";
@@ -27,6 +29,8 @@ import { Content as observationEn } from "../../../docs/research/observation-reg
 import { Content as observationZh } from "../../../docs/research/observation-registry.zh-CN.md";
 
 const content={
+  "strategy-comparison.en":comparisonEn,
+  "strategy-comparison.zh-CN":comparisonZh,
   "incremental-research.en":incrementalEn,
   "incremental-research.zh-CN":incrementalZh,
   "equity-predictive.en":predictiveEn,

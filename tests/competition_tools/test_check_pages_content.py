@@ -66,6 +66,7 @@ def test_incremental_aggregate_must_be_present_and_equal_on_both_topic_pages(tmp
     target.parent.mkdir(parents=True)
     target.write_text(snapshot.read_text())
     assert "invalid public incremental facts or output" in check_site(source, built)
+
     facts = html.escape(snapshot.read_text(), quote=True)
     for topic in ("factors", "strategies"):
         for prefix, locale, other in (("", "en", "zh-CN/"), ("zh-CN/", "zh-CN", "")):
@@ -83,6 +84,47 @@ def test_incremental_aggregate_must_be_present_and_equal_on_both_topic_pages(tmp
         chinese.read_text().replace("data-incremental-facts=", "data-removed-facts=")
     )
     assert "invalid public incremental facts or output" in check_site(source, built)
+
+
+def test_comparison_aggregate_is_required_unchanged_in_both_languages_and_topics(
+    tmp_path,
+):
+    source, built = make_site_trees(tmp_path)
+    snapshot = (
+        Path(__file__).resolve().parents[2]
+        / "site/src/data/strategy-comparison.v1.json"
+    )
+    target = source / "src/data/strategy-comparison.v1.json"
+    target.parent.mkdir(parents=True)
+    target.write_text(snapshot.read_text(encoding="utf-8"), encoding="utf-8")
+    assert "invalid public comparison facts or output" in check_site(source, built)
+    facts = html.escape(snapshot.read_text(encoding="utf-8"), quote=True)
+    for topic in ("factors", "strategies"):
+        for prefix, locale, other in (("", "en", "zh-CN/"), ("zh-CN/", "zh-CN", "")):
+            page = built / f"{prefix}{topic}/index.html"
+            page.parent.mkdir(parents=True, exist_ok=True)
+            page.write_text(
+                rendered_page(locale, f"{BASE_PATH}/{other}{topic}/").replace(
+                    "</body>",
+                    f'<section data-comparison-facts="{facts}"></section></body>',
+                ),
+                encoding="utf-8",
+            )
+    assert check_site(source, built) == []
+    target.write_text(
+        '{"schema":"ignored-duplicate",' + snapshot.read_text(encoding="utf-8")[1:],
+        encoding="utf-8",
+    )
+    assert "invalid public comparison facts or output" in check_site(source, built)
+    target.write_text(snapshot.read_text(encoding="utf-8"), encoding="utf-8")
+    chinese = built / "zh-CN/factors/index.html"
+    chinese.write_text(
+        chinese.read_text(encoding="utf-8").replace(
+            "data-comparison-facts=", "data-removed-facts="
+        ),
+        encoding="utf-8",
+    )
+    assert "invalid public comparison facts or output" in check_site(source, built)
 
 
 def editorial_site_fixture(tmp_path):
@@ -404,6 +446,7 @@ def test_documentation_routes_validate_locale_links_and_reject_unlisted_pages(tm
             "native-process-diagnostics",
             "equity-predictive",
             "incremental-research",
+            "strategy-comparison",
         ):
             suffix = f"docs/{slug + '/' if slug else ''}"
             p = built / prefix / suffix / "index.html"

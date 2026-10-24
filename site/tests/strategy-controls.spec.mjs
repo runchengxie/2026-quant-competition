@@ -12,8 +12,8 @@ test('dashboard headlines remain explicit and readable on desktop and mobile',as
    const crypto=JSON.parse(await panel.locator('[data-controls-highlight=crypto]').getAttribute('data-highlight-facts'));
    expect([crypto.feeBps,crypto.windows,crypto.returnWins,crypto.drawdownWins]).toEqual([25,12,7,4]);
    if(route){
-    await expect(page.locator('.section-nav a')).toHaveCount(6);
-    await expect(page.locator('.section-nav a').first()).toHaveAttribute('href','#incremental-crypto');
+    await expect(page.locator('.section-nav a')).toHaveCount(7);
+    await expect(page.locator('.section-nav a').first()).toHaveAttribute('href','#comparison-crypto');
    }
    else{
     await expect(panel.locator('canvas')).toHaveCount(0);

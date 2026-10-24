@@ -280,7 +280,8 @@
       "data-refresh": "Fresh data and observations",
       "native-process-diagnostics": "Synthetic process timing",
       "equity-predictive": "Equity prediction study",
-      "incremental-research": "Reversal, models and weekly trading"
+      "incremental-research": "Reversal, models and weekly trading",
+      "strategy-comparison": "Selection, costs and execution delay"
     },
     "summaries": {
       "architecture": "One repository, workflow modules and a separate reviewed execution handoff.",
@@ -295,7 +296,8 @@
       "data-refresh": "Bounded request plans, fresh warmup and per-market protocol handoff.",
       "native-process-diagnostics": "Separate synthetic startup, exit and timeout evidence.",
       "equity-predictive": "Read the source-candidate pool, fixed model protocol and three-period results.",
-      "incremental-research": "Check what learned models add and how less frequent crypto trading changes costs."
+      "incremental-research": "Check what learned models add and how less frequent crypto trading changes costs.",
+      "strategy-comparison": "Compare daily stock-selection costs, crypto holding controls and delayed execution, with unavailable results retained."
     }
   },
   "dashboard": {

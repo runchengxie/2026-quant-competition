@@ -3,6 +3,7 @@ import SiteNavigation from "./SiteNavigation.astro";
 import FactorResearch from "./FactorResearch.astro";
 import PredictiveResearch from "./PredictiveResearch.astro";
 import IncrementalResearch from "./IncrementalResearch.astro";
+import ResearchComparison from "./ResearchComparison.astro";
 import SiteLayout from "../layouts/SiteLayout.astro";
 import ValidationResults from "./ValidationResults.astro";
 import ExpansionResults from "./ExpansionResults.astro";
@@ -17,10 +18,13 @@ import en from "../i18n/en.json";
 import zh from "../i18n/zh-CN.json";
 import incrementalEn from "../i18n/incremental-en.json";
 import incrementalZh from "../i18n/incremental-zh-CN.json";
+import comparisonEn from "../i18n/comparison-en.json";
+import comparisonZh from "../i18n/comparison-zh-CN.json";
 interface Props { locale?: string; view?: "home"|"strategies"|"factors"|"guide" }
 const locale = Astro.props.locale === "zh-CN" ? "zh-CN" : "en";
 const t = locale === "zh-CN" ? zh : en;
 const incrementalText = locale === "zh-CN" ? incrementalZh : incrementalEn;
+const comparisonText = locale === "zh-CN" ? comparisonZh : comparisonEn;
 const view=Astro.props.view??"home";
 const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
 const localePath=({home:'',strategies:'strategies/',factors:'factors/',guide:'docs/project/'})[view];
@@ -48,13 +52,15 @@ const guide = (directory: string) => file(`research/${directory}/README${locale 
     {view==='home'&&<EditorialHome locale={locale} />}
     {view==='strategies'&&<>
       <nav class="section-nav" aria-label={t.strategyControls.headlines.navigation}>
-        <a href="#incremental-crypto"><span>01</span>{incrementalText.latest}</a>
-        {['robustness','strategy-controls','ablation','performance','study'].map((id,index)=><a href={`#${id}`}><span>0{index+2}</span>{index===0?t.robustness.title:t.strategyControls.headlines.sections[index-1]}</a>)}
+        <a href="#comparison-crypto"><span>01</span>{comparisonText.cryptoTitle}</a>
+        <a href="#incremental-crypto"><span>02</span>{incrementalText.latest}</a>
+        {['robustness','strategy-controls','ablation','performance','study'].map((id,index)=><a href={`#${id}`}><span>0{index+3}</span>{index===0?t.robustness.title:t.strategyControls.headlines.sections[index-1]}</a>)}
       </nav>
+      <ResearchComparison locale={locale} market="crypto" />
       <IncrementalResearch locale={locale} view="crypto" />
       <RobustnessResults locale={locale} /><StrategyControls locale={locale} /><AblationResults locale={locale} /><PerformanceDashboard locale={locale} /><StudyResults locale={locale} />
     </>}
-    {view==='factors'&&<><IncrementalResearch locale={locale} view="equity" /><PredictiveResearch locale={locale} /><FactorResearch locale={locale} /></>}
+    {view==='factors'&&<><ResearchComparison locale={locale} market="equity" /><IncrementalResearch locale={locale} view="equity" /><PredictiveResearch locale={locale} /><FactorResearch locale={locale} /></>}
     {view==='guide'&&<>    <section id="evidence" class="evidence-section">
       <div class="section-heading"><h2>{t.evidence.title}</h2><p>{t.evidence.intro}</p></div>
       <p class="detail">{t.evidence.scope}</p>
@@ -120,6 +126,7 @@ const guide = (directory: string) => file(`research/${directory}/README${locale 
 </SiteLayout>
 
 <style>
+.showcase-main.view-strategies>.section-nav{margin-bottom:1rem;padding-bottom:.6rem}
 .showcase-hero.performance-hero{padding-top:0;padding-bottom:1rem}.performance-hero h1{font-size:clamp(1.9rem,3vw,2.5rem);line-height:1.2;max-width:58rem}.performance-hero .hero-actions{margin-top:1.1rem}.performance-hero .hero-note{margin:.3rem 0 0}
 .evidence-section{border-top:1px solid var(--line);padding-top:2rem}.reader-glossary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.reader-glossary div{border-left:2px solid var(--line);padding-left:1rem}.reader-glossary dt{font-weight:650}.reader-glossary dd{margin:.4rem 0;color:var(--muted)}.baseline-summary{margin:2rem 0}.baseline-summary>summary{cursor:pointer;padding:1rem;border:1px solid var(--line);border-radius:.5rem}@media(max-width:700px){.reader-glossary{grid-template-columns:1fr}}
 </style>

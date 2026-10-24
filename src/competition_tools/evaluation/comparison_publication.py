@@ -1,6 +1,7 @@
 """Aggregate-only reviewed comparison contract, with no locale-dependent facts."""
 
 import math
+import json
 import re
 from datetime import date, datetime, timedelta
 from itertools import product
@@ -8,12 +9,38 @@ from itertools import product
 from .comparison_reference import EQUITY_ARMS, CRYPTO_ARMS, METRICS, close
 from .study_identity import canonical_hash
 
-REVIEWED_SHA256 = ""
+REVIEWED_SHA256 = "e808a27d1a7bfb6a40bc7f33541849dea72047ef0fdbb692dfab1dd98abe62ac"
+REASONS = {
+    "EMPTY_DECISION_POOL",
+    "MODEL_UNAVAILABLE",
+    "INVALID_SCORES",
+    "CONSTANT_SCORES",
+    "INSUFFICIENT_DECISION_POOL",
+    "MISSING_EXECUTION_SESSION",
+    "MISSING_SELECTED_OUTCOME",
+}
 
 
 def _keys(value, keys):
     if not isinstance(value, dict) or set(value) != set(keys.split()):
         raise ValueError("INVALID_COMPARISON_FIELDS")
+
+
+def parse_public_comparison(text):
+    if not isinstance(text, str) or len(text.encode("utf-8")) > 2 * 1024**2:
+        raise ValueError("INVALID_COMPARISON_TEXT")
+
+    def unique(pairs):
+        value = {}
+        for key, item in pairs:
+            if key in value:
+                raise ValueError("DUPLICATE_COMPARISON_FIELD")
+            value[key] = item
+        return value
+
+    value = json.loads(text, object_pairs_hook=unique)
+    json.dumps(value, allow_nan=False)
+    return validate_public_comparison(value)
 
 
 def _integer(value, maximum=1_000_000_000):
@@ -68,7 +95,7 @@ def validate_cells(market, rows, windows):
     for row in rows:
         _keys(
             row,
-            "window end arm fee_bps delay status requested_dates valid_dates metrics",
+            "window end arm fee_bps delay status requested_dates valid_dates metrics reasons",
         )
         _date(row["window"])
         _date(row["end"])
@@ -85,11 +112,25 @@ def validate_cells(market, rows, windows):
         ):
             raise ValueError("CHANGED_COMPARISON_GRID")
         seen.add(identity)
+        if (
+            not isinstance(row["reasons"], list)
+            or any(
+                not isinstance(reason, str) or reason not in REASONS
+                for reason in row["reasons"]
+            )
+            or row["reasons"] != sorted(set(row["reasons"]))
+        ):
+            raise ValueError("INVALID_COMPARISON_REASONS")
         if row["status"] == "completed":
-            if row["valid_dates"] != periods:
+            if row["valid_dates"] != periods or row["reasons"]:
                 raise ValueError("INCOMPLETE_COMPARISON_METRICS")
             _metrics(row["metrics"])
-        elif row["status"] != "blocked" or row["metrics"] is not None:
+        elif (
+            row["status"] != "blocked"
+            or row["metrics"] is not None
+            or not row["reasons"]
+            or row["valid_dates"] >= periods
+        ):
             raise ValueError("INVALID_COMPARISON_STATUS")
     if seen != expected:
         raise ValueError("INCOMPLETE_COMPARISON_GRID")

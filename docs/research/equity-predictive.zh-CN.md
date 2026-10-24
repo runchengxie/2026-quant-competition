@@ -56,7 +56,7 @@ uv run --locked --extra predictive python -m equity_lab.predictive.cli --input $
 
 ## 存储交接
 
-数据所属任务仍在按证券转换文件，中间产物保持原状。存储工具会拒绝未完成的任务，核对最终file_index.csv的行数、成交量与SHA256记录，再按明确命令复制到挂载好的新目录。staging和包含旧路径的DuckDB目录文件不在复制清单中。原始ZIP需要另做冻结传输清单。本轮尚未复制数据，也没有删除原件或修改共享数据入口。
+2026-10-25检查时，数据所属任务的标准按证券Zstd6版本报告完成，另一个delta/Zstd12重压缩仍在运行。[有界比较检查](strategy-comparison.zh-CN.md)分别记录了这两个所属任务状态。存储工具仍需完整凭证，核对最终`file_index.csv`的行数、成交量与SHA256记录，再按明确命令复制已验证的最终布局到挂载好的新目录。staging和包含旧路径的DuckDB目录文件不在复制清单中。原始ZIP需要另做冻结传输清单。本轮研究没有复制这些布局、删除原件或修改共享数据入口。
 
 ```powershell
 uv run --locked python -m competition_tools.datasets.storage_handoff --source $COMPLETED_LAYOUT --output $NEW_PRIVATE_MANIFEST

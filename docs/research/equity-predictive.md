@@ -54,7 +54,7 @@ Formal stock PnL requires dated security identity/type evidence, relevant action
 
 ## Storage handoff
 
-The source owner's by-security conversion is still running. Its staging output remains untouched. The guarded storage tool refuses incomplete runs, checks the final file_index.csv against row/volume totals and SHA256 receipts, and can explicitly copy only a completed final layout to a new mounted destination. It excludes staging and the path-dependent DuckDB catalog. The original ZIP needs a separate frozen transfer manifest. No copy, source deletion or shared-data pointer change occurred in this milestone.
+At the 2026-10-25 inspection, the source owner's standard by-security Zstd6 layout reported completion. A separate delta/Zstd12 repack was still running. The bounded [comparison audit](strategy-comparison.md) retained these as separate owner-reported statuses. The guarded storage tool requires its own complete receipts, checks the final `file_index.csv` against row/volume totals and SHA256 records, and can explicitly copy a verified final layout to a new mounted destination. It excludes staging and the path-dependent DuckDB catalog. The original ZIP needs a separate frozen transfer manifest. No copy, source deletion or shared-data pointer change occurred in this research task.
 
 ```powershell
 uv run --locked python -m competition_tools.datasets.storage_handoff --source $COMPLETED_LAYOUT --output $NEW_PRIVATE_MANIFEST

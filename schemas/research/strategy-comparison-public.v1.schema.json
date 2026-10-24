@@ -1,0 +1,876 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:competition:strategy-comparison-public:v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "retrospective",
+    "formal_performance_ready",
+    "scientific",
+    "equity",
+    "crypto",
+    "data_quality",
+    "future"
+  ],
+  "properties": {
+    "schema": {
+      "const": "competition.strategy_comparison_public.v1"
+    },
+    "retrospective": {
+      "const": true
+    },
+    "formal_performance_ready": {
+      "const": false
+    },
+    "scientific": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "commit",
+        "plan_sha256",
+        "result_sha256",
+        "equity_input_sha256",
+        "crypto_input_sha256"
+      ],
+      "properties": {
+        "commit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "plan_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "result_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "equity_input_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "crypto_input_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "equity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "accounting_model",
+        "fit_attempts",
+        "folds",
+        "accounts"
+      ],
+      "properties": {
+        "currency": {
+          "const": "USD"
+        },
+        "accounting_model": {
+          "const": "intraday_cash_proxy.v1"
+        },
+        "fit_attempts": {
+          "type": "integer",
+          "minimum": 36,
+          "maximum": 42
+        },
+        "folds": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "start",
+              "end",
+              "models"
+            ],
+            "properties": {
+              "start": {
+                "type": "string",
+                "format": "date"
+              },
+              "end": {
+                "type": "string",
+                "format": "date"
+              },
+              "models": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/model"
+                },
+                "minItems": 2,
+                "maxItems": 2
+              }
+            }
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "accounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/equityCell"
+          },
+          "minItems": 72,
+          "maxItems": 72
+        }
+      }
+    },
+    "crypto": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "accounting_model",
+        "products",
+        "accounts"
+      ],
+      "properties": {
+        "currency": {
+          "const": "USDT"
+        },
+        "accounting_model": {
+          "const": "self_financing_daily.v1"
+        },
+        "products": {
+          "const": 8
+        },
+        "accounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/cryptoCell"
+          },
+          "minItems": 288,
+          "maxItems": 288
+        }
+      }
+    },
+    "data_quality": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "daily",
+        "minute",
+        "conversion"
+      ],
+      "properties": {
+        "daily": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "rows",
+            "source_codes",
+            "candidate_identities",
+            "observed_sessions",
+            "duplicate_candidate_sessions",
+            "non_session_rows",
+            "invalid_ohlc_rows",
+            "nonfinite_numeric_values",
+            "missing_numeric_values",
+            "negative_dollar_volume_rows",
+            "unresolved_identity_rows",
+            "first_date",
+            "last_date",
+            "formal_common_stock_ready",
+            "availability_verified",
+            "corporate_action_coverage"
+          ],
+          "properties": {
+            "rows": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000
+            },
+            "source_codes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000
+            },
+            "candidate_identities": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000
+            },
+            "observed_sessions": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000
+            },
+            "duplicate_candidate_sessions": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000
+            },
+            "non_session_rows": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000
+            },
+            "invalid_ohlc_rows": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000
+            },
+            "nonfinite_numeric_values": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000
+            },
+            "missing_numeric_values": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000
+            },
+            "negative_dollar_volume_rows": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000
+            },
+            "unresolved_identity_rows": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000
+            },
+            "first_date": {
+              "type": "string",
+              "format": "date"
+            },
+            "last_date": {
+              "type": "string",
+              "format": "date"
+            },
+            "formal_common_stock_ready": {
+              "const": false
+            },
+            "availability_verified": {
+              "const": false
+            },
+            "corporate_action_coverage": {
+              "const": "incomplete"
+            }
+          }
+        },
+        "minute": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "rows",
+            "source_codes",
+            "duplicate_minute_keys",
+            "regular_rows",
+            "regular_rows_outside_session",
+            "zero_volume_rows",
+            "invalid_volume_rows",
+            "invalid_traded_ohlc_rows",
+            "nonfinite_numeric_values",
+            "missing_quote_rows",
+            "crossed_quote_rows",
+            "wide_quote_rows",
+            "scope",
+            "full_conversion_certified"
+          ],
+          "properties": {
+            "rows": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 150000
+            },
+            "source_codes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 150000
+            },
+            "duplicate_minute_keys": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 150000
+            },
+            "regular_rows": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 150000
+            },
+            "regular_rows_outside_session": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 150000
+            },
+            "zero_volume_rows": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 150000
+            },
+            "invalid_volume_rows": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 150000
+            },
+            "invalid_traded_ohlc_rows": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 150000
+            },
+            "nonfinite_numeric_values": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 150000
+            },
+            "missing_quote_rows": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 150000
+            },
+            "crossed_quote_rows": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 150000
+            },
+            "wide_quote_rows": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 150000
+            },
+            "scope": {
+              "const": "one_bounded_row_group"
+            },
+            "full_conversion_certified": {
+              "const": false
+            }
+          }
+        },
+        "conversion": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "days",
+            "rows",
+            "parquet_bytes",
+            "independently_verified"
+          ],
+          "properties": {
+            "status": {
+              "const": "complete"
+            },
+            "days": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000
+            },
+            "rows": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000000
+            },
+            "parquet_bytes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 1000000000000
+            },
+            "independently_verified": {
+              "const": false
+            }
+          }
+        }
+      }
+    },
+    "future": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "active",
+        "frozen_at",
+        "known_cutoff_at",
+        "first_eligible_observation_at",
+        "unseen_data_certified"
+      ],
+      "properties": {
+        "status": {
+          "const": "awaiting_fresh_verified_data"
+        },
+        "active": {
+          "const": false
+        },
+        "frozen_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "known_cutoff_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "first_eligible_observation_at": {
+          "const": null
+        },
+        "unseen_data_certified": {
+          "const": false
+        }
+      }
+    }
+  },
+  "$defs": {
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "net_return",
+        "gross_return",
+        "cost_drag",
+        "max_drawdown",
+        "total_costs",
+        "turnover",
+        "top_asset_positive_price_pnl_share",
+        "without_best_five_days_return"
+      ],
+      "properties": {
+        "net_return": {
+          "type": "number",
+          "exclusiveMinimum": -1
+        },
+        "gross_return": {
+          "type": "number",
+          "exclusiveMinimum": -1
+        },
+        "cost_drag": {
+          "type": "number",
+          "minimum": 0
+        },
+        "max_drawdown": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "total_costs": {
+          "type": "number",
+          "minimum": 0
+        },
+        "turnover": {
+          "type": "number",
+          "minimum": 0
+        },
+        "top_asset_positive_price_pnl_share": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "without_best_five_days_return": {
+          "type": "number",
+          "exclusiveMinimum": -1
+        }
+      }
+    },
+    "equityCell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "window",
+        "end",
+        "arm",
+        "fee_bps",
+        "delay",
+        "status",
+        "requested_dates",
+        "valid_dates",
+        "metrics",
+        "reasons"
+      ],
+      "properties": {
+        "window": {
+          "type": "string",
+          "format": "date"
+        },
+        "end": {
+          "type": "string",
+          "format": "date"
+        },
+        "arm": {
+          "enum": [
+            "equal_weight",
+            "reversal",
+            "ridge",
+            "elastic_net"
+          ]
+        },
+        "fee_bps": {
+          "type": "integer",
+          "enum": [
+            0,
+            20,
+            40
+          ]
+        },
+        "delay": {
+          "type": "integer",
+          "enum": [
+            0,
+            1
+          ]
+        },
+        "status": {
+          "enum": [
+            "completed",
+            "blocked"
+          ]
+        },
+        "requested_dates": {
+          "const": 20
+        },
+        "valid_dates": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 20
+        },
+        "metrics": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/metrics"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reasons": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "EMPTY_DECISION_POOL",
+              "MODEL_UNAVAILABLE",
+              "INVALID_SCORES",
+              "CONSTANT_SCORES",
+              "INSUFFICIENT_DECISION_POOL",
+              "MISSING_EXECUTION_SESSION",
+              "MISSING_SELECTED_OUTCOME"
+            ]
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "completed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "metrics": {
+                "$ref": "#/$defs/metrics"
+              },
+              "valid_dates": {
+                "const": 20
+              },
+              "reasons": {
+                "maxItems": 0
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "metrics": {
+                "type": "null"
+              },
+              "valid_dates": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 19
+              },
+              "reasons": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "cryptoCell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "window",
+        "end",
+        "arm",
+        "fee_bps",
+        "delay",
+        "status",
+        "requested_dates",
+        "valid_dates",
+        "metrics",
+        "reasons"
+      ],
+      "properties": {
+        "window": {
+          "type": "string",
+          "format": "date"
+        },
+        "end": {
+          "type": "string",
+          "format": "date"
+        },
+        "arm": {
+          "enum": [
+            "buy_hold_equal_weight",
+            "fixed60_weekly",
+            "trend_weekly",
+            "matched_weekly"
+          ]
+        },
+        "fee_bps": {
+          "type": "integer",
+          "enum": [
+            0,
+            35,
+            50
+          ]
+        },
+        "delay": {
+          "type": "integer",
+          "enum": [
+            0,
+            1
+          ]
+        },
+        "status": {
+          "enum": [
+            "completed",
+            "blocked"
+          ]
+        },
+        "requested_dates": {
+          "const": 90
+        },
+        "valid_dates": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 90
+        },
+        "metrics": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/metrics"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reasons": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "EMPTY_DECISION_POOL",
+              "MODEL_UNAVAILABLE",
+              "INVALID_SCORES",
+              "CONSTANT_SCORES",
+              "INSUFFICIENT_DECISION_POOL",
+              "MISSING_EXECUTION_SESSION",
+              "MISSING_SELECTED_OUTCOME"
+            ]
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "completed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "metrics": {
+                "$ref": "#/$defs/metrics"
+              },
+              "valid_dates": {
+                "const": 90
+              },
+              "reasons": {
+                "maxItems": 0
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "metrics": {
+                "type": "null"
+              },
+              "valid_dates": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 89
+              },
+              "reasons": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model",
+        "status",
+        "params",
+        "valid_ic_dates",
+        "mean_daily_ic",
+        "mean_daily_mse",
+        "scored_rows"
+      ],
+      "properties": {
+        "model": {
+          "enum": [
+            "ridge",
+            "elastic_net"
+          ]
+        },
+        "status": {
+          "enum": [
+            "completed",
+            "unavailable",
+            "failed"
+          ]
+        },
+        "params": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "alpha": {
+              "type": "number"
+            },
+            "l1_ratio": {
+              "type": "number"
+            }
+          }
+        },
+        "valid_ic_dates": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 20
+        },
+        "mean_daily_ic": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": -1,
+          "maximum": 1
+        },
+        "mean_daily_mse": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "scored_rows": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "model": {
+                "const": "ridge"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "params": {
+                "properties": {
+                  "alpha": {
+                    "enum": [
+                      0.1,
+                      1,
+                      10
+                    ]
+                  },
+                  "l1_ratio": false
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "params": {
+                "properties": {
+                  "alpha": {
+                    "enum": [
+                      0.0001,
+                      0.001,
+                      0.01
+                    ]
+                  },
+                  "l1_ratio": {
+                    "enum": [
+                      0.1,
+                      0.5,
+                      0.9
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "completed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "params": {
+                "required": [
+                  "alpha"
+                ]
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "params": {
+                "maxProperties": 0
+              },
+              "valid_ic_dates": {
+                "const": 0
+              },
+              "mean_daily_ic": {
+                "const": null
+              },
+              "mean_daily_mse": {
+                "const": null
+              },
+              "scored_rows": {
+                "const": 0
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

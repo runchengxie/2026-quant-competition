@@ -78,14 +78,16 @@ for(const locale of ['en','zh-CN'])test(`${locale}: editorial topic pages retain
   await page.setViewportSize({width:1440,height:1000});await page.goto(prefix+route);
   await expect(page.locator('main h1')).toHaveCount(1,{timeout:3000});
   if(route==='strategies/'){
-   await expect(page.locator('.section-nav a')).toHaveCount(6);
-   await expect(page.locator('.section-nav a').first()).toHaveAttribute('href','#incremental-crypto');
+   await expect(page.locator('.section-nav a')).toHaveCount(7);
+   await expect(page.locator('.section-nav a').first()).toHaveAttribute('href','#comparison-crypto');
+   await expect(page.locator('#comparison-crypto')).toHaveAttribute('data-comparison-ready','true');
+   await page.locator('#incremental-crypto').scrollIntoViewIfNeeded();
    await expect(page.locator('#incremental-crypto')).toHaveAttribute('data-incremental-ready','true');
    await page.locator('#robustness').scrollIntoViewIfNeeded();
    await expect(page.locator('#robustness')).toHaveAttribute('data-ready','true');
    await page.evaluate(()=>window.scrollTo(0,0));
    expect(await page.evaluate(()=>scrollY)).toBe(0);
-   const core=await page.locator('#incremental-crypto [data-incremental-chart]').boundingBox();
+   const core=await page.locator('#comparison-crypto [data-cmp-chart]').first().boundingBox();
    expect(core.y).toBeLessThan(800);
    await expect(page.locator('[data-study-id]')).toHaveCount(318);
    await expect(page.locator('[data-ablation-id]')).toHaveCount(678);
@@ -94,7 +96,7 @@ for(const locale of ['en','zh-CN'])test(`${locale}: editorial topic pages retain
    await expect(page.locator('[data-factor-score],[data-dex-metric]')).toHaveCount(0);
    expect(JSON.parse(await page.locator('[data-dex-facts]').getAttribute('data-dex-facts')).status).toBe('readiness_only');
   }
-  if(route==='docs/')await expect(page.locator('main [data-doc-slug]')).toHaveCount(14);
+  if(route==='docs/')await expect(page.locator('main [data-doc-slug]')).toHaveCount(15);
   for(const theme of ['light','dark']){
    await page.locator('#theme-preference').selectOption(theme);
    await expect(page.locator('body')).toHaveCSS('background-color',theme==='light'?'rgb(246, 244, 239)':'rgb(23, 27, 32)');

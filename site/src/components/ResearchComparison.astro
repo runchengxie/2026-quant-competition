@@ -1,0 +1,69 @@
+---
+import facts from '../data/strategy-comparison.v1.json';
+import rawFacts from '../data/strategy-comparison.v1.json?raw';
+import en from '../i18n/comparison-en.json';
+import zh from '../i18n/comparison-zh-CN.json';
+import {pairedSummary} from '../scripts/comparison-state.mjs';
+import {formatResearchNumber} from '../scripts/incremental-state.mjs';
+const locale=Astro.props.locale==='zh-CN'?'zh-CN':'en';
+const market=Astro.props.market==='crypto'?'crypto':'equity';
+const t=locale==='en'?en:zh;
+const rows=facts[market].accounts;
+const windows=[...new Map(rows.map(row=>[row.window,row.end])).entries()].sort();
+const fees=market==='equity'?[0,20,40]:[0,35,50];
+const fee=fees.at(-1)!;
+const summary=pairedSummary(facts,{market,fee,delay:0});
+const substitute=(text:string,values:Record<string,number>)=>Object.entries(values).reduce((value,[key,number])=>value.replaceAll(`{${key}}`,String(number)),text);
+const fmt=(value:number|null)=>formatResearchNumber(value,locale,t.unavailable);
+const percent=(value:number|null)=>value===null?t.unavailable:`${fmt(100*value)}%`;
+const name=(arm:string)=>t.arms[arm as keyof typeof t.arms];
+const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+---
+<section id={`comparison-${market}`} data-comparison-market={market} data-comparison-facts={rawFacts}>
+ <p class="evidence-label">{t.historical}</p>
+ <h2>{market==='equity'?t.equityTitle:t.cryptoTitle}</h2>
+ <p class="conclusion">{market==='equity'?t.equityConclusion:t.cryptoConclusion}</p>
+ <p class="detail">{t.summaryContext} <span data-cmp-summary>{substitute(market==='equity'?t.equitySummary:t.cryptoSummary,summary)} {summary.blocked>0?substitute(t.blockedSummary,summary):''}</span></p>
+ <div class="controls">
+  <label>{t.window}<select data-cmp-window>{windows.map(([start,end])=><option value={start}>{start} ～ {end}</option>)}</select></label>
+  <label>{t.fee}<select data-cmp-fee>{fees.map(value=><option value={value} selected={value===fee}>{value} bps</option>)}</select></label>
+  <label>{t.delay}<select data-cmp-delay><option value="0">{t.delay0}</option><option value="1">{t.delay1}</option></select></label>
+ </div>
+ <div class="comparison-plots">
+  <figure><figcaption>{t.returnChart}</figcaption><div data-cmp-chart="returns" role="img" aria-label={t.returnChart}></div><p class="detail">{t.chartNote}</p></figure>
+  <figure><figcaption>{t.costChart}</figcaption><div data-cmp-chart="costs" role="img" aria-label={t.costChart}></div><p class="detail">{t.costNote}</p></figure>
+ </div>
+ <p class="detail">{market==='equity'?t.equityIntro:t.cryptoIntro}</p>
+ <p class="detail">{t.feeHelp} {market==='equity'?t.equityTiming:t.cryptoTiming}</p>
+ <p class="detail">{market==='equity'?t.equityRisk:t.cryptoLimit}</p>
+ {market==='equity'&&<p class="detail">{t.equityLimit}</p>}
+ <div class="table-scroll"><table>
+  <caption>{t.table}</caption><thead><tr><th scope="col">{t.window}</th><th scope="col">{t.method}</th><th scope="col">{t.fee}</th><th scope="col">{t.delay}</th><th scope="col">{t.return}</th><th scope="col">{t.drawdown}</th><th scope="col">{t.cost}</th><th scope="col">{t.coverage}</th><th scope="col">{t.status}</th><th scope="col">{t.share}</th><th scope="col">{t.removed}</th></tr></thead>
+  <tbody>{rows.map(row=><tr data-cmp-row data-window={row.window} data-fee={row.fee_bps} data-delay={row.delay}>
+   <th scope="row">{row.window} ～ {row.end}</th><td>{name(row.arm)}</td><td>{row.fee_bps} bps</td><td>{row.delay===0?t.delay0:t.delay1}</td>
+   <td>{percent(row.metrics?.net_return??null)}</td><td>{percent(row.metrics?.max_drawdown??null)}</td><td>{percent(row.metrics?.total_costs??null)}</td><td>{row.valid_dates}/{row.requested_dates}</td>
+   <td>{row.status==='completed'?t.complete:row.reasons?.map(reason=>t.reasons[reason as keyof typeof t.reasons]).join(locale==='en'?', ':'、')||t.unavailable}</td>
+   <td>{percent(row.metrics?.top_asset_positive_price_pnl_share??null)}</td><td>{percent(row.metrics?.without_best_five_days_return??null)}</td>
+  </tr>)}</tbody>
+ </table></div>
+ <h3>{t.stressTitle}</h3><p class="detail">{t.stressNote}</p>
+ {market==='equity'&&<>
+  <h3>{t.qualityTitle}</h3>
+  <dl class="quality-facts">{[[t.dailyRows,facts.data_quality.daily.rows],[t.unusable,facts.data_quality.daily.invalid_ohlc_rows],[t.identity,facts.data_quality.daily.unresolved_identity_rows],[t.minuteRows,facts.data_quality.minute.rows],[t.regularRows,facts.data_quality.minute.regular_rows]].map(([label,value])=><div><dt>{label}</dt><dd>{new Intl.NumberFormat(locale).format(Number(value))}</dd></div>)}</dl>
+  <p class="detail">{t.minuteScope}</p>
+ </>}
+ <p class="detail">{t.future}</p><a href={`${prefix}docs/strategy-comparison/`}>{t.guide} ↗</a>
+ <script type="application/json" data-comparison-config set:html={JSON.stringify({locale,t}).replaceAll('<','\\u003c')}/>
+</section>
+<script>
+ document.querySelectorAll('[data-comparison-market]').forEach(root=>{
+  const observer=new IntersectionObserver(async entries=>{
+   if(!entries.some(entry=>entry.isIntersecting))return;observer.disconnect();
+   try{const {mountComparison}=await import('../scripts/comparison-charts.mjs');mountComparison(root);}
+   catch(error){console.error('Comparison chart unavailable; evidence tables remain available',error);}
+  },{rootMargin:'200px'});observer.observe(root);
+ });
+</script>
+<style>
+ section{min-width:0;margin:1rem 0 4rem;border-top:1px solid var(--line);padding-top:1rem}h2{margin:.4rem 0;max-width:36ch;line-height:1.3}.conclusion{margin:.6rem 0;font-size:1.2rem;line-height:1.8;max-width:72ch}.detail{color:var(--muted);font-size:.92rem;line-height:1.8;max-width:85ch}.evidence-label{color:var(--muted);font-size:.8rem}section>.detail{margin:.6rem 0}.controls{display:flex;flex-wrap:wrap;gap:1rem;margin:.65rem 0}label{display:grid;gap:.4rem;font-size:.85rem;max-width:100%}select{font:inherit;color:var(--ink);background:var(--paper);border:1px solid var(--line);padding:.65rem;max-width:100%}.comparison-plots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.5rem}figure{margin:1rem 0;min-width:0}figcaption{font-weight:600}[data-cmp-chart]{height:350px;width:100%;min-width:0;overflow:hidden}.table-scroll{max-width:100%;overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:.82rem;font-variant-numeric:tabular-nums}td,th{padding:.65rem;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}caption{text-align:left;margin:1rem 0;font-weight:600}.quality-facts{display:flex;flex-wrap:wrap;gap:1.5rem}.quality-facts div{max-width:24ch}.quality-facts dt{font-size:.85rem;color:var(--muted)}.quality-facts dd{font-size:1.3rem;margin:.4rem 0;font-variant-numeric:tabular-nums}[hidden]{display:none!important}@media(max-width:850px){.comparison-plots{grid-template-columns:minmax(0,1fr)}}@media(max-width:500px){.controls{display:grid;grid-template-columns:minmax(0,1fr)}[data-cmp-chart]{height:320px}}
+</style>

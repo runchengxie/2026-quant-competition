@@ -4,6 +4,7 @@ import argparse
 import csv
 import json
 import math
+from datetime import date
 from pathlib import Path
 
 from ..datasets.daily_storage import safe_path
@@ -12,6 +13,7 @@ from .comparison_reference import (
     verify_crypto_account,
     rank_ic,
     close,
+    validate_identity,
 )
 from .comparison_publication import validate_cells
 from .run_record import verify_run
@@ -33,6 +35,18 @@ def read_json(path):
     value = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=unique)
     json.dumps(value, allow_nan=False)
     return value
+
+
+def _canonical_date(value):
+    if not isinstance(value, str) or date.fromisoformat(value).isoformat() != value:
+        raise ValueError("INVALID_COMPARISON_DATE")
+
+
+def _artifact(folder, name):
+    path = folder / name
+    if path.parent != folder:
+        raise ValueError("COMPARISON_ARTIFACT_ESCAPED")
+    return read_json(path)
 
 
 def _csv(path, columns):
@@ -103,7 +117,7 @@ def _model_metrics(scores, dates, calendar, observations):
     )
 
 
-def _public_row(row, metrics):
+def _public_row(row, metrics, reasons=None):
     return {
         key: row[key]
         for key in (
@@ -116,7 +130,7 @@ def _public_row(row, metrics):
             "requested_dates",
             "valid_dates",
         )
-    } | dict(metrics=metrics)
+    } | dict(metrics=metrics, reasons=[] if reasons is None else reasons)
 
 
 def verify_equity_export(folder):
@@ -131,8 +145,17 @@ def verify_equity_export(folder):
     ):
         raise ValueError("INVALID_EQUITY_COMPARISON_REPORT")
     calendar = report["calendar"]
-    if len(calendar) < 187 or calendar != sorted(set(calendar)):
+    if (
+        not isinstance(calendar, list)
+        or len(calendar) < 187
+        or any(not isinstance(day, str) for day in calendar)
+        or calendar != sorted(set(calendar))
+    ):
         raise ValueError("INVALID_COMPARISON_CALENDAR")
+    for day in calendar:
+        _canonical_date(day)
+    if not isinstance(report.get("accounts"), list) or len(report["accounts"]) != 72:
+        raise ValueError("INVALID_COMPARISON_ACCOUNT_GRID")
     first = len(calendar) - 61
     blocks = [calendar[first + i * 20 : first + (i + 1) * 20] for i in range(3)]
     requested = {day for block in blocks for day in block}
@@ -201,10 +224,11 @@ def verify_equity_export(folder):
         raise ValueError("COMPARISON_FIT_BUDGET_CHANGED")
     accounts = []
     for row in report["accounts"]:
+        validate_identity(row, "equity")
         name = f"{row['window']}-{row['arm']}-{row['fee_bps']}-{row['delay']}.json"
         if row["window"] not in windows or row["path"] != name:
             raise ValueError("COMPARISON_ARTIFACT_PATH_CHANGED")
-        account = read_json(folder / name)
+        account = _artifact(folder, name)
         if any(
             row[key] != account[key]
             for key in ("status", "requested_dates", "valid_dates", "metrics")
@@ -220,7 +244,14 @@ def verify_equity_export(folder):
             sessions=calendar,
             dates=dates,
         )
-        accounts.append(_public_row(row, metrics))
+        reasons = sorted(
+            {
+                period["reason"]
+                for period in account["periods"]
+                if period["status"] == "blocked"
+            }
+        )
+        accounts.append(_public_row(row, metrics, reasons))
     validate_cells("equity", accounts, windows)
     return dict(
         currency="USD",
@@ -241,17 +272,28 @@ def verify_crypto_export(folder, batch):
         or report.get("quote_currency") != "USDT"
     ):
         raise ValueError("INVALID_CRYPTO_COMPARISON_REPORT")
+    if batch.get("schema") != "crypto.weekly_input.v1" or not isinstance(
+        batch.get("windows"), list
+    ):
+        raise ValueError("INVALID_COMPARISON_CRYPTO_INPUT")
+    for window in batch["windows"]:
+        _canonical_date(window["window_id"])
+        if window["window_id"] != window["bars"]["dates"][252]:
+            raise ValueError("COMPARISON_WINDOW_CHANGED")
     windows = {w["window_id"]: w for w in batch["windows"]}
     if len(windows) != 12 or any(
         len(w["bars"]["close"]) != 8 for w in windows.values()
     ):
         raise ValueError("COMPARISON_CRYPTO_SCOPE_CHANGED")
+    if not isinstance(report.get("accounts"), list) or len(report["accounts"]) != 288:
+        raise ValueError("INVALID_COMPARISON_ACCOUNT_GRID")
     accounts = []
     for row in report["accounts"]:
+        validate_identity(row, "crypto")
         name = f"{row['window']}-{row['arm']}-{row['fee_bps']}-{row['delay']}.json"
         if row["window"] not in windows or row["path"] != name:
             raise ValueError("COMPARISON_ARTIFACT_PATH_CHANGED")
-        result = read_json(folder / name)
+        result = _artifact(folder, name)
         if result["metrics"] != row["metrics"]:
             raise ValueError("COMPARISON_INDEX_CHANGED")
         metrics = verify_crypto_account(row, result, windows[row["window"]]["bars"])

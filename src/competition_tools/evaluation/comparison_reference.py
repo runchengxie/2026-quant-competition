@@ -34,7 +34,7 @@ def close(actual, expected):
         raise ValueError("COMPARISON_ARITHMETIC_MISMATCH")
 
 
-def _identity(row, market):
+def validate_identity(row, market):
     arms, fees = (
         (EQUITY_ARMS, (0, 20, 40)) if market == "equity" else (CRYPTO_ARMS, (0, 35, 50))
     )
@@ -119,7 +119,7 @@ def _chosen(pool, arm, scores, day):
 
 
 def verify_equity_account(row, account, *, pool, observations, scores, sessions, dates):
-    _identity(row, "equity")
+    validate_identity(row, "equity")
     if (
         account.get("accounting_model") != "intraday_cash_proxy.v1"
         or account.get("quote_currency") != "USD"
@@ -215,7 +215,7 @@ def verify_equity_account(row, account, *, pool, observations, scores, sessions,
 
 
 def verify_crypto_account(row, account, bars):
-    _identity(row, "crypto")
+    validate_identity(row, "crypto")
     dates, prices = bars["dates"], bars["close"]
     if (
         len(dates) != 342
