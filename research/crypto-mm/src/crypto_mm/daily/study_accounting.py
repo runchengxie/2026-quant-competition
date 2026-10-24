@@ -31,7 +31,12 @@ def validate_prices(prices: dict) -> None:
 
 
 def account_periods(
-    prices: dict, targets: list[dict], *, fee_bps: float, quote_currency: str
+    prices: dict,
+    targets: list[dict],
+    *,
+    fee_bps: float,
+    quote_currency: str,
+    decision_flags: list[bool] | None = None,
 ) -> dict:
     if (
         quote_currency not in {"USD", "HKD", "USDT"}
@@ -43,6 +48,12 @@ def account_periods(
     dates, closes = prices["dates"], prices["close"]
     if not isinstance(targets, list) or len(targets) != len(dates) - 1:
         raise ValueError("INVALID_ACCOUNTING_GRID")
+    if decision_flags is not None and (
+        not isinstance(decision_flags, list)
+        or len(decision_flags) != len(targets)
+        or any(type(flag) is not bool for flag in decision_flags)
+    ):
+        raise ValueError("INVALID_ACCOUNTING_DECISIONS")
     products = sorted(closes)
     for target in targets:
         if (
@@ -63,6 +74,8 @@ def account_periods(
         unchanged = (
             sum(abs(desired[p] * before - held[p]) for p in products) <= 1e-12 * before
         )
+        if decision_flags is not None and not decision_flags[index]:
+            unchanged = True
         if unchanged:
             turnover, cost = 0.0, 0.0
         else:
