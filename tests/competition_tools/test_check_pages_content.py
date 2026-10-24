@@ -56,6 +56,102 @@ def test_allows_bilingual_astro_sources_assets_and_build_output(tmp_path):
     assert check_site(source, built) == []
 
 
+def editorial_site_fixture(tmp_path):
+    from competition_tools.check_pages_content import _expected_editorial_summary
+
+    source, built = make_site_trees(tmp_path)
+    data = Path(__file__).resolve().parents[2] / "site/src/data"
+    values = {}
+    for name in ("strategy-robustness", "strategy-readiness"):
+        value = json.loads((data / f"{name}.v1.json").read_text())
+        values[name] = value
+        target = source / f"src/data/{name}.v1.json"
+        target.parent.mkdir(exist_ok=True)
+        target.write_text(json.dumps(value))
+    component = source / "src/components/EditorialHome.astro"
+    component.parent.mkdir()
+    component.write_text("<!-- Editorial homepage -->")
+    summary = _expected_editorial_summary(
+        values["strategy-robustness"], values["strategy-readiness"]
+    )
+    for prefix in ("", "zh-CN/"):
+        target = built / f"{prefix}strategies/index.html"
+        target.parent.mkdir(parents=True)
+        target.write_text(
+            "".join(
+                f'<section data-{attribute}-facts="{html.escape(json.dumps(values[name]), quote=True)}"></section>'
+                for attribute, name in (
+                    ("robustness", "strategy-robustness"),
+                    ("readiness", "strategy-readiness"),
+                )
+            )
+        )
+        target = built / f"{prefix}index.html"
+        target.write_text(
+            target.read_text().replace(
+                "</body>",
+                f'<section data-editorial-facts="{html.escape(json.dumps(summary), quote=True)}"></section></body>',
+            )
+        )
+    return source, built, summary
+
+
+def test_editorial_summary_matches_reviewed_source(tmp_path):
+    source, built, summary = editorial_site_fixture(tmp_path)
+    assert summary["observation"]["observations"] == 0
+    assert [g["returnWins"] for g in summary["us"]] == [4, 4, 4]
+    assert summary["us"][1]["medianReturnChange"] == pytest.approx(
+        -0.0197321676330644, abs=1e-12
+    )
+    assert [g["returnWins"] for g in summary["crypto"]] == [6, 5]
+    assert check_site(source, built) == []
+
+
+@pytest.mark.parametrize(
+    "mutation", ["count", "median", "extra", "missing", "duplicate"]
+)
+def test_editorial_summary_rejects_mutated_or_extra_fields(tmp_path, mutation):
+    source, built, summary = editorial_site_fixture(tmp_path)
+    target = built / "index.html"
+    if mutation == "count":
+        summary["coverage"]["requested_jobs"] = 113
+    elif mutation == "median":
+        summary["us"][0]["medianReturnChange"] = 0
+    elif mutation == "extra":
+        summary["private_path"] = "not-public"
+    original = target.read_text()
+    section = f'<section data-editorial-facts="{html.escape(json.dumps(summary), quote=True)}"></section>'
+    import re
+
+    changed = re.sub(
+        r'<section data-editorial-facts="[^"]+"></section>',
+        ""
+        if mutation == "missing"
+        else section * (2 if mutation == "duplicate" else 1),
+        original,
+    )
+    target.write_text(changed)
+    assert any("editorial" in issue for issue in check_site(source, built))
+
+
+def test_editorial_summary_requires_locale_equivalence(tmp_path):
+    source, built, summary = editorial_site_fixture(tmp_path)
+    summary["observation"]["observations"] = 1
+    target = built / "zh-CN/index.html"
+    import re
+
+    target.write_text(
+        re.sub(
+            r'data-editorial-facts="[^"]+"',
+            'data-editorial-facts="'
+            + html.escape(json.dumps(summary), quote=True)
+            + '"',
+            target.read_text(),
+        )
+    )
+    assert any("editorial" in issue for issue in check_site(source, built))
+
+
 def test_robustness_snapshot_requires_exact_bilingual_facts(tmp_path):
     source, built = make_site_trees(tmp_path)
     canonical = (

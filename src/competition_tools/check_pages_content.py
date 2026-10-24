@@ -3,6 +3,7 @@ import json
 from html.parser import HTMLParser
 from pathlib import Path, PurePosixPath
 import re
+from statistics import median
 from typing import Callable
 from urllib.parse import unquote, urlsplit
 
@@ -68,6 +69,7 @@ class _PageMetadata(HTMLParser):
         self.controls_facts: list[str | None] = []
         self.robustness_facts: list[str | None] = []
         self.readiness_facts: list[str | None] = []
+        self.editorial_facts: list[str | None] = []
         self.ids: set[str] = set()
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
@@ -84,6 +86,8 @@ class _PageMetadata(HTMLParser):
             self.robustness_facts.append(attributes.get("data-robustness-facts"))
         if "data-readiness-facts" in attributes:
             self.readiness_facts.append(attributes.get("data-readiness-facts"))
+        if "data-editorial-facts" in attributes:
+            self.editorial_facts.append(attributes.get("data-editorial-facts"))
         if ablation_id := attributes.get("data-ablation-id"):
             self.ablation_facts.append((ablation_id, attributes.get("data-facts")))
         if study_id := attributes.get("data-study-id"):
@@ -135,6 +139,9 @@ def _allowed_source(relative_path: PurePosixPath) -> bool:
         "src/scripts/robustness-charts.mjs",
         "tests/robustness-state.test.mjs",
         "tests/robustness.spec.mjs",
+        "src/scripts/editorial-summary.mjs",
+        "tests/editorial-summary.test.mjs",
+        "tests/editorial.spec.mjs",
         "src/data/strategy-readiness.v1.json",
         "src/scripts/strategy-controls-charts.mjs",
         "src/scripts/strategy-controls-state.mjs",
@@ -263,6 +270,73 @@ def _validate_localized_output(
         errors.append("expansion facts differ between localized output pages")
     if len(study_facts) == 2 and study_facts[0] != study_facts[1]:
         errors.append("study facts differ between localized output pages")
+
+
+def _expected_editorial_summary(snapshot: dict, readiness: dict) -> dict:
+    """Independently project reviewed public rows into the compact home facts."""
+
+    def group(market, fee, pool):
+        rows = [
+            r
+            for r in snapshot["results"]
+            if r["market"] == market
+            and r["fee_bps"] == fee
+            and (market == "crypto" or r["pool_id"] == pool)
+        ]
+        ids = {r["job_id"] for r in rows}
+        pairs = [
+            p
+            for p in snapshot["crypto_pairs" if market == "crypto" else "us_pairs"]
+            if p.get("job_id", p.get("candidate_job_id")) in ids
+        ]
+        requested = len({r["start"] for r in rows})
+        return dict(
+            poolId=pool,
+            feeBps=fee,
+            requestedWindows=requested,
+            blockedWindows=requested - len(pairs),
+            windows=len(pairs),
+            returnWins=sum(p["net_return_change"] > 0 for p in pairs),
+            drawdownWins=sum(p["drawdown_change"] < 0 for p in pairs),
+            medianReturnChange=median(p["net_return_change"] for p in pairs)
+            if pairs
+            else None,
+            medianDrawdownChange=median(p["drawdown_change"] for p in pairs)
+            if pairs
+            else None,
+        )
+
+    measured = snapshot["status"] == "measured"
+    ranges = {}
+    for market in ("US", "crypto"):
+        rows = [r for r in snapshot["results"] if r["market"] == market]
+        ranges[market] = (
+            dict(start=min(r["start"] for r in rows), end=max(r["end"] for r in rows))
+            if rows
+            else None
+        )
+    observation = readiness["observation"]
+    return dict(
+        asOf=snapshot["as_of"],
+        codeCommit=snapshot["code_commit"],
+        planSha256=snapshot["plan_sha256"],
+        coverage=dict(snapshot["coverage"]),
+        observation=dict(
+            status=observation["status"],
+            observations=observation["observations"],
+            firstEligibleObservationAt=observation["first_eligible_observation_at"],
+        ),
+        us=[
+            group("US", 20, pool)
+            for pool in ("exclude_nvda", "exclude_three", "fixed_six")
+        ]
+        if measured
+        else [],
+        crypto=[group("crypto", fee, "trend_vs_matched") for fee in (35, 50)]
+        if measured
+        else [],
+        evidenceRange=ranges,
+    )
 
 
 def check_site(source_dir: Path, built_dir: Path) -> list[str]:
@@ -454,6 +528,40 @@ def check_site(source_dir: Path, built_dir: Path) -> list[str]:
                     )
         except (OSError, ValueError, TypeError, KeyError, AttributeError):
             errors.append("invalid public strategy readiness facts or output")
+    home_metadata = []
+    for relative in ("index.html", "zh-CN/index.html"):
+        page = _PageMetadata()
+        if (built_dir / relative).is_file():
+            page.feed((built_dir / relative).read_text(encoding="utf-8"))
+        home_metadata.append(page)
+    if "src/components/EditorialHome.astro" in source_paths or any(
+        p.editorial_facts for p in home_metadata
+    ):
+        from competition_tools.evaluation.robustness.publication import (
+            validate_public_robustness,
+        )
+        from competition_tools.evaluation.research_readiness import (
+            validate_public_readiness,
+        )
+
+        try:
+            snapshot = validate_public_robustness(
+                json.loads(robustness_path.read_text(encoding="utf-8"))
+            )
+            readiness = validate_public_readiness(
+                json.loads(readiness_path.read_text(encoding="utf-8"))
+            )
+            expected = _expected_editorial_summary(snapshot, readiness)
+            for page in home_metadata:
+                if (
+                    len(page.editorial_facts) != 1
+                    or json.loads(page.editorial_facts[0]) != expected
+                ):
+                    errors.append(
+                        "editorial facts differ from reviewed source snapshot"
+                    )
+        except (OSError, ValueError, TypeError, KeyError, AttributeError):
+            errors.append("invalid public editorial facts or output")
     if "document-routes.mjs" in source_paths:
         _validate_documentation(built_dir, output_paths, errors)
     _scan_sensitive(source_files, "source", errors)
