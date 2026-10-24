@@ -1,10 +1,11 @@
 import * as echarts from "echarts/core";
-import { LineChart,BarChart,ScatterChart } from "echarts/charts";
-import { GridComponent,TooltipComponent,LegendComponent,DataZoomComponent,DatasetComponent,AriaComponent } from "echarts/components";
+import { LineChart,BarChart,ScatterChart,HeatmapChart } from "echarts/charts";
+import { GridComponent,TooltipComponent,LegendComponent,DataZoomComponent,DatasetComponent,AriaComponent,VisualMapComponent } from "echarts/components";
+import {capitalCurve,feeWindowCells} from './reader-charts.mjs';
 import { CanvasRenderer } from "echarts/renderers";
 import { deriveChartModels,selectResults,selectWindowOptions,summarizeWindows,compareStrategies,summarizeFeeRobustness } from "./dashboard-state.mjs";
 
-echarts.use([LineChart,BarChart,ScatterChart,GridComponent,TooltipComponent,LegendComponent,DataZoomComponent,DatasetComponent,AriaComponent,CanvasRenderer]);
+echarts.use([LineChart,BarChart,ScatterChart,HeatmapChart,VisualMapComponent,GridComponent,TooltipComponent,LegendComponent,DataZoomComponent,DatasetComponent,AriaComponent,CanvasRenderer]);
 
 export async function mountPerformanceDashboard(root){
   const {locale,t}=JSON.parse(root.querySelector("[data-dashboard-config]").textContent);
@@ -17,6 +18,7 @@ export async function mountPerformanceDashboard(root){
   const nodes=Object.fromEntries([...root.querySelectorAll("[data-chart]")].map(node=>[node.dataset.chart,node]));
   const charts=Object.fromEntries(Object.entries(nodes).map(([key,node])=>[key,echarts.init(node)]));
   const gross=root.querySelector("[data-toggle-gross]");
+  const capital=root.querySelector('[data-capital-view]');
   const zoom=root.querySelector("[data-zoom-window]");
   const format=new Intl.NumberFormat(locale,{maximumFractionDigits:2,minimumFractionDigits:2});
   const percent=value=>format.format(value*100)+"%";
@@ -73,6 +75,11 @@ export async function mountPerformanceDashboard(root){
     root.querySelector("[data-strategy-description]").textContent=t.descriptions[row.market==="crypto"&&row.strategy==="equal_weight"?"crypto_equal_weight":row.strategy];
     root.dataset.grossVisible=String(gross.checked);
     const points=model.curve?.points??[];
+    const money=capitalCurve(points,row.quote_currency);
+    nodes.nav.dataset.capital=JSON.stringify(money);
+    const curveValue=(point,key)=>point[key]*(capital.checked?10000:1);
+    const curveFormat=value=>capital.checked?`${format.format(value)} ${row.quote_currency}`:navFormat.format(value);
+    root.querySelector('[data-capital-note]').textContent=capital.checked?t.reader.capitalNote:t.reader.normalized;
     nodes.nav.dataset.points=JSON.stringify(points);
     root.querySelector("[data-curve-unavailable]").hidden=Boolean(model.curve);
     zoom.disabled=!model.curve;
@@ -91,7 +98,7 @@ export async function mountPerformanceDashboard(root){
     root.querySelector("[data-comparison-note]").textContent=comparison.entries.some(e=>!e.curve)?t.comparison.missing:"";
     guide.href=guideBase+"#"+row.strategy.replaceAll("_","-");
     nodes.comparison.dataset.jobs=JSON.stringify(available.map(e=>e.result.job_id));
-    set("comparison",{tooltip:{...base().tooltip,valueFormatter:value=>navFormat.format(value)},legend:{...base().legend,type:"scroll",data:available.map(e=>seriesLabel(e.strategy))},xAxis:{...base().xAxis,data:available[0]?.curve.points.map(p=>p.date)??[]},yAxis:{...base().yAxis,scale:true},dataZoom:[{type:"inside"},{type:"slider",height:18,bottom:5}],series:available.map(e=>({name:seriesLabel(e.strategy),type:"line",showSymbol:false,data:e.curve.points.map(p=>p.net_nav)}))});
+    set("comparison",{tooltip:{...base().tooltip,valueFormatter:curveFormat},legend:{...base().legend,type:"scroll",data:available.map(e=>seriesLabel(e.strategy))},xAxis:{...base().xAxis,data:available[0]?.curve.points.map(p=>p.date)??[]},yAxis:{...base().yAxis,scale:true,name:capital.checked?row.quote_currency:''},dataZoom:[{type:"inside"},{type:"slider",height:18,bottom:5}],series:available.map(e=>({name:seriesLabel(e.strategy),type:"line",showSymbol:false,data:e.curve.points.map(p=>curveValue(p,'net_nav'))}))});
     const robustness=summarizeFeeRobustness(study,selection());
     root.querySelector("[data-fee-matches]").textContent=`${t.comparison.matched}: ${robustness.matchedWindows} · ${t.comparison.excluded}: ${robustness.excludedWindows}`;
     const feeBody=root.querySelector("[data-fee-body]");feeBody.replaceChildren();
@@ -100,7 +107,7 @@ export async function mountPerformanceDashboard(root){
       const values=[`${f.feeBps} bps${f.feeBps===0?` (${t.comparison.control})`:""}`,String(f.summary?.count??0),`${f.positiveNetCount}/${f.summary?.count??0}`,`${f.summary?.positiveExcessCount??0}/${f.summary?.excessCount??0}`,f.summary?.medianNetReturn==null?"—":percent(f.summary.medianNetReturn),f.summary?.medianExcessReturn==null?"—":percent(f.summary.medianExcessReturn)];
       values.forEach((value,i)=>{const td=document.createElement(i===0?"th":"td");if(i===0)td.scope="row";td.textContent=value;tr.append(td);});feeBody.append(tr);
     }
-    set("nav",{tooltip:{...base().tooltip,valueFormatter:value=>navFormat.format(value)},xAxis:{...base().xAxis,data:points.map(p=>p.date)},yAxis:{...base().yAxis,scale:true},legend:{...base().legend,data:[t.net,t.gross],selected:{[t.gross]:gross.checked}},dataZoom,series:[{name:t.net,type:"line",showSymbol:false,data:points.map(p=>p.net_nav)},{name:t.gross,type:"line",showSymbol:false,lineStyle:{type:"dashed"},data:points.map(p=>p.gross_nav)}]});
+    set("nav",{tooltip:{...base().tooltip,valueFormatter:curveFormat},xAxis:{...base().xAxis,data:points.map(p=>p.date)},yAxis:{...base().yAxis,scale:true,name:capital.checked?row.quote_currency:''},legend:{...base().legend,data:[t.net,t.gross],selected:{[t.gross]:gross.checked}},dataZoom,series:[{name:t.net,type:"line",showSymbol:false,data:points.map(p=>curveValue(p,'net_nav'))},{name:t.gross,type:"line",showSymbol:false,lineStyle:{type:"dashed"},data:points.map(p=>curveValue(p,'gross_nav'))}]});
     set("drawdown",{tooltip:{...base().tooltip,valueFormatter:percent},xAxis:{...base().xAxis,data:points.map(p=>p.date)},yAxis:{...base().yAxis,axisLabel:{formatter:percent}},dataZoom,series:[{name:t.charts.drawdown,type:"line",showSymbol:false,areaStyle:{opacity:.18},data:points.map(p=>p.drawdown)}]});
     set("folds",{tooltip:{...base().tooltip,valueFormatter:percent},xAxis:{...base().xAxis,data:model.foldReturns.map(r=>r.start)},yAxis:{...base().yAxis,axisLabel:{formatter:percent}},legend:{...base().legend,data:[t.net,t.excess]},series:[{name:t.net,type:"bar",data:model.foldReturns.map(r=>r.net_return)},{name:t.excess,type:"bar",data:model.foldReturns.map(r=>r.excess_return)}]});
     set("fees",{tooltip:{...base().tooltip,valueFormatter:percent},xAxis:{...base().xAxis,data:model.feeSensitivity.map(r=>`${r.cost_bps} bps`)},yAxis:{...base().yAxis,axisLabel:{formatter:percent}},series:[{name:t.net,type:"bar",data:model.feeSensitivity.map(r=>r.net_return)}]});
@@ -108,9 +115,31 @@ export async function mountPerformanceDashboard(root){
     set("turnover",{tooltip:{...base().tooltip,valueFormatter:percent},xAxis:{...base().xAxis,data:model.foldReturns.map(r=>r.start)},yAxis:{...base().yAxis,axisLabel:{formatter:percent}},series:[{name:t.charts.turnover,type:"bar",data:model.foldReturns.map(r=>r.mean_daily_oneway_turnover_proxy)}]});
     set("exposure",{tooltip:{...base().tooltip,valueFormatter:percent},xAxis:{...base().xAxis,data:model.foldReturns.map(r=>r.start)},yAxis:{...base().yAxis,min:0,max:1,axisLabel:{formatter:percent}},series:[{name:t.charts.exposure,type:"bar",data:model.foldReturns.map(r=>r.mean_exposure)}]});
     set("histogram",{xAxis:{...base().xAxis,data:model.histogram.map(bin=>`${percent(bin.low)} – ${percent(bin.high)}`)},yAxis:{...base().yAxis,minInterval:1},series:[{name:t.windows,type:"bar",data:model.histogram.map(bin=>bin.count)}]});
+    const matrix=feeWindowCells(study,selection());
+    root.querySelector('[data-reader-coverage]').textContent=`${t.reader.coverage} ${matrix.coverage.requested} / ${matrix.coverage.valid} / ${matrix.coverage.blocked} / ${matrix.coverage.missing}`;
+    nodes.heatmap.dataset.cells=JSON.stringify(matrix.cells);
+    const cellBody=root.querySelector('[data-reader-cells]');cellBody.replaceChildren();
+    const headers=cellBody.closest('table').querySelector('thead tr');headers.replaceChildren();
+    for(const label of [t.window,...matrix.fees.map(f=>`${f} bps`)]){const th=document.createElement('th');th.scope='col';th.textContent=label;headers.append(th);}
+    for(const start of matrix.windows){
+      const tr=document.createElement('tr');const th=document.createElement('th');th.scope='row';th.textContent=start;tr.append(th);
+      for(const fee of matrix.fees){const cell=matrix.cells.find(c=>c.windowStart===start&&c.feeBps===fee);const td=document.createElement('td');
+        if(cell.result){const button=document.createElement('button');button.type='button';button.dataset.feeCell='';button.dataset.job=cell.result.job_id;button.textContent=percent(cell.result.net_return);button.setAttribute('aria-label',`${start} · ${fee} bps · ${button.textContent}`);button.setAttribute('aria-pressed',String(cell.result.job_id===row.job_id));button.addEventListener('click',()=>pick(cell.result));td.append(button);}else td.textContent=t.reader.missing;tr.append(td);}
+      cellBody.append(tr);
+    }
+    const extent=Math.max(.01,...matrix.cells.map(c=>Math.abs(c.result?.net_return??0)));
+    set('heatmap',{grid:{left:90,right:20,top:10,bottom:70},tooltip:{...base().tooltip,trigger:'item',formatter:p=>{const c=matrix.cells[p.dataIndex];return `${seriesLabel(row.strategy)}\n${c.windowStart} · ${c.result?.end??''}\n${c.feeBps} bps · ${matrix.currency}\n${c.result?percent(c.result.net_return):t.reader.missing}\n${c.result?.sessions??0} ${t.periods}`;}},xAxis:{...base().xAxis,data:matrix.fees.map(f=>`${f} bps`),splitArea:{show:true}},yAxis:{...base().yAxis,type:'category',data:matrix.windows,axisLabel:{color:colors.muted},splitArea:{show:true}},visualMap:{min:-extent,max:extent,calculable:false,orient:'horizontal',left:'center',bottom:0,inRange:{color:['#b65c45','#ddd7c9','#267b69']},textStyle:{color:colors.ink},formatter:v=>percent(v)},series:[{type:'heatmap',data:matrix.cells.map(c=>({value:[c.x,c.y,c.result?.net_return??0],itemStyle:c.result?{}:{color:colors.line,opacity:.5}})),label:{show:matrix.windows.length<=12,formatter:p=>{const c=matrix.cells[p.dataIndex];return c.result?percent(c.result.net_return):'—';}},emphasis:{itemStyle:{borderWidth:2,borderColor:colors.ink}}}]});
     root.querySelector("[data-chart-status]").textContent=t.ready;
     root.dataset.ready="true";
   }
+  function pick(row){
+    controls.strategy.value=row.strategy;controls.fee.value=String(row.cost_bps);syncControls();controls.window.value=row.start;render();
+    root.querySelector('[data-reader-announcement]').textContent=`${t.reader.selected} · ${seriesLabel(row.strategy)} · ${row.start} – ${row.end} · ${row.cost_bps} bps · ${row.quote_currency}`;
+  }
+  charts.heatmap.on('click',event=>{const cell=feeWindowCells(study,selection()).cells[event.dataIndex];if(cell?.result)pick(cell.result);});
+  charts.folds.on('click',event=>{const row=deriveChartModels(study,curves,selection()).foldReturns[event.dataIndex];if(row)pick(row);});
+  charts.scatter.on('click',event=>{const row=study.results.find(r=>r.job_id===event.data.jobId);if(row)pick(row);});
+  capital.addEventListener('change',()=>appearance());
   charts.nav.group=charts.drawdown.group="portfolio-window";
   echarts.connect("portfolio-window");
   for(const chart of [charts.nav,charts.drawdown])chart.on("datazoom",event=>{
@@ -124,7 +153,7 @@ export async function mountPerformanceDashboard(root){
   charts.nav.on("legendselectchanged",event=>{gross.checked=event.selected[t.gross]!==false;root.dataset.grossVisible=String(gross.checked);});
   gross.addEventListener("change",()=>{root.dataset.grossVisible=String(gross.checked);charts.nav.dispatchAction({type:gross.checked?"legendSelect":"legendUnSelect",name:t.gross});});
   zoom.addEventListener("input",()=>{zoomPercent=Number(zoom.value);zoomStart=100-zoomPercent;zoomEnd=100;root.dataset.zoom=String(zoomPercent);charts.nav.dispatchAction({type:"dataZoom",start:100-zoomPercent,end:100});});
-  root.querySelector("[data-reset]").addEventListener("click",()=>{syncControls(true);gross.checked=true;zoomPercent=100;zoomStart=0;zoomEnd=100;zoom.value="100";root.dataset.zoom="100";render();});
+  root.querySelector("[data-reset]").addEventListener("click",()=>{syncControls(true);capital.checked=false;gross.checked=true;zoomPercent=100;zoomStart=0;zoomEnd=100;zoom.value="100";root.dataset.zoom="100";render();});
   function appearance(){
     const state=Object.entries(charts).map(([id,chart])=>{
       const option=chart.getOption();

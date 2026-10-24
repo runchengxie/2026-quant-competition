@@ -3,6 +3,7 @@ import StrategyComparison from "./StrategyComparison.astro";
 import snapshot from "../data/real-data-study.v1.json";
 import { deriveChartModels,selectWindowOptions,summarizeWindows } from "../scripts/dashboard-state.mjs";
 import en from "../i18n/en.json";
+import {feeWindowCells} from "../scripts/reader-charts.mjs";
 import zh from "../i18n/zh-CN.json";
 interface Props { locale?:string }
 const locale=Astro.props.locale==="zh-CN"?"zh-CN":"en";
@@ -16,6 +17,7 @@ const number=new Intl.NumberFormat(locale,{minimumFractionDigits:2,maximumFracti
 const display=(value:number|null,percent=true)=>value===null?"—":number.format(value*(percent?100:1))+(percent?"%":"");
 const cards=["net_return","excess_return","max_drawdown","sharpe","mean_exposure","cost_drag"] as const;
 const panels=["nav","drawdown","folds","fees","scatter","turnover","exposure","histogram"] as const;
+const heatmap=feeWindowCells(snapshot,{market:"US",strategy:"buy_hold"});
 ---
 <section id="performance" data-ready="false" data-zoom="100" data-gross-visible="true" class="performance-dashboard">
   <div class="dashboard-heading"><div><p class="eyebrow">{t.eyebrow}</p><h2>{t.title}</h2><p>{t.intro}</p></div><a class="text-link" data-documentation href={`${prefix}docs/`}>{t.docs} ↗</a></div>
@@ -28,18 +30,26 @@ const panels=["nav","drawdown","folds","fees","scatter","turnover","exposure","h
     <label>{t.fee}<select data-filter="fee"><option value="20">20 bps</option><option value="40">40 bps</option></select></label>
     <label>{t.window}<select data-filter="window">{windows.map(w=><option value={w.start}>{w.start} – {w.end}</option>)}</select></label>
     <label class="gross-toggle"><input type="checkbox" data-toggle-gross checked />{t.gross}</label>
+    <label class="gross-toggle"><input type="checkbox" data-capital-view />{t.reader.capital}</label>
     <label>{t.zoom}<input data-zoom-window type="range" min="20" max="100" value="100" step="10" /></label>
     <button type="button" data-reset>{t.reset}</button>
   </fieldset>
   <aside class="strategy-explanation"><h3>{t.insights.strategyTitle}</h3><p data-strategy-description>{t.descriptions.buy_hold}</p><p class="detail">{t.insights.execution}</p></aside>
   <section data-stability data-count={stability.count} data-summary={JSON.stringify(stability)}><h3>{t.insights.stability}</h3><div class="metric-cards">{["count","positiveExcessRate","medianNetReturn","medianExcessReturn","worstNetReturn","medianCostDrag"].map((key,i)=><div><span>{[t.insights.count,t.insights.positive,t.insights.median,t.insights.excess,t.insights.worst,t.insights.drag][i]}</span><strong data-stability-metric={key}>{key==="count"?stability.count:display(stability[key as keyof typeof stability] as number|null)}</strong></div>)}</div><p class="detail" data-stability-denominator>{stability.excessCount} {t.insights.denominator}</p><p class="detail">{t.insights.caveat}</p></section>
   <p class="selection-note" data-selection-note>{selected.quote_currency} · {selected.start} – {selected.end} · {selected.sessions} {t.periods}</p>
+  <p class="detail">{t.reader.feeNote}</p>
+  <p class="detail" data-capital-note>{t.reader.normalized}</p>
+  <p class="visually-hidden" data-reader-announcement role="status" aria-live="polite"></p>
   <div class="metric-cards" data-dashboard-selected data-facts={JSON.stringify(selected)}>{cards.map(key=><div><span>{t.metrics[key]}</span><strong data-metric={key}>{display(selected[key],key!=="sharpe")}</strong></div>)}</div>
   <StrategyComparison locale={locale} />
   <p class="chart-status" data-chart-status role="status">{t.loading}</p>
   <p class="chart-status" data-curve-unavailable hidden>{t.curveUnavailable}</p>
+  <section class="reader-map"><h3>{t.reader.mapTitle}</h3><p>{t.reader.mapNote}</p><p data-reader-coverage class="detail">{t.reader.coverage} {heatmap.coverage.requested} / {heatmap.coverage.valid} / {heatmap.coverage.blocked} / {heatmap.coverage.missing}</p><div class="chart-root" data-chart="heatmap" role="img" aria-label={t.reader.mapTitle}></div>
+    <div class="reader-table"><table><caption>{t.reader.cellTable}</caption><thead><tr><th scope="col">{t.window}</th>{heatmap.fees.map(fee=><th scope="col">{fee} bps</th>)}</tr></thead><tbody data-reader-cells>{heatmap.windows.map(start=><tr><th scope="row">{start}</th>{heatmap.fees.map(fee=>{const cell=heatmap.cells.find(c=>c.windowStart===start&&c.feeBps===fee)!;return <td>{cell.result?display(cell.result.net_return):t.empty}</td>})}</tr>)}</tbody></table></div>
+  </section>
   <div class="chart-grid">{panels.map(key=><figure><figcaption>{t.charts[key]}</figcaption><div class="chart-root" data-chart={key} role="img" aria-label={t.charts[key]}></div><p>{t.chartNotes[key]}</p></figure>)}</div>
   <noscript><p>{t.noJs} <a href="#study">{t.table}</a></p></noscript>
+  <aside class="reader-glossary"><h3>{t.reader.glossaryTitle}</h3><dl>{t.reader.glossary.map(item=><div><dt>{item.term}</dt><dd>{item.meaning}</dd></div>)}</dl></aside>
   <div class="research-context"><div><h3>{t.factorTitle}</h3><p>{t.factorNote}</p></div><div><h3>{t.nextTitle}</h3><ul><li>{t.usNext}</li><li>{t.cryptoNext}</li><li>{t.mlNext}</li><li>{t.runtimeNext}</li></ul></div></div>
   <p class="detail">{t.historical} <a href={`${prefix}docs/project/#demo`}>{t.demoGuide}</a> · <a href="#study">{t.table}</a> · <a href={`${prefix}docs/study/`}>{t.method}</a></p>
   <script type="application/json" data-dashboard-config set:html={JSON.stringify({locale,t}).replaceAll("<","\u003c")} />
@@ -58,6 +68,15 @@ const panels=["nav","drawdown","folds","fees","scatter","turnover","exposure","h
 </script>
 <style>
 .performance-dashboard { padding:2rem 0 3rem; border-top:1px solid var(--line); }
+.reader-map { margin:2rem 0; border-block:1px solid var(--line); padding-block:1rem; min-width:0; }
+.reader-table { max-width:100%; overflow-x:auto; }
+.reader-table table { border-collapse:collapse; width:100%; font-variant-numeric:tabular-nums; }
+.reader-table th,.reader-table td { text-align:left; padding:.6rem; border-bottom:1px solid var(--line); white-space:nowrap; }
+.reader-table button { font:inherit; color:var(--ink); background:var(--paper); border:1px solid var(--line); padding:.4rem .6rem; cursor:pointer; border-radius:.2rem; }
+.reader-table button[aria-pressed="true"] { outline:2px solid var(--green); outline-offset:1px; }
+.reader-glossary dl { display:grid; grid-template-columns:1fr 1fr; gap:1rem 2rem; }
+.reader-glossary dt { font-weight:600; }.reader-glossary dd { margin:.25rem 0; color:var(--muted); }
+@media(max-width:500px) { .reader-glossary dl { grid-template-columns:1fr; } }
 .dashboard-heading { display:flex; gap:1.5rem; align-items:start; justify-content:space-between; }
 .dashboard-heading h2 { margin:.4rem 0 1rem; }
 .dashboard-heading>a { flex-shrink:0; margin-top:2rem; }

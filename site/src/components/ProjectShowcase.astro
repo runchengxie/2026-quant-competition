@@ -1,6 +1,7 @@
 ---
 import SiteNavigation from "./SiteNavigation.astro";
 import FactorResearch from "./FactorResearch.astro";
+import PredictiveResearch from "./PredictiveResearch.astro";
 import SiteLayout from "../layouts/SiteLayout.astro";
 import ValidationResults from "./ValidationResults.astro";
 import ExpansionResults from "./ExpansionResults.astro";
@@ -42,7 +43,7 @@ const guide = (directory: string) => file(`research/${directory}/README${locale 
   </div></header>}
     {view==='home'&&<EditorialHome locale={locale} />}
     {view==='strategies'&&<><nav class="section-nav" aria-label={t.strategyControls.headlines.navigation}>{['robustness','strategy-controls','ablation','performance','study'].map((id,index)=><a href={`#${id}`}><span>0{index+1}</span>{index===0?t.robustness.title:t.strategyControls.headlines.sections[index-1]}</a>)}</nav><RobustnessResults locale={locale} /><StrategyControls locale={locale} /><AblationResults locale={locale} /><PerformanceDashboard locale={locale} /><StudyResults locale={locale} /></>}
-    {view==='factors'&&<FactorResearch locale={locale} />}
+    {view==='factors'&&<><PredictiveResearch locale={locale} /><FactorResearch locale={locale} /></>}
     {view==='guide'&&<>    <section id="evidence" class="evidence-section">
       <div class="section-heading"><h2>{t.evidence.title}</h2><p>{t.evidence.intro}</p></div>
       <p class="detail">{t.evidence.scope}</p>

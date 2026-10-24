@@ -373,6 +373,7 @@ def test_documentation_routes_validate_locale_links_and_reject_unlisted_pages(tm
             "strategy-robustness",
             "data-refresh",
             "native-process-diagnostics",
+            "equity-predictive",
         ):
             suffix = f"docs/{slug + '/' if slug else ''}"
             p = built / prefix / suffix / "index.html"

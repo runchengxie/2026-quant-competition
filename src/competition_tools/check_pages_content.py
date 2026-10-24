@@ -70,6 +70,7 @@ class _PageMetadata(HTMLParser):
         self.robustness_facts: list[str | None] = []
         self.readiness_facts: list[str | None] = []
         self.editorial_facts: list[str | None] = []
+        self.predictive_facts: list[str | None] = []
         self.ids: set[str] = set()
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
@@ -88,6 +89,8 @@ class _PageMetadata(HTMLParser):
             self.readiness_facts.append(attributes.get("data-readiness-facts"))
         if "data-editorial-facts" in attributes:
             self.editorial_facts.append(attributes.get("data-editorial-facts"))
+        if "data-predictive-facts" in attributes:
+            self.predictive_facts.append(attributes.get("data-predictive-facts"))
         if ablation_id := attributes.get("data-ablation-id"):
             self.ablation_facts.append((ablation_id, attributes.get("data-facts")))
         if study_id := attributes.get("data-study-id"):
@@ -143,6 +146,11 @@ def _allowed_source(relative_path: PurePosixPath) -> bool:
         "tests/editorial-summary.test.mjs",
         "tests/editorial.spec.mjs",
         "src/data/strategy-readiness.v1.json",
+        "src/data/equity-predictive.v1.json",
+        "src/scripts/reader-charts.mjs",
+        "src/scripts/predictive-charts.mjs",
+        "tests/reader-charts.test.mjs",
+        "tests/reader-charts.spec.mjs",
         "src/scripts/strategy-controls-charts.mjs",
         "src/scripts/strategy-controls-state.mjs",
         "tests/strategy-controls-fixture.mjs",
@@ -578,6 +586,28 @@ def check_site(source_dir: Path, built_dir: Path) -> list[str]:
                     )
         except (OSError, ValueError, TypeError, KeyError, AttributeError):
             errors.append("invalid public editorial facts or output")
+    predictive_path = source_dir / "src/data/equity-predictive.v1.json"
+    if predictive_path.is_file():
+        from competition_tools.evaluation.predictive_publication import (
+            validate_public_predictive,
+        )
+
+        try:
+            predictive = validate_public_predictive(
+                json.loads(predictive_path.read_text(encoding="utf-8"))
+            )
+            for name in ("factors/index.html", "zh-CN/factors/index.html"):
+                page = _PageMetadata()
+                page.feed((built_dir / name).read_text(encoding="utf-8"))
+                if len(page.predictive_facts) != 1:
+                    raise ValueError("Missing predictive facts")
+                emitted = validate_public_predictive(
+                    json.loads(page.predictive_facts[0])
+                )
+                if emitted != predictive:
+                    raise ValueError("Changed predictive facts")
+        except (OSError, ValueError, TypeError, KeyError, AttributeError):
+            errors.append("invalid public predictive facts or output")
     if "document-routes.mjs" in source_paths:
         _validate_documentation(built_dir, output_paths, errors)
     _scan_sensitive(source_files, "source", errors)
@@ -607,6 +637,7 @@ def _validate_documentation(
             "strategy-robustness",
             "data-refresh",
             "native-process-diagnostics",
+            "equity-predictive",
         )
     }
     if "strategies/index.html" in output_paths:

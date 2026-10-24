@@ -60,7 +60,7 @@ test("curated documentation is integrated and language switches retain the artic
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   }
   await page.goto("/2026-quant-competition/docs/");
-  await expect(page.locator("main [data-doc-slug]")).toHaveCount(12);
+  await expect(page.locator("main [data-doc-slug]")).toHaveCount(13);
   const response=await page.goto("/2026-quant-competition/docs/internal-secret/");
   expect(response.status()).toBe(404);
 });

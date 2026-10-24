@@ -1,0 +1,28 @@
+---
+import facts from '../data/equity-predictive.v1.json';
+import en from '../i18n/en.json';
+import zh from '../i18n/zh-CN.json';
+const locale=Astro.props.locale==='zh-CN'?'zh-CN':'en';
+const t=(locale==='en'?en:zh).predictive;
+const format=new Intl.NumberFormat(locale,{maximumFractionDigits:4});
+const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+---
+<section id="equity-predictive" data-predictive-facts={JSON.stringify(facts)}>
+ <p class="eyebrow">{t.eyebrow}</p><h2>{t.title}</h2><p class="conclusion">{t.conclusion}</p>
+ <p>{t.scope}</p><p class="detail">{t.limit}</p>
+ <p>{facts.source_start} ～ {facts.source_end} · {facts.source_candidate_count} {t.identities} · {facts.unresolved_candidate_count} {t.unresolved} · {facts.fit_attempts} {t.fits}</p>
+ <figure><figcaption>{t.chartTitle}</figcaption><div data-predictive-chart role="img" aria-label={t.chartTitle}></div><p>{t.chartNote}</p></figure>
+ <div class="table-scroll"><table><caption>{t.tableTitle}</caption><thead><tr><th scope="col">{t.period}</th><th scope="col">{t.model}</th><th scope="col">{t.ic}</th><th scope="col">{t.mse}</th><th scope="col">{t.coverage}</th></tr></thead><tbody>{facts.folds.flatMap(f=>f.models.map(m=><tr><th scope="row">{f.start} ～ {f.end}</th><td>{t.models[m.model as keyof typeof t.models]}</td><td>{m.metrics.mean_daily_ic===null?t.undefined:format.format(m.metrics.mean_daily_ic)}</td><td>{format.format(m.metrics.mean_daily_mse!)}</td><td>{m.metrics.valid_ic_dates}/{m.metrics.requested_dates}</td></tr>))}</tbody></table></div>
+ <p class="detail">{t.countNote}</p><a href={`${prefix}docs/equity-predictive/`}>{t.method} ↗</a>
+ <script type="application/json" data-predictive-config set:html={JSON.stringify({locale,t}).replaceAll('<','\\u003c')} />
+</section>
+<script>
+ const root=document.getElementById('equity-predictive');
+ if(root){const observer=new IntersectionObserver(async entries=>{if(!entries.some(e=>e.isIntersecting))return;observer.disconnect();try{const {mountPredictive}=await import('../scripts/predictive-charts.mjs');mountPredictive(root);}catch(error){console.error('Predictive chart unavailable; table remains available',error);}}, {rootMargin:'200px'});observer.observe(root);}
+</script>
+<style>
+section { margin:2rem 0 4rem;border-top:1px solid var(--line);padding-top:2rem;min-width:0; }
+.conclusion {font-size:1.2rem;line-height:1.8;max-width:70ch} .detail,figure p {color:var(--muted);font-size:.9rem;line-height:1.8}
+figure{margin:2rem 0;min-width:0}figcaption{font-weight:600}[data-predictive-chart]{height:320px;width:100%;min-width:0;overflow:hidden}
+.table-scroll{overflow-x:auto;max-width:100%}table{border-collapse:collapse;width:100%;font-size:.85rem;font-variant-numeric:tabular-nums}td,th{padding:.65rem;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}caption{text-align:left;margin-bottom:.5rem}
+</style>

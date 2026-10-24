@@ -12,7 +12,8 @@ for(const locale of ["en","zh-CN"]){
     const root=page.locator("#performance");
     await root.scrollIntoViewIfNeeded();
     await expect(root).toHaveAttribute("data-ready","true");
-    await expect(root.locator("canvas")).toHaveCount(9);
+    await expect(root.locator('[data-chart]')).toHaveCount(10);
+    for(const chart of await root.locator('[data-chart]').all())await expect(chart.locator('canvas').first()).toBeVisible();
     await root.locator("[data-filter=market]").selectOption("crypto");
     await root.locator("[data-filter=strategy]").selectOption("trend_200d");
     await root.locator("[data-filter=fee]").selectOption("10");

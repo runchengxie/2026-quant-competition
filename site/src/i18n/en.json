@@ -278,7 +278,8 @@
       "observation-registry": "Manual observation registry",
       "strategy-robustness": "Robustness checks",
       "data-refresh": "Fresh data and observations",
-      "native-process-diagnostics": "Synthetic process timing"
+      "native-process-diagnostics": "Synthetic process timing",
+      "equity-predictive": "Equity prediction study"
     },
     "summaries": {
       "architecture": "Responsibilities, package boundaries and execution contracts.",
@@ -291,7 +292,8 @@
       "observation-registry": "Freeze candidates and preserve a continuous manual account.",
       "strategy-robustness": "US exclusions, recomputed crypto fees and ex-post volume checks.",
       "data-refresh": "Bounded request plans, fresh warmup and per-market protocol handoff.",
-      "native-process-diagnostics": "Separate synthetic startup, exit and timeout evidence."
+      "native-process-diagnostics": "Separate synthetic startup, exit and timeout evidence.",
+      "equity-predictive": "Read the source-candidate pool, fixed model protocol and three-period results."
     }
   },
   "dashboard": {
@@ -322,8 +324,8 @@
     "method": "Accounting and methods",
     "empty": "No completed result matches this selection.",
     "loadError": "Charts could not load. The published tables and documentation remain available.",
-    "factorTitle": "Strategy effects, before factor claims",
-    "factorNote": "Momentum and trend filters are tested strategies. IC, rank-IC, quantile spreads, signal decay and machine-learning test results have not been measured here. These charts do not establish independent factor efficacy.",
+    "factorTitle": "Read the separate prediction study",
+    "factorNote": "These curves describe the original momentum and trend allocation rules. The factor page separately reports the new Ridge/Elastic Net prediction study. Grouped returns and signal decay remain unmeasured.",
     "nextTitle": "Next research milestones",
     "usNext": "US stocks: inspect the fixed weekly/monthly comparison below. Momentum ranking, position caps and realistic fills still need separate protocols.",
     "cryptoNext": "Crypto spot: inspect the fixed trend overlays below and compare risk changes with exposure. Derivative and maker research needs new inputs and a separate protocol.",
@@ -353,8 +355,8 @@
       "cost_drag": "Cost drag"
     },
     "charts": {
-      "nav": "Selected-window NAV",
-      "drawdown": "Selected-window drawdown",
+      "nav": "How did value change in this period?",
+      "drawdown": "How far did value fall from its high?",
       "folds": "Return across independent windows",
       "fees": "Cost sensitivity · same window",
       "scatter": "Return versus drawdown · same market/cost",
@@ -413,7 +415,38 @@
       "positiveNet": "Positive net windows",
       "control": "Zero-cost control"
     },
-    "demoGuide": "Project guide and offline demos"
+    "demoGuide": "Project guide and offline demos",
+    "reader": {
+      "capital": "Show each window from 10,000",
+      "feeNote": "Fees apply to one-way traded value. At 20 bps, trading 10,000 currency units costs 20 units each time. Only previously calculated fee scenarios are available.",
+      "normalized": "Curve values start from a normalized value of 1 before the first scored move. Each window is a separate experiment.",
+      "capitalNote": "Each window starts with 10,000 units before the first scored move. Values use the selected market currency. Separate windows are never joined into an account.",
+      "mapTitle": "Which periods made money after costs?",
+      "mapNote": "Columns are calculated fee assumptions. Rows are independent periods. Each cell shows net return. Select a cell to inspect its exact period and fee below. Missing results stay unavailable.",
+      "cellTable": "Net return by period and fee; select a value to inspect it",
+      "missing": "No published result",
+      "glossaryTitle": "How to read these results",
+      "glossary": [
+        {
+          "term": "Net return",
+          "meaning": "The change over this period after the model’s trading costs."
+        },
+        {
+          "term": "Drawdown",
+          "meaning": "How far the value fell from its previous high. A deeper drop means a larger loss to recover."
+        },
+        {
+          "term": "Excess return",
+          "meaning": "The strategy’s return minus the stated reference rule’s return, in percentage points."
+        },
+        {
+          "term": "Turnover",
+          "meaning": "How much value was traded relative to portfolio value. More trading usually means more costs."
+        }
+      ],
+      "selected": "Selected period and fee",
+      "coverage": "Requested / completed / blocked or failed / undeclared combinations"
+    }
   },
   "ablation": {
     "title": "What changed when we changed one rule?",
@@ -580,7 +613,7 @@
   "factors": {
     "title": "Strategy results are available; factor validation is still pending",
     "conclusion": "Momentum and moving-average rules have been backtested. That does not yet show whether the underlying signals predict later returns consistently.",
-    "boundary": "A strategy backtest includes allocation and cost rules; it does not isolate a signal’s predictive ability. IC, rank-IC, grouped-return and signal-decay results have not been published.",
+    "boundary": "The stock prediction study above measures ranking separately. The four signals below still need their own IC, grouped-return and signal-decay tests.",
     "markets": [
       "US and Hong Kong stocks",
       "US and Hong Kong stocks",
@@ -604,7 +637,7 @@
         "Check different periods, markets and holding horizons on fresh data."
       ]
     ],
-    "noResults": "No IC, grouped-return or signal-decay scores are published here. We will add charts when the underlying tests have been run and reviewed.",
+    "noResults": "The four signals in this section have no published IC, grouped-return or signal-decay scores. Their future tests remain separate from the stock prediction study above.",
     "method": "Read definitions and research methods"
   },
   "dexFactors": {
@@ -885,5 +918,32 @@
     "unavailable": "Unavailable",
     "hkTitle": "Rebalancing frequency in Hong Kong momentum",
     "hkBody": "Daily and monthly rules have been compared within a fixed stock pool. The original windows and fees remain below; the strategy page retains the full comparison."
+  },
+  "predictive": {
+    "eyebrow": "Equity prediction study",
+    "title": "Can a simple model rank tomorrow’s moves?",
+    "conclusion": "Ridge had little ranking effect in the middle test period and a stronger positive effect in the last. The three periods do not establish a dependable trading advantage.",
+    "scope": "Monthly pools contain at most 500 source candidates selected using the previous 20 exchange sessions. Ridge and Elastic Net predict the next session’s observed first-to-last trade return using six daily features.",
+    "limit": "Security identity, historical security types, corporate actions and execution remain incompletely verified. This historical period was already explored. These prediction scores carry no accepted trading PnL.",
+    "identities": "source identity segments",
+    "unresolved": "unresolved segments",
+    "fits": "fit attempts",
+    "chartTitle": "Did higher model scores rank stronger next-session candidates?",
+    "chartNote": "Rank IC ranges from −1 to 1. Positive values mean higher scores tended to accompany stronger later returns. Zero means no ranking association. Missing bars have undefined scores; the table gives valid-date counts.",
+    "tableTitle": "All declared models and baselines across the same three periods",
+    "period": "Test period",
+    "model": "Model or rule",
+    "ic": "Mean daily rank IC",
+    "mse": "Mean daily squared error",
+    "coverage": "Valid IC dates / requested",
+    "undefined": "Undefined",
+    "countNote": "Each test period requests 20 exchange dates. A day needs at least 30 distinct candidates and nonconstant scores and labels for IC. Zero forecasts have undefined IC. Candidate pools change monthly, so distinct identities across a period can exceed 500.",
+    "method": "Read the data limits and exact protocol",
+    "models": {
+      "ridge": "Ridge",
+      "elastic_net": "Elastic Net",
+      "constant_zero": "Always predict zero",
+      "session_return_rank": "Rank by today’s move"
+    }
   }
 }

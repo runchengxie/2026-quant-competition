@@ -1,4 +1,6 @@
 import { Content as robustnessEn } from "../../../docs/research/strategy-robustness.md";
+import { Content as predictiveEn } from "../../../docs/research/equity-predictive.md";
+import { Content as predictiveZh } from "../../../docs/research/equity-predictive.zh-CN.md";
 import { Content as robustnessZh } from "../../../docs/research/strategy-robustness.zh-CN.md";
 import { Content as refreshEn } from "../../../docs/research/data-refresh.md";
 import { Content as refreshZh } from "../../../docs/research/data-refresh.zh-CN.md";
@@ -23,6 +25,8 @@ import { Content as observationEn } from "../../../docs/research/observation-reg
 import { Content as observationZh } from "../../../docs/research/observation-registry.zh-CN.md";
 
 const content={
+  "equity-predictive.en":predictiveEn,
+  "equity-predictive.zh-CN":predictiveZh,
   "strategy-robustness.en":robustnessEn,
   "strategy-robustness.zh-CN":robustnessZh,
   "data-refresh.en":refreshEn,
