@@ -56,6 +56,46 @@ def test_allows_bilingual_astro_sources_assets_and_build_output(tmp_path):
     assert check_site(source, built) == []
 
 
+def test_low_turnover_facts_are_required_for_both_views_and_languages(tmp_path):
+    source, built = make_site_trees(tmp_path)
+    snapshot = (
+        Path(__file__).resolve().parents[2] / "site/src/data/low-turnover.v1.json"
+    )
+    target = source / "src/data/low-turnover.v1.json"
+    target.parent.mkdir(parents=True)
+    target.write_text(snapshot.read_text(encoding="utf-8"), encoding="utf-8")
+    assert "invalid public low-turnover facts or output" in check_site(source, built)
+    facts = html.escape(snapshot.read_text(encoding="utf-8"), quote=True)
+    for topic in ("factors", "strategies"):
+        views = (
+            [("equity", "factor")]
+            if topic == "factors"
+            else [("equity", "strategy"), ("crypto", "strategy")]
+        )
+        for prefix, locale, other in (("", "en", "zh-CN/"), ("zh-CN/", "zh-CN", "")):
+            page = built / f"{prefix}{topic}/index.html"
+            page.parent.mkdir(parents=True, exist_ok=True)
+            sections = "".join(
+                f'<section data-lt-facts="{facts}" data-lt-market="{market}" data-lt-view="{view}"></section>'
+                for market, view in views
+            )
+            page.write_text(
+                rendered_page(locale, f"{BASE_PATH}/{other}{topic}/").replace(
+                    "</body>", sections + "</body>"
+                ),
+                encoding="utf-8",
+            )
+    assert check_site(source, built) == []
+    chinese = built / "zh-CN/strategies/index.html"
+    chinese.write_text(
+        chinese.read_text(encoding="utf-8").replace(
+            'data-lt-market="crypto"', 'data-lt-market="equity"'
+        ),
+        encoding="utf-8",
+    )
+    assert "invalid public low-turnover facts or output" in check_site(source, built)
+
+
 def test_incremental_aggregate_must_be_present_and_equal_on_both_topic_pages(tmp_path):
     source, built = make_site_trees(tmp_path)
     snapshot = (

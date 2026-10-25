@@ -21,7 +21,7 @@ test('incremental evidence keeps selectors charts tables and locales consistent'
   await expect(equity).toHaveAttribute('data-chart-ink','rgb(233, 231, 224)');
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBeTruthy();
   await equity.screenshot({path:testInfo.outputPath(`incremental-equity-${locale}.png`)});
-  await page.goto(`${prefix}strategies/`);
+  await page.goto(`${prefix}strategies/#incremental-crypto`);
   const crypto=page.locator('#incremental-crypto');
   await crypto.scrollIntoViewIfNeeded();
   await expect(crypto).toHaveAttribute('data-incremental-ready','true');

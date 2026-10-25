@@ -37,8 +37,8 @@
   "cryptoLimit": "Each 90-day window starts at normalized NAV1, denominated in USDT. Buy and hold and the fixed 60% allocation carry different risk from trend. The matched control matches target exposure at scheduled trades. Realized weights can drift afterwards. Final holdings are marked without a terminal sale.",
   "stressTitle": "Does the result depend on a few opportunities?",
   "share": "Largest asset share of positive price PnL",
-  "removed": "Return with the five best days held in cash",
-  "stressNote": "These are ex-post diagnostics. The five days are chosen after seeing their results and do not supply a usable timing rule. Asset shares use positive price PnL as the denominator.",
+  "removed": "Compounded return excluding the five best daily returns",
+  "stressNote": "These are ex-post diagnostics. The five highest daily returns are omitted mechanically; holdings and costs are not recalculated. The asset share uses positive price PnL as its denominator.",
   "qualityTitle": "What the input checks establish",
   "dailyRows": "Daily candidate rows",
   "unusable": "Rows without usable OHLC, including missing prices",
@@ -48,6 +48,23 @@
   "minuteScope": "The minute check covers one fixed row group, including pre/post-market records. Full conversion completion is the converter's reported status.",
   "future": "The future observation proposal is frozen and awaiting fresh data with verified availability. Historical replays remain a separate evidence stage.",
   "guide": "Read the data and comparison method",
-  "arms": {"equal_weight": "Equal weight", "reversal": "Simple reversal", "ridge": "Ridge", "elastic_net": "Elastic Net", "buy_hold_equal_weight": "Buy and hold", "fixed60_weekly": "60% allocation, weekly", "trend_weekly": "Weekly trend", "matched_weekly": "Weekly matched exposure"},
-  "reasons": {"EMPTY_DECISION_POOL": "No usable decision pool", "MODEL_UNAVAILABLE": "No selected model", "INVALID_SCORES": "Scores unavailable", "CONSTANT_SCORES": "Constant forecast cannot rank candidates", "INSUFFICIENT_DECISION_POOL": "Fewer than 50 candidates", "MISSING_EXECUTION_SESSION": "Execution session outside the retained range", "MISSING_SELECTED_OUTCOME": "A selected candidate has no usable outcome"}
+  "arms": {
+    "equal_weight": "Equal weight",
+    "reversal": "Simple reversal",
+    "ridge": "Ridge",
+    "elastic_net": "Elastic Net",
+    "buy_hold_equal_weight": "Buy and hold",
+    "fixed60_weekly": "60% allocation, weekly",
+    "trend_weekly": "Weekly trend",
+    "matched_weekly": "Weekly matched exposure"
+  },
+  "reasons": {
+    "EMPTY_DECISION_POOL": "No usable decision pool",
+    "MODEL_UNAVAILABLE": "No selected model",
+    "INVALID_SCORES": "Scores unavailable",
+    "CONSTANT_SCORES": "Constant forecast cannot rank candidates",
+    "INSUFFICIENT_DECISION_POOL": "Fewer than 50 candidates",
+    "MISSING_EXECUTION_SESSION": "Execution session outside the retained range",
+    "MISSING_SELECTED_OUTCOME": "A selected candidate has no usable outcome"
+  }
 }

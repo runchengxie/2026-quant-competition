@@ -4,7 +4,7 @@ test("hourly factor pilot keeps blocked facts equal across languages without pri
  let canonical;
  for(const locale of ["en","zh-CN"]){
   const prefix=`/2026-quant-competition/${locale==="en"?"":"zh-CN/"}`;
-  await page.goto(`${prefix}factors/`);
+  await page.goto(`${prefix}factors/#dex-factor-pilot`);
   const panel=page.locator("#dex-factor-pilot");
   await expect(panel).toBeVisible();
   const facts=JSON.parse(await panel.getAttribute("data-dex-facts"));

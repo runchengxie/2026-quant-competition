@@ -10,6 +10,8 @@ A daily CSV/YAML backtest laboratory with eight offline strategies: `sma_cross`,
 
 The optional [equity prediction study](../../docs/research/equity-predictive.md) adds a bounded Ridge/Elastic Net experiment over frozen source-candidate daily summaries. Install with `uv sync --locked --group dev --extra predictive`. Its aggregate prediction scores are separate from trading PnL. The default engine remains unchanged.
 
+The separate [holding-horizon experiment](../../docs/research/strategy-comparison.md) tests five/twenty-session labels and actual-unit portfolios with rank retention, cash-funded fees, terminal sales and known-action quarantine. `python -m equity_lab.predictive.holding_cli --help` describes the source-only reserved real-data entry. Consumed reservations cannot be repeated. The synthetic-only `equity_lab.predictive.holding_demo` and root `competition_tools.check_holding_delivery` exercise the installed file contract in predictive CI.
+
 From this directory, configure external `DATA_ROOT` and `UV_PROJECT_ENVIRONMENT`, then run:
 
 ```sh

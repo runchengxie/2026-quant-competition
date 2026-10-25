@@ -4,6 +4,8 @@ import FactorResearch from "./FactorResearch.astro";
 import PredictiveResearch from "./PredictiveResearch.astro";
 import IncrementalResearch from "./IncrementalResearch.astro";
 import ResearchComparison from "./ResearchComparison.astro";
+import LowTurnoverResearch from "./LowTurnoverResearch.astro";
+import ResearchTakeaways from "./ResearchTakeaways.astro";
 import SiteLayout from "../layouts/SiteLayout.astro";
 import ValidationResults from "./ValidationResults.astro";
 import ExpansionResults from "./ExpansionResults.astro";
@@ -20,11 +22,14 @@ import incrementalEn from "../i18n/incremental-en.json";
 import incrementalZh from "../i18n/incremental-zh-CN.json";
 import comparisonEn from "../i18n/comparison-en.json";
 import comparisonZh from "../i18n/comparison-zh-CN.json";
+import lowTurnoverEn from "../i18n/low-turnover-en.json";
+import lowTurnoverZh from "../i18n/low-turnover-zh-CN.json";
 interface Props { locale?: string; view?: "home"|"strategies"|"factors"|"guide" }
 const locale = Astro.props.locale === "zh-CN" ? "zh-CN" : "en";
 const t = locale === "zh-CN" ? zh : en;
 const incrementalText = locale === "zh-CN" ? incrementalZh : incrementalEn;
 const comparisonText = locale === "zh-CN" ? comparisonZh : comparisonEn;
+const marketText = locale === "zh-CN" ? lowTurnoverZh : lowTurnoverEn;
 const view=Astro.props.view??"home";
 const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
 const localePath=({home:'',strategies:'strategies/',factors:'factors/',guide:'docs/project/'})[view];
@@ -47,20 +52,31 @@ const guide = (directory: string) => file(`research/${directory}/README${locale 
   <main class:list={['showcase-main',`view-${view}`]}>
   {view!=='home'&&<header class="showcase-hero performance-hero"><div>
     <h1>{t.pages.titles[view]}</h1>
-    <p class="intro">{view==='home'?t.hero.intro:t.pages.intros[view]}</p><p class="hero-note">{t.hero.note}</p>
+    <p class="intro">{view==='home'?t.hero.intro:t.pages.intros[view]}</p><p class="hero-note">{view==='guide'?t.hero.note:marketText.marketScope}</p>
   </div></header>}
     {view==='home'&&<EditorialHome locale={locale} />}
+    {(view==='strategies'||view==='factors')&&<nav class="market-nav" data-market-navigation aria-label={marketText.marketNavigation}>
+      {(['HK','US','crypto'] as const).map(market=><a id={`tab-${market.toLowerCase()}`} href={`#market-${market.toLowerCase()}`} data-market-link={market} aria-controls={`market-${market.toLowerCase()}`}>{marketText.markets[market]}</a>)}
+    </nav>}
     {view==='strategies'&&<>
+      <section id="market-hk" class="market-panel" data-market-panel="HK" aria-labelledby="tab-hk">
+        <h2>{marketText.hkStrategyTitle}</h2><p>{marketText.hkStrategyBody}</p><ResearchTakeaways locale={locale} market="HK" compact /><a href={`${prefix}docs/strategies/`}>{marketText.hkLink} ↗</a>
+      </section>
+      <section id="market-us" class="market-panel" data-market-panel="US" aria-labelledby="tab-us"><p class="market-label">{marketText.markets.US}</p><LowTurnoverResearch locale={locale} market="equity" /></section>
+      <section id="market-crypto" class="market-panel" data-market-panel="crypto" aria-labelledby="tab-crypto"><p class="market-label">{marketText.markets.crypto}</p><LowTurnoverResearch locale={locale} market="crypto" /><ResearchComparison locale={locale} market="crypto" /><IncrementalResearch locale={locale} view="crypto" /></section>
+      <h2 class="history-heading">{marketText.history}</h2>
       <nav class="section-nav" aria-label={t.strategyControls.headlines.navigation}>
         <a href="#comparison-crypto"><span>01</span>{comparisonText.cryptoTitle}</a>
         <a href="#incremental-crypto"><span>02</span>{incrementalText.latest}</a>
         {['robustness','strategy-controls','ablation','performance','study'].map((id,index)=><a href={`#${id}`}><span>0{index+3}</span>{index===0?t.robustness.title:t.strategyControls.headlines.sections[index-1]}</a>)}
       </nav>
-      <ResearchComparison locale={locale} market="crypto" />
-      <IncrementalResearch locale={locale} view="crypto" />
       <RobustnessResults locale={locale} /><StrategyControls locale={locale} /><AblationResults locale={locale} /><PerformanceDashboard locale={locale} /><StudyResults locale={locale} />
     </>}
-    {view==='factors'&&<><ResearchComparison locale={locale} market="equity" /><IncrementalResearch locale={locale} view="equity" /><PredictiveResearch locale={locale} /><FactorResearch locale={locale} /></>}
+    {view==='factors'&&<>
+      <section id="market-hk" class="market-panel" data-market-panel="HK" aria-labelledby="tab-hk"><h2>{marketText.hkFactorTitle}</h2><p>{marketText.hkFactorBody}</p><a href={`${prefix}docs/strategies/`}>{marketText.hkLink} ↗</a></section>
+      <section id="market-us" class="market-panel" data-market-panel="US" aria-labelledby="tab-us"><p class="market-label">{marketText.markets.US}</p><LowTurnoverResearch locale={locale} market="equity" view="factor" /><ResearchComparison locale={locale} market="equity" /><IncrementalResearch locale={locale} view="equity" /><PredictiveResearch locale={locale} /><FactorResearch locale={locale} market="equity" /></section>
+      <section id="market-crypto" class="market-panel" data-market-panel="crypto" aria-labelledby="tab-crypto"><p class="market-label">{marketText.markets.crypto}</p><FactorResearch locale={locale} market="crypto" /></section>
+    </>}
     {view==='guide'&&<>    <section id="evidence" class="evidence-section">
       <div class="section-heading"><h2>{t.evidence.title}</h2><p>{t.evidence.intro}</p></div>
       <p class="detail">{t.evidence.scope}</p>
@@ -104,6 +120,10 @@ const guide = (directory: string) => file(`research/${directory}/README${locale 
     <aside class="competition-note"><div><h3>{t.rules.title}</h3><p>{t.rules.body}</p></div><a href={file("docs/competition/schedule-and-checklist.md")}>{t.rules.link} ↗</a></aside>
 </>}
   </main>
+  {(view==='strategies'||view==='factors')&&<script>
+    import {mountMarketPanels} from '../scripts/market-panels.mjs';
+    mountMarketPanels(document.querySelector('main'));
+  </script>}
   {view==='home'&&<script is:inline define:vars={{prefix,legacy}}>
     const followLegacy=()=>{
       let key;try{key=decodeURIComponent(location.hash.slice(1));}catch{return;}
@@ -126,6 +146,7 @@ const guide = (directory: string) => file(`research/${directory}/README${locale 
 </SiteLayout>
 
 <style>
+.market-nav{display:flex;gap:2rem;border-bottom:1px solid var(--line);margin:0 0 1.2rem;padding:.5rem 0}.market-nav a{color:var(--muted);padding:.55rem 0;text-decoration:none}.market-nav a[aria-selected=true]{color:var(--ink);border-bottom:2px solid var(--ink)}.market-nav a:focus-visible{outline:2px solid var(--ink);outline-offset:4px}.market-label{font-size:.8rem;color:var(--muted);margin:.3rem 0}.market-panel{min-width:0}[data-market-panel][hidden]{display:none!important}.history-heading{padding-top:2rem;border-top:1px solid var(--ink)}
 .showcase-main.view-strategies>.section-nav{margin-bottom:1rem;padding-bottom:.6rem}
 .showcase-hero.performance-hero{padding-top:0;padding-bottom:1rem}.performance-hero h1{font-size:clamp(1.9rem,3vw,2.5rem);line-height:1.2;max-width:58rem}.performance-hero .hero-actions{margin-top:1.1rem}.performance-hero .hero-note{margin:.3rem 0 0}
 .evidence-section{border-top:1px solid var(--line);padding-top:2rem}.reader-glossary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.reader-glossary div{border-left:2px solid var(--line);padding-left:1rem}.reader-glossary dt{font-weight:650}.reader-glossary dd{margin:.4rem 0;color:var(--muted)}.baseline-summary{margin:2rem 0}.baseline-summary>summary{cursor:pointer;padding:1rem;border:1px solid var(--line);border-radius:.5rem}@media(max-width:700px){.reader-glossary{grid-template-columns:1fr}}

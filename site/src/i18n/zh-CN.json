@@ -281,7 +281,7 @@
       "native-process-diagnostics": "合成进程计时",
       "equity-predictive": "股票预测研究",
       "incremental-research": "反转、模型与每周调仓",
-      "strategy-comparison": "选股、费用与执行延迟"
+      "strategy-comparison": "调仓频率、模型预测与收益分解"
     },
     "summaries": {
       "architecture": "一个仓库按工作流划分模块，执行通过单独审查的目标文件接入。",
@@ -297,7 +297,7 @@
       "native-process-diagnostics": "分别记录合成进程的启动、退出和超时。",
       "equity-predictive": "查看候选池、模型检验方法和三段实际结果。",
       "incremental-research": "查看模型增加了多少排序信息，以及加密少交易以后省下多少成本。",
-      "strategy-comparison": "比较日内选股成本、加密持币对照和晚一期执行，保留无法比较的结果。"
+      "strategy-comparison": "低换手机器学习、成本承受能力与加密记账贡献，以及尚未补齐的观察输入。"
     }
   },
   "dashboard": {
@@ -608,8 +608,8 @@
       "guide": "项目使用与离线演示"
     },
     "intros": {
-      "strategies": "加密每周调仓减少了买卖次数，相对等权对照的收益优势仍不明确。",
-      "factors": "这批样本里，增加特征给 Ridge 带来的帮助很小，尚未证实稳定的交易优势。",
+      "strategies": "美股低换手模型还没显示稳定优势。加密收益需要连同市场涨跌和仓位一起看。",
+      "factors": "美股模型的排序能力在不同窗口中不稳定。港股与加密的独立因子证据仍有缺口。",
       "guide": "先用虚构数据跑一个离线演示。券商执行需要单独配置，并在人工监督下检查。"
     },
     "guideSummary": "离线演示、数据依据、研究候选和执行边界。"

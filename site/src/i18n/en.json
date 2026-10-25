@@ -281,7 +281,7 @@
       "native-process-diagnostics": "Synthetic process timing",
       "equity-predictive": "Equity prediction study",
       "incremental-research": "Reversal, models and weekly trading",
-      "strategy-comparison": "Selection, costs and execution delay"
+      "strategy-comparison": "Trading frequency, prediction and attribution"
     },
     "summaries": {
       "architecture": "One repository, workflow modules and a separate reviewed execution handoff.",
@@ -297,7 +297,7 @@
       "native-process-diagnostics": "Separate synthetic startup, exit and timeout evidence.",
       "equity-predictive": "Read the source-candidate pool, fixed model protocol and three-period results.",
       "incremental-research": "Check what learned models add and how less frequent crypto trading changes costs.",
-      "strategy-comparison": "Compare daily stock-selection costs, crypto holding controls and delayed execution, with unavailable results retained."
+      "strategy-comparison": "Bounded holding-horizon models, exact cost tolerance, crypto PnL components and unresolved observation inputs."
     }
   },
   "dashboard": {
@@ -608,8 +608,8 @@
       "guide": "Project guide and offline demos"
     },
     "intros": {
-      "strategies": "Weekly crypto trading cut turnover. Its edge over equal weight is unclear.",
-      "factors": "Extra features added little to Ridge in this sample. No dependable trading advantage is established.",
+      "strategies": "US lower-turnover models have not shown a stable advantage. Crypto returns need to be read alongside market moves and exposure.",
+      "factors": "US model rankings change across windows. Independent Hong Kong and crypto factor evidence is still incomplete.",
       "guide": "Start with an offline demo using made-up data. Broker execution needs separate setup and supervised checks."
     },
     "guideSummary": "Offline demonstrations, data evidence, research candidates and execution boundaries."

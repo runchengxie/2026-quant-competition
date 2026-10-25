@@ -6,7 +6,7 @@ for(const locale of ['en','zh-CN'])for(const market of ['equity','crypto']){
  test(`${locale} ${market}: costs and timing retain exact facts, missing cells and readable charts`,async({page},testInfo)=>{
   const errors=[];page.on('pageerror',error=>errors.push(error.message));
   const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`,topic=market==='equity'?'factors':'strategies';
-  await page.goto(`${prefix}${topic}/`);
+  await page.goto(`${prefix}${topic}/#comparison-${market}`);
   const root=page.locator(`#comparison-${market}`);
   await root.scrollIntoViewIfNeeded();
   await expect(root).toHaveAttribute('data-comparison-ready','true');

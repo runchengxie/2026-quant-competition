@@ -73,6 +73,7 @@ class _PageMetadata(HTMLParser):
         self.predictive_facts: list[str | None] = []
         self.incremental_facts: list[str | None] = []
         self.comparison_facts: list[str | None] = []
+        self.low_turnover_facts: list[tuple[str | None, str | None, str | None]] = []
         self.ids: set[str] = set()
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
@@ -97,6 +98,14 @@ class _PageMetadata(HTMLParser):
             self.incremental_facts.append(attributes.get("data-incremental-facts"))
         if "data-comparison-facts" in attributes:
             self.comparison_facts.append(attributes.get("data-comparison-facts"))
+        if "data-lt-facts" in attributes:
+            self.low_turnover_facts.append(
+                (
+                    attributes.get("data-lt-market"),
+                    attributes.get("data-lt-view"),
+                    attributes.get("data-lt-facts"),
+                )
+            )
         if ablation_id := attributes.get("data-ablation-id"):
             self.ablation_facts.append((ablation_id, attributes.get("data-facts")))
         if study_id := attributes.get("data-study-id"):
@@ -155,6 +164,14 @@ def _allowed_source(relative_path: PurePosixPath) -> bool:
         "src/data/equity-predictive.v1.json",
         "src/data/incremental-research.v1.json",
         "src/data/strategy-comparison.v1.json",
+        "src/data/low-turnover.v1.json",
+        "src/scripts/low-turnover-state.mjs",
+        "src/scripts/low-turnover-charts.mjs",
+        "src/scripts/market-panels.mjs",
+        "src/i18n/low-turnover-en.json",
+        "src/i18n/low-turnover-zh-CN.json",
+        "tests/low-turnover.test.mjs",
+        "tests/low-turnover.spec.mjs",
         "src/scripts/comparison-charts.mjs",
         "src/scripts/comparison-state.mjs",
         "src/i18n/comparison-en.json",
@@ -680,6 +697,38 @@ def check_site(source_dir: Path, built_dir: Path) -> list[str]:
                     raise ValueError("Changed comparison facts")
         except (OSError, ValueError, TypeError, KeyError, AttributeError):
             errors.append("invalid public comparison facts or output")
+    low_turnover_path = source_dir / "src/data/low-turnover.v1.json"
+    if low_turnover_path.is_file():
+        from .evaluation.low_turnover_publication import parse_reviewed
+
+        try:
+            expected = parse_reviewed(low_turnover_path.read_text(encoding="utf-8"))
+            for topic in ("factors", "strategies"):
+                expected_views = (
+                    {("equity", "factor")}
+                    if topic == "factors"
+                    else {("equity", "strategy"), ("crypto", "strategy")}
+                )
+                for prefix in ("", "zh-CN/"):
+                    page = _PageMetadata()
+                    page.feed(
+                        (built_dir / f"{prefix}{topic}/index.html").read_text(
+                            encoding="utf-8"
+                        )
+                    )
+                    if (
+                        len(page.low_turnover_facts) != len(expected_views)
+                        or {(m, v) for m, v, _ in page.low_turnover_facts}
+                        != expected_views
+                    ):
+                        raise ValueError("Missing market/view research facts")
+                    if any(
+                        parse_reviewed(raw) != expected
+                        for _, _, raw in page.low_turnover_facts
+                    ):
+                        raise ValueError("Changed low-turnover facts")
+        except (OSError, ValueError, TypeError, KeyError, AttributeError):
+            errors.append("invalid public low-turnover facts or output")
     if "document-routes.mjs" in source_paths:
         _validate_documentation(built_dir, output_paths, errors)
     _scan_sensitive(source_files, "source", errors)

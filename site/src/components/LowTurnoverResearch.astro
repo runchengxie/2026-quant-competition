@@ -1,0 +1,92 @@
+---
+import facts from '../data/low-turnover.v1.json';
+import rawFacts from '../data/low-turnover.v1.json?raw';
+import en from '../i18n/low-turnover-en.json';
+import zh from '../i18n/low-turnover-zh-CN.json';
+import {bufferSummary} from '../scripts/low-turnover-state.mjs';
+const locale=Astro.props.locale==='zh-CN'?'zh-CN':'en';
+const market=Astro.props.market==='crypto'?'crypto':'equity';
+const view=Astro.props.view==='factor'?'factor':'strategy';
+const t=locale==='en'?en:zh;
+const windows=[...new Map(facts[market].accounts.map(row=>[row.window,row.end])).entries()].sort();
+const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+const number=(value:number|null|undefined,digits=2)=>value==null?t.unavailable:new Intl.NumberFormat(locale,{minimumFractionDigits:digits,maximumFractionDigits:digits}).format(value);
+const pct=(value:number|null|undefined)=>value==null?t.unavailable:`${number(value*100)}%`;
+const arm=(name:string)=>t.arms[name as keyof typeof t.arms];
+const summary=bufferSummary(facts,{horizon:5,fee:20,delay:0});
+const substitute=(text:string,values:Record<string,number>)=>Object.entries(values).reduce((result,[key,value])=>result.replaceAll(`{${key}}`,String(value)),text);
+---
+<section id={`holding-${market}`} data-lt-facts={rawFacts} data-lt-market={market} data-lt-view={view}>
+ <p class="evidence-label">{t.retrospective}</p>
+ <h2>{market==='crypto'?t.cryptoTitle:view==='factor'?t.factorTitle:t.stockTitle}</h2>
+ <p class="conclusion">{market==='crypto'?t.cryptoConclusion:view==='factor'?t.factorConclusion:t.stockConclusion}</p>
+ <div class="lt-controls">
+  <label>{t.window}<select data-lt-window>{windows.map(([start,end])=><option value={start}>{start} ～ {end}</option>)}</select></label>
+  {market==='equity'&&<label>{t.horizon}<select data-lt-horizon><option value="5">{t.five}</option><option value="20">{t.twenty}</option></select></label>}
+  {view==='strategy'&&<>
+   <label>{t.fee}<select data-lt-fee>{(market==='equity'?[0,20,40]:[0,35,50]).map(fee=><option value={fee} selected={fee===(market==='equity'?20:35)}>{fee} bps</option>)}</select></label>
+   <label>{t.delay}<select data-lt-delay><option value="0">{t.original}</option><option value="1">{t.late}</option></select></label>
+   {market==='equity'&&<label>{t.buffer}<select data-lt-buffer><option value="0">{t.buffer0}</option><option value="20" selected>{t.buffer20}</option></select></label>}
+  </>}
+ </div>
+ <div class="lt-plots">
+  <figure><figcaption>{market==='crypto'?t.attributionChart:view==='factor'?t.icChart:t.returnChart}</figcaption><div data-lt-chart="primary" role="img" aria-label={market==='crypto'?t.attributionChart:view==='factor'?t.icChart:t.returnChart}></div></figure>
+  <figure><figcaption>{market==='crypto'?t.exposureChart:view==='factor'?t.mseChart:t.costChart}</figcaption><div data-lt-chart="secondary" role="img" aria-label={market==='crypto'?t.exposureChart:view==='factor'?t.mseChart:t.costChart}></div></figure>
+ </div>
+ <p class="detail">{t.chartNote}</p>
+ {market==='equity'&&view==='strategy'&&<>
+  <p class="detail" data-lt-buffer-summary>{substitute(t.bufferSummary,summary)}</p>
+  <p class="detail">{t.bufferHelp}</p><p class="detail">{t.holdingMethod}</p><p class="detail">{t.gridMethod}</p>
+ </>}
+ {market==='equity'&&view==='factor'&&<><p class="detail">{t.factorMethod}</p><p class="detail">{t.factorLimit}</p></>}
+ {market==='crypto'&&<><p class="detail">{t.attributionMethod}</p><p class="detail">{t.attributionLimit} {t.cryptoTiming}</p></>}
+ <div class="lt-table-scroll"><table>
+ {market==='equity'&&view==='strategy'&&<>
+  <thead><tr>{[t.window,t.horizon,t.model,t.buffer,t.fee,t.delay,t.return,t.drawdown,t.turnover,t.costCapital,t.coverage,t.status].map(label=><th scope="col">{label}</th>)}</tr></thead>
+  <tbody>{facts.equity.accounts.map(row=><tr data-lt-account data-window={row.window} data-horizon={row.horizon} data-fee={row.fee_bps} data-delay={row.delay} data-buffer={row.buffer} data-arm={row.arm}>
+   <th scope="row">{row.window} ～ {row.end}</th><td>{row.horizon}</td><td>{arm(row.arm)}</td><td>{row.buffer}</td><td>{row.fee_bps} bps</td><td>{row.delay}</td>
+   <td>{pct(row.metrics?.net_return)}</td><td>{pct(row.metrics?.max_drawdown)}</td><td>{number(row.metrics?.turnover)}</td><td>{pct(row.metrics?.total_costs)}</td><td>{row.valid_dates}/{row.requested_dates}</td><td>{row.reason?t.reasons[row.reason as keyof typeof t.reasons]:t.complete}</td>
+  </tr>)}</tbody>
+ </>}
+ {market==='equity'&&view==='factor'&&<>
+  <thead><tr>{[t.window,t.horizon,t.model,t.ic,t.mse,t.icDays,t.status].map(label=><th scope="col">{label}</th>)}</tr></thead>
+  <tbody>{facts.equity.models.map(row=><tr data-lt-model data-window={row.window} data-horizon={row.horizon}>
+   <th scope="row">{row.window} ～ {row.end}</th><td>{row.horizon}</td><td>{arm(row.model)}</td><td>{number(row.metrics?.mean_daily_ic,4)}</td><td>{number(row.metrics?.mean_daily_mse,6)}</td><td>{row.metrics?.valid_ic_dates??0}/40</td><td>{row.status==='completed'?t.complete:t.unavailable}</td>
+  </tr>)}</tbody>
+ </>}
+ {market==='crypto'&&<>
+  <thead><tr>{[t.window,t.model,t.fee,t.delay,t.return,t.market,t.exposure,t.selection,t.cost,t.exposureChart].map(label=><th scope="col">{label}</th>)}</tr></thead>
+  <tbody>{facts.crypto.accounts.map(row=><tr data-lt-account data-window={row.window} data-fee={row.fee_bps} data-delay={row.delay}>
+   <th scope="row">{row.window} ～ {row.end}</th><td>{arm(row.arm)}</td><td>{row.fee_bps} bps</td><td>{row.delay}</td><td>{pct(row.net_return)}</td><td>{pct(row.components.market)}</td><td>{pct(row.components.exposure)}</td><td>{pct(row.components.selection)}</td><td>{pct(row.components.cost)}</td><td>{pct(row.mean_post_trade_exposure)}</td>
+  </tr>)}</tbody>
+ </>}
+ </table></div>
+ {market==='equity'&&<>
+  <p class="detail">{t.modelAvailability}</p>
+  {view==='strategy'&&<>
+   <h3>{t.thresholdTitle}</h3><p class="detail">{t.thresholdBody}</p>
+   <div class="lt-table-scroll"><table><thead><tr>{[t.window,t.model,t.delay,t.gross,t.threshold].map(label=><th scope="col">{label}</th>)}</tr></thead>
+   <tbody>{facts.cost_diagnostics.accounts.map(row=><tr><th scope="row">{row.window}</th><td>{arm(row.arm)}</td><td>{row.delay}</td><td>{pct(row.gross_return)}</td><td>{row.status==='blocked'?t.unavailable:row.break_even_one_way_bps===null?t.grossLoss:`${number(row.break_even_one_way_bps)} bps`}</td></tr>)}</tbody></table></div>
+  </>}
+  <h3>{t.qualityTitle}</h3><dl class="lt-quality">{[[t.identity,facts.security.unresolved_candidate_days],[t.primary,facts.security.primary_announcements_reviewed],[t.actionMatches,facts.security.seed_split_boundary_matches],[t.jumps,facts.security.large_raw_boundary_jumps]].map(([label,value])=><div><dt>{label}</dt><dd>{number(Number(value),0)}</dd></div>)}</dl><p class="detail">{t.qualityBody}</p>
+ </>}
+ <h3>{t.observationTitle}</h3><p class="detail">{t.observationBody}</p>
+ <div class="lt-links"><a href={`${prefix}docs/strategy-comparison/`}>{t.guide} ↗</a>{market==='equity'&&<a href={`${prefix}${view==='factor'?'strategies':'factors'}/#market-us`}>{view==='factor'?t.strategyLink:t.factorLink} ↗</a>}</div>
+ <script type="application/json" data-lt-config set:html={JSON.stringify({locale,t}).replaceAll('<','\\u003c')}/>
+</section>
+<script>
+ document.querySelectorAll('[data-lt-facts]').forEach(root=>{
+  const observer=new IntersectionObserver(async entries=>{
+   if(!entries.some(entry=>entry.isIntersecting))return;observer.disconnect();
+   try{const {mountLowTurnover}=await import('../scripts/low-turnover-charts.mjs');mountLowTurnover(root);}
+   catch(error){console.error('Research charts unavailable; complete evidence tables remain readable',error);root.setAttribute('data-lt-ready','error');}
+  },{rootMargin:'200px'});observer.observe(root);
+ });
+</script>
+<style>
+ section{min-width:0;margin:0 0 3rem;padding-top:.2rem}h2{max-width:44ch;margin:.4rem 0;line-height:1.35}.evidence-label{font-size:.75rem;color:var(--muted);margin:.5rem 0}.conclusion{font-size:1.15rem;line-height:1.8;max-width:76ch;margin:.6rem 0}.detail{font-size:.9rem;color:var(--muted);line-height:1.85;max-width:90ch}
+ .lt-controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.8rem;margin:1rem 0}.lt-controls label{display:grid;align-content:end;gap:.4rem;font-size:.78rem;min-width:0}.lt-controls select{min-width:0;width:100%;max-width:100%;font:inherit;padding:.65rem;color:var(--ink);background:var(--paper);border:1px solid var(--line)}
+ .lt-plots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.5rem}figure{margin:.6rem 0;min-width:0}figcaption{font-size:.95rem;line-height:1.6}[data-lt-chart]{width:100%;height:330px;overflow:hidden;min-width:0}
+ .lt-table-scroll{max-width:100%;overflow-x:auto;margin:1rem 0 2rem}table{width:100%;border-collapse:collapse;font-size:.78rem;font-variant-numeric:tabular-nums}th,td{white-space:nowrap;text-align:left;padding:.65rem;border-bottom:1px solid var(--line)}.lt-quality{display:flex;flex-wrap:wrap;gap:1.8rem}.lt-quality div{max-width:24ch}.lt-quality dt{font-size:.78rem;color:var(--muted)}.lt-quality dd{font-size:1.45rem;font-variant-numeric:tabular-nums;margin:.5rem 0}.lt-links{display:flex;gap:1rem;flex-wrap:wrap;font-size:.88rem}[hidden]{display:none!important}
+ @media(max-width:850px){.lt-plots{grid-template-columns:minmax(0,1fr)}}@media(max-width:500px){.lt-controls{grid-template-columns:minmax(0,1fr)}[data-lt-chart]{height:300px}}
+</style>

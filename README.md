@@ -16,7 +16,7 @@ New here? Start with an offline example. It uses made-up data, runs on your comp
 | Understand the existing results | [Research results and limitations](docs/research/strategy-validation-2026-10-19.md) |
 | Inspect the latest sensitivity checks | [Robustness results](docs/research/strategy-robustness.md) and [fresh-data steps](docs/research/data-refresh.md) |
 | Compare simple reversal, learned signals and weekly crypto trading | [Incremental research](docs/research/incremental-research.md) |
-| Check daily selection costs and delayed execution | [Fixed strategy comparison](docs/research/strategy-comparison.md) |
+| Check holding horizons, model scores, costs and crypto attribution | [Strategy comparison](docs/research/strategy-comparison.md) |
 | Check how cash, shares and fees affect a result | [Accounting comparison](docs/research/accounting-comparison.md) |
 
 Trying a strategy on past prices is called a backtest. It helps you inspect the strategy's behavior, but it cannot promise future returns.

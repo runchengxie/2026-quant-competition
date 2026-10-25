@@ -9,7 +9,7 @@ from itertools import product
 from .study_identity import canonical_hash
 from .research_diagnostics import match
 
-REVIEWED_SHA256 = "0" * 64
+REVIEWED_SHA256 = "fa7e00c9b9582caf7c6656e5151520cde588304dc523b28953e9eeaf22d2a6e2"
 VARIANTS = (
     ("equal_weight", 0),
     *((a, b) for a in ("reversal", "ridge", "elastic_net") for b in (0, 20)),

@@ -80,6 +80,9 @@ for(const locale of ['en','zh-CN'])test(`${locale}: editorial topic pages retain
   if(route==='strategies/'){
    await expect(page.locator('.section-nav a')).toHaveCount(7);
    await expect(page.locator('.section-nav a').first()).toHaveAttribute('href','#comparison-crypto');
+   await expect(page.locator('#holding-equity')).toHaveAttribute('data-lt-ready','true');
+   await page.locator('[data-market-link=crypto]').click();
+   await page.locator('#comparison-crypto').scrollIntoViewIfNeeded();
    await expect(page.locator('#comparison-crypto')).toHaveAttribute('data-comparison-ready','true');
    await page.locator('#incremental-crypto').scrollIntoViewIfNeeded();
    await expect(page.locator('#incremental-crypto')).toHaveAttribute('data-incremental-ready','true');
@@ -87,7 +90,7 @@ for(const locale of ['en','zh-CN'])test(`${locale}: editorial topic pages retain
    await expect(page.locator('#robustness')).toHaveAttribute('data-ready','true');
    await page.evaluate(()=>window.scrollTo(0,0));
    expect(await page.evaluate(()=>scrollY)).toBe(0);
-   const core=await page.locator('#comparison-crypto [data-cmp-chart]').first().boundingBox();
+   const core=await page.locator('#holding-crypto [data-lt-chart]').first().boundingBox();
    expect(core.y).toBeLessThan(800);
    await expect(page.locator('[data-study-id]')).toHaveCount(318);
    await expect(page.locator('[data-ablation-id]')).toHaveCount(678);

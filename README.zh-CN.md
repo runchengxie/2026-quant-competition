@@ -16,7 +16,7 @@
 | 看懂已有结果和它们的限制 | [研究结果说明](docs/research/strategy-validation-2026-10-19.zh-CN.md) |
 | 查看最新的敏感性检查 | [稳健性结果](docs/research/strategy-robustness.zh-CN.md)与[补数据步骤](docs/research/data-refresh.zh-CN.md) |
 | 比较简单反转、机器学习和加密每周调仓 | [反转与周频研究](docs/research/incremental-research.zh-CN.md) |
-| 查看日内选股扣费后怎样，晚一期执行会怎样 | [固定策略比较](docs/research/strategy-comparison.zh-CN.md) |
+| 查看持仓期限、模型预测、成本与加密收益分解 | [策略比较](docs/research/strategy-comparison.zh-CN.md) |
 | 看看现金、股数和手续费怎样影响结果 | [记账对照](docs/research/accounting-comparison.zh-CN.md) |
 
 拿过去的行情试跑策略，通常叫作回测。它可以帮助你检查策略会怎样买卖，结果好看也不能保证以后赚钱。
