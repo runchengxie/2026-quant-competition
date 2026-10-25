@@ -74,10 +74,13 @@ class _PageMetadata(HTMLParser):
         self.incremental_facts: list[str | None] = []
         self.comparison_facts: list[str | None] = []
         self.low_turnover_facts: list[tuple[str | None, str | None, str | None]] = []
+        self.progress_facts: list[str | None] = []
         self.ids: set[str] = set()
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         attributes = dict(attrs)
+        if "data-progress-facts" in attributes:
+            self.progress_facts.append(attributes.get("data-progress-facts"))
         if attributes.get("id"):
             self.ids.add(attributes["id"])
         if "data-dashboard-selected" in attributes:
@@ -165,6 +168,10 @@ def _allowed_source(relative_path: PurePosixPath) -> bool:
         "src/data/incremental-research.v1.json",
         "src/data/strategy-comparison.v1.json",
         "src/data/low-turnover.v1.json",
+        "src/data/evidence-followup.v1.json",
+        "src/i18n/followup-en.json",
+        "src/i18n/followup-zh-CN.json",
+        "src/scripts/chart-axis.mjs",
         "src/scripts/low-turnover-state.mjs",
         "src/scripts/low-turnover-charts.mjs",
         "src/scripts/market-panels.mjs",
@@ -729,6 +736,31 @@ def check_site(source_dir: Path, built_dir: Path) -> list[str]:
                         raise ValueError("Changed low-turnover facts")
         except (OSError, ValueError, TypeError, KeyError, AttributeError):
             errors.append("invalid public low-turnover facts or output")
+    followup_path = source_dir / "src/data/evidence-followup.v1.json"
+    if followup_path.is_file():
+        from .evaluation.followup_publication import (
+            parse_reviewed as parse_followup,
+            summary,
+        )
+
+        try:
+            expected = summary(
+                parse_followup(followup_path.read_text(encoding="utf-8"))
+            )
+            for prefix in ("", "zh-CN/"):
+                for topic in ("", "strategies/", "factors/"):
+                    page = _PageMetadata()
+                    page.feed(
+                        (built_dir / f"{prefix}{topic}index.html").read_text(
+                            encoding="utf-8"
+                        )
+                    )
+                    if len(page.progress_facts) != 1 or not _same_editorial_facts(
+                        json.loads(page.progress_facts[0]), expected
+                    ):
+                        raise ValueError("Missing or changed progress facts")
+        except (OSError, ValueError, TypeError, KeyError, AttributeError):
+            errors.append("invalid public follow-up facts or output")
     if "document-routes.mjs" in source_paths:
         _validate_documentation(built_dir, output_paths, errors)
     _scan_sensitive(source_files, "source", errors)

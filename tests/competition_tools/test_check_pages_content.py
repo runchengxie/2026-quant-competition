@@ -96,6 +96,44 @@ def test_low_turnover_facts_are_required_for_both_views_and_languages(tmp_path):
     assert "invalid public low-turnover facts or output" in check_site(source, built)
 
 
+def test_followup_progress_is_required_on_all_six_localized_pages(tmp_path):
+    from competition_tools.evaluation.followup_publication import (
+        summary,
+        parse_reviewed,
+    )
+
+    source, built = make_site_trees(tmp_path)
+    snapshot = (
+        Path(__file__).resolve().parents[2] / "site/src/data/evidence-followup.v1.json"
+    )
+    target = source / "src/data/evidence-followup.v1.json"
+    target.parent.mkdir(parents=True)
+    target.write_text(snapshot.read_text(encoding="utf-8"), encoding="utf-8")
+    assert "invalid public follow-up facts or output" in check_site(source, built)
+    facts = html.escape(
+        json.dumps(summary(parse_reviewed(snapshot.read_text(encoding="utf-8")))),
+        quote=True,
+    )
+    for prefix, locale, other in (("", "en", "zh-CN/"), ("zh-CN/", "zh-CN", "")):
+        for topic in ("", "strategies/", "factors/"):
+            path = built / f"{prefix}{topic}index.html"
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(
+                rendered_page(locale, f"{BASE_PATH}/{other}{topic}")
+                + f'<section data-progress-facts="{facts}"></section>',
+                encoding="utf-8",
+            )
+    assert check_site(source, built) == []
+    path = built / "zh-CN/factors/index.html"
+    path.write_text(
+        path.read_text(encoding="utf-8").replace(
+            "data-progress-facts", "data-unreviewed-facts"
+        ),
+        encoding="utf-8",
+    )
+    assert "invalid public follow-up facts or output" in check_site(source, built)
+
+
 def test_incremental_aggregate_must_be_present_and_equal_on_both_topic_pages(tmp_path):
     source, built = make_site_trees(tmp_path)
     snapshot = (

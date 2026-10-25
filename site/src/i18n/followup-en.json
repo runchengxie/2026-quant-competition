@@ -1,0 +1,23 @@
+{
+ "title":"What the latest checks found",
+ "conclusion":"Longer validation completed the model comparison. The stock models still show no consistent ranking advantage.",
+ "stock":"US stocks",
+ "stockBody":"All eight model blocks produced predictions. Of 168 account estimates, 156 completed and 12 stopped at known corporate-action boundaries. All four 20-session model rank correlations were negative.",
+ "pool":"Stock input review",
+ "poolBody":"Broker contract records exist for ten candidates. None passes the full historical identity, security-type, corporate-action and availability review yet. This stock study remains a raw-price research proxy.",
+ "crypto":"Crypto controls",
+ "cryptoBody":"Trend accounts beat the matched-exposure control in 33 of 72 same-condition comparisons. The median return difference was zero. These controls share target exposure, not identical volatility or execution risk.",
+ "observation":"New observation preparation",
+ "observationBody":"The new recovery reused 344 responses and fetched 40 more, totaling 6,443 new body bytes. Warmup now ends on 2026-10-24. The crypto protocol is frozen; no forward observations have been accepted.",
+ "firstDate":"First eligible price date",
+ "clock":"Actual protocol freeze",
+ "availability":"A new bar must complete and its availability must pass review. US warmup remains stale. No collection schedule or broker session was activated.",
+ "guide":"Read methods, permissions checklist and remaining work",
+ "models":"Latest model results with 60 validation sessions",
+ "modelNote":"IC compares predicted ranks with later return ranks. Negative values mean the rankings ran in opposite directions. MSE measures squared prediction error. These reused historical windows do not establish new out-of-sample performance.",
+ "method":"Model", "window":"Signal window", "horizon":"Trading sessions", "ic":"Mean daily rank IC", "mse":"Mean daily MSE", "unavailable":"Unavailable",
+ "accounts":"Latest account estimates",
+ "accountNote":"Each row pools variants and execution delays across the same two windows. These are overlapping conditions, not independent samples. Both entry costs and terminal sale costs are included. USD and USDT remain separate.",
+ "fee":"One-way cost", "complete":"Completed / requested", "positive":"Positive net returns", "median":"Median net return",
+ "older":"Earlier protocol results retain their unavailable model outcomes."
+}

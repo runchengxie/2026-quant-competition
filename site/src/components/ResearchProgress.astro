@@ -1,0 +1,33 @@
+---
+import facts from '../data/evidence-followup.v1.json';
+import en from '../i18n/followup-en.json';
+import zh from '../i18n/followup-zh-CN.json';
+interface Props {locale?: string; view?: string}
+const locale=Astro.props.locale==='zh-CN'?'zh-CN':'en',t=locale==='zh-CN'?zh:en,view=Astro.props.view??'home';
+const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+const compact={scientific:facts.scientific,validation_sessions:60,completed:facts.equity.accounts.filter(r=>r.status==='completed').length,blocked:facts.equity.accounts.filter(r=>r.status==='blocked').length,fit_attempts:facts.equity.fit_attempts,accepted_stocks:facts.security.accepted,requested_stocks:facts.security.requested,paired:facts.crypto.comparable,wins:facts.crypto.return_wins,median_pair_difference:facts.crypto.median_return_difference,...Object.fromEntries(['warmup_end','freeze_at','next_eligible_date','accepted_observations','new_attempts','new_bytes','reused_responses'].map(k=>[k,facts.observation[k]]))};
+const fmt=(v:number|null,digits=4)=>v===null?t.unavailable:new Intl.NumberFormat(locale,{maximumFractionDigits:digits,minimumFractionDigits:digits}).format(v);
+const pct=(v:number|null)=>v===null?t.unavailable:`${fmt(v*100)}%`;
+const groups=[5,20].flatMap(h=>[0,20,40].map(f=>{const rows=facts.equity.accounts.filter(r=>r.horizon===h&&r.fee_bps===f),values=rows.filter(r=>r.status==='completed').map(r=>r.metrics!.net_return).sort((a,b)=>a-b);return {h,f,requested:rows.length,completed:values.length,positive:values.filter(v=>v>0).length,median:values.length?(values[Math.floor((values.length-1)/2)]+values[Math.floor(values.length/2)])/2:null};}));
+---
+<section class="research-progress evidence-section" data-progress-facts={JSON.stringify(compact)} aria-labelledby="research-progress-title">
+ <div class="section-heading"><h2 id="research-progress-title">{t.title}</h2><p>{t.conclusion}</p></div>
+ <dl class="reader-glossary">
+  <div><dt>{t.stock}</dt><dd>{t.stockBody}</dd></div>
+  <div><dt>{t.pool}</dt><dd>{t.poolBody}</dd></div>
+  <div><dt>{t.crypto}</dt><dd>{t.cryptoBody}</dd></div>
+  <div><dt>{t.observation}</dt><dd>{t.observationBody}</dd></div>
+ </dl>
+ <p>{t.firstDate} <time>{facts.observation.next_eligible_date}</time> · {t.clock} <time>{facts.observation.freeze_at}</time> UTC</p>
+ <p class="detail">{t.availability}</p>
+ {view==='factors'&&<><h3>{t.models}</h3><p>{t.modelNote}</p><div class="table-scroll"><table><thead><tr><th>{t.method}</th><th>{t.horizon}</th><th>{t.window}</th><th>{t.ic}</th><th>{t.mse}</th></tr></thead><tbody>{facts.equity.models.map(row=><tr data-followup-model><td>{row.model==='ridge'?'Ridge':'Elastic Net'}</td><td>{row.horizon}</td><td>{row.window} / {row.end}</td><td>{fmt(row.metrics?.mean_daily_ic??null)}</td><td>{fmt(row.metrics?.mean_daily_mse??null,6)}</td></tr>)}</tbody></table></div></>}
+ {view==='strategies'&&<><h3>{t.accounts}</h3><p>{t.accountNote}</p><div class="table-scroll"><table><thead><tr><th>{t.horizon}</th><th>{t.fee}</th><th>{t.complete}</th><th>{t.positive}</th><th>{t.median}</th></tr></thead><tbody>{groups.map(row=><tr data-followup-account><td>{row.h}</td><td>{row.f} bps</td><td>{row.completed} / {row.requested}</td><td>{row.positive}</td><td>{pct(row.median)}</td></tr>)}</tbody></table></div></>}
+ <p><a href={`${prefix}docs/strategy-comparison/#evidence-follow-up`}>{t.guide} ↗</a></p>
+ {view!=='home'&&<p class="detail">{t.older}</p>}
+</section>
+<style>
+ .research-progress{border-top:1px solid var(--line);padding:1.7rem 0;margin:1.5rem 0}
+ .reader-glossary{margin:1.3rem 0}.reader-glossary>div{display:grid;grid-template-columns:10rem minmax(0,1fr);gap:1.5rem;padding:.8rem 0;border-top:1px solid var(--line)}dt{font-weight:500}dd{margin:0;line-height:1.9;font-size:.9rem}.detail{font-size:.8rem;color:var(--muted)}
+ .table-scroll{max-width:100%;overflow-x:auto;margin:1rem 0 2rem}table{width:100%;border-collapse:collapse;font-size:.8rem;font-variant-numeric:tabular-nums}th,td{text-align:left;white-space:nowrap;padding:.65rem;border-bottom:1px solid var(--line)}
+ @media(max-width:600px){.reader-glossary>div{grid-template-columns:1fr;gap:.3rem}}
+</style>

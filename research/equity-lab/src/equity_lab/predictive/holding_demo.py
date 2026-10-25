@@ -8,8 +8,8 @@ import numpy as np
 import pandas as pd
 
 
-def synthetic_input():
-    dates = pd.date_range("2025-01-01", periods=230, freq="B")
+def synthetic_input(*, sessions=230):
+    dates = pd.date_range("2025-01-01", periods=sessions, freq="B")
     schedule = pd.DataFrame(
         {
             "open": dates.tz_localize("UTC") + pd.Timedelta(hours=14),
@@ -43,6 +43,7 @@ def synthetic_input():
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--validation60", action="store_true")
     args = parser.parse_args(argv)
     output = args.output.resolve()
     if not args.output.is_absolute() or any(
@@ -52,7 +53,11 @@ def main(argv=None):
         raise ValueError("SYNTHETIC_OUTPUT_MUST_BE_EXTERNAL")
     from .holding import run_holding
 
-    report = run_holding(*synthetic_input(), output)
+    report = run_holding(
+        *synthetic_input(sessions=270 if args.validation60 else 230),
+        output,
+        profile="validation60" if args.validation60 else "legacy",
+    )
     print(
         json.dumps(
             dict(

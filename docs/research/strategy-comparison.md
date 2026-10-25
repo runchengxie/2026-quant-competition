@@ -2,9 +2,62 @@
 
 [简体中文](strategy-comparison.zh-CN.md)
 
-Keeping slightly lower-ranked stock holdings usually reduced trading, but higher returns were less common. The new Ridge and Elastic Net forecasts remain unstable. Crypto attribution shows how market returns, exposure and selection contributed along the saved account paths. All results below are retrospective price/cost research, with no accepted trading performance or new future observations.
+Longer validation completed all eight stock model blocks, without establishing a stable ranking advantage. The 20-session ranking correlations were negative in both windows. Crypto trend accounts beat the exposure control in 33 of 72 paired conditions, with a zero median return difference. The crypto observation protocol is now frozen after warmup recovery. It has accepted no forward observations.
 
-## Latest multi-session stock experiment
+<a id="evidence-follow-up"></a>
+
+## Latest evidence follow-up
+
+### Stock validation and input acceptance
+
+The separate `equity.holding_validation60.20261025.v1` protocol uses the same input bytes, six features, fixed parameter grids, two historical windows, fees and accounting as the earlier study. It reserves 60 preceding calendar sessions for internal validation and requires at least 80 earlier calendar sessions for inner training. Labels still end strictly before each following decision boundary. A 20-session label leaves 40 potentially usable validation dates. Constant predictions can still make rank IC unavailable. Model selection retains its minimum of 20 valid IC dates.
+
+The once-reserved run used 56 fits and completed 156 of 168 accounts. Twelve accounts stopped at known corporate-action boundaries. All eight model blocks produced forecasts. Twenty-session mean daily rank IC was −0.0897/−0.0298 for Ridge and −0.0497/−0.0297 for Elastic Net, in chronological window order. These are reused historical windows, not a new out-of-sample test.
+
+| Holding horizon | One-way cost | Completed / requested | Positive net returns | Median net return |
+| --- | --- | --- | --- | --- |
+| 5 sessions | 20 bps | 26/28 | 7 | −3.4383% |
+| 5 sessions | 40 bps | 26/28 | 6 | −5.6549% |
+| 20 sessions | 20 bps | 26/28 | 13 | −0.4580% |
+| 20 sessions | 40 bps | 26/28 | 12 | −0.9017% |
+
+Rows pool variants and execution delays across the same two windows. They are overlapping conditions. The earlier 20-session summary omitted unavailable model accounts, so subtracting its median from this fuller grid would misstate a performance change.
+
+The small-pool audit reviewed ten US candidates against five evidence requirements: dated identity, security type, corporate actions, price basis and feature availability. Retained broker contract records cover all ten, and the provider receipt declares split-adjusted prices. None passes complete historical acceptance. Its receipt explicitly leaves corporate-action coverage and out-of-overlap revisions unverified. Current contract qualification cannot certify a security's whole historical identity or type. Raw minute-derived inputs remain unchanged and the new study is a research proxy.
+
+`audit_pool` reports explicit review attestations and missing evidence. It does not authenticate a provider or turn a URL into verified history. Keep dated source records and full input review outside public Git before recording a claim as reviewed.
+
+### Crypto paired controls
+
+The analysis reuses the same 288 saved accounts and adds no crypto replay. It pairs `trend_weekly` with `matched_weekly` on window, end date, fee and execution delay. All 72 pairs are comparable. Trend has a higher net return in 33 pairs and the overall median difference is zero. At 35 bps with original timing, it wins in 5 of 12 windows and the median difference is −0.3830 percentage points. With a one-day delay, it wins in 6 of 12 and the median difference is +0.3809 percentage points.
+
+These targets share the trend policy's target exposure. Actual holdings drift, selected assets and costs can differ. The controls do not promise identical volatility, tradability or causal alpha. Pair records also retain drawdown, turnover and realized exposure differences.
+
+### Recovered warmup and prospective readiness
+
+A new recovery reservation reused 344 checksum-validated saved responses and fetched the 40 missing responses once. It transferred 6,443 new body bytes and finished in 76.922 seconds, within 64 requests, 300 seconds and 4 MiB. The prior 345-attempt receipt and its uncertain last transfer remain unchanged. Combined request attempts are 385, including that uncertain attempt. Re-freezing the same inputs with a different timestamp cannot restore the recovery budget.
+
+Crypto warmup now ends on 2026-10-24. A new protocol froze at `2026-10-25T09:44:57.461634+00:00`. Its first eligible price date is 2026-10-25. No forward observations have been accepted. The bar must complete, and its actual availability must pass the existing review gate. `TRUSTED_AVAILABILITY_EVIDENCE` is still empty; the successful warmup download grants no import approval. The US candidate group remains inactive with stale warmup. No collection schedule, broker login or order was activated.
+
+### IB permissions inventory
+
+Keep a private row for each market/product and record account mode, approved trading permission, historical data access, live data subscription, source and verification time separately. Use `unverified` until checked. Open Client Portal → Settings → Trading → Trading Permissions to inspect approved products and countries. See the [official IBKR instructions](https://www.ibkrguides.com/clientportal/tradingpermissions.htm).
+
+The task prepared a private inventory for stocks, ETFs and options in HK/US/UK/AU/SG/CA/JP, plus spot crypto. These rows are a checklist, not approved permissions. Historical-bar success does not establish trading or real-time data permission. Do not publish account identifiers or the completed inventory. This task opened no broker session; account permissions await user confirmation.
+
+### Reproduction and retained identity
+
+The scientific source commit is `6601a4378be9e73c30fdfe1aec78e512e56753f3`. The immutable result hash is `1260422930de1b2c6d79d623c3d98c9c73149f53ca648fd7b4f59e5e912906f0`. `evidence-followup.v1.json` contains the separate reviewed aggregate. Previous snapshots remain unchanged. The root independently rechecked all account paths, selection, label chronology and model metrics from exported files.
+
+For the installed synthetic producer/consumer check, use an absolute external output path and the independently installed equity interpreter. The default contract retains the earlier protocol. Add `--validation60` for the new synthetic protocol.
+
+```text
+python -m competition_tools.check_holding_delivery --leaf-python <absolute-equity-python> --output-root <new-external-output> --validation60
+```
+
+The reserved real-data entry is `python -m equity_lab.predictive.holding_validation_cli --input <input.parquet> --output <new-output> --reservation <reservation.json>`. It requires a matching once-only reservation; this is not permission to repeat the study.
+
+## Earlier multi-session stock experiment
 
 The new protocol uses two signal windows, 2026-05-28 through 2026-07-24 and 2026-07-27 through 2026-09-21. Each has 40 signal dates and a common 41-session valuation grid. Portfolios rebalance every five or twenty sessions at the next exact session's first usable regular-session trade. Delaying execution adds one session. Original timing spends the final valuation session in cash, and delayed timing spends the first in cash. Each window starts a separate NAV 1 USD account. Units drift between trades, fees are cash-funded, and the terminal sale is charged.
 
@@ -50,11 +103,11 @@ The retained master and interval records cover all 658,472 candidate-days, but 6
 
 Seven issuer announcements or SEC filings were read. They concern [NFLX](https://ir.netflix.net/investor-news-and-events/financial-releases/press-release-details/2025/Netflix-Announces-Ten-For-One-Stock-Split/default.aspx), [BK/BNY](https://www.bny.com/corporate/global/en/about-us/newsroom/press-release/bny-announces-planned-change-of-stock-ticker-symbol-to-bny-130465.html), [RNA](https://www.sec.gov/Archives/edgar/data/2093101/000119312526083227/d87849d8k.htm), [BKNG](https://d18rn0p25nwr6d.cloudfront.net/CIK-0001075531/27ace9e2-033e-4276-b3cc-02b52be010fe.pdf), [KLAC](https://ir.kla.com/sec-filings/all-sec-filings/content/0001193125-26-212093/d116682dex991.htm), [AGL](https://investors.agilonhealth.com/news/news-details/2026/agilon-health-Announces-Reverse-Stock-Split/default.aspx) and [WOLF](https://www.sec.gov/Archives/edgar/data/895419/000119312525223057/d69265d8k.htm). This review confirms the sparse announcement/filing evidence, not every settlement or historical identity link. Four raw-price split boundaries match those seeds. A derived input adds seven `KnownActionBoundary` flags while preserving every original price and feature value. Labels crossing those days and accounts holding or entering affected names are quarantined, without silently adjusting prices or joining identities. The 243 large adjacent observed price jumps can include gaps and other effects. They are not 243 certified actions. Unknown actions and dividend/total-return treatment remain unresolved.
 
-## Fresh observation status
+## Earlier observation preparation
 
-The one-shot free daily-archive extension stopped at its frozen 300-second limit after 345 attempts and 55,656 recorded response-body bytes. Its final request was in flight, so final transfer spend is uncertain. The incomplete output has no accepted manifest. No automatic retry, resume or schedule ran. Crypto warmup remains through 2026-09-30 and US warmup through 2026-10-20. No new registry was frozen and zero prospective observations were accepted. The earlier six-candidate protocol remains unchanged, with US 20/40 bps and crypto 0/10/25 bps. New ML results do not promote themselves into that protocol or executable targets. Fresh complete warmup and reviewed availability remain prerequisites.
+The one-shot free daily-archive extension stopped at its frozen 300-second limit after 345 attempts and 55,656 recorded response-body bytes. Its final request was in flight, so final transfer spend is uncertain. The incomplete output has no accepted manifest. No automatic retry, resume or schedule ran. At that snapshot, crypto warmup ended on 2026-09-30 and US warmup on 2026-10-20. That attempt froze no new registry and zero prospective observations were accepted. The earlier six-candidate protocol remains unchanged, with US 20/40 bps and crypto 0/10/25 bps. New ML results do not promote themselves into that protocol or executable targets. Fresh complete warmup and reviewed availability remain prerequisites.
 
-## Latest frozen record and reproduction
+## Earlier frozen record and reproduction
 
 Scientific commit `da4ba95905290059a6dc07163368d0508ab090c7` binds the implementation. Plan `33e3be7e5e9d82f2b27898ca78aeacffe4b5601126bc0bc235c10d179e047a56` and result `3f44b319bfb2c1a1cb0741de1b3800b14b1621e64a47fb169eb12639d2a40534` bind the actual run. Its 54 fits and 168 net/gross pairs finished in 246.906 seconds, within a 2,400-second worker deadline and 1,200 seconds per horizon. Exact input copies, source/locks, wrapper bytes, environment metadata, attempts, predictions and periods remain external. Root stdlib verification independently checks selection, calendar timestamps, purged label counts, IC/MSE, held units, cash and terminal fees. It verifies the declared exports and integrity, without independently certifying primary Parquet decoding or provider authenticity.
 
@@ -160,4 +213,4 @@ python -m competition_tools.evaluation.comparison_evidence --run-root /absolute/
 
 Run each leaf command in its independently installed environment and root commands in the root environment. Replace placeholders with absolute paths; Windows needs drive-qualified paths. The last command only projects saved results, with no fits or replays, and refuses to overwrite an existing output. It needs the complete bundle, including the retained `source/` tree and inputs. Post-run addition of unavailable reason codes changed no scientific values and used zero additional fits or replays.
 
-The reviewed aggregate is [strategy-comparison.v 1.json](../../site/src/data/strategy-comparison.v1.json), governed by [the public schema](../../schemas/research/strategy-comparison-public.v1.schema.json) and its exact reviewed canonical hash. Both languages and all chart filters consume the same facts. Raw prices, individual predictions and private paths stay outside public Git. See [workflow checks](../operations/workflow-check.md) for receipt integrity and [manual observation](observation-registry.md) for the separate future-data gate.
+The reviewed aggregate is [strategy-comparison.v1.json](../../site/src/data/strategy-comparison.v1.json), governed by [the public schema](../../schemas/research/strategy-comparison-public.v1.schema.json) and its exact reviewed canonical hash. Both languages and all chart filters consume the same facts. Raw prices, individual predictions and private paths stay outside public Git. See [workflow checks](../operations/workflow-check.md) for receipt integrity and [manual observation](observation-registry.md) for the separate future-data gate.

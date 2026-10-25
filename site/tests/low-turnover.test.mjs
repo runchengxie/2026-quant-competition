@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {selectHoldings,holdingCosts,selectModels,selectAttribution,bufferSummary} from '../src/scripts/low-turnover-state.mjs';
 import {marketForHash} from '../src/scripts/market-panels.mjs';
+import {valueAxisLayout} from '../src/scripts/chart-axis.mjs';
 const facts=JSON.parse(readFileSync(new URL('../src/data/low-turnover.v1.json',import.meta.url),'utf8'));
 const windows=[...new Set(facts.equity.accounts.map(row=>row.window))].sort();
 
@@ -46,4 +47,11 @@ test('daily-return omission labels do not claim a holdings and fee replay',()=>{
  const zh=JSON.parse(readFileSync(new URL('../src/i18n/comparison-zh-CN.json',import.meta.url),'utf8'));
  assert.doesNotMatch(en.removed,/cash/i);assert.doesNotMatch(zh.removed,/现金/);
  assert.match(en.stressNote,/not recalculated/);assert.match(zh.stressNote,/不重新计算持仓和费用/);
+});
+
+test('narrow charts use fewer value ticks and hide overlapping labels',()=>{
+ assert.equal(valueAxisLayout(344).splitNumber,3);
+ assert.equal(valueAxisLayout(900).splitNumber,5);
+ assert.equal(valueAxisLayout(344).axisLabel.hideOverlap,true);
+ assert.throws(()=>valueAxisLayout(NaN),RangeError);
 });

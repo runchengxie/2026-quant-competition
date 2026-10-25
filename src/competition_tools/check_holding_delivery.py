@@ -14,6 +14,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--leaf-python", type=Path, required=True)
     parser.add_argument("--output-root", type=Path, required=True)
+    parser.add_argument("--validation60", action="store_true")
     args = parser.parse_args(argv)
     # POSIX venv interpreters are symlinks. Keep the selected environment's
     # lexical path: resolving it would run the base Python without leaf deps.
@@ -34,6 +35,7 @@ def main(argv=None):
             "equity_lab.predictive.holding_demo",
             "--output",
             str(output),
+            *(["--validation60"] if args.validation60 else []),
         ],
         environment=child_environment(TeamConfig(output.parent, output.parent)),
         timeout=600,

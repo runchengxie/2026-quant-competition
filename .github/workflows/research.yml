@@ -80,8 +80,10 @@ jobs:
           python-version: "3.12"
       - uses: astral-sh/setup-uv@v5
       - run: uv sync --locked --group dev --extra predictive
-      - run: uv run --locked --extra predictive pytest tests/test_predictive_*.py -q
+      - run: uv run --locked --extra predictive pytest tests/test_predictive_*.py tests/test_holding_validation.py -q
       - name: Install independent holding contract consumer
         run: UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/holding-root-env" uv sync --project ../.. --locked --extra test
       - name: Verify installed synthetic holding producer and consumer
         run: UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/holding-root-env" uv run --project ../.. --locked python -m competition_tools.check_holding_delivery --leaf-python "$RUNNER_TEMP/predictive-env/bin/python" --output-root "$RUNNER_TEMP/holding-contract"
+      - name: Verify separate sixty-session validation contract
+        run: UV_PROJECT_ENVIRONMENT="$RUNNER_TEMP/holding-root-env" uv run --project ../.. --locked python -m competition_tools.check_holding_delivery --leaf-python "$RUNNER_TEMP/predictive-env/bin/python" --output-root "$RUNNER_TEMP/holding-validation-contract" --validation60

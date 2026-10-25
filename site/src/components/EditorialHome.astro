@@ -1,4 +1,5 @@
 ---
+import ResearchProgress from './ResearchProgress.astro';
 import snapshot from '../data/strategy-robustness.v1.json';
 import readiness from '../data/strategy-readiness.v1.json';
 import {editorialSummary} from '../scripts/editorial-summary.mjs';
@@ -47,6 +48,7 @@ const cryptoJobs=snapshot.results.filter(r=>r.market==='crypto').length;
    {facts.evidenceRange.US&&<p class="evidence-range">{t.range}: <time>{facts.evidenceRange.US.start}</time> – <time>{facts.evidenceRange.US.end}</time></p>}
   </figure>
  </div>
+ <ResearchProgress locale={locale} />
  <p class="editorial-figure-note">{latest.homeLatest} <a href={`${prefix}docs/strategy-comparison/`}>{latest.guide} ↗</a></p>
  <div class="editorial-section-title"><h2 id="takeaways-title">{t.directory}</h2><span>{t.directoryNote}</span></div>
  <div id="takeaways" class="editorial-topics">

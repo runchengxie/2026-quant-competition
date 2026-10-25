@@ -5,6 +5,9 @@ import PredictiveResearch from "./PredictiveResearch.astro";
 import IncrementalResearch from "./IncrementalResearch.astro";
 import ResearchComparison from "./ResearchComparison.astro";
 import LowTurnoverResearch from "./LowTurnoverResearch.astro";
+import ResearchProgress from "./ResearchProgress.astro";
+import followupEn from '../i18n/followup-en.json';
+import followupZh from '../i18n/followup-zh-CN.json';
 import ResearchTakeaways from "./ResearchTakeaways.astro";
 import SiteLayout from "../layouts/SiteLayout.astro";
 import ValidationResults from "./ValidationResults.astro";
@@ -30,6 +33,7 @@ const t = locale === "zh-CN" ? zh : en;
 const incrementalText = locale === "zh-CN" ? incrementalZh : incrementalEn;
 const comparisonText = locale === "zh-CN" ? comparisonZh : comparisonEn;
 const marketText = locale === "zh-CN" ? lowTurnoverZh : lowTurnoverEn;
+const followup = locale === "zh-CN" ? followupZh : followupEn;
 const view=Astro.props.view??"home";
 const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
 const localePath=({home:'',strategies:'strategies/',factors:'factors/',guide:'docs/project/'})[view];
@@ -52,7 +56,7 @@ const guide = (directory: string) => file(`research/${directory}/README${locale 
   <main class:list={['showcase-main',`view-${view}`]}>
   {view!=='home'&&<header class="showcase-hero performance-hero"><div>
     <h1>{t.pages.titles[view]}</h1>
-    <p class="intro">{view==='home'?t.hero.intro:t.pages.intros[view]}</p><p class="hero-note">{view==='guide'?t.hero.note:marketText.marketScope}</p>
+    <p class="intro">{view==='guide'?t.pages.intros[view]:followup.conclusion}</p><p class="hero-note">{view==='guide'?t.hero.note:marketText.marketScope} {view!=='guide'&&<a href="#research-progress-title">{followup.title} ↘</a>}</p>
   </div></header>}
     {view==='home'&&<EditorialHome locale={locale} />}
     {(view==='strategies'||view==='factors')&&<nav class="market-nav" data-market-navigation aria-label={marketText.marketNavigation}>
@@ -64,6 +68,7 @@ const guide = (directory: string) => file(`research/${directory}/README${locale 
       </section>
       <section id="market-us" class="market-panel" data-market-panel="US" aria-labelledby="tab-us"><p class="market-label">{marketText.markets.US}</p><LowTurnoverResearch locale={locale} market="equity" /></section>
       <section id="market-crypto" class="market-panel" data-market-panel="crypto" aria-labelledby="tab-crypto"><p class="market-label">{marketText.markets.crypto}</p><LowTurnoverResearch locale={locale} market="crypto" /><ResearchComparison locale={locale} market="crypto" /><IncrementalResearch locale={locale} view="crypto" /></section>
+      <ResearchProgress locale={locale} view={view} />
       <h2 class="history-heading">{marketText.history}</h2>
       <nav class="section-nav" aria-label={t.strategyControls.headlines.navigation}>
         <a href="#comparison-crypto"><span>01</span>{comparisonText.cryptoTitle}</a>
@@ -76,6 +81,7 @@ const guide = (directory: string) => file(`research/${directory}/README${locale 
       <section id="market-hk" class="market-panel" data-market-panel="HK" aria-labelledby="tab-hk"><h2>{marketText.hkFactorTitle}</h2><p>{marketText.hkFactorBody}</p><a href={`${prefix}docs/strategies/`}>{marketText.hkLink} ↗</a></section>
       <section id="market-us" class="market-panel" data-market-panel="US" aria-labelledby="tab-us"><p class="market-label">{marketText.markets.US}</p><LowTurnoverResearch locale={locale} market="equity" view="factor" /><ResearchComparison locale={locale} market="equity" /><IncrementalResearch locale={locale} view="equity" /><PredictiveResearch locale={locale} /><FactorResearch locale={locale} market="equity" /></section>
       <section id="market-crypto" class="market-panel" data-market-panel="crypto" aria-labelledby="tab-crypto"><p class="market-label">{marketText.markets.crypto}</p><FactorResearch locale={locale} market="crypto" /></section>
+      <ResearchProgress locale={locale} view={view} />
     </>}
     {view==='guide'&&<>    <section id="evidence" class="evidence-section">
       <div class="section-heading"><h2>{t.evidence.title}</h2><p>{t.evidence.intro}</p></div>

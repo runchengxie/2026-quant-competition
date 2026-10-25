@@ -16,6 +16,7 @@ export function mountMarketPanels(root){
   requestAnimationFrame(()=>window.dispatchEvent(new Event('resize')));
  }
  function fromHash(){
+  if(!location.hash){show('US');return;}
   let target;try{target=document.getElementById(decodeURIComponent(location.hash.slice(1)));}catch{return;}
   const market=marketForHash(location.hash)||target?.closest('[data-market-panel]')?.dataset.marketPanel;
   if(market){show(market);requestAnimationFrame(()=>target?.scrollIntoView({block:'start'}));}

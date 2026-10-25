@@ -3,6 +3,7 @@ import {BarChart,LineChart} from 'echarts/charts';
 import {GridComponent,TooltipComponent,LegendComponent,AriaComponent} from 'echarts/components';
 import {CanvasRenderer} from 'echarts/renderers';
 import {selectHoldings,holdingCosts,selectModels,selectAttribution,bufferSummary} from './low-turnover-state.mjs';
+import {valueAxisLayout} from './chart-axis.mjs';
 echarts.use([BarChart,LineChart,GridComponent,TooltipComponent,LegendComponent,AriaComponent,CanvasRenderer]);
 
 export function mountLowTurnover(root){
@@ -20,7 +21,7 @@ export function mountLowTurnover(root){
   const resolve=name=>{probe.style.color=`var(${name})`;return getComputedStyle(probe).color;};const ink=resolve('--ink'),line=resolve('--line'),surface=resolve('--surface');probe.remove();root.dataset.ltInk=ink;
   const common={animation:false,aria:{enabled:true},color:['#668dbe','#267b69','#b39c69','#b66e67'],textStyle:{color:ink},tooltip:{trigger:'axis',renderMode:'richText',backgroundColor:surface,textStyle:{color:ink}},grid:{containLabel:true,left:15,right:30,top:45,bottom:35}};
   const category=rows=>({type:'category',inverse:true,data:rows.map(r=>t.arms[r.arm??r.model]),axisLabel:{color:ink,fontSize:11}});
-  const value=(name='%')=>({type:'value',name,axisLabel:{color:ink,formatter:v=>fmt(v)},splitLine:{lineStyle:{color:line}}});
+  const value=(name='%')=>{const layout=valueAxisLayout(root.clientWidth);return {type:'value',name,...layout,axisLabel:{...layout.axisLabel,color:ink,formatter:v=>fmt(v)},splitLine:{lineStyle:{color:line}}};};
   const bars=(chart,rows,values,label,unit='%')=>chart.setOption({...common,xAxis:value(unit),yAxis:category(rows),series:[{name:label,type:'bar',barMaxWidth:26,data:values.map((v,i)=>({value:v,itemStyle:{color:common.color[i]}}))}]},{notMerge:true});
   if(market==='crypto'){
    const rows=selectAttribution(facts,{window,fee,delay});
@@ -42,5 +43,5 @@ export function mountLowTurnover(root){
  }
  root.querySelectorAll('select').forEach(select=>select.addEventListener('change',render));render();root.dataset.ltReady='true';
  new MutationObserver(render).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});matchMedia('(prefers-color-scheme: dark)').addEventListener('change',render);
- const resize=()=>{primary.resize();secondary.resize();};new ResizeObserver(resize).observe(root);window.addEventListener('resize',resize);
+ const resize=()=>{primary.resize();secondary.resize();render();};new ResizeObserver(resize).observe(root);window.addEventListener('resize',resize);
 }
