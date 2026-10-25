@@ -63,7 +63,9 @@ def _write(path, value):
     )
 
 
-def run_holding(raw, schedule, output):
+def run_holding(raw, schedule, output, *, profile="legacy"):
+    if profile not in ("legacy", "validation60"):
+        raise ValueError("UNKNOWN_HOLDING_PROFILE")
     output = Path(output)
     output.mkdir(parents=True, exist_ok=False)
     base = prepare_daily(raw, schedule)
@@ -117,6 +119,8 @@ def run_holding(raw, schedule, output):
         fit_attempts=0,
         currency="USD",
     )
+    if profile == "validation60":
+        report.update(schema="equity.low_turnover_ml.v2", validation_sessions=60)
     for horizon in (5, 20):
         budget = Budget(
             output / f"attempts-{horizon}.jsonl", max_attempts=28, seconds=1200
@@ -129,7 +133,10 @@ def run_holding(raw, schedule, output):
         )
         for dates in folds:
             outer, train, valid, validation_dates = training_slices(
-                selected, sessions, dates
+                selected,
+                sessions,
+                dates,
+                validation_sessions=60 if profile == "validation60" else None,
             )
             test = selected[selected.date.isin(dates)].copy()
             predictions = {}

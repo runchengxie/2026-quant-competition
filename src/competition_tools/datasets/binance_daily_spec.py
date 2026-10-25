@@ -22,7 +22,15 @@ BUDGET = dict(
 def parent_rows(path: Path) -> tuple[dict, dict]:
     path = safe_path(path)
     header = json.loads(path.read_text(encoding="utf-8"))
-    if header.get("schema") == "competition.binance_daily_manifest.v1":
+    if header.get("schema") == "competition.daily_recovery_manifest.v1":
+        from .daily_recovery import inspect_recovery
+
+        recovered = inspect_recovery(path)
+        ancestor, _ = parent_rows(
+            Path(recovered["plan"]["original_plan"]["parent_manifest"])
+        )
+        manifest = dict(spec=ancestor["spec"], status=recovered["parent_status"])
+    elif header.get("schema") == "competition.binance_daily_manifest.v1":
         from .binance_daily_acquisition import inspect_daily_extension
 
         extension = inspect_daily_extension(path)

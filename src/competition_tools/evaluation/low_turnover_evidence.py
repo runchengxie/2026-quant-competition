@@ -56,13 +56,23 @@ def verify_holding_export(folder):
     folder = safe_path(folder)
     report = read_json(folder / "report.json")
     if (
-        report.get("schema") != "equity.low_turnover_ml.v1"
+        report.get("schema")
+        not in ("equity.low_turnover_ml.v1", "equity.low_turnover_ml.v2")
         or report.get("status") != "completed"
         or report.get("retrospective") is not True
         or report.get("formal_performance_ready") is not False
         or report.get("currency") != "USD"
     ):
         raise ValueError("INVALID_HOLDING_REPORT")
+    extended = report["schema"] == "equity.low_turnover_ml.v2"
+    if (
+        extended
+        and (
+            type(report.get("validation_sessions")) is not int
+            or report["validation_sessions"] != 60
+        )
+    ) or (not extended and "validation_sessions" in report):
+        raise ValueError("INVALID_HOLDING_VALIDATION_POLICY")
     calendar = report["calendar"]
     if (
         not isinstance(calendar, list)
@@ -159,7 +169,9 @@ def verify_holding_export(folder):
         horizon, window, model = row["horizon"], row["window"], row["model"]
         fold = windows[window]
         preceding = calendar[: indices[window]]
-        validation = preceding[-math.ceil(len(preceding) * 0.2) :]
+        if extended and len(preceding) - 60 < 80:
+            raise ValueError("INSUFFICIENT_INNER_TRAINING_CALENDAR")
+        validation = preceding[-(60 if extended else math.ceil(len(preceding) * 0.2)) :]
         outer, inner = [], []
         for d in preceding:
             label_index = indices[d] + horizon

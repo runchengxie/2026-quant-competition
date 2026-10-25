@@ -104,7 +104,13 @@ def prepare_observation(
     now = utc_time(now or datetime.now(timezone.utc))
     path = safe_path(manifest)
     header = json.loads(path.read_text(encoding="utf-8-sig"))
-    if header.get("schema") == "competition.binance_daily_manifest.v1":
+    if header.get("schema") == "competition.daily_recovery_manifest.v1":
+        from ..datasets.daily_recovery import inspect_recovery
+
+        value = inspect_recovery(path)
+        market, products = "crypto", sorted(value["coverage"])
+        collected_at = value["receipt"]["collected_at"]
+    elif header.get("schema") == "competition.binance_daily_manifest.v1":
         value = inspect_daily_extension(path)
         market, products = "crypto", sorted(value["coverage"])
         collected_at = value["receipt"]["collected_at"]

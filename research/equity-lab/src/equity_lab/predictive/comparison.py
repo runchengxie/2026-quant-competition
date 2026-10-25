@@ -43,11 +43,17 @@ def select_weights(identities, predictions, *, top_n=50):
     return {identity: 1 / top_n for identity, _ in chosen}
 
 
-def training_slices(frame, sessions, dates):
+def training_slices(frame, sessions, dates, *, validation_sessions=None):
     training_dates = [day for day in sessions if day < dates[0]]
     if len(training_dates) < 126:
         raise ValueError("INSUFFICIENT_TRAINING_DATES")
-    validation_dates = training_dates[-math.ceil(len(training_dates) * 0.2) :]
+    if validation_sessions is not None:
+        if type(validation_sessions) is not int or validation_sessions != 60:
+            raise ValueError("UNSUPPORTED_VALIDATION_POLICY")
+        if len(training_dates) - validation_sessions < 80:
+            raise ValueError("INSUFFICIENT_INNER_TRAINING_CALENDAR")
+    count = validation_sessions or math.ceil(len(training_dates) * 0.2)
+    validation_dates = training_dates[-count:]
     decision = frame.loc[frame.date == dates[0], "decision_at"].iloc[0]
     inner_decision = frame.loc[frame.date == validation_dates[0], "decision_at"].iloc[0]
     outer = split_training(frame, dates[0], decision).dropna(subset=["target"])
