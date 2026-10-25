@@ -15,9 +15,16 @@ def main(argv=None):
     parser.add_argument("--leaf-python", type=Path, required=True)
     parser.add_argument("--output-root", type=Path, required=True)
     args = parser.parse_args(argv)
-    python = safe_path(args.leaf_python)
+    # POSIX venv interpreters are symlinks. Keep the selected environment's
+    # lexical path: resolving it would run the base Python without leaf deps.
+    python = args.leaf_python
     output = safe_path(args.output_root)
-    if not python.is_file() or output.exists():
+    if (
+        not python.is_absolute()
+        or ".." in python.parts
+        or not python.is_file()
+        or output.exists()
+    ):
         raise ValueError("INVALID_HOLDING_DELIVERY_PATHS")
     child = run_child(
         [
