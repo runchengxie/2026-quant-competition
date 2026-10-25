@@ -1,0 +1,819 @@
+{
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "competition.low_turnover_public.v1"
+    },
+    "retrospective": {
+      "const": true
+    },
+    "formal_performance_ready": {
+      "const": false
+    },
+    "scientific": {
+      "type": "object",
+      "properties": {
+        "commit": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        "plan_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "result_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "daily_input_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "parent_comparison_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "commit",
+        "plan_sha256",
+        "result_sha256",
+        "daily_input_sha256",
+        "parent_comparison_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "equity": {
+      "type": "object",
+      "properties": {
+        "currency": {
+          "const": "USD"
+        },
+        "fit_attempts": {
+          "type": "integer",
+          "minimum": 48,
+          "maximum": 56
+        },
+        "models": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "horizon": {
+                "enum": [
+                  5,
+                  20
+                ]
+              },
+              "window": {
+                "type": "string",
+                "format": "date"
+              },
+              "end": {
+                "type": "string",
+                "format": "date"
+              },
+              "model": {
+                "enum": [
+                  "ridge",
+                  "elastic_net"
+                ]
+              },
+              "status": {
+                "enum": [
+                  "completed",
+                  "unavailable",
+                  "failed"
+                ]
+              },
+              "params": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "alpha": {
+                        "enum": [
+                          0.1,
+                          1.0,
+                          10.0
+                        ]
+                      }
+                    },
+                    "required": [
+                      "alpha"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "alpha": {
+                        "enum": [
+                          0.0001,
+                          0.001,
+                          0.01
+                        ]
+                      },
+                      "l1_ratio": {
+                        "enum": [
+                          0.1,
+                          0.5,
+                          0.9
+                        ]
+                      }
+                    },
+                    "required": [
+                      "alpha",
+                      "l1_ratio"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              },
+              "prediction_rows": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "training_rows": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "inner_training_rows": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "metrics": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "requested_dates": {
+                        "const": 40
+                      },
+                      "valid_ic_dates": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 40
+                      },
+                      "valid_mse_dates": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 40
+                      },
+                      "mean_daily_ic": {
+                        "anyOf": [
+                          {
+                            "type": "number",
+                            "minimum": -1,
+                            "maximum": 1
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "mean_daily_mse": {
+                        "anyOf": [
+                          {
+                            "type": "number",
+                            "minimum": 0
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "requested_dates",
+                      "valid_ic_dates",
+                      "valid_mse_dates",
+                      "mean_daily_ic",
+                      "mean_daily_mse"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "horizon",
+              "window",
+              "end",
+              "model",
+              "status",
+              "params",
+              "prediction_rows",
+              "training_rows",
+              "inner_training_rows",
+              "metrics"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 8,
+          "maxItems": 8
+        },
+        "accounts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "horizon": {
+                "enum": [
+                  5,
+                  20
+                ]
+              },
+              "window": {
+                "type": "string",
+                "format": "date"
+              },
+              "end": {
+                "type": "string",
+                "format": "date"
+              },
+              "arm": {
+                "enum": [
+                  "equal_weight",
+                  "reversal",
+                  "ridge",
+                  "elastic_net"
+                ]
+              },
+              "buffer": {
+                "enum": [
+                  0,
+                  20
+                ]
+              },
+              "fee_bps": {
+                "enum": [
+                  0,
+                  20,
+                  40
+                ]
+              },
+              "delay": {
+                "enum": [
+                  0,
+                  1
+                ]
+              },
+              "status": {
+                "enum": [
+                  "completed",
+                  "blocked"
+                ]
+              },
+              "reason": {
+                "anyOf": [
+                  {
+                    "enum": [
+                      "EMPTY_DECISION_POOL",
+                      "MODEL_UNAVAILABLE",
+                      "INVALID_RANKING_POOL",
+                      "CONSTANT_SCORES",
+                      "MISSING_HELD_OR_SELECTED_PRICE",
+                      "KNOWN_ACTION_BOUNDARY"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "blocked_date": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "requested_dates": {
+                "const": 41
+              },
+              "valid_dates": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 41
+              },
+              "metrics": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "net_return": {
+                        "type": "number"
+                      },
+                      "gross_return": {
+                        "type": "number"
+                      },
+                      "cost_drag": {
+                        "type": "number"
+                      },
+                      "max_drawdown": {
+                        "type": "number"
+                      },
+                      "total_costs": {
+                        "type": "number"
+                      },
+                      "turnover": {
+                        "type": "number"
+                      }
+                    },
+                    "required": [
+                      "net_return",
+                      "gross_return",
+                      "cost_drag",
+                      "max_drawdown",
+                      "total_costs",
+                      "turnover"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "horizon",
+              "window",
+              "end",
+              "arm",
+              "buffer",
+              "fee_bps",
+              "delay",
+              "status",
+              "reason",
+              "blocked_date",
+              "requested_dates",
+              "valid_dates",
+              "metrics"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 168,
+          "maxItems": 168
+        }
+      },
+      "required": [
+        "currency",
+        "fit_attempts",
+        "models",
+        "accounts"
+      ],
+      "additionalProperties": false
+    },
+    "cost_diagnostics": {
+      "type": "object",
+      "properties": {
+        "requested": {
+          "const": 24
+        },
+        "completed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 24
+        },
+        "accounts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "window": {
+                "type": "string",
+                "format": "date"
+              },
+              "arm": {
+                "enum": [
+                  "equal_weight",
+                  "reversal",
+                  "ridge",
+                  "elastic_net"
+                ]
+              },
+              "delay": {
+                "enum": [
+                  0,
+                  1
+                ]
+              },
+              "status": {
+                "enum": [
+                  "completed",
+                  "blocked"
+                ]
+              },
+              "valid_dates": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 20
+              },
+              "requested_dates": {
+                "const": 20
+              },
+              "gross_return": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "break_even_one_way_bps": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "mean_daily_turnover": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "window",
+              "arm",
+              "delay",
+              "status",
+              "valid_dates",
+              "requested_dates",
+              "gross_return",
+              "break_even_one_way_bps",
+              "mean_daily_turnover"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 24,
+          "maxItems": 24
+        }
+      },
+      "required": [
+        "requested",
+        "completed",
+        "accounts"
+      ],
+      "additionalProperties": false
+    },
+    "crypto": {
+      "type": "object",
+      "properties": {
+        "currency": {
+          "const": "USDT"
+        },
+        "accounts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "window": {
+                "type": "string",
+                "format": "date"
+              },
+              "end": {
+                "type": "string",
+                "format": "date"
+              },
+              "arm": {
+                "enum": [
+                  "buy_hold_equal_weight",
+                  "fixed60_weekly",
+                  "trend_weekly",
+                  "matched_weekly"
+                ]
+              },
+              "fee_bps": {
+                "enum": [
+                  0,
+                  35,
+                  50
+                ]
+              },
+              "delay": {
+                "enum": [
+                  0,
+                  1
+                ]
+              },
+              "net_return": {
+                "type": "number"
+              },
+              "components": {
+                "type": "object",
+                "properties": {
+                  "market": {
+                    "type": "number"
+                  },
+                  "exposure": {
+                    "type": "number"
+                  },
+                  "selection": {
+                    "type": "number"
+                  },
+                  "cost": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "market",
+                  "exposure",
+                  "selection",
+                  "cost"
+                ],
+                "additionalProperties": false
+              },
+              "dates": {
+                "const": 90
+              },
+              "mean_post_trade_exposure": {
+                "type": "number"
+              },
+              "down_market_dates": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "down_market_strategy_pnl": {
+                "type": "number"
+              },
+              "down_market_full_reference_pnl": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "window",
+              "end",
+              "arm",
+              "fee_bps",
+              "delay",
+              "net_return",
+              "components",
+              "dates",
+              "mean_post_trade_exposure",
+              "down_market_dates",
+              "down_market_strategy_pnl",
+              "down_market_full_reference_pnl"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 288,
+          "maxItems": 288
+        }
+      },
+      "required": [
+        "currency",
+        "accounts"
+      ],
+      "additionalProperties": false
+    },
+    "security": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "competition.security_evidence_audit.v1"
+        },
+        "candidate_days": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "identity_segments": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unresolved_identity_segments": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unresolved_candidate_days": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unmatched_interval_days": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "missing_master_days": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "source_classifications": {
+          "type": "object",
+          "properties": {
+            "unverified_security_type": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "warrant_evidence": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "date_bounded_identity_candidates": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "reorganization_old_new_equity_requires_split_identity": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [],
+          "additionalProperties": false
+        },
+        "source_seed_events": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "source_split_seeds": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "seed_split_boundary_matches": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "large_raw_boundary_jumps": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "independently_verified_type_days": {
+          "const": 0
+        },
+        "corporate_action_coverage": {
+          "const": "incomplete"
+        },
+        "availability_verified": {
+          "const": false
+        },
+        "formal_performance_ready": {
+          "const": false
+        },
+        "prices_modified": {
+          "const": false
+        },
+        "primary_announcements_reviewed": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "schema",
+        "candidate_days",
+        "identity_segments",
+        "unresolved_identity_segments",
+        "unresolved_candidate_days",
+        "unmatched_interval_days",
+        "missing_master_days",
+        "source_classifications",
+        "source_seed_events",
+        "source_split_seeds",
+        "seed_split_boundary_matches",
+        "large_raw_boundary_jumps",
+        "independently_verified_type_days",
+        "corporate_action_coverage",
+        "availability_verified",
+        "formal_performance_ready",
+        "prices_modified",
+        "primary_announcements_reviewed"
+      ],
+      "additionalProperties": false
+    },
+    "observation": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "const": "awaiting_new_data"
+        },
+        "registry_frozen": {
+          "type": "boolean"
+        },
+        "protocol_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "frozen_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "crypto_warmup_end": {
+          "type": "string",
+          "format": "date"
+        },
+        "us_warmup_end": {
+          "type": "string",
+          "format": "date"
+        },
+        "accepted_observations": {
+          "const": 0
+        },
+        "first_eligible_observation_at": {
+          "const": null
+        },
+        "download": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "enum": [
+                "not_attempted",
+                "acquired",
+                "failed",
+                "blocked"
+              ]
+            },
+            "attempts": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 496
+            },
+            "transferred_bytes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 16777216
+            }
+          },
+          "required": [
+            "status",
+            "attempts",
+            "transferred_bytes"
+          ],
+          "additionalProperties": false
+        },
+        "issue_codes": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 10,
+          "items": {
+            "enum": [
+              "STALE_WARMUP",
+              "INCOMPLETE_WARMUP",
+              "DOWNLOAD_FAILED",
+              "US_STALE_WARMUP",
+              "AVAILABILITY_UNREVIEWED",
+              "NEW_BAR_NOT_COMPLETED",
+              "ARCHIVE_UNAVAILABLE",
+              "BUDGET_EXHAUSTED",
+              "NO_FRESH_SOURCE",
+              "UNKNOWN_AVAILABILITY"
+            ]
+          }
+        }
+      },
+      "required": [
+        "status",
+        "registry_frozen",
+        "protocol_id",
+        "frozen_at",
+        "crypto_warmup_end",
+        "us_warmup_end",
+        "accepted_observations",
+        "first_eligible_observation_at",
+        "download",
+        "issue_codes"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schema",
+    "retrospective",
+    "formal_performance_ready",
+    "scientific",
+    "equity",
+    "cost_diagnostics",
+    "crypto",
+    "security",
+    "observation"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Reviewed low-turnover research aggregate v1"
+}

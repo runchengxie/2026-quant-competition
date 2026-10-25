@@ -45,7 +45,9 @@ def audit_security_evidence(daily_records, master, intervals, events):
             raise ValueError("INVALID_SECURITY_OBSERVATION")
         seen.add(key)
         unresolved_days += identity.startswith("unresolved:")
-        unmatched += not any(start <= day <= end for start, end in boundaries.get((ticker, identity), []))
+        unmatched += not any(
+            start <= day <= end for start, end in boundaries.get((ticker, identity), [])
+        )
         missing_master += ticker not in classes
         groups[identity].append(row)
     split_matches = 0
@@ -59,14 +61,28 @@ def audit_security_evidence(daily_records, master, intervals, events):
             except (TypeError, ValueError, ZeroDivisionError):
                 continue
             jumps += abs(math.log(ratio)) >= math.log(1.5)
-            split_matches += any(symbol == current["ticker"] and day == current["date"]
-                                 and abs(math.log(ratio * shares)) < math.log(1.25)
-                                 for symbol, day, shares in splits)
-    return dict(schema="competition.security_evidence_audit.v1", candidate_days=len(seen),
-                identity_segments=len(groups), unresolved_identity_segments=sum(k.startswith("unresolved:") for k in groups),
-                unresolved_candidate_days=unresolved_days, unmatched_interval_days=unmatched,
-                missing_master_days=missing_master, source_classifications=dict(sorted(Counter(classes.values()).items())),
-                source_seed_events=len(events), source_split_seeds=len(splits), seed_split_boundary_matches=split_matches,
-                large_raw_boundary_jumps=jumps, independently_verified_type_days=0,
-                corporate_action_coverage="incomplete", availability_verified=False,
-                formal_performance_ready=False, prices_modified=False)
+            split_matches += any(
+                symbol == current["ticker"]
+                and day == current["date"]
+                and abs(math.log(ratio * shares)) < math.log(1.25)
+                for symbol, day, shares in splits
+            )
+    return dict(
+        schema="competition.security_evidence_audit.v1",
+        candidate_days=len(seen),
+        identity_segments=len(groups),
+        unresolved_identity_segments=sum(k.startswith("unresolved:") for k in groups),
+        unresolved_candidate_days=unresolved_days,
+        unmatched_interval_days=unmatched,
+        missing_master_days=missing_master,
+        source_classifications=dict(sorted(Counter(classes.values()).items())),
+        source_seed_events=len(events),
+        source_split_seeds=len(splits),
+        seed_split_boundary_matches=split_matches,
+        large_raw_boundary_jumps=jumps,
+        independently_verified_type_days=0,
+        corporate_action_coverage="incomplete",
+        availability_verified=False,
+        formal_performance_ready=False,
+        prices_modified=False,
+    )

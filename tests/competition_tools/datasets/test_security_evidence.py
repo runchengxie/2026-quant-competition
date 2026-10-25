@@ -4,10 +4,40 @@ from competition_tools.datasets.security_evidence import audit_security_evidence
 
 
 def fixtures():
-    daily = [dict(date="2026-01-02", candidate_id="unresolved:A", ticker="A", open=100, close=101), dict(date="2026-01-05", candidate_id="unresolved:A", ticker="A", open=10, close=10.1)]
+    daily = [
+        dict(
+            date="2026-01-02",
+            candidate_id="unresolved:A",
+            ticker="A",
+            open=100,
+            close=101,
+        ),
+        dict(
+            date="2026-01-05",
+            candidate_id="unresolved:A",
+            ticker="A",
+            open=10,
+            close=10.1,
+        ),
+    ]
     master = [dict(symbol="A", classification="unverified_security_type")]
-    intervals = [dict(Ticker="A", ResearchKey="unresolved:A", first_date="2026-01-02", last_date="2026-01-05")]
-    events = [dict(symbol="A", event_date="2026-01-05", event_type="forward_split", new_shares_per_old_share="10", apply_automatically="False")]
+    intervals = [
+        dict(
+            Ticker="A",
+            ResearchKey="unresolved:A",
+            first_date="2026-01-02",
+            last_date="2026-01-05",
+        )
+    ]
+    events = [
+        dict(
+            symbol="A",
+            event_date="2026-01-05",
+            event_type="forward_split",
+            new_shares_per_old_share="10",
+            apply_automatically="False",
+        )
+    ]
     return daily, master, intervals, events
 
 
