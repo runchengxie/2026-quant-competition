@@ -155,3 +155,31 @@ def test_cache_change_after_freeze_is_rejected_before_any_request(tmp_path):
             tmp_path / "recovered",
             transport=ArchiveTransport(),
         )
+
+
+def test_invalid_downloaded_pair_stops_before_next_resource(tmp_path):
+    from test_binance_daily_acquisition import ArchiveTransport
+    from competition_tools.datasets.daily_recovery import acquire_recovery
+
+    config, _, _ = prepared_recovery(tmp_path)
+
+    class Corrupt(ArchiveTransport):
+        count = 0
+
+        def fetch(self, *args, **kwargs):
+            self.count += 1
+            status, body = super().fetch(*args, **kwargs)
+            if self.count == 1:
+                body += b"unexpected-trailing-bytes"
+            return status, body
+
+    client = Corrupt()
+    plan = tmp_path / "recovery-plan/plan.json"
+    result = acquire_recovery(config, plan, tmp_path / "recovered", transport=client)
+    assert result["status"] == "blocked"
+    assert result["attempts"] == client.count == 2
+    assert result["spend_uncertain"] is False
+    assert not (tmp_path / "recovered/manifest.json").exists()
+    with pytest.raises(ValueError, match="ALREADY_SPENT"):
+        acquire_recovery(config, plan, tmp_path / "retry", transport=client)
+    assert client.count == 2

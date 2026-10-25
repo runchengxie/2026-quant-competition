@@ -195,6 +195,15 @@ def acquire_recovery(config, plan_path, output, *, transport, clock=time.monoton
             if status != 200 or len(body) > limit:
                 raise ValueError("RECOVERY_RESPONSE_BLOCKED")
             target.write_bytes(body)
+            if name.endswith(".CHECKSUM"):
+                # Stop before the next request once the complete pair is known
+                # to be invalid; the consumed reservation remains irreversible.
+                normalize_daily_archive(
+                    (out / "raw" / name.removesuffix(".CHECKSUM")).read_bytes(),
+                    body.decode("ascii"),
+                    resource["product"],
+                    resource["day"],
+                )
         _, tables = parent_rows(parent)
         inspect_cached_pairs(out / "raw", plan["original_plan"]["resources"])
         for resource in plan["original_plan"]["resources"]:
