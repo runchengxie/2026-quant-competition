@@ -84,3 +84,7 @@ Connect research and execution through stable contracts. Do not copy the entire 
 ## Rule and publication guidance
 
 Use the public organizer rules dated 2026-10-13 and later official notices for publicly cited guidance. Keep restricted team rule copies, personal registration material and account authorizations outside public Git. Intraday close-out is not automatically a flat day. Position/turnover eligibility affects defense/award candidacy, not continued participation. Research involving crypto does not authorize a venue/product or expand the execution target schema. Confirm the actual account, supported broker and products separately.
+
+## Task artifact closeout
+
+Before closing a task, update its private retention inventory under configured DATA_ROOT/2026-quant-competition/retention/<review-date>/ following [artifact retention](docs/operations/artifact-retention.md) ([简体中文](docs/operations/artifact-retention.zh-CN.md)). Preserve inputs, versioned research, ledgers, validation and recovery evidence. Unknown contents and unresolved consumers remain retained. Rebuildable dependencies require completion and dependency/process/scheduled-task checks before any separately authorized retirement; inventory never authorizes deletion. Keep private paths and inventories outside public Git.

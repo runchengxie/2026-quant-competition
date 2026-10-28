@@ -17,6 +17,7 @@ Start with the [offline quickstart](operations/team-quickstart.md) if you have n
 | Review strategy ideas | [Strategy analysis](strategy/strategy-analysis.md), [competition analysis](competition/competition-analysis.md) |
 | Configure credentials or data providers | [Private configuration and providers](operations/environment-and-providers.md) |
 | Set up a Paper account workflow | [Gateway setup](operations/gateway-login.md), [release checks](operations/release-checks.md) |
+| Close a task and retain its evidence | [Artifact retention](operations/artifact-retention.md) |
 | Change code or build the website | [Development guide](development.md) |
 
 The rules summary and dated validation reports record what was checked at the time. Follow the organizer's latest notices for competition requirements and the current setup guides for commands.

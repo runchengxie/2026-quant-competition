@@ -17,6 +17,7 @@
 | 了解候选策略 | [策略分析](strategy/strategy-analysis.md)和[比赛分析](competition/competition-analysis.md)，目前为英文 |
 | 配置密钥和数据服务 | [私人配置与数据服务](operations/environment-and-providers.zh-CN.md) |
 | 准备模拟账户交易 | [Gateway 配置](operations/gateway-login.zh-CN.md)和[运行前检查](operations/release-checks.md)，后者为英文 |
+| 任务收尾与保留证据 | [产物保留规则](operations/artifact-retention.zh-CN.md) |
 | 修改代码或构建网站 | [开发指南](development.zh-CN.md) |
 
 规则摘要和带日期的验证报告记录了当时查到的情况。比赛要求以主办方最新通知为准，操作命令以当前入门指南为准。
