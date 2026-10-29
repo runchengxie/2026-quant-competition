@@ -177,6 +177,7 @@ def _allowed_source(relative_path: PurePosixPath) -> bool:
         "src/i18n/crypto-cnn-en.json",
         "src/i18n/crypto-cnn-zh-CN.json",
         "src/data/us-cnn-summary.v1.json",
+        "src/data/us-cnn-ranges.v1.json",
         "src/i18n/us-cnn-en.json",
         "src/i18n/us-cnn-zh-CN.json",
         "src/lib/us-cnn-summary.mjs",

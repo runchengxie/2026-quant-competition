@@ -10,6 +10,7 @@ from competition_tools.check_pages_content import _allowed_source, check_site
 def test_us_cnn_publication_allowlist_is_narrow():
     allowed = [
         "src/data/us-cnn-summary.v1.json",
+        "src/data/us-cnn-ranges.v1.json",
         "src/i18n/us-cnn-en.json",
         "src/i18n/us-cnn-zh-CN.json",
         "src/lib/us-cnn-summary.mjs",
