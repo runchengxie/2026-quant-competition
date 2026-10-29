@@ -1,6 +1,7 @@
 import csv
 import hashlib
 import io
+import json
 import zipfile
 
 import pytest
@@ -10,6 +11,7 @@ from competition_tools.cnn_archive_performance import (
     STRATEGIES,
     load_curves,
     render_svg,
+    render_chart_data,
 )
 
 
@@ -37,6 +39,10 @@ def test_curves_validate_and_render_normalized_equity(tmp_path):
     assert svg.startswith('<svg ')
     assert svg.count('class="curve"') == 3
     assert "2020" in svg
+    payload = json.loads(render_chart_data(curves))
+    assert payload["dates"] == ["2020-01-01", "2020-01-02", "2020-01-03"]
+    assert [row["values"] for row in payload["series"]] == [[100, 80, 110], [100, 80, 120], [100, 80, 130]]
+    assert [row["strategy"] for row in payload["series"]] == list(STRATEGIES)
 
 
 @pytest.mark.parametrize("variant", ["hash", "summary", "fee"])

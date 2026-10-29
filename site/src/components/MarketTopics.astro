@@ -17,10 +17,9 @@ const prefix = `/2026-quant-competition/${locale === 'en' ? '' : 'zh-CN/'}`;
    <div class="cards">
     <article><p class="kind">{t.factor}</p><h3><a href={`${prefix}factors/#market-${market.id}`}>{market.factorTitle}</a></h3><p>{market.factorBody}</p><p class="scope">{market.factorScope}</p><a href={`${prefix}factors/#market-${market.id}`} aria-label={`${t.open} · ${market.factorTitle}`}>{t.open} →</a></article>
     <article><p class="kind">{t.strategy}</p><h3><a href={`${prefix}strategies/#market-${market.id}`}>{market.strategyTitle}</a></h3><p>{market.strategyBody}</p><p class="scope">{market.strategyScope}</p><a href={`${prefix}strategies/#market-${market.id}`} aria-label={`${t.open} · ${market.strategyTitle}`}>{t.open} →</a></article>
-    {'extraTitle' in market && <article><p class="kind">{t.strategy}</p><h3><a href={`${prefix}docs/cnn-chart-research/`}>{market.extraTitle}</a></h3><p>{market.extraBody}</p><a href={`${prefix}docs/cnn-chart-research/`} aria-label={`${t.open} · ${market.extraTitle}`}>{t.open} →</a></article>}
+    {'extraTitle' in market && <article><p class="kind">{t.strategy}</p><h3><a href={`${prefix}research/cnn-chart/`}>{market.extraTitle}</a></h3><p>{market.extraBody}</p><a href={`${prefix}research/cnn-chart/`} aria-label={`${t.open} · ${market.extraTitle}`}>{t.open} →</a></article>}
    </div>
   </section>)}
-  <aside><h2>{t.indexes}</h2><a href={`${prefix}factors/`}>{t.allFactors} →</a> <a href={`${prefix}strategies/`}>{t.allStrategies} →</a></aside>
  </main>
 </SiteLayout>
 <style>

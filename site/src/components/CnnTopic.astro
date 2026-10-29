@@ -1,0 +1,41 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import SiteNavigation from './SiteNavigation.astro';
+import curves from '../data/cnn-archive-curves.v1.json';
+import en from '../i18n/cnn-topic-en.json';
+import zh from '../i18n/cnn-topic-zh-CN.json';
+const locale=Astro.props.locale==='zh-CN'?'zh-CN':'en';
+const t=locale==='zh-CN'?zh:en;
+const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+const names=[t.image,t.average,t.momentum];
+const results=[['114.87','+14.87%','59.47%'],['191.70','+91.70%','34.73%'],['102.31','+2.31%','42.65%']];
+---
+<SiteLayout locale={locale} localePath="research/cnn-chart/" title={`${t.title} | QUANT / LAB`} description={t.intro}>
+ <SiteNavigation locale={locale} active="markets" />
+ <main class="cnn-topic">
+  <header class="hero"><p class="eyebrow">{t.eyebrow}</p><h1>{t.title}</h1><p class="lead">{t.intro}</p><p class="notice">{t.notice}</p></header>
+  <nav class="topic-nav" aria-label={t.title}><a href="#pictures">01 {t.pictureTitle}</a><a href="#performance">02 {t.chartTitle}</a><a href="#approaches">03 {t.variantsTitle}</a><a href="#sources">04 {t.sourcesTitle}</a></nav>
+  <section id="pictures"><div class="heading"><p class="eyebrow">01 / {t.eyebrow}</p><h2>{t.pictureTitle}</h2><p class="lead">{t.pictureBody}</p></div>
+   <div class="picture-grid"><figure><img data-cnn-image src={`${prefix.replace(/zh-CN\/$/,'')}research-images/cnn-archived-candlestick.png`} alt={t.imageAlt1} width="160" height="160" loading="lazy"/><figcaption><strong>{t.simpleTitle}</strong><p>{t.simpleBody}</p></figcaption></figure><figure><img data-cnn-image src={`${prefix.replace(/zh-CN\/$/,'')}research-images/cnn-archived-paper-ohlc.png`} alt={t.imageAlt2} width="240" height="256" loading="lazy"/><figcaption><strong>{t.ohlcTitle}</strong><p>{t.ohlcBody}</p></figcaption></figure></div><p class="detail">{t.imageNote}</p>
+  </section>
+  <section id="performance"><div class="heading"><p class="eyebrow">02 / 2018–2026</p><h2>{t.chartTitle}</h2><p class="lead">{t.chartBody}</p></div>
+   <p class="notice">{t.notice}</p>
+   <div data-cnn-curve data-selection="all"><div data-cnn-controls hidden><label>{t.select}<select data-cnn-select><option value="all">{t.all}</option>{curves.series.map((row,index)=><option value={row.strategy}>{names[index]}</option>)}</select></label></div>
+    <figure class="performance-figure"><img data-cnn-fallback src={`${prefix.replace(/zh-CN\/$/,'')}research-images/cnn-archive-performance.svg`} alt={t.fallbackAlt} width="800" height="400"/><div data-cnn-chart role="img" aria-label={t.chartLabel} hidden></div></figure>
+    <script type="application/json" data-cnn-config set:html={JSON.stringify({locale,names,dates:curves.dates,series:curves.series}).replaceAll('<','\\u003c')}></script>
+   </div>
+   <div class="table-scroll"><table data-cnn-results><caption>{t.results}</caption><thead><tr><th scope="col">{t.method}</th><th scope="col">{t.ending}</th><th scope="col">{t.return}</th><th scope="col">{t.drawdown}</th></tr></thead><tbody>{results.map((row,index)=><tr><th scope="row">{names[index]}</th>{row.map(cell=><td>{cell}</td>)}</tr>)}</tbody></table></div>
+   <p class="lead">{t.explain}</p><p>{t.cost}</p><p class="notice">{t.warning}</p>
+  </section>
+  <section id="approaches"><div class="heading"><p class="eyebrow">03 / CNN</p><h2>{t.variantsTitle}</h2><p class="lead">{t.variantsIntro}</p></div><div class="variants">{t.variants.map(([name,description])=><article><h3><code>{name}</code></h3><p>{description}</p></article>)}</div></section>
+  <section><h2>{t.laterTitle}</h2><p class="lead">{t.laterBody}</p></section>
+  <section id="sources"><h2>{t.sourcesTitle}</h2><p>{t.sourceBody}</p><div class="links"><a data-cnn-source href={`${prefix}docs/cnn-chart-research/`}>{t.sourceLink} →</a><a href="https://github.com/runchengxie/chi-futu-quant-lab/releases/tag/updated-code-bundled-with-data">{t.releaseLink} ↗</a><a href="https://github.com/runchengxie/chi-futu-quant-lab/blob/main/docs/cnn-strategies.md">{t.methodsLink} ↗</a></div></section>
+ </main>
+</SiteLayout>
+<script>
+ import { mountCnnChart } from '../scripts/cnn-topic-chart.mjs';
+ document.querySelectorAll('[data-cnn-curve]').forEach(root=>mountCnnChart(root));
+</script>
+<style>
+ .cnn-topic{max-width:1100px;margin:auto;padding:2rem 2rem 5rem}.hero{padding:2.5rem 0}.hero h1{font:400 clamp(2rem,4vw,3.2rem)/1.3 Georgia,'SimSun',serif;max-width:24ch}.eyebrow{color:var(--muted);font-size:.8rem;letter-spacing:.04em}.lead{font-size:1.13rem;line-height:1.85;max-width:76ch}.notice{max-width:90ch;border-left:3px solid var(--green);padding:.6rem 1rem;color:var(--muted);background:var(--surface);line-height:1.8}.topic-nav{display:flex;gap:1.5rem;flex-wrap:wrap;border-block:1px solid var(--line);padding:1rem 0}.topic-nav a,.links a{color:var(--ink)}section{margin:3rem 0;padding-top:1rem;min-width:0}.heading{max-width:85ch}.cnn-topic h2{font:400 clamp(1.6rem,3vw,2.3rem)/1.35 Georgia,'SimSun',serif}.cnn-topic p{line-height:1.85}.picture-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.picture-grid figure{margin:0;padding:1.5rem;background:var(--surface);border:1px solid var(--line)}.picture-grid img{display:block;width:240px;max-width:100%;height:auto;margin:0 auto 1.5rem;image-rendering:pixelated}.picture-grid figcaption p,.detail{font-size:.9rem;color:var(--muted)}[data-cnn-controls]{margin:1rem 0}[data-cnn-controls] label{display:grid;gap:.5rem;max-width:20rem;font-size:.9rem}[data-cnn-select]{font:inherit;color:var(--ink);background:var(--paper);border:1px solid var(--line);padding:.65rem}.performance-figure{margin:1rem 0}.performance-figure img{display:block;width:100%;height:auto}.performance-figure [data-cnn-chart]{width:100%;height:400px}.table-scroll{overflow-x:auto;max-width:100%;margin:1.5rem 0}table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:.9rem}th,td{text-align:left;padding:.8rem;border-bottom:1px solid var(--line);white-space:nowrap}caption{text-align:left;font-weight:600;margin-bottom:.7rem}.variants{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.variants article{padding:1.2rem;border:1px solid var(--line);background:var(--surface);min-width:0}.variants h3{font-size:.95rem;overflow-wrap:anywhere}.variants p{margin-bottom:0;color:var(--muted);font-size:.9rem}.links{display:flex;flex-wrap:wrap;gap:1.2rem}.cnn-topic [hidden]{display:none!important}@media(max-width:700px){.cnn-topic{padding:1rem 1.4rem 4rem}.hero{padding:1rem 0}.picture-grid,.variants{grid-template-columns:1fr}.performance-figure [data-cnn-chart]{height:320px}}
+</style>

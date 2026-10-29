@@ -58,9 +58,8 @@ const cryptoJobs=snapshot.results.filter(r=>r.market==='crypto').length;
   <article class="editorial-topic" data-market-topic="crypto" data-robustness-headline-facts={crypto?JSON.stringify({market:'crypto',...crypto}):undefined}><p class="topic-index">03 / {(locale==='en'?en:zh).robustness.markets.crypto}</p><div><h3><a data-topic="crypto" href={`${prefix}markets/#market-crypto`}>{t.cryptoTitle}</a></h3><p>{t.cryptoBody}</p></div><div class="topic-stat"><strong>{crypto?`${crypto.returnWins} / ${crypto.requestedWindows}`:t.unavailable}</strong><span>{t.cryptoMetric}</span></div><MarketEvidence locale={locale} market="crypto" /></article>
   <p class="editorial-figure-note">{(locale==='en'?en:zh).reader.readNumbers}</p>
   <a data-run-guide class="editorial-link" href={`${prefix}docs/project/#demo`}>{(locale==='en'?en:zh).reader.run} →</a>
-  <article class="editorial-topic"><p class="topic-index">04 / {(locale==='en'?en:zh).pages.labels.factors}</p><div><h3><a data-topic="factors" href={`${prefix}factors/`}>{t.factorTitle}</a></h3><p>{t.factorBody}</p></div><div class="topic-stat"><strong class="text-stat">{t.factorState}</strong><span>{t.factorMetric}</span></div></article>
  </div>
- <p class="editorial-figure-note"><a data-cnn-note href={`${prefix}docs/cnn-chart-research/`}>{(locale==='en'?en:zh).documents.titles["cnn-chart-research"]} ↗</a> {(locale==='en'?en:zh).documents.summaries["cnn-chart-research"]}</p>
+ <p class="editorial-figure-note"><a data-cnn-note href={`${prefix}research/cnn-chart/`}>{(locale==='en'?en:zh).documents.titles["cnn-chart-research"]} ↗</a> {(locale==='en'?en:zh).documents.summaries["cnn-chart-research"]}</p>
  <div class="editorial-bottom"><div><h2>{t.nextTitle}</h2><p>{interpolate(t.nextBody,{count:facts.observation.observations})}</p><a class="editorial-link" href={`${prefix}docs/data-refresh/`}>{t.nextLink} →</a></div><div><h2>{t.methodTitle}</h2><p>{interpolate(t.methodBody,{jobs:facts.coverage.requested_jobs,checks:facts.coverage.requested_capacity_checks})}</p><a class="editorial-link" href={`${prefix}docs/strategy-robustness/`}>{t.methodLink} →</a></div></div>
 </section>
 <style>

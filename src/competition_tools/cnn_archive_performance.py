@@ -4,6 +4,7 @@ import argparse
 import csv
 import hashlib
 import io
+import json
 import math
 import zipfile
 from datetime import date
@@ -94,12 +95,28 @@ def render_svg(curves):
     return "\n".join(parts) + "\n"
 
 
+def render_chart_data(curves):
+    """Export only normalized portfolio values for the interactive chart."""
+    payload = {
+        "dates": [day.isoformat() for day in curves[0]["dates"]],
+        "series": [
+            {"strategy": curve["strategy"], "values": [round(value, 5) for value in curve["equity"]]}
+            for curve in curves
+        ],
+    }
+    return json.dumps(payload, separators=(",", ":")) + "\n"
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--archive", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument("--json-output", type=Path)
     args = parser.parse_args()
-    args.output.write_text(render_svg(load_curves(args.archive)), encoding="utf-8")
+    curves = load_curves(args.archive)
+    args.output.write_text(render_svg(curves), encoding="utf-8")
+    if args.json_output:
+        args.json_output.write_text(render_chart_data(curves), encoding="utf-8")
 
 
 if __name__ == "__main__":

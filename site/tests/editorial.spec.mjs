@@ -26,7 +26,7 @@ for(const locale of ['en','zh-CN']){
   await expect(home.locator('canvas')).toHaveCount(0);
   await expect(page.locator('[data-robustness-facts],[data-controls-facts]')).toHaveCount(0);
   expect(JSON.stringify(facts).length).toBeLessThan(10240);
-  await expect(home.locator('a[data-topic=factors]')).toHaveAttribute('href',prefix+'factors/');
+  await expect(home.locator('a[data-topic=factors]')).toHaveCount(0);
   for(const theme of ['light','dark']){
    await page.locator('#theme-preference').selectOption(theme);
    await page.screenshot({path:info.outputPath(`${locale}-home-${theme}.png`),fullPage:true});
