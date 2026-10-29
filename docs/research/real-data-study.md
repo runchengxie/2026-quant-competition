@@ -49,7 +49,7 @@ All 318 frozen jobs completed: US 110 (11 folds), HK 100 (10 folds), crypto 108 
 
 Both stock markets completed a bounded overlap refresh with no observed revisions; parent snapshot hashes stayed unchanged. This overlap check cannot certify older adjustment consistency. Closed-session zero-volume flat placeholders are retained raw and audited separately, never treated as trading sessions.
 
-The table summarizes independent fold returns: median net return, median paired excess return, and the largest within-fold drawdown. These are not annual returns or a stitched equity curve. Median excess is calculated from paired differences and need not equal the difference of medians. Full per-fold facts, fees, Sharpe and eligibility proxies are available in the [Pages study section](https://runchengxie.github.io/2026-quant-competition/#study).
+The table summarizes independent fold returns: median net return, median paired excess return, and the largest within-fold drawdown. These are not annual returns or a stitched equity curve. Median excess is calculated from paired differences and need not equal the difference of medians. Full per-fold facts, fees, Sharpe and eligibility proxies are available in the [Pages study section](https://runchengxie.github.io/global-market-research/#study).
 
 | Market | Strategy | One-way bps | Folds | Median net return | Median excess | Largest fold drawdown |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -95,7 +95,7 @@ The initial 2026-10-21 `npm audit` reported one high-severity Vite launch-editor
 
 ## Interactive site and documentation
 
-The [performance dashboard](https://runchengxie.github.io/2026-quant-competition/#performance) uses Apache ECharts with market, strategy, fee and independent-window selectors. Hover, legends, curve zoom and reset are presentation controls. Published financial metrics are selected from the frozen study; the browser does not rerun accounting or join windows into a continuous portfolio. Return histograms calculate bin counts only.
+The [performance dashboard](https://runchengxie.github.io/global-market-research/#performance) uses Apache ECharts with market, strategy, fee and independent-window selectors. Hover, legends, curve zoom and reset are presentation controls. Published financial metrics are selected from the frozen study; the browser does not rerun accounting or join windows into a continuous portfolio. Return histograms calculate bin counts only.
 
 The original eight views cover net/gross NAV, drawdown, window net/excess returns, fixed-window cost sensitivity, return/drawdown comparison, daily turnover and position proxies, and window-return distribution. The same currencies and methods apply across languages and themes. Accessible summaries and the complete tables remain available without JavaScript.
 
@@ -105,7 +105,7 @@ The original eight views cover net/gross NAV, drawdown, window net/excess return
 python -m competition_tools.evaluation.study_series --aggregate /external/study/run/study-results.json --output /external/new-public-series.json
 ```
 
-The [integrated documentation](https://runchengxie.github.io/2026-quant-competition/docs/) renders this canonical Markdown and the curated architecture, quickstart and dataset guides directly through Astro. Language switches retain the article. Other source documents remain GitHub links. This avoids a second documentation copy or MkDocs deployment.
+The [integrated documentation](https://runchengxie.github.io/global-market-research/docs/) renders this canonical Markdown and the curated architecture, quickstart and dataset guides directly through Astro. Language switches retain the article. Other source documents remain GitHub links. This avoids a second documentation copy or MkDocs deployment.
 
 Current charts describe strategy effects. IC, rank-IC, quantile spreads, decay and machine-learning out-of-time performance have not been measured. Factor/ML checks and a possible runtime adapter remain later research. Fixed slower stock schedules and crypto risk overlays now have a separate versioned ablation path described below. The default packages remain standalone. No external runtime has been connected and no new strategy experiment was run for this display update.
 

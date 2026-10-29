@@ -108,7 +108,7 @@ python -m competition_tools.check_ablation_delivery --config /external/team.toml
 
 使用已提交的源码和全新的仓库外输出路径。最后一条命令会创建明确标注为合成数据的输入和来源证据，不需要私人研究归档。根工具和两个叶子环境都必须指向当前检出。私有运行目录保留源码快照，开发 worktree 删除后仍可核验。新计划最多 768 个任务，共用 3600 秒期限，每批最多 384 个。原计划仍限制为 384 个。失败或阻塞任务保留空指标和明确原因，不自动重试。
 
-[消融研究展示区](https://runchengxie.github.io/2026-quant-competition/zh-CN/#ablation)使用独立的 `competition.public_ablation.v1` 汇总，按相同市场、币种、信号、规则和费用分组。配对变化先比较同一窗口、同一费用下的原始对照，再汇总配对差值。缺失对照保持为空。图表与筛选不重新记账，不公开原始输入价格，也不增加每日曲线。
+[消融研究展示区](https://runchengxie.github.io/global-market-research/zh-CN/#ablation)使用独立的 `competition.public_ablation.v1` 汇总，按相同市场、币种、信号、规则和费用分组。配对变化先比较同一窗口、同一费用下的原始对照，再汇总配对差值。缺失对照保持为空。图表与筛选不重新记账，不公开原始输入价格，也不增加每日曲线。
 
 <a id="forward-observation"></a>
 ## 前瞻观察之前
@@ -131,4 +131,4 @@ python -m competition_tools.evaluation.study_publication --aggregate /external/n
 python -m competition_tools.check_study_delivery --config /external/team.toml --output-root /external/new-synthetic-contract
 ```
 
-[打开业绩看板](https://runchengxie.github.io/2026-quant-competition/zh-CN/#performance)，在相同费用及准确窗口下比较策略，再通过匹配窗口的费用摘要观察费用依赖。历史窗口不会拼成连续复利账户，原有公开快照保留原始运行，新对照使用独立协议和发布检查。
+[打开业绩看板](https://runchengxie.github.io/global-market-research/zh-CN/#performance)，在相同费用及准确窗口下比较策略，再通过匹配窗口的费用摘要观察费用依赖。历史窗口不会拼成连续复利账户，原有公开快照保留原始运行，新对照使用独立协议和发布检查。

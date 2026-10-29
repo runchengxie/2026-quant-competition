@@ -1,8 +1,8 @@
-# 2026 Quant Competition
+# Global Market Research
 
-[English](README.md) · [项目网站](https://runchengxie.github.io/2026-quant-competition/zh-CN/) · [文档目录](docs/README.zh-CN.md)
+[English](README.md) · [项目网站](https://runchengxie.github.io/global-market-research/zh-CN/) · [文档目录](docs/README.zh-CN.md)
 
-这个项目用来准备 2026 年香港量化交易比赛。你可以用它整理行情数据、试跑交易策略，再把过程和结果保存下来。
+这个项目研究全球市场的量化策略和因子。你可以用它整理行情数据、试跑交易策略，再把过程和结果保存下来。项目也保留了 2026 年香港量化交易比赛使用的基础设施。
 
 第一次接触的话，先跑离线演示。演示使用虚构数据，在自己的电脑上运行，不会下单。你不需要券商账户、API 密钥，也不用安装其他 `quant-*` 项目。
 
@@ -21,7 +21,7 @@
 
 拿过去的行情试跑策略，通常叫作回测。它可以帮助你检查策略会怎样买卖，结果好看也不能保证以后赚钱。
 
-网站分别展示[策略表现](https://runchengxie.github.io/2026-quant-competition/zh-CN/strategies/)、[因子研究](https://runchengxie.github.io/2026-quant-competition/zh-CN/factors/)和[项目使用与离线演示](https://runchengxie.github.io/2026-quant-competition/zh-CN/docs/project/)。股票预测研究已经公开排序结果。另外四类日线规则信号仍需独立的 IC、分组收益和信号衰减检验。代码按工作流划分职责，见[模块归属](docs/architecture.zh-CN.md#一个仓库里的工作流模块)，整个仓库保留独立交付能力。
+网站分别展示[策略表现](https://runchengxie.github.io/global-market-research/zh-CN/strategies/)、[因子研究](https://runchengxie.github.io/global-market-research/zh-CN/factors/)和[项目使用与离线演示](https://runchengxie.github.io/global-market-research/zh-CN/docs/project/)。股票预测研究已经公开排序结果。另外四类日线规则信号仍需独立的 IC、分组收益和信号衰减检验。代码按工作流划分职责，见[模块归属](docs/architecture.zh-CN.md#一个仓库里的工作流模块)，整个仓库保留独立交付能力。
 
 ## 第一次怎么跑
 
@@ -29,7 +29,7 @@
 2. 按[离线演示入门](docs/operations/team-quickstart.zh-CN.md)安装环境，并选一个源码目录以外的文件夹存放数据和结果。
 3. 先跑股票演示。它会生成一份示例数据和回测报告。同一份指南也提供加密市场演示。
 
-这两个演示都不需要填写账户密钥或购买行情服务。想先看看项目长什么样，可以直接打开[项目网站](https://runchengxie.github.io/2026-quant-competition/zh-CN/)。
+这两个演示都不需要填写账户密钥或购买行情服务。想先看看项目长什么样，可以直接打开[项目网站](https://runchengxie.github.io/global-market-research/zh-CN/)。
 
 ## 目前做到哪一步了
 
@@ -47,4 +47,4 @@
 
 [日频历史对比研究](docs/research/real-data-study.zh-CN.md)
 
-[站内项目文档](https://runchengxie.github.io/2026-quant-competition/zh-CN/docs/)
+[站内项目文档](https://runchengxie.github.io/global-market-research/zh-CN/docs/)

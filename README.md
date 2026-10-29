@@ -1,8 +1,8 @@
-# 2026 Quant Competition
+# Global Market Research
 
-[简体中文](README.zh-CN.md) · [Project website](https://runchengxie.github.io/2026-quant-competition/) · [Documentation](docs/README.md)
+[简体中文](README.zh-CN.md) · [Project website](https://runchengxie.github.io/global-market-research/) · [Documentation](docs/README.md)
 
-This project helps a team prepare for the 2026 Hong Kong quantitative trading competition. It brings together tools to prepare price data, try trading ideas and keep track of the results.
+This project studies quantitative strategies and factors across global markets. It includes tools for preparing data, testing ideas and tracking results, as well as the infrastructure used for the 2026 Hong Kong quantitative trading competition.
 
 New here? Start with an offline example. It uses made-up data, runs on your computer and does not submit orders. You do not need a broker account, API keys or any other `quant-*` repository.
 
@@ -21,7 +21,7 @@ New here? Start with an offline example. It uses made-up data, runs on your comp
 
 Trying a strategy on past prices is called a backtest. It helps you inspect the strategy's behavior, but it cannot promise future returns.
 
-The website separates [strategy performance](https://runchengxie.github.io/2026-quant-competition/strategies/), [factor research](https://runchengxie.github.io/2026-quant-competition/factors/) and the [project guide with offline demos](https://runchengxie.github.io/2026-quant-competition/docs/project/). The equity prediction study publishes ranking results. The four separate daily rule signals still need independent IC, grouped-return and signal-decay tests. See [workflow modules](docs/architecture.md#workflow-modules-in-one-repository) for code ownership inside this independently deliverable repository.
+The website separates [strategy performance](https://runchengxie.github.io/global-market-research/strategies/), [factor research](https://runchengxie.github.io/global-market-research/factors/) and the [project guide with offline demos](https://runchengxie.github.io/global-market-research/docs/project/). The equity prediction study publishes ranking results. The four separate daily rule signals still need independent IC, grouped-return and signal-decay tests. See [workflow modules](docs/architecture.md#workflow-modules-in-one-repository) for code ownership inside this independently deliverable repository.
 
 ## Run your first example
 
@@ -29,7 +29,7 @@ The website separates [strategy performance](https://runchengxie.github.io/2026-
 2. Follow the [offline quickstart](docs/operations/team-quickstart.md) to install the packages and choose a folder outside the code checkout for data and results.
 3. Run the equity demo first. It creates sample data and a backtest report. The same guide also includes a crypto demo.
 
-No account credentials or market-data subscription is needed for these demos. To browse before installing anything, open the [project website](https://runchengxie.github.io/2026-quant-competition/).
+No account credentials or market-data subscription is needed for these demos. To browse before installing anything, open the [project website](https://runchengxie.github.io/global-market-research/).
 
 ## How far along is the project?
 
@@ -47,4 +47,4 @@ Installation for development, test commands and website builds are in the [devel
 
 [Retrospective daily study](docs/research/real-data-study.md)
 
-[Project documentation](https://runchengxie.github.io/2026-quant-competition/docs/)
+[Project documentation](https://runchengxie.github.io/global-market-research/docs/)

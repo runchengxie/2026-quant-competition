@@ -49,7 +49,7 @@ v2 spec 仅包含以下三个键。
 
 两地股票均完成有界重叠刷新，未发现重叠区间修订，父快照哈希不变。这不能证明更早历史复权完全一致。休市日零成交量且 OHLC 相同的占位记录保留在原始数据和独立审计中，不算交易日。
 
-下表分别汇总独立窗口的净收益中位数和配对超额收益中位数，并列出最严重的窗口回撤。数值保留窗口期限，未做年化或连续净值拼接。超额收益先逐窗口配对再取中位数，因此不一定等于两个收益中位数之差。[Pages 研究区域](https://runchengxie.github.io/2026-quant-competition/zh-CN/#study) 提供逐窗口指标、费用、Sharpe 和资格代理。
+下表分别汇总独立窗口的净收益中位数和配对超额收益中位数，并列出最严重的窗口回撤。数值保留窗口期限，未做年化或连续净值拼接。超额收益先逐窗口配对再取中位数，因此不一定等于两个收益中位数之差。[Pages 研究区域](https://runchengxie.github.io/global-market-research/zh-CN/#study) 提供逐窗口指标、费用、Sharpe 和资格代理。
 
 | 市场 | 策略 | 单边 bps | 窗口数 | 净收益中位数 | 超额收益中位数 | 窗口最大回撤的最大值 |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -95,7 +95,7 @@ v2 spec 仅包含以下三个键。
 
 ## 互动展示与站内文档
 
-[业绩看板](https://runchengxie.github.io/2026-quant-competition/zh-CN/#performance) 使用 Apache ECharts，可选择市场、策略、费用和独立窗口。悬停、图例、曲线缩放与重置只改变展示。财务指标直接选自冻结研究结果，浏览器不重跑记账，也不拼接窗口形成连续组合。收益直方图仅计算分箱计数。
+[业绩看板](https://runchengxie.github.io/global-market-research/zh-CN/#performance) 使用 Apache ECharts，可选择市场、策略、费用和独立窗口。悬停、图例、曲线缩放与重置只改变展示。财务指标直接选自冻结研究结果，浏览器不重跑记账，也不拼接窗口形成连续组合。收益直方图仅计算分箱计数。
 
 八类图表分别展示净／毛净值、回撤、窗口净／超额收益、同窗口费用敏感性、收益与回撤比较、日均换手与仓位代理，以及窗口收益分布。切换语言或主题不改变币种和方法。关闭 JavaScript 后仍可阅读摘要和完整表格。
 
@@ -105,7 +105,7 @@ v2 spec 仅包含以下三个键。
 python -m competition_tools.evaluation.study_series --aggregate /external/study/run/study-results.json --output /external/new-public-series.json
 ```
 
-[站内文档](https://runchengxie.github.io/2026-quant-competition/zh-CN/docs/) 通过 Astro 直接渲染本篇权威 Markdown，以及选定的架构、快速上手和数据指南。语言切换保留当前文章，其他源文档继续链接 GitHub，无需第二份正文或独立 MkDocs 部署。
+[站内文档](https://runchengxie.github.io/global-market-research/zh-CN/docs/) 通过 Astro 直接渲染本篇权威 Markdown，以及选定的架构、快速上手和数据指南。语言切换保留当前文章，其他源文档继续链接 GitHub，无需第二份正文或独立 MkDocs 部署。
 
 当前图表展示策略效果，尚未测量 IC、rank-IC、分组收益差、信号衰减或机器学习的按时间留出表现。因子、机器学习检验及可选 runtime adapter 仍属后续研究。固定股票降频规则和加密风险叠加规则现有独立版本化消融路径，详见下文。默认研究包仍可独立运行，尚未接入外部 runtime，本次展示更新没有新增策略实验。
 
