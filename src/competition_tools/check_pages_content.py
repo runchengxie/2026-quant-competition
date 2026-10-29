@@ -166,6 +166,7 @@ def _allowed_source(relative_path: PurePosixPath) -> bool:
         "tests/market-topics.spec.mjs",
         "tests/cnn-topic.spec.mjs",
         "tests/clear-home.spec.mjs",
+        "tests/visual-refinement.spec.mjs",
         "src/i18n/home-en.json",
         "src/i18n/home-zh-CN.json",
         "src/i18n/cnn-topic-en.json",

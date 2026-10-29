@@ -10,6 +10,9 @@ main{max-width:1220px;padding-inline:42px}
 .project-nav [data-site-nav]{padding:.25rem 0;border-radius:0;color:var(--ink)}
 .project-nav [aria-current=page]{background:transparent;border-bottom:2px solid var(--ink);font-weight:500}
 .project-nav .repo-link{font-size:.75rem}
+.project-nav [data-site-nav]{position:relative;transition:color .18s ease}
+.project-nav [data-site-nav]:hover{color:var(--green)}
+.project-nav [aria-current=page]{border-bottom-color:var(--green)}
 .showcase-main{padding-top:1.5rem}
 .showcase-main.view-home{padding-top:0}
 .showcase-main>.showcase-hero.performance-hero{padding:0 0 1rem;margin-bottom:1.2rem;border-bottom:1px solid var(--line)}

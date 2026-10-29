@@ -2,7 +2,7 @@
  "title":"Explore quantitative research by market",
  "intro":"We use historical data to study prediction ideas and trading rules in stock and crypto markets. Choose a market to see the work and its findings.",
  "scope":"This site presents research and historical simulations. The results do not establish future performance or represent actual competition-account returns.",
- "markets":"Choose a market","allMarkets":"Browse all topics","featured":"Two studies",
+ "markets":"Choose a market","allMarkets":"Browse all topics","featured":"Two studies","readingNote":"Reading note",
  "usLabel":"US equities · Strategy backtest","usTitle":"Does trading less improve returns?","usBody":"Keeping stocks whose rankings slipped usually reduced trading; returns improved less often.","usLimit":"The comparison uses retained historical windows; real execution remains unverified.",
  "cnnLabel":"Hong Kong equities · Historical experiment","cnnTitle":"Letting a CNN read price charts","cnnBody":"See the old experiment's input images, six related approaches and three simulated return curves.","cnnLimit":"Training boundaries and out-of-sample results remain unverified.",
  "more":"How the research runs","moreBody":"The project guide explains the data, methods and demonstrations you can run locally.","guide":"View the project demo","progress":"View research progress"
