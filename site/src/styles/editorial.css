@@ -47,3 +47,11 @@ main .strategy-controls .publication-note{background:transparent}
 footer{max-width:1220px;padding-inline:42px;font-size:.72rem}
 @media(max-width:900px){.project-nav{gap:1.2rem}.project-nav>div{gap:1rem}.project-nav .wordmark{font-size:1.7rem}main .robustness-core{gap:1.5rem}main .strategy-controls .headline-card:last-child{margin-top:1rem}}
 @media(max-width:700px){main,.showcase-main{padding-inline:23px}.language{padding-inline:23px}.project-nav{width:calc(100% - 46px);flex-wrap:wrap;gap:.8rem;padding-top:1rem}.project-nav .wordmark{font-size:1.6rem}.project-nav>div{gap:1.3rem;order:3;flex-basis:100%;padding-top:.5rem}.project-nav [data-site-nav]{font-size:.8rem}.showcase-main>.showcase-hero.performance-hero{padding:0 0 1.2rem}.showcase-main .section-nav{gap:.5rem 1.2rem}main .robustness-core,main .robustness-section .robustness-charts{grid-template-columns:minmax(0,1fr)}main .strategy-controls .headline-grid{grid-template-columns:minmax(0,1fr)}main .strategy-controls .headline-card,main .strategy-controls .headline-card:first-child{border-left:0;border-top:1px solid var(--line);padding:1rem 0}main .strategy-controls .readiness-cards article{border-left:0;border-top:1px solid var(--line);padding:1rem 0}footer{padding-inline:23px}}
+
+/* Shared editorial rhythm across the research directory and feature pages. */
+:root{--editorial-accent:light-dark(#276a66,#a6d3c7)}
+.project-nav .wordmark{letter-spacing:-.05em}
+.project-nav [aria-current=page]{border-bottom-color:var(--editorial-accent)}
+.showcase-main .home .hero-copy:before,.topics header:before,.cnn-topic .hero:before{content:"";display:block;width:3rem;height:3px;background:var(--editorial-accent);margin-bottom:1.5rem}
+.showcase-main .home .market-grid article,.showcase-main .home .feature-grid article{box-shadow:0 2px 12px light-dark(#233c3210,#00000018)}
+@media(max-width:700px){.showcase-main .home .hero-copy:before,.topics header:before,.cnn-topic .hero:before{margin-bottom:1rem}}

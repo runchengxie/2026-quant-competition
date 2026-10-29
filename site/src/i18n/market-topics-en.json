@@ -6,6 +6,7 @@
   "strategy": "Strategies and backtests",
   "note": "Factor research asks whether a signal helps predict returns. Strategy research also considers positions, turnover and costs. Historical simulations do not guarantee future returns.",
   "open": "Explore research",
+  "allResearch": "All research",
   "indexes": "Browse by research type",
   "allFactors": "All factor research",
   "allStrategies": "All strategy research",
