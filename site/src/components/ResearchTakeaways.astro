@@ -6,7 +6,7 @@ import zh from '../i18n/zh-CN.json';
 const locale=Astro.props.locale==='zh-CN'?'zh-CN':'en';
 const market=Astro.props.market as string|undefined;
 const compact=Astro.props.compact??false;
-const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+const prefix=`/global-market-research/${locale==='en'?'':'zh-CN/'}`;
 const t=(locale==='en'?en:zh).reader;
 const percent=new Intl.NumberFormat(locale,{style:'percent',minimumFractionDigits:2,maximumFractionDigits:2});
 const choices=[{market:'US',feeBps:20,strategy:'sma_cross',variant:'weekly'},{market:'HK',feeBps:30,strategy:'momentum_20d',variant:'monthly'},{market:'crypto',feeBps:10,strategy:'trend_200d',variant:'vol_target_40pct'}];

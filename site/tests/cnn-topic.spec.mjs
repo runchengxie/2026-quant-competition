@@ -6,14 +6,14 @@ test('CNN chart stays inside a mobile page while resize callbacks are delayed',a
   window.addEventListener=(type,listener,options)=>original(type,type==='resize'&&typeof listener==='function'?(event)=>setTimeout(()=>listener(event),1000):listener,options);
  });
  await page.setViewportSize({width:1440,height:1000});
- await page.goto('/2026-quant-competition/research/cnn-chart/');
+ await page.goto('/global-market-research/research/cnn-chart/');
  await expect(page.locator('[data-cnn-curve]')).toHaveAttribute('data-ready','true');
  await page.setViewportSize({width:390,height:844});
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
 
 for (const locale of ['en','zh-CN']) {
- const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+ const prefix=`/global-market-research/${locale==='en'?'':'zh-CN/'}`;
  test(`${locale}: CNN topic has interactive history and retains the source note`,async({page},info)=>{
   await page.goto(`${prefix}markets/#market-hk`);
   await page.locator('[data-topic-market=hk] a[href$="research/cnn-chart/"]').first().click();
@@ -44,7 +44,7 @@ for (const locale of ['en','zh-CN']) {
 }
 
 for (const locale of ['en','zh-CN']) {
- const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+ const prefix=`/global-market-research/${locale==='en'?'':'zh-CN/'}`;
  test(`${locale}: crypto CNN research keeps assumptions and scenario results visible`,async({browser})=>{
   const context=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});
   const page=await context.newPage();
@@ -61,7 +61,7 @@ for (const locale of ['en','zh-CN']) {
 }
 
 test('crypto CNN curve changes window, cost, delay and strategy',async({page})=>{
- await page.goto('/2026-quant-competition/zh-CN/research/crypto-cnn/');
+ await page.goto('/global-market-research/zh-CN/research/crypto-cnn/');
  const chart=page.locator('[data-chart]');
  await expect(chart).toBeVisible();
  await expect(chart).toHaveAttribute('data-selection','0/35/0/cnn_weekly');
@@ -80,7 +80,7 @@ test('crypto CNN curve changes window, cost, delay and strategy',async({page})=>
 });
 
 for (const locale of ['en','zh-CN']) {
- const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+ const prefix=`/global-market-research/${locale==='en'?'':'zh-CN/'}`;
  test(`${locale}: later crypto windows and sentiment limits remain readable without JS`,async({browser})=>{
   const context=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});
   const page=await context.newPage();await page.goto(`${prefix}research/crypto-cnn/`);

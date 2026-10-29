@@ -1,7 +1,7 @@
 import {test,expect} from '@playwright/test';
 
 for(const locale of ['en','zh-CN'])for(const route of ['', 'markets/', 'research/cnn-chart/']) {
- const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+ const prefix=`/global-market-research/${locale==='en'?'':'zh-CN/'}`;
  test(`${locale} ${route||'home'} keeps a readable hierarchy across sizes and themes`,async({page},info)=>{
   await page.goto(prefix+route);
   await expect(page.locator('main h1')).toHaveCount(1);

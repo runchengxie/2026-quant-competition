@@ -1,7 +1,7 @@
 import {test,expect} from '@playwright/test';
 
 for(const locale of ['en','zh-CN']) {
- const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+ const prefix=`/global-market-research/${locale==='en'?'':'zh-CN/'}`;
  test(`${locale}: a concise home and all CNN entry points lead to the topic`,async({browser},info)=>{
   const context=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});
   const page=await context.newPage();

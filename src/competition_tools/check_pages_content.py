@@ -7,7 +7,7 @@ from statistics import median
 from typing import Callable
 from urllib.parse import unquote, urlsplit
 
-PAGES_BASE_PATH = "/2026-quant-competition"
+PAGES_BASE_PATH = "/global-market-research"
 
 SENSITIVE = {
     "credential": re.compile(

@@ -10,7 +10,7 @@ export default defineConfig({
   use: { baseURL: "http://127.0.0.1:4397", browserName: "chromium" },
   webServer: {
     command: "npm run preview -- --host 127.0.0.1 --port 4397",
-    url: "http://127.0.0.1:4397/2026-quant-competition/",
+    url: "http://127.0.0.1:4397/global-market-research/",
     reuseExistingServer: false,
   },
 });

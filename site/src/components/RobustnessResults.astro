@@ -10,7 +10,7 @@ const locale=Astro.props.locale==='zh-CN'?'zh-CN':'en';
 const compact=Astro.props.compact??false;
 const t=(locale==='zh-CN'?zh:en).robustness;
 validateRobustnessSnapshot(snapshot);
-const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+const prefix=`/global-market-research/${locale==='en'?'':'zh-CN/'}`;
 const number=new Intl.NumberFormat(locale,{maximumFractionDigits:2});
 const percent=(n:number)=>number.format(n*100)+'%';
 const change=(n:number|null)=>n===null?t.notAvailable:number.format(n*100)+' '+t.pp;
@@ -43,7 +43,7 @@ const groups=summarizeRobustness(snapshot,{market:'US',feeBps:20});
   <details class="robustness-results"><summary data-robustness-table-summary>{t.table}</summary><div class="robustness-scroll"><table><thead><tr>{[t.market,t.columns.method,t.columns.cost,t.columns.window,t.columns.returnValue,t.columns.drawdown,t.columns.turnover,t.columns.status].map(label=><th>{label}</th>)}</tr></thead><tbody>{snapshot.results.map(r=><tr data-robustness-row={r.job_id}><td>{t.markets[r.market as 'US'|'crypto']}</td><th>{method(r.market==='US'?r.pool_id:r.arm_id)}</th><td>{r.fee_bps}</td><td>{r.start}<br/>{r.end}</td><td>{r.metrics?percent(r.metrics.net_return):t.notAvailable}</td><td>{r.metrics?percent(r.metrics.max_drawdown):t.notAvailable}</td><td>{r.metrics?number.format(r.metrics.turnover)+'×':t.notAvailable}</td><td>{t.status[r.status as 'completed'|'blocked']}{r.reason&&<code>{r.reason}</code>}</td></tr>)}</tbody></table></div></details>
   <aside class="robustness-next"><h3>{t.readiness}</h3><p>{t.readinessBody.replace('{observations}',String(readiness.observation.observations))}</p><a href={`${prefix}docs/data-refresh/`}>{t.dataGuide} ↗</a></aside>
   <p><a href={`${prefix}docs/strategy-robustness/`}>{t.guide} ↗</a></p>
-  <details><summary>{t.provenance}</summary><p><code>{snapshot.code_commit}</code><br/><code>{snapshot.plan_sha256}</code></p><p><a href="https://github.com/runchengxie/2026-quant-competition/blob/main/site/src/data/strategy-robustness.v1.json">{t.artifact} ↗</a></p><ul>{snapshot.restrictions.map(r=><li><code>{r}</code></li>)}</ul></details>
+  <details><summary>{t.provenance}</summary><p><code>{snapshot.code_commit}</code><br/><code>{snapshot.plan_sha256}</code></p><p><a href="https://github.com/runchengxie/global-market-research/blob/main/site/src/data/strategy-robustness.v1.json">{t.artifact} ↗</a></p><ul>{snapshot.restrictions.map(r=><li><code>{r}</code></li>)}</ul></details>
   <script type="application/json" data-robustness-config set:html={JSON.stringify({locale,t}).replace(/</g,'\u003c')} />
  </>}
 </section>

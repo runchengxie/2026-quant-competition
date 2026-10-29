@@ -9,7 +9,7 @@ import { selectSummary } from '../lib/us-cnn-summary.mjs';
 const locale=Astro.props.locale==='zh-CN'?'zh-CN':'en';
 const t=locale==='zh-CN'?zh:en;
 const names=t.names as Record<string,string>;
-const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+const prefix=`/global-market-research/${locale==='en'?'':'zh-CN/'}`;
 const rows=selectSummary(data,100,20);
 const pct=(n:number)=>`${(n*100).toFixed(2)}%`;
 ---
@@ -27,7 +27,7 @@ const pct=(n:number)=>`${(n*100).toFixed(2)}%`;
   <section><h2>{t.chartTitle}</h2><p>{t.chartIntro}</p><div class="chart" data-us-cnn-chart aria-label={t.turnover}>{rows.map(r=><div class="chart-row" data-chart-method={r.strategy}><span>{names[r.strategy]}</span><div class="bar-track"><i style={`width:${Math.min(r.turnover/45*100,100)}%`}></i></div><strong data-chart-value>{r.turnover.toFixed(2)}×</strong></div>)}</div><p class="detail">{t.costExplanation}</p></section>
   <section><h2>{t.howTitle}</h2><p>{t.howBody}</p><h3>{t.matched}</h3><p>{t.matchedBody}</p></section>
   <section><h2>{t.limits}</h2><ul>{t.limitItems.map(item=><li>{item}</li>)}</ul></section>
-  <section><h2>{t.nextTitle}</h2><p>{t.nextBody}</p><a href={`https://github.com/runchengxie/2026-quant-competition/blob/main/docs/research/us-cnn-exploratory${locale==='zh-CN'?'.zh-CN':''}.md`}>{t.protocol} ↗</a> · <a href="https://github.com/runchengxie/2026-quant-competition/blob/a85d63be56137b9ea969f3f0af483cd3bf8d9653/research/equity-lab/src/equity_lab/signals/cnn_walk_forward_rank.py">{t.source} ↗</a><p><a href={`${prefix}markets/#market-us`}>{t.back} →</a></p></section>
+  <section><h2>{t.nextTitle}</h2><p>{t.nextBody}</p><a href={`https://github.com/runchengxie/global-market-research/blob/main/docs/research/us-cnn-exploratory${locale==='zh-CN'?'.zh-CN':''}.md`}>{t.protocol} ↗</a> · <a href="https://github.com/runchengxie/global-market-research/blob/a85d63be56137b9ea969f3f0af483cd3bf8d9653/research/equity-lab/src/equity_lab/signals/cnn_walk_forward_rank.py">{t.source} ↗</a><p><a href={`${prefix}markets/#market-us`}>{t.back} →</a></p></section>
  </main>
 </SiteLayout>
 <script>

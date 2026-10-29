@@ -5,7 +5,7 @@ for(const section of ["ablation","performance"])test(`${section}: charts cannot 
   const Native=window.ResizeObserver;
   window.ResizeObserver=class extends Native{constructor(callback){super((entries,observer)=>setTimeout(()=>callback(entries,observer),1000));}};
  });
- await page.goto('/2026-quant-competition/strategies/');
+ await page.goto('/global-market-research/strategies/');
  const root=page.locator('#'+section);await root.scrollIntoViewIfNeeded();await expect(root).toHaveAttribute('data-ready','true');
  await page.setViewportSize({width:390,height:844});
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
@@ -13,7 +13,7 @@ for(const section of ["ablation","performance"])test(`${section}: charts cannot 
 for(const locale of ["en","zh-CN"]){
  test(`${locale}: post_hoc_badge_survives_every_filter_and_locale`,async({page})=>{
   const errors=[];page.on("pageerror",e=>errors.push(e.message));
-  await page.goto(locale==="en"?"/2026-quant-competition/strategies/":"/2026-quant-competition/zh-CN/strategies/");
+  await page.goto(locale==="en"?"/global-market-research/strategies/":"/global-market-research/zh-CN/strategies/");
   const root=page.locator("#ablation");await expect(root).toBeVisible();await root.scrollIntoViewIfNeeded();await expect(root).toHaveAttribute("data-ready","true");
   await expect(root.locator("canvas")).toHaveCount(2);
   await root.locator("[data-ablation-filter=market]").selectOption("crypto");
@@ -41,7 +41,7 @@ for(const locale of ["en","zh-CN"]){
 }
 test("no JavaScript retains every ablation fact and explicit evidence label",async({browser})=>{
  const context=await browser.newContext({javaScriptEnabled:false});const page=await context.newPage();
- await page.goto("http://127.0.0.1:4397/2026-quant-competition/strategies/");
+ await page.goto("http://127.0.0.1:4397/global-market-research/strategies/");
  const root=page.locator("#ablation");await expect(root.getByText("Post-hoc diagnostic",{exact:true}).first()).toBeVisible();
  const snapshot=JSON.parse(await readFile(new URL("../src/data/ablation-study.v1.json",import.meta.url),"utf8"));
  await expect(root.locator("[data-ablation-id]")).toHaveCount(snapshot.results.length);

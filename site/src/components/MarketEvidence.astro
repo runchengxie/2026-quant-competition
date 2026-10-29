@@ -7,7 +7,7 @@ import zh from '../i18n/zh-CN.json';
 interface Props {locale:string;market:'US'|'HK'|'crypto'}
 const {locale,market}=Astro.props;
 const t=(locale==='zh-CN'?zh:en).strategyControls;
-const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+const prefix=`/global-market-research/${locale==='en'?'':'zh-CN/'}`;
 validateControlsSnapshot(snapshot);
 const highlight=controlsHighlights(snapshot).find(h=>h.market===market);
 const number=new Intl.NumberFormat(locale,{maximumFractionDigits:2});

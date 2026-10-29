@@ -8,7 +8,7 @@ const comparison=compareStrategies(snapshot,null,selection,['buy_hold','equal_we
 const robustness=summarizeFeeRobustness(snapshot,selection);
 const fmt=new Intl.NumberFormat(locale,{maximumFractionDigits:2});
 const pct=(value:number|null|undefined)=>value==null?'—':fmt.format(value*100)+'%';
-const prefix=`/2026-quant-competition/${locale==='zh-CN'?'zh-CN/':''}`;
+const prefix=`/global-market-research/${locale==='zh-CN'?'zh-CN/':''}`;
 const metrics=['net_return','excess_return','max_drawdown','cost_drag','sharpe'] as const;
 ---
 <section class="strategy-comparison" aria-labelledby="comparison-title">

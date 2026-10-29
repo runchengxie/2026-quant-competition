@@ -7,7 +7,7 @@ const locale = Astro.props.locale === "zh-CN" ? "zh-CN" : "en";
 const t = (locale === "zh-CN" ? zh : en).expansion;
 const n = new Intl.NumberFormat(locale, { maximumFractionDigits: 2, minimumFractionDigits: 2 });
 const show = (value: number | null, percent = false) => value === null ? "—" : `${n.format(value * (percent ? 100 : 1))}${percent ? "%" : ""}`;
-const report = `https://github.com/runchengxie/2026-quant-competition/blob/main/docs/research/data-expansion-and-evaluation${locale === "zh-CN" ? ".zh-CN" : ""}.md`;
+const report = `https://github.com/runchengxie/global-market-research/blob/main/docs/research/data-expansion-and-evaluation${locale === "zh-CN" ? ".zh-CN" : ""}.md`;
 ---
 <section id="expansion" class="expansion-section">
   <h2>{t.title}</h2><p>{t.intro}</p>

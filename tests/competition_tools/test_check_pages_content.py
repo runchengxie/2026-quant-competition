@@ -21,7 +21,7 @@ def test_us_cnn_publication_allowlist_is_narrow():
     assert not _allowed_source(PurePosixPath("src/data/us-cnn-raw.json"))
 
 
-BASE_PATH = "/2026-quant-competition"
+BASE_PATH = "/global-market-research"
 
 
 def rendered_page(locale: str, language_url: str, css_url: str | None = None) -> str:

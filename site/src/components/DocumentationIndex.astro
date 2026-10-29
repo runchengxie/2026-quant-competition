@@ -7,7 +7,7 @@ import zh from "../i18n/zh-CN.json";
 interface Props { locale?:string }
 const locale=Astro.props.locale==="zh-CN"?"zh-CN":"en";
 const t=(locale==="zh-CN"?zh:en).documents;
-const prefix=`/2026-quant-competition/${locale==="zh-CN"?"zh-CN/":""}`;
+const prefix=`/global-market-research/${locale==="zh-CN"?"zh-CN/":""}`;
 ---
 <SiteLayout locale={locale} localePath="docs/" title={`${t.title} | QUANT / LAB`} description={t.intro}>
   <SiteNavigation locale={locale} active="docs" />

@@ -6,7 +6,7 @@ import en from '../i18n/cnn-topic-en.json';
 import zh from '../i18n/cnn-topic-zh-CN.json';
 const locale=Astro.props.locale==='zh-CN'?'zh-CN':'en';
 const t=locale==='zh-CN'?zh:en;
-const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+const prefix=`/global-market-research/${locale==='en'?'':'zh-CN/'}`;
 const names=[t.image,t.average,t.momentum];
 const results=[['114.87','+14.87%','59.47%'],['191.70','+91.70%','34.73%'],['102.31','+2.31%','42.65%']];
 ---

@@ -6,7 +6,7 @@ const snapshot = JSON.parse(await readFile(new URL("../src/data/strategy-expansi
 test("both languages present the same published research facts", async ({ page }) => {
   const expected = [...snapshot.daily_results, ...snapshot.equity_results, ...snapshot.maker_results];
   let canonical;
-  for (const path of ["/2026-quant-competition/docs/project/", "/2026-quant-competition/zh-CN/docs/project/"]) {
+  for (const path of ["/global-market-research/docs/project/", "/global-market-research/zh-CN/docs/project/"]) {
     await page.goto(path);
     const rows = page.locator("#expansion [data-expansion-id]");
     await expect(rows).toHaveCount(expected.length);

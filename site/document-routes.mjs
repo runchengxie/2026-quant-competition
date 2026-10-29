@@ -16,5 +16,5 @@ export const documentRoutes = Object.entries({
   "cnn-chart-research": "docs/research/cnn-chart-research",
 }).flatMap(([slug, source]) => ["en", "zh-CN"].map(locale => ({
   slug, locale, source: `${source}${locale === "zh-CN" ? ".zh-CN" : ""}.md`,
-  route: `/2026-quant-competition/${locale === "zh-CN" ? "zh-CN/" : ""}docs/${slug}/`,
+  route: `/global-market-research/${locale === "zh-CN" ? "zh-CN/" : ""}docs/${slug}/`,
 })));

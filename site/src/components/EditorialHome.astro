@@ -6,7 +6,7 @@ import marketsZh from '../i18n/market-topics-zh-CN.json';
 const locale=Astro.props.locale==='zh-CN'?'zh-CN':'en';
 const t=locale==='zh-CN'?zh:en;
 const markets=(locale==='zh-CN'?marketsZh:marketsEn).markets;
-const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+const prefix=`/global-market-research/${locale==='en'?'':'zh-CN/'}`;
 ---
 <section id="robustness" class="home">
  <header class="hero"><div class="hero-copy"><p class="eyebrow">QUANT / LAB · RESEARCH</p><h1>{t.title}</h1><p class="lead">{t.intro}</p></div><aside class="hero-aside"><span class="note-index">01 / {t.readingNote}</span><p class="scope" data-scope>{t.scope}</p></aside></header>

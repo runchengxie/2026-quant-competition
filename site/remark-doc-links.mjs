@@ -13,7 +13,7 @@ export function rewriteDocumentationLink(url, filename, image=false) {
   const doc=documentRoutes.find(entry=>entry.source===target);
   if(doc && !image) return doc.route+fragment;
   const encoded=target.split("/").map(encodeURIComponent).join("/");
-  return (image?"https://raw.githubusercontent.com/runchengxie/2026-quant-competition/main/":"https://github.com/runchengxie/2026-quant-competition/blob/main/")+encoded+fragment;
+  return (image?"https://raw.githubusercontent.com/runchengxie/global-market-research/main/":"https://github.com/runchengxie/global-market-research/blob/main/")+encoded+fragment;
 }
 
 export default function documentationLinks() {

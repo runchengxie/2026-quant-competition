@@ -9,7 +9,7 @@ const market=Astro.props.market==='crypto'?'crypto':'equity';
 const view=Astro.props.view==='factor'?'factor':'strategy';
 const t=locale==='en'?en:zh;
 const windows=[...new Map(facts[market].accounts.map(row=>[row.window,row.end])).entries()].sort();
-const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+const prefix=`/global-market-research/${locale==='en'?'':'zh-CN/'}`;
 const number=(value:number|null|undefined,digits=2)=>value==null?t.unavailable:new Intl.NumberFormat(locale,{minimumFractionDigits:digits,maximumFractionDigits:digits}).format(value);
 const pct=(value:number|null|undefined)=>value==null?t.unavailable:`${number(value*100)}%`;
 const arm=(name:string)=>t.arms[name as keyof typeof t.arms];

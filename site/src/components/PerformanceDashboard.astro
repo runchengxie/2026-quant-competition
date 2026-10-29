@@ -12,7 +12,7 @@ const model=deriveChartModels(snapshot,null,{market:"US",strategy:"buy_hold",fee
 const selected=model.selected!;
 const stability=summarizeWindows(snapshot,{market:"US",strategy:"buy_hold",feeBps:20})!;
 const windows=selectWindowOptions(model.rows);
-const prefix=`/2026-quant-competition/${locale==="zh-CN"?"zh-CN/":""}`;
+const prefix=`/global-market-research/${locale==="zh-CN"?"zh-CN/":""}`;
 const number=new Intl.NumberFormat(locale,{minimumFractionDigits:2,maximumFractionDigits:2});
 const display=(value:number|null,percent=true)=>value===null?"—":number.format(value*(percent?100:1))+(percent?"%":"");
 const cards=["net_return","excess_return","max_drawdown","sharpe","mean_exposure","cost_drag"] as const;

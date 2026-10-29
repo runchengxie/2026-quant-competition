@@ -4,7 +4,7 @@ import zh from '../i18n/zh-CN.json';
 import DexFactorResults from './DexFactorResults.astro';
 const locale=Astro.props.locale==='zh-CN'?'zh-CN':'en';
 const all=locale==='en'?en:zh;const t=all.factors;
-const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+const prefix=`/global-market-research/${locale==='en'?'':'zh-CN/'}`;
 const signals=['momentum_20d','sma_cross','momentum_63d','trend_200d'] as const;
 const market=Astro.props.market??'all';
 const chosen=signals.map((id,index)=>({id,index})).filter(({index})=>market==='all'||(market==='crypto'?index>=2:index<2));

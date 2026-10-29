@@ -4,7 +4,7 @@ import en from '../i18n/en.json';
 import zh from '../i18n/zh-CN.json';
 const locale=Astro.props.locale==='zh-CN'?'zh-CN':'en';
 const t=(locale==='en'?en:zh).dexFactors;
-const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+const prefix=`/global-market-research/${locale==='en'?'':'zh-CN/'}`;
 if(snapshot.status!=='readiness_only'||'metrics' in snapshot) throw new Error('Unreviewed measured DEX presentation');
 const signals=['momentum_24h','momentum_168h','volume_ratio_24h_7d','momentum_volume_24h'];
 ---

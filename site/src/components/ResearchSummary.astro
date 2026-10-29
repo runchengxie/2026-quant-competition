@@ -7,7 +7,7 @@ const locale=Astro.props.locale==='zh-CN'?'zh-CN':'en';
 const t=(locale==='en'?en:zh).dashboard;const text=t.insights;
 const format=new Intl.NumberFormat(locale,{maximumFractionDigits:2});
 const pct=(value:number|null)=>value===null?'—':format.format(value*100)+'%';
-const prefix=`/2026-quant-competition/${locale==='zh-CN'?'zh-CN/':''}`;
+const prefix=`/global-market-research/${locale==='zh-CN'?'zh-CN/':''}`;
 const markets=Object.entries(t.markets).map(([market,label])=>{
  const rows=snapshot.results.filter(r=>r.market===market&&r.status==='completed');
  const feeBps=({US:20,HK:30,crypto:10})[market as "US"|"HK"|"crypto"];

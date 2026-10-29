@@ -17,7 +17,7 @@ const substitute=(text:string,values:Record<string,number>)=>Object.entries(valu
 const fmt=(value:number|null)=>formatResearchNumber(value,locale,t.unavailable);
 const percent=(value:number|null)=>value===null?t.unavailable:`${fmt(100*value)}%`;
 const name=(arm:string)=>t.arms[arm as keyof typeof t.arms];
-const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+const prefix=`/global-market-research/${locale==='en'?'':'zh-CN/'}`;
 ---
 <section id={`comparison-${market}`} data-comparison-market={market} data-comparison-facts={rawFacts}>
  <p class="evidence-label">{t.historical}</p>

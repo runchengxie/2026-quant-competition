@@ -4,7 +4,7 @@ const snapshot=JSON.parse(await readFile(new URL('../src/data/strategy-controls.
 const readiness=JSON.parse(await readFile(new URL('../src/data/strategy-readiness.v1.json',import.meta.url),'utf8'));
 test('dashboard headlines remain explicit and readable on desktop and mobile',async({page},testInfo)=>{
  for(const locale of ['en','zh-CN']){
-  const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+  const prefix=`/global-market-research/${locale==='en'?'':'zh-CN/'}`;
   for(const route of ['', 'strategies/']){
    await page.setViewportSize({width:1360,height:1000});await page.goto(prefix+route);
    const panel=page.locator(route?'#strategy-controls':'#takeaways');
@@ -37,7 +37,7 @@ test('dashboard headlines remain explicit and readable on desktop and mobile',as
 });
 test('chart controls never cover plotted values after scrolling',async({page},testInfo)=>{
  await page.setViewportSize({width:1360,height:1000});
- await page.goto('/2026-quant-competition/strategies/');
+ await page.goto('/global-market-research/strategies/');
  const panel=page.locator('#strategy-controls');await panel.scrollIntoViewIfNeeded();
  await expect(panel).toHaveAttribute('data-ready','true');
  await panel.locator('.control-charts').evaluate(n=>n.scrollIntoView({block:'start'}));
@@ -48,7 +48,7 @@ test('chart controls never cover plotted values after scrolling',async({page},te
 });
 for(const locale of ['en','zh-CN'])test(`${locale}: new controls separate completion from public performance`,async({page},testInfo)=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
- await page.goto(`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}strategies/`);
+ await page.goto(`/global-market-research/${locale==='en'?'':'zh-CN/'}strategies/`);
  const panel=page.locator('#strategy-controls');await expect(panel).toBeVisible();
  expect(JSON.parse(await panel.getAttribute('data-controls-facts'))).toEqual(snapshot);
  await expect(panel.locator('[data-controls-conclusion]')).toBeVisible();
@@ -83,7 +83,7 @@ for(const locale of ['en','zh-CN'])test(`${locale}: new controls separate comple
 });
 test('new controls remain readable without JavaScript',async({browser})=>{
  const context=await browser.newContext({javaScriptEnabled:false});const page=await context.newPage();
- await page.goto('http://127.0.0.1:4397/2026-quant-competition/strategies/');
+ await page.goto('http://127.0.0.1:4397/global-market-research/strategies/');
  const panel=page.locator('#strategy-controls');await expect(panel.locator('[data-controls-conclusion]')).toBeVisible();
  await expect(panel.locator('[data-controls-result]')).toHaveCount(snapshot.results.length);
  await expect(page.locator('#strategy-readiness')).toBeVisible();await context.close();

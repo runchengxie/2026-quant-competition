@@ -1,6 +1,6 @@
 # What happened when we let a CNN read price charts
 
-<p><a data-cnn-topic-link href="/2026-quant-competition/research/cnn-chart/">Explore the CNN research topic and interactive chart →</a></p>
+<p><a data-cnn-topic-link href="/global-market-research/research/cnn-chart/">Explore the CNN research topic and interactive chart →</a></p>
 
 Earlier experiments really did turn price history into pictures and produce predictions and backtest reports. An October 29, 2026 review recovered exported images from the public release, checked the competition project's later diagnostics, and located another CNN archive on Linux. The evidence does not yet support deploying an image CNN to the competition account.
 
@@ -12,11 +12,11 @@ A price bar records a day's open, high, low and close. These tiny grayscale pict
 
 <div class="cnn-gallery">
 <figure>
-<img src="/2026-quant-competition/research-images/cnn-archived-candlestick.png" alt="Archived grayscale Tencent candlestick input ending July 15, 2004, with volume along the bottom" width="160" height="160" loading="lazy" />
+<img src="/global-market-research/research-images/cnn-archived-candlestick.png" alt="Archived grayscale Tencent candlestick input ending July 15, 2004, with volume along the bottom" width="160" height="160" loading="lazy" />
 <figcaption>The old simplified candlestick input. Its original resolution was just 20 × 20 pixels. This exported picture enlarges it eight times, which makes each pixel visible.</figcaption>
 </figure>
 <figure>
-<img src="/2026-quant-competition/research-images/cnn-archived-paper-ohlc.png" alt="Archived Tencent OHLC input with the same cutoff date, open and close ticks, a moving average and volume" width="240" height="256" loading="lazy" />
+<img src="/global-market-research/research-images/cnn-archived-paper-ohlc.png" alt="Archived Tencent OHLC input with the same cutoff date, open and close ticks, a moving average and volume" width="240" height="256" loading="lazy" />
 <figcaption>The old OHLC drawing. Each vertical line spans the daily low and high; left and right ticks mark open and close. The gray line is a moving average. The original input was 60 pixels wide and 64 high, enlarged four times for this export.</figcaption>
 </figure>
 </div>
@@ -69,7 +69,7 @@ One image experiment covers 12 Hong Kong stocks, with portfolio records from Jan
 The chart uses every daily portfolio value in the old report, scaled to a common starting value of 100. The horizontal axis shows the year; the vertical axis shows simulated portfolio value. A value of 150 means an initial 100 would have become 150.
 
 <figure class="cnn-performance">
-<img src="/2026-quant-competition/research-images/cnn-archive-performance.svg" alt="Daily simulated portfolio values from 2018 to 2026, all starting at 100. Image CNN ends near 115, moving average near 192, and momentum near 102, with substantial declines along the way." width="800" height="400" loading="lazy" />
+<img src="/global-market-research/research-images/cnn-archive-performance.svg" alt="Daily simulated portfolio values from 2018 to 2026, all starting at 100. Image CNN ends near 115, moving average near 192, and momentum near 102, with substantial declines along the way." width="800" height="400" loading="lazy" />
 <figcaption>Purple solid line: image CNN; green long dashes: moving average; brown short dashes: momentum. Source: daily simulated portfolio records in the public release.</figcaption>
 </figure>
 

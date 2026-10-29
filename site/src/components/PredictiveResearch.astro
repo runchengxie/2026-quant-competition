@@ -6,7 +6,7 @@ import {formatResearchNumber} from '../scripts/incremental-state.mjs';
 const locale=Astro.props.locale==='zh-CN'?'zh-CN':'en';
 const t=(locale==='en'?en:zh).predictive;
 const format={format:(value:number)=>formatResearchNumber(value,locale)};
-const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+const prefix=`/global-market-research/${locale==='en'?'':'zh-CN/'}`;
 ---
 <section id="equity-predictive" data-predictive-facts={JSON.stringify(facts)}>
  <p class="eyebrow">{t.eyebrow}</p><h2>{t.title}</h2><p class="conclusion">{t.conclusion}</p>

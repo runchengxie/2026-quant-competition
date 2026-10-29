@@ -3,7 +3,7 @@ import {test,expect} from '@playwright/test';
 test('incremental evidence keeps selectors charts tables and locales consistent',async({page},testInfo)=>{
  const errors=[];page.on('pageerror',error=>errors.push(error.message));
  for(const locale of ['en','zh-CN']){
-  const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+  const prefix=`/global-market-research/${locale==='en'?'':'zh-CN/'}`;
   await page.goto(`${prefix}factors/`);
   const equity=page.locator('#incremental-equity');
   await equity.scrollIntoViewIfNeeded();

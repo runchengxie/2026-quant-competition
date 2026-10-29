@@ -7,7 +7,7 @@ import en from '../i18n/crypto-cnn-en.json';
 import zh from '../i18n/crypto-cnn-zh-CN.json';
 const locale=Astro.props.locale==='zh-CN'?'zh-CN':'en';
 const t=locale==='zh-CN'?zh:en;
-const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+const prefix=`/global-market-research/${locale==='en'?'':'zh-CN/'}`;
 const names=t.names as Record<string,string>;
 const ids=Object.keys(names);
 const pct=(n:number)=>`${(n*100).toFixed(2)}%`;
@@ -26,7 +26,7 @@ const rows=ids.map(id=>{const r=facts.records.filter(x=>x.strategy===id&&x.fee_b
   <section data-crypto-followup><h2>{t.followupTitle}</h2><p>{t.followupIntro}</p><p class="notice">{t.followupCaveat}</p><p>{t.followupConclusion}</p><details><summary>{t.followupDetails}</summary><div class="scroll"><table><thead><tr><th>{t.window}</th><th>{t.method}</th><th>{t.return}</th><th>{t.drawdown}</th><th>{t.turnover}</th></tr></thead><tbody>{followup.records.map(r=><tr><td>{r.start} — {r.end}</td><th scope="row">{names[r.strategy]}</th><td>{pct(r.return)}</td><td>{pct(r.max_drawdown)}</td><td>{r.turnover.toFixed(2)}×</td></tr>)}</tbody></table></div><p>{t.followupTurnover}</p></details></section>
   <section data-sentiment-availability><h2>{t.sentimentTitle}</h2><p>{t.sentimentBody}</p><p>{t.sentimentCaveat}</p></section>
   <section><h2>{t.universeTitle}</h2><p>{t.universeBody}</p><p><a href="https://www.binance.com/en/support/announcement/detail/619c4929fc3f4a0d9df7f9ae1d4519a5">{t.universeSource} ↗</a> · <a href="https://www.binance.com/en/support/announcement/detail/d044a6742e484b77a170111460b0eed3">{t.universeSecondSource} ↗</a></p><p>{t.futureBody}</p></section>
-  <section><h2>{t.limitsTitle}</h2><ul>{t.limits.map(item=><li>{item}</li>)}</ul><h3>{t.methodTitle}</h3><p>{t.methodBody}</p><p class="notice">{t.riskNote}</p><p><a href={`https://github.com/runchengxie/2026-quant-competition/blob/09b72eae8f0cf0c8a00095161f0b9ee3b19c791a/docs/research/data-expansion-and-evaluation${locale==='zh-CN'?'.zh-CN':''}.md`}>{t.sourceData} ↗</a> · <a href="https://github.com/runchengxie/2026-quant-competition/blob/09b72eae8f0cf0c8a00095161f0b9ee3b19c791a/research/equity-lab/src/equity_lab/signals/cnn_walk_forward_rank.py">{t.sourceModel} ↗</a></p><a href={`${prefix}markets/#market-crypto`}>{t.back} →</a></section>
+  <section><h2>{t.limitsTitle}</h2><ul>{t.limits.map(item=><li>{item}</li>)}</ul><h3>{t.methodTitle}</h3><p>{t.methodBody}</p><p class="notice">{t.riskNote}</p><p><a href={`https://github.com/runchengxie/global-market-research/blob/09b72eae8f0cf0c8a00095161f0b9ee3b19c791a/docs/research/data-expansion-and-evaluation${locale==='zh-CN'?'.zh-CN':''}.md`}>{t.sourceData} ↗</a> · <a href="https://github.com/runchengxie/global-market-research/blob/09b72eae8f0cf0c8a00095161f0b9ee3b19c791a/research/equity-lab/src/equity_lab/signals/cnn_walk_forward_rank.py">{t.sourceModel} ↗</a></p><a href={`${prefix}markets/#market-crypto`}>{t.back} →</a></section>
  </main>
 </SiteLayout>
 <script is:inline define:vars={{records:facts.records,baseName:t.baseline,endingLabel:t.chartSummary,returnLabel:t.returnLabel}}>

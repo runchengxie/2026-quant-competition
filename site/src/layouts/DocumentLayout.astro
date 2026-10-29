@@ -10,14 +10,14 @@ const locale=doc.locale==="zh-CN"?"zh-CN":"en";
 const t=(locale==="zh-CN"?zh:en).documents;
 const title=t.titles[doc.slug as keyof typeof t.titles];
 const Content=doc.Content;
-const prefix=`/2026-quant-competition/${locale==="zh-CN"?"zh-CN/":""}`;
+const prefix=`/global-market-research/${locale==="zh-CN"?"zh-CN/":""}`;
 ---
 <SiteLayout locale={locale} localePath={`docs/${doc.slug}/`} title={`${title} | QUANT / LAB`} description={t.intro}>
   <SiteNavigation locale={locale} active="docs" />
   <header class="doc-header"><a href={prefix}>{(locale==='en'?en:zh).pages.labels.home}</a><a href={`${prefix}strategies/#performance`}>{t.dashboard}</a><a href={`${prefix}docs/`}>{t.title}</a></header>
   <main class="doc-shell">
     <aside><nav aria-label={t.title}>{documents.filter(d=>d.locale===locale).map(d=><a href={d.route} aria-current={d.slug===doc.slug?"page":undefined}>{t.titles[d.slug as keyof typeof t.titles]}</a>)}</nav></aside>
-    <div class="doc-body"><p class="doc-note">{t.canonical} <a href={`https://github.com/runchengxie/2026-quant-competition/blob/main/${doc.source}`}>{t.source} ↗</a></p><article><Content /></article></div>
+    <div class="doc-body"><p class="doc-note">{t.canonical} <a href={`https://github.com/runchengxie/global-market-research/blob/main/${doc.source}`}>{t.source} ↗</a></p><article><Content /></article></div>
   </main>
 </SiteLayout>
 <style>

@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 for (const locale of ['en', 'zh-CN']) {
-  const prefix = `/2026-quant-competition/${locale === 'en' ? '' : 'zh-CN/'}`;
+  const prefix = `/global-market-research/${locale === 'en' ? '' : 'zh-CN/'}`;
   test(`${locale}: US CNN findings and comparisons are accessible`, async ({ page }) => {
     await page.goto(`${prefix}markets/#market-us`);
     await page.locator('[data-us-cnn-link]').first().click();

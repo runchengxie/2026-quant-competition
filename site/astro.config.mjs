@@ -4,7 +4,7 @@ import { unified } from "@astrojs/markdown-remark";
 
 export default defineConfig({
   site: "https://runchengxie.github.io",
-  base: "/2026-quant-competition",
+  base: "/global-market-research",
   output: "static",
   trailingSlash: "always",
   markdown: { processor: unified({ remarkPlugins: [documentationLinks] }) },

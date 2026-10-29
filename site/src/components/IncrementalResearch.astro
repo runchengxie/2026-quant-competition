@@ -8,7 +8,7 @@ const locale=Astro.props.locale==='zh-CN'?'zh-CN':'en';
 const view=Astro.props.view==='crypto'?'crypto':'equity';
 const t=locale==='en'?en:zh;
 const fmt=(value:number|null)=>formatResearchNumber(value,locale,t.unavailable);
-const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+const prefix=`/global-market-research/${locale==='en'?'':'zh-CN/'}`;
 const windows=[...new Set(facts.crypto.jobs.map(row=>row.window_id))];
 const modelName=(id:string)=>t.models[id as keyof typeof t.models];
 const armName=(id:string)=>t.arms[id as keyof typeof t.arms];

@@ -1,7 +1,7 @@
 import {test, expect} from '@playwright/test';
 
 for (const locale of ['en','zh-CN']) {
-  const prefix = `/2026-quant-competition/${locale === 'en' ? '' : 'zh-CN/'}`;
+  const prefix = `/global-market-research/${locale === 'en' ? '' : 'zh-CN/'}`;
   test(`${locale}: market directory works without JavaScript and preserves evidence links`, async ({browser}, info) => {
     const context = await browser.newContext({javaScriptEnabled:false, viewport:{width:390,height:844}});
     const page = await context.newPage();
@@ -22,14 +22,14 @@ for (const locale of ['en','zh-CN']) {
     await page.screenshot({path:info.outputPath(`${locale}-market-mobile.png`),fullPage:true});
     await page.setViewportSize({width:1440,height:1000});
     await page.screenshot({path:info.outputPath(`${locale}-market-desktop.png`),fullPage:true});
-    await expect(page.locator('.language a').first()).toHaveAttribute('href', '/2026-quant-competition/markets/');
-    await expect(page.locator('.language a').nth(1)).toHaveAttribute('href', '/2026-quant-competition/zh-CN/markets/');
+    await expect(page.locator('.language a').first()).toHaveAttribute('href', '/global-market-research/markets/');
+    await expect(page.locator('.language a').nth(1)).toHaveAttribute('href', '/global-market-research/zh-CN/markets/');
     await context.close();
   });
 }
 
 for (const locale of ['en', 'zh-CN']) {
-  const prefix = `/2026-quant-competition/${locale === 'en' ? '' : 'zh-CN/'}`;
+  const prefix = `/global-market-research/${locale === 'en' ? '' : 'zh-CN/'}`;
   test(`${locale}: research type filter can be changed and reset`, async ({ page }) => {
     await page.goto(`${prefix}markets/`);
     const filter = page.locator('[data-research-filter]');

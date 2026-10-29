@@ -1,6 +1,6 @@
 # 让 CNN 看 K 线图，我们试到了哪一步
 
-<p><a data-cnn-topic-link href="/2026-quant-competition/zh-CN/research/cnn-chart/">查看带互动收益曲线的 CNN 研究专题 →</a></p>
+<p><a data-cnn-topic-link href="/global-market-research/zh-CN/research/cnn-chart/">查看带互动收益曲线的 CNN 研究专题 →</a></p>
 
 以前确实做过让模型看 K 线图的实验，也留下了图片、预测和回测记录。这次把公开发布包、本机比赛项目和 Linux 上的存档对了一遍，找回了两张原来导出的图片。现有结果还不足以支持把图像 CNN 接到比赛账户。
 
@@ -14,11 +14,11 @@ CNN 可以理解为一种寻找局部图形的模型。它会学习哪些线条�
 
 <div class="cnn-gallery">
 <figure>
-<img src="/2026-quant-competition/research-images/cnn-archived-candlestick.png" alt="旧发布包中导出的腾讯历史灰度蜡烛图，窗口截至2004年7月15日，下方为成交量" width="160" height="160" loading="lazy" />
+<img src="/global-market-research/research-images/cnn-archived-candlestick.png" alt="旧发布包中导出的腾讯历史灰度蜡烛图，窗口截至2004年7月15日，下方为成交量" width="160" height="160" loading="lazy" />
 <figcaption>旧实验的简化蜡烛图。原始输入只有 20 × 20 个像素，这张导出图放大了 8 倍，所以线条看起来像小方块。</figcaption>
 </figure>
 <figure>
-<img src="/2026-quant-competition/research-images/cnn-archived-paper-ohlc.png" alt="旧发布包中同一腾讯历史截止日的OHLC灰度图，显示开收盘短横线、均线和成交量" width="240" height="256" loading="lazy" />
+<img src="/global-market-research/research-images/cnn-archived-paper-ohlc.png" alt="旧发布包中同一腾讯历史截止日的OHLC灰度图，显示开收盘短横线、均线和成交量" width="240" height="256" loading="lazy" />
 <figcaption>旧实验的 OHLC 画法。竖线表示当天最高到最低，左短横表示开盘，右短横表示收盘，灰线表示移动平均价。原始输入宽 60、高 64 个像素，这张图放大了 4 倍。</figcaption>
 </figure>
 </div>
@@ -71,7 +71,7 @@ CNN 可以理解为一种寻找局部图形的模型。它会学习哪些线条�
 下面把旧报告中每天的组合价值画出来，并把起点统一换成 100。横轴是年份，纵轴是模拟组合价值。比如曲线到 150，就相当于起初的 100 元变成了 150 元。
 
 <figure class="cnn-performance">
-<img src="/2026-quant-competition/research-images/cnn-archive-performance.svg" alt="2018 至 2026 年三种历史模拟方法的组合价值曲线，起点均为 100。图像 CNN 结束时约 115，均线约 192，动量约 102，中途均有明显下跌。" width="800" height="400" loading="lazy" />
+<img src="/global-market-research/research-images/cnn-archive-performance.svg" alt="2018 至 2026 年三种历史模拟方法的组合价值曲线，起点均为 100。图像 CNN 结束时约 115，均线约 192，动量约 102，中途均有明显下跌。" width="800" height="400" loading="lazy" />
 <figcaption>紫色实线代表图像 CNN，绿色长虚线代表均线，棕色短虚线代表动量。图来自公开发布包的逐日模拟记录。</figcaption>
 </figure>
 

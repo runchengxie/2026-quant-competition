@@ -4,7 +4,7 @@ import en from '../i18n/followup-en.json';
 import zh from '../i18n/followup-zh-CN.json';
 interface Props {locale?: string; view?: string}
 const locale=Astro.props.locale==='zh-CN'?'zh-CN':'en',t=locale==='zh-CN'?zh:en,view=Astro.props.view??'home';
-const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+const prefix=`/global-market-research/${locale==='en'?'':'zh-CN/'}`;
 const compact={scientific:facts.scientific,validation_sessions:60,completed:facts.equity.accounts.filter(r=>r.status==='completed').length,blocked:facts.equity.accounts.filter(r=>r.status==='blocked').length,fit_attempts:facts.equity.fit_attempts,accepted_stocks:facts.security.accepted,requested_stocks:facts.security.requested,paired:facts.crypto.comparable,wins:facts.crypto.return_wins,median_pair_difference:facts.crypto.median_return_difference,...Object.fromEntries(['warmup_end','freeze_at','next_eligible_date','accepted_observations','new_attempts','new_bytes','reused_responses'].map(k=>[k,facts.observation[k]]))};
 const fmt=(v:number|null,digits=4)=>v===null?t.unavailable:new Intl.NumberFormat(locale,{maximumFractionDigits:digits,minimumFractionDigits:digits}).format(v);
 const pct=(v:number|null)=>v===null?t.unavailable:`${fmt(v*100)}%`;

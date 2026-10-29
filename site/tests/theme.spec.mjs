@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-const base = "/2026-quant-competition/";
+const base = "/global-market-research/";
 
 test("system is the default and tracks OS changes", async ({ page }) => {
   await page.emulateMedia({ colorScheme: "dark" });

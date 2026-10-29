@@ -5,7 +5,7 @@ const facts=JSON.parse(readFileSync(new URL('../src/data/strategy-comparison.v1.
 for(const locale of ['en','zh-CN'])for(const market of ['equity','crypto']){
  test(`${locale} ${market}: costs and timing retain exact facts, missing cells and readable charts`,async({page},testInfo)=>{
   const errors=[];page.on('pageerror',error=>errors.push(error.message));
-  const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`,topic=market==='equity'?'factors':'strategies';
+  const prefix=`/global-market-research/${locale==='en'?'':'zh-CN/'}`,topic=market==='equity'?'factors':'strategies';
   await page.goto(`${prefix}${topic}/#comparison-${market}`);
   const root=page.locator(`#comparison-${market}`);
   await root.scrollIntoViewIfNeeded();
@@ -50,7 +50,7 @@ test('both languages retain every comparison and its reason without JavaScript',
  const context=await browser.newContext({javaScriptEnabled:false});
  const page=await context.newPage();
  for(const locale of ['en','zh-CN'])for(const market of ['equity','crypto']){
-  await page.goto(`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}${market==='equity'?'factors':'strategies'}/`);
+  await page.goto(`/global-market-research/${locale==='en'?'':'zh-CN/'}${market==='equity'?'factors':'strategies'}/`);
   const root=page.locator(`#comparison-${market}`);
   await expect(root.locator('[data-cmp-row]')).toHaveCount(facts[market].accounts.length);
   await expect(root.locator('[data-cmp-chart] canvas')).toHaveCount(0);

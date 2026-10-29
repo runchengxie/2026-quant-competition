@@ -5,7 +5,7 @@ import en from '../i18n/market-topics-en.json';
 import zh from '../i18n/market-topics-zh-CN.json';
 const locale = Astro.props.locale === 'zh-CN' ? 'zh-CN' : 'en';
 const t = locale === 'zh-CN' ? zh : en;
-const prefix = `/2026-quant-competition/${locale === 'en' ? '' : 'zh-CN/'}`;
+const prefix = `/global-market-research/${locale === 'en' ? '' : 'zh-CN/'}`;
 ---
 <SiteLayout locale={locale} localePath="markets/" title={`${t.title} | QUANT / LAB`} description={t.intro}>
  <SiteNavigation locale={locale} active="markets" />

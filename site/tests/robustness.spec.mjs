@@ -5,7 +5,7 @@ const snapshot=JSON.parse(await readFile(new URL('../src/data/strategy-robustnes
 test('robustness comparisons keep exact bilingual facts across fees, windows and themes',async({page},testInfo)=>{
  for(const locale of ['en','zh-CN']){
   await page.setViewportSize({width:1360,height:1000});
-  const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+  const prefix=`/global-market-research/${locale==='en'?'':'zh-CN/'}`;
   await page.goto(prefix+'strategies/');
   const root=page.locator('#robustness');await root.scrollIntoViewIfNeeded();
   await expect(root).toHaveAttribute('data-ready','true');
@@ -37,7 +37,7 @@ test('robustness comparisons keep exact bilingual facts across fees, windows and
 
 test('robustness charts cannot widen mobile pages while resize callbacks are delayed',async({page})=>{
  await page.addInitScript(()=>{window.ResizeObserver=class {observe(){} disconnect(){} unobserve(){}};});
- await page.setViewportSize({width:1360,height:1000});await page.goto('/2026-quant-competition/strategies/');
+ await page.setViewportSize({width:1360,height:1000});await page.goto('/global-market-research/strategies/');
  const root=page.locator('#robustness');await root.scrollIntoViewIfNeeded();await expect(root).toHaveAttribute('data-ready','true');
  await page.setViewportSize({width:390,height:844});
  await expect.poll(()=>root.locator('[data-robustness-chart=paired]').evaluate(node=>{
@@ -72,7 +72,7 @@ const targets=[['#robustness','[data-robustness-chart=windows]'],['#strategy-con
 for(const [root,chart] of targets)for(const blockedStorage of [false,true])test(`${root} retains interactions across appearance changes (blocked storage: ${blockedStorage})`,async({page})=>{
  if(blockedStorage)await page.addInitScript(()=>{Storage.prototype.setItem=()=>{throw new Error('Storage unavailable');};});
  await page.emulateMedia({colorScheme:'light',reducedMotion:'reduce'});
- await page.goto('/2026-quant-competition/strategies/');
+ await page.goto('/global-market-research/strategies/');
   await page.locator(root).scrollIntoViewIfNeeded();
   await expect(page.locator(root)).toHaveAttribute('data-ready','true');
   const selector=`${root} ${chart}`,before=await chartState(page,selector,true);
@@ -90,7 +90,7 @@ for(const [root,chart] of targets)for(const blockedStorage of [false,true])test(
 
 test('without JavaScript the complete reviewed table remains available',async({browser})=>{
  const context=await browser.newContext({javaScriptEnabled:false});const page=await context.newPage();
- await page.goto('/2026-quant-competition/zh-CN/strategies/');
+ await page.goto('/global-market-research/zh-CN/strategies/');
  const root=page.locator('#robustness');
  await expect(root.locator('[data-robustness-row]')).toHaveCount(114);
  await expect(root.locator('canvas')).toHaveCount(0);

@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 test.beforeEach(async({page})=>{await page.emulateMedia({reducedMotion:'reduce'});});
 
 for(const locale of ['en','zh-CN']){
- const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+ const prefix=`/global-market-research/${locale==='en'?'':'zh-CN/'}`;
  test(`${locale}: editorial home shows reviewed story without full payload`,async({page},info)=>{
   await page.goto(prefix);
   const home=page.locator('#robustness');
@@ -44,7 +44,7 @@ for(const locale of ['en','zh-CN']){
 
 test('all market evidence remains directly available without JavaScript',async({browser})=>{
  const context=await browser.newContext({javaScriptEnabled:false});const page=await context.newPage();
- await page.goto('/2026-quant-competition/');
+ await page.goto('/global-market-research/');
  await expect(page.locator('[data-home-market]')).toHaveCount(3,{timeout:3000});
  await expect(page.locator('#takeaways')).toBeVisible();
  for(const market of ['US','HK','crypto'])await expect(page.locator(`[data-market-topic=${market}] [data-home-market]`)).toBeVisible();
@@ -53,7 +53,7 @@ test('all market evidence remains directly available without JavaScript',async({
 });
 
 for(const locale of ['en','zh-CN'])test(`${locale}: editorial topic pages retain navigation, evidence and readable contrast`,async({page},info)=>{
- const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+ const prefix=`/global-market-research/${locale==='en'?'':'zh-CN/'}`;
  for(const route of ['', 'strategies/','factors/','docs/','docs/project/','docs/strategy-robustness/']){
   await page.setViewportSize({width:1440,height:1000});await page.goto(prefix+route);
   await expect(page.locator('main h1')).toHaveCount(1,{timeout:3000});
@@ -110,7 +110,7 @@ for(const locale of ['en','zh-CN'])test(`${locale}: editorial topic pages retain
 
 test('long localized market labels and unavailable storage retain a usable homepage',async({page})=>{
  await page.addInitScript(()=>{Object.defineProperty(window,'localStorage',{get(){throw new Error('blocked');}});});
- await page.setViewportSize({width:390,height:844});await page.goto('/2026-quant-competition/zh-CN/');
+ await page.setViewportSize({width:390,height:844});await page.goto('/global-market-research/zh-CN/');
  await page.locator('[data-home-market]').first().evaluate(el=>el.textContent+='较长的研究标签'.repeat(15));
  await page.locator('#theme-preference').selectOption('dark');
  await expect(page.locator('body')).toHaveCSS('background-color','rgb(23, 27, 32)');
