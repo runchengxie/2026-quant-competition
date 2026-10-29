@@ -27,8 +27,12 @@ import { Content as executionEn } from "../../../docs/research/us-execution-evid
 import { Content as executionZh } from "../../../docs/research/us-execution-evidence.zh-CN.md";
 import { Content as observationEn } from "../../../docs/research/observation-registry.md";
 import { Content as observationZh } from "../../../docs/research/observation-registry.zh-CN.md";
+import { Content as cnnEn } from "../../../docs/research/cnn-chart-research.md";
+import { Content as cnnZh } from "../../../docs/research/cnn-chart-research.zh-CN.md";
 
 const content={
+  "cnn-chart-research.en":cnnEn,
+  "cnn-chart-research.zh-CN":cnnZh,
   "strategy-comparison.en":comparisonEn,
   "strategy-comparison.zh-CN":comparisonZh,
   "incremental-research.en":incrementalEn,

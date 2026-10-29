@@ -93,6 +93,7 @@ const guide = (directory: string) => file(`research/${directory}/README${locale 
     </section>
     <section id="demo" class="demo-section">
       <div class="section-heading"><p class="eyebrow">{t.demo.eyebrow}</p><h2>{t.demo.title}</h2><p>{t.demo.intro}</p></div>
+      <p><a data-cnn-note href={`${prefix}docs/cnn-chart-research/`}>{t.documents.titles["cnn-chart-research"]} ↗</a></p>
       <div class="demo-switcher">
         <fieldset class="path-picker"><legend class="visually-hidden">{t.demo.legend}</legend>
           <input type="radio" name="research-path" id="path-stock" value="stock" checked /><label for="path-stock">{t.demo.stock}</label>

@@ -281,7 +281,8 @@
       "native-process-diagnostics": "Synthetic process timing",
       "equity-predictive": "Equity prediction study",
       "incremental-research": "Reversal, models and weekly trading",
-      "strategy-comparison": "Trading frequency, prediction and attribution"
+      "strategy-comparison": "Trading frequency, prediction and attribution",
+      "cnn-chart-research": "How a CNN reads price charts"
     },
     "summaries": {
       "architecture": "One repository, workflow modules and a separate reviewed execution handoff.",
@@ -297,7 +298,8 @@
       "native-process-diagnostics": "Separate synthetic startup, exit and timeout evidence.",
       "equity-predictive": "Read the source-candidate pool, fixed model protocol and three-period results.",
       "incremental-research": "Check what learned models add and how less frequent crypto trading changes costs.",
-      "strategy-comparison": "Bounded holding-horizon models, exact cost tolerance, crypto PnL components and unresolved observation inputs."
+      "strategy-comparison": "Bounded holding-horizon models, exact cost tolerance, crypto PnL components and unresolved observation inputs.",
+      "cnn-chart-research": "Recovered chart pictures, archived comparisons and what still needs an unseen-data test."
     }
   },
   "dashboard": {

@@ -10,6 +10,7 @@
 | 找到该改哪部分代码 | [项目结构与当前限制](project-overview.zh-CN.md) |
 | 准备行情数据 | [数据准备](research/datasets.zh-CN.md) |
 | 看懂已有实验 | [策略结果](research/strategy-validation-2026-10-19.zh-CN.md)、[扩展数据评估](research/data-expansion-and-evaluation.zh-CN.md) |
+| 看懂模型怎样读 K 线图 | [CNN 图像研究回顾与原有例图](research/cnn-chart-research.zh-CN.md) |
 | 比较记账方式或测试国际组合 | [记账对照](research/accounting-comparison.zh-CN.md)、[国际实验](research/international-experiments.zh-CN.md) |
 | 检查研究输入和证据 | [研究验收](research/research-acceptance.zh-CN.md) |
 | 比较反转、机器学习和加密每周调仓 | [本轮研究](research/incremental-research.zh-CN.md) |

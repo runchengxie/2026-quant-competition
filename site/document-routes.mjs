@@ -13,6 +13,7 @@ export const documentRoutes = Object.entries({
   "equity-predictive": "docs/research/equity-predictive",
   "incremental-research": "docs/research/incremental-research",
   "strategy-comparison": "docs/research/strategy-comparison",
+  "cnn-chart-research": "docs/research/cnn-chart-research",
 }).flatMap(([slug, source]) => ["en", "zh-CN"].map(locale => ({
   slug, locale, source: `${source}${locale === "zh-CN" ? ".zh-CN" : ""}.md`,
   route: `/2026-quant-competition/${locale === "zh-CN" ? "zh-CN/" : ""}docs/${slug}/`,

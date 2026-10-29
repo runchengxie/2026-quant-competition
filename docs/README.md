@@ -10,6 +10,7 @@ Start with the [offline quickstart](operations/team-quickstart.md) if you have n
 | Find the relevant code | [Project structure and current limits](project-overview.md) |
 | Prepare data | [Dataset tools](research/datasets.md) |
 | Understand existing experiments | [Strategy results](research/strategy-validation-2026-10-19.md), [expanded-data evaluation](research/data-expansion-and-evaluation.md) |
+| See how a model reads price charts | [CNN retrospective and recovered pictures](research/cnn-chart-research.md) |
 | Compare accounting or test international portfolios | [Accounting comparison](research/accounting-comparison.md), [international experiments](research/international-experiments.md) |
 | Check research inputs and evidence | [Research acceptance](research/research-acceptance.md) |
 | Compare reversal, learned signals and weekly crypto trading | [Incremental research](research/incremental-research.md) |

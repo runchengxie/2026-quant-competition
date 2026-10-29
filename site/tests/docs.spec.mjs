@@ -48,7 +48,7 @@ test("research pages separate results, factor evidence and offline guides",async
 });
 
 test("curated documentation is integrated and language switches retain the article",async({page})=>{
-  for(const slug of ["architecture","quickstart","datasets","study","strategies","strategy-controls","execution-evidence","observation-registry","strategy-robustness","data-refresh","native-process-diagnostics","incremental-research","strategy-comparison"]){
+  for(const slug of ["architecture","quickstart","datasets","study","strategies","strategy-controls","execution-evidence","observation-registry","strategy-robustness","data-refresh","native-process-diagnostics","incremental-research","strategy-comparison","cnn-chart-research"]){
     await page.goto(`/2026-quant-competition/docs/${slug}/`);
     await expect(page.locator("main article h1").first()).toBeVisible();
     await page.getByLabel("Appearance").selectOption("dark");
@@ -60,7 +60,36 @@ test("curated documentation is integrated and language switches retain the artic
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   }
   await page.goto("/2026-quant-competition/docs/");
-  await expect(page.locator("main [data-doc-slug]")).toHaveCount(15);
+  await expect(page.locator("main [data-doc-slug]")).toHaveCount(16);
   const response=await page.goto("/2026-quant-competition/docs/internal-secret/");
   expect(response.status()).toBe(404);
+});
+
+test("CNN note shows recovered chart inputs without JavaScript",async({browser},testInfo)=>{
+  const context=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});
+  const page=await context.newPage();
+  for(const prefix of ["","zh-CN/"]){
+    await page.setViewportSize({width:390,height:844});
+    await page.goto(`/2026-quant-competition/${prefix}docs/project/#demo`);
+    await page.locator("a[data-cnn-note]").click();
+    await expect(page).toHaveURL(`/2026-quant-competition/${prefix}docs/cnn-chart-research/`);
+    const images=page.locator("article .cnn-gallery img");
+    await expect(images).toHaveCount(2);
+    for(const image of await images.all()){
+      await image.scrollIntoViewIfNeeded();
+      await expect(image).toBeVisible();
+      await expect.poll(()=>image.evaluate(el=>el.complete&&el.naturalWidth>0)).toBe(true);
+      await expect(image).toHaveAttribute("alt",/.+/);
+    }
+    await expect(page.locator("article")).toContainText("59.47%");
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+    if(prefix){
+      await page.locator(".cnn-gallery").screenshot({path:testInfo.outputPath("cnn-mobile-gallery.png")});
+      await page.setViewportSize({width:1440,height:1000});
+      await page.goto(`/2026-quant-competition/${prefix}docs/cnn-chart-research/`);
+      await page.screenshot({path:testInfo.outputPath("cnn-desktop-intro.png")});
+      await page.locator(".cnn-gallery").screenshot({path:testInfo.outputPath("cnn-desktop-gallery.png")});
+    }
+  }
+  await context.close();
 });

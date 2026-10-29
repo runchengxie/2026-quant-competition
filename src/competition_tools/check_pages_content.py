@@ -793,6 +793,7 @@ def _validate_documentation(
             "equity-predictive",
             "incremental-research",
             "strategy-comparison",
+            "cnn-chart-research",
         )
     }
     if "strategies/index.html" in output_paths:

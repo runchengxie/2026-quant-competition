@@ -6,6 +6,13 @@ import { rewriteDocumentationLink } from "../remark-doc-links.mjs";
 import {documentRoutes} from "../document-routes.mjs";
 
 const source=fileURLToPath(new URL("../../docs/architecture.md",import.meta.url));
+test("chart CNN research is reachable in both languages",()=>{
+  for(const locale of ["en","zh-CN"]){
+    const entry=documentRoutes.find(doc=>doc.slug==="cnn-chart-research"&&doc.locale===locale);
+    assert.ok(entry,`CNN note for ${locale}`);
+    assert.equal(rewriteDocumentationLink(`research/cnn-chart-research${locale==="zh-CN"?".zh-CN":""}.md`,source),entry.route);
+  }
+});
 test("every curated document has a localized title and summary",()=>{
   for(const locale of ['en','zh-CN']){
     const catalog=JSON.parse(readFileSync(new URL(`../src/i18n/${locale}.json`,import.meta.url),'utf8')).documents;
