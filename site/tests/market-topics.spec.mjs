@@ -7,7 +7,7 @@ for (const locale of ['en','zh-CN']) {
     const page = await context.newPage();
     await page.goto(prefix);
     await expect(page.locator('[data-site-nav=markets]')).toHaveAttribute('href', `${prefix}markets/`);
-    await page.locator('[data-topic=HK]').click();
+    await page.locator('[data-home-market=hk]').click();
     await expect(page).toHaveURL(`${prefix}markets/#market-hk`);
     for (const market of ['us','hk','crypto']) {
       const topic = page.locator(`[data-topic-market=${market}]`);
