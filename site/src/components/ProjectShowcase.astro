@@ -38,7 +38,7 @@ const view=Astro.props.view??"home";
 const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
 const localePath=({home:'',strategies:'strategies/',factors:'factors/',guide:'docs/project/'})[view];
 const legacy={performance:'strategies/#performance',ablation:'strategies/#ablation',study:'strategies/#study',evidence:'docs/project/#evidence',demo:'docs/project/#demo',research:'docs/project/#research',engineering:'docs/project/#engineering',validation:'docs/project/#validation',expansion:'docs/project/#expansion'};
-Object.assign(legacy,{'title-stock':'docs/project/#title-stock','title-crypto':'docs/project/#title-crypto','research-summary-title':'docs/project/#research-summary-title','research-history':'#takeaways'});
+Object.assign(legacy,{'title-stock':'docs/project/#title-stock','title-crypto':'docs/project/#title-crypto','research-summary-title':'docs/project/#research-summary-title','research-history':'#takeaways','research-progress-title':'strategies/#research-progress-title'});
 const repository = "https://github.com/runchengxie/2026-quant-competition";
 const docsUrl=`/2026-quant-competition/${locale==="zh-CN"?"zh-CN/":""}docs/`;
 const file = (path: string) => `${repository}/blob/main/${path}`;
@@ -93,7 +93,7 @@ const guide = (directory: string) => file(`research/${directory}/README${locale 
     </section>
     <section id="demo" class="demo-section">
       <div class="section-heading"><p class="eyebrow">{t.demo.eyebrow}</p><h2>{t.demo.title}</h2><p>{t.demo.intro}</p></div>
-      <p><a data-cnn-note href={`${prefix}docs/cnn-chart-research/`}>{t.documents.titles["cnn-chart-research"]} ↗</a></p>
+      <p><a data-cnn-note href={`${prefix}research/cnn-chart/`}>{t.documents.titles["cnn-chart-research"]} ↗</a></p>
       <div class="demo-switcher">
         <fieldset class="path-picker"><legend class="visually-hidden">{t.demo.legend}</legend>
           <input type="radio" name="research-path" id="path-stock" value="stock" checked /><label for="path-stock">{t.demo.stock}</label>

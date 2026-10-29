@@ -8,14 +8,15 @@ test('dashboard headlines remain explicit and readable on desktop and mobile',as
   for(const route of ['', 'strategies/']){
    await page.setViewportSize({width:1360,height:1000});await page.goto(prefix+route);
    const panel=page.locator(route?'#strategy-controls':'#takeaways');
-   await expect(panel.locator('[data-controls-highlight]')).toHaveCount(2);
-   const crypto=JSON.parse(await panel.locator('[data-controls-highlight=crypto]').getAttribute('data-highlight-facts'));
-   expect([crypto.feeBps,crypto.windows,crypto.returnWins,crypto.drawdownWins]).toEqual([25,12,7,4]);
    if(route){
+    await expect(panel.locator('[data-controls-highlight]')).toHaveCount(2);
+    const crypto=JSON.parse(await panel.locator('[data-controls-highlight=crypto]').getAttribute('data-highlight-facts'));
+    expect([crypto.feeBps,crypto.windows,crypto.returnWins,crypto.drawdownWins]).toEqual([25,12,7,4]);
     await expect(page.locator('.section-nav a')).toHaveCount(7);
     await expect(page.locator('.section-nav a').first()).toHaveAttribute('href','#comparison-crypto');
    }
    else{
+    await expect(panel.locator('[data-home-market]')).toHaveCount(3);
     await expect(panel.locator('canvas')).toHaveCount(0);
     expect(await panel.evaluate(n=>n.hasAttribute('data-controls-facts'))).toBe(false);
    }

@@ -96,7 +96,7 @@ def test_low_turnover_facts_are_required_for_both_views_and_languages(tmp_path):
     assert "invalid public low-turnover facts or output" in check_site(source, built)
 
 
-def test_followup_progress_is_required_on_all_six_localized_pages(tmp_path):
+def test_followup_progress_is_required_on_research_pages(tmp_path):
     from competition_tools.evaluation.followup_publication import (
         summary,
         parse_reviewed,
@@ -123,6 +123,12 @@ def test_followup_progress_is_required_on_all_six_localized_pages(tmp_path):
                 + f'<section data-progress-facts="{facts}"></section>',
                 encoding="utf-8",
             )
+    assert check_site(source, built) == []
+    for prefix in ("", "zh-CN/"):
+        home = built / f"{prefix}index.html"
+        home.write_text(home.read_text(encoding="utf-8").replace(
+            f'<section data-progress-facts="{facts}"></section>', ""
+        ), encoding="utf-8")
     assert check_site(source, built) == []
     path = built / "zh-CN/factors/index.html"
     path.write_text(

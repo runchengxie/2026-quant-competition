@@ -1,4 +1,3 @@
-import {summarizeAblations} from "../src/scripts/ablation-state.mjs";
 import { test,expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 const study=JSON.parse(await readFile(new URL("../src/data/real-data-study.v1.json",import.meta.url),"utf8"));
@@ -117,19 +116,15 @@ test('matched strategy comparison and fee robustness preserve published conditio
  }
 });
 
-const ablationSnapshot=JSON.parse(await readFile(new URL("../src/data/ablation-study.v1.json",import.meta.url),"utf8"));
 test("both languages lead with traceable conclusions and retain evidence without JavaScript",async({browser})=>{
- const context=await browser.newContext({javaScriptEnabled:false});const page=await context.newPage();let canonical;
+ const context=await browser.newContext({javaScriptEnabled:false});const page=await context.newPage();
  for(const locale of ["en","zh-CN"]){
   await page.goto(locale==="en"?"/2026-quant-competition/":"/2026-quant-competition/zh-CN/");
   await expect(page.locator("main > :first-child")).toHaveAttribute("id","robustness");
-  await expect(page.locator("#takeaways [data-controls-highlight]")).toHaveCount(2);
-  await expect(page.locator("[data-takeaway]")).toHaveCount(3);
-  const facts=await page.locator("[data-takeaway]").evaluateAll(nodes=>nodes.map(n=>JSON.parse(n.dataset.facts)));
-  if(canonical)expect(facts).toEqual(canonical);else canonical=facts;
-  for(const f of facts){const groups=summarizeAblations(ablationSnapshot,{market:f.market,feeBps:f.feeBps,strategy:f.strategy});expect(f.baseline).toEqual(groups.find(g=>g.variant_id==="baseline"));expect(f.candidate).toEqual(groups.find(g=>g.variant_id===f.variant));}
+  await expect(page.locator("#takeaways [data-home-market]")).toHaveCount(3);
+  await expect(page.locator("[data-home-feature]")).toHaveCount(2);
   expect(await page.locator("main > [id]").evaluateAll(ns=>ns.map(n=>n.id))).toEqual(["robustness"]);
-  await expect(page.locator("#takeaways [data-scope]")).toBeVisible();
+  await expect(page.locator("[data-scope]")).toBeVisible();
   await page.goto(locale==="en"?"/2026-quant-competition/docs/project/":"/2026-quant-competition/zh-CN/docs/project/");
   await expect(page.locator("#evidence")).toContainText(locale==="en"?"10 US stocks":"10 只美股");
   await page.goto(locale==="en"?"/2026-quant-competition/strategies/":"/2026-quant-competition/zh-CN/strategies/");

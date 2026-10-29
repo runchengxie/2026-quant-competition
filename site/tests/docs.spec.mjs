@@ -48,6 +48,9 @@ test("research pages separate results, factor evidence and offline guides",async
 });
 
 test("curated documentation is integrated and language switches retain the article",async({page})=>{
+  await page.goto('/2026-quant-competition/#research-progress-title');
+  await expect(page).toHaveURL('/2026-quant-competition/strategies/#research-progress-title');
+  await expect(page.locator('#research-progress-title')).toBeVisible();
   for(const slug of ["architecture","quickstart","datasets","study","strategies","strategy-controls","execution-evidence","observation-registry","strategy-robustness","data-refresh","native-process-diagnostics","incremental-research","strategy-comparison","cnn-chart-research"]){
     await page.goto(`/2026-quant-competition/docs/${slug}/`);
     await expect(page.locator("main article h1").first()).toBeVisible();
@@ -72,6 +75,8 @@ test("CNN note shows recovered chart inputs without JavaScript",async({browser},
     await page.setViewportSize({width:390,height:844});
     await page.goto(`/2026-quant-competition/${prefix}docs/project/#demo`);
     await page.locator("a[data-cnn-note]").click();
+    await expect(page).toHaveURL(`/2026-quant-competition/${prefix}research/cnn-chart/`);
+    await page.locator('a[data-cnn-source]').click();
     await expect(page).toHaveURL(`/2026-quant-competition/${prefix}docs/cnn-chart-research/`);
     const images=page.locator("article .cnn-gallery img");
     await expect(images).toHaveCount(2);

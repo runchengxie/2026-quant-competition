@@ -1,5 +1,7 @@
 # What happened when we let a CNN read price charts
 
+<p><a data-cnn-topic-link href="/2026-quant-competition/research/cnn-chart/">Explore the CNN research topic and interactive chart →</a></p>
+
 Earlier experiments really did turn price history into pictures and produce predictions and backtest reports. An October 29, 2026 review recovered exported images from the public release, checked the competition project's later diagnostics, and located another CNN archive on Linux. The evidence does not yet support deploying an image CNN to the competition account.
 
 Start with the pictures. All performance figures below come from retained reports. This review did not retrain models or submit orders.

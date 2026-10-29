@@ -165,6 +165,9 @@ def _allowed_source(relative_path: PurePosixPath) -> bool:
         "tests/editorial.spec.mjs",
         "tests/market-topics.spec.mjs",
         "tests/cnn-topic.spec.mjs",
+        "tests/clear-home.spec.mjs",
+        "src/i18n/home-en.json",
+        "src/i18n/home-zh-CN.json",
         "src/i18n/cnn-topic-en.json",
         "src/i18n/cnn-topic-zh-CN.json",
         "src/data/cnn-archive-curves.v1.json",
@@ -611,9 +614,7 @@ def check_site(source_dir: Path, built_dir: Path) -> list[str]:
         if (built_dir / relative).is_file():
             page.feed((built_dir / relative).read_text(encoding="utf-8"))
         home_metadata.append(page)
-    if "src/components/EditorialHome.astro" in source_paths or any(
-        p.editorial_facts for p in home_metadata
-    ):
+    if any(p.editorial_facts for p in home_metadata):
         from competition_tools.evaluation.robustness.publication import (
             validate_public_robustness,
         )
@@ -755,8 +756,11 @@ def check_site(source_dir: Path, built_dir: Path) -> list[str]:
             expected = summary(
                 parse_followup(followup_path.read_text(encoding="utf-8"))
             )
+            progress_topics = ["strategies/", "factors/"]
+            if any(page.progress_facts for page in home_metadata):
+                progress_topics.insert(0, "")
             for prefix in ("", "zh-CN/"):
-                for topic in ("", "strategies/", "factors/"):
+                for topic in progress_topics:
                     page = _PageMetadata()
                     page.feed(
                         (built_dir / f"{prefix}{topic}index.html").read_text(

@@ -1,31 +1,17 @@
 import {test,expect} from '@playwright/test';
-import {readFile} from 'node:fs/promises';
-import {controlsHighlights} from '../src/scripts/strategy-controls-state.mjs';
-const snapshot=JSON.parse(await readFile(new URL('../src/data/strategy-robustness.v1.json',import.meta.url),'utf8'));
-const controls=JSON.parse(await readFile(new URL('../src/data/strategy-controls.v1.json',import.meta.url),'utf8'));
 test.beforeEach(async({page})=>{await page.emulateMedia({reducedMotion:'reduce'});});
 
 for(const locale of ['en','zh-CN']){
  const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
  test(`${locale}: editorial home shows reviewed story without full payload`,async({page},info)=>{
   await page.goto(prefix);
-  const home=page.locator('[data-editorial-facts]');
+  const home=page.locator('#robustness');
   await expect(home).toHaveCount(1,{timeout:3000});
-  const facts=JSON.parse(await home.getAttribute('data-editorial-facts'));
-  expect(facts.coverage).toEqual(snapshot.coverage);expect(facts.observation.observations).toBe(0);
-  expect(facts.us.map(g=>g.requestedWindows)).toEqual([11,11,11]);
-  expect(facts.crypto.map(g=>g.returnWins)).toEqual([6,5]);
   await expect(page.locator('main h1')).toHaveCount(1);
-  await expect(home.locator('[data-editorial-pool]')).toHaveCount(3);
-  for(const row of await home.locator('[data-editorial-pool]').all()){
-   const group=JSON.parse(await row.getAttribute('data-editorial-pool'));
-   expect(group).toEqual(facts.us.find(g=>g.poolId===group.poolId));
-   const value=new Intl.NumberFormat(locale,{maximumFractionDigits:2}).format(group.medianReturnChange*100);
-   await expect(row.locator('[data-editorial-value]')).toContainText(value);
-  }
+  await expect(home.locator('[data-home-feature]')).toHaveCount(2);
+  await expect(home.locator('[data-home-market]')).toHaveCount(3);
   await expect(home.locator('canvas')).toHaveCount(0);
   await expect(page.locator('[data-robustness-facts],[data-controls-facts]')).toHaveCount(0);
-  expect(JSON.stringify(facts).length).toBeLessThan(10240);
   await expect(home.locator('a[data-topic=factors]')).toHaveCount(0);
   for(const theme of ['light','dark']){
    await page.locator('#theme-preference').selectOption(theme);
@@ -43,16 +29,10 @@ for(const locale of ['en','zh-CN']){
   for(const market of ['US','HK','crypto']){
    const topic=page.locator(`[data-market-topic=${market}]`);
    await expect(topic).toBeVisible();
-   await expect(topic.locator(`[data-takeaway=${market}]`)).toBeVisible();
+   await expect(topic.locator('[data-home-market]')).toBeVisible();
    expect(await topic.evaluate(n=>n.closest('details')===null)).toBe(true);
   }
-  await expect(history.locator('[data-controls-highlight]')).toHaveCount(2);
-  const highlights=await history.locator('[data-controls-highlight]').evaluateAll(nodes=>nodes.map(n=>JSON.parse(n.dataset.highlightFacts)));
-  expect(highlights).toEqual(controlsHighlights(controls));
-  for(const highlight of highlights)await expect(page.locator(`[data-market-topic=${highlight.market}] [data-controls-highlight=${highlight.market}]`)).toBeVisible();
-  await expect(history.locator('[data-takeaway]')).toHaveCount(3);
-  const crypto=JSON.parse(await history.locator('[data-controls-highlight=crypto]').getAttribute('data-highlight-facts'));
-  expect([crypto.feeBps,crypto.windows,crypto.returnWins]).toEqual([25,12,7]);
+  await expect(history.locator('[data-home-market]')).toHaveCount(3);
   for(const fragment of ['strategy-controls','takeaways','%74akeaways','takeaways-title','%74akeaways-title']){
    await page.goto(prefix+'#'+fragment);
    await expect(page.locator('#'+decodeURIComponent(fragment))).toBeVisible();
@@ -65,9 +45,9 @@ for(const locale of ['en','zh-CN']){
 test('all market evidence remains directly available without JavaScript',async({browser})=>{
  const context=await browser.newContext({javaScriptEnabled:false});const page=await context.newPage();
  await page.goto('/2026-quant-competition/');
- await expect(page.locator('[data-editorial-pool]')).toHaveCount(3,{timeout:3000});
+ await expect(page.locator('[data-home-market]')).toHaveCount(3,{timeout:3000});
  await expect(page.locator('#takeaways')).toBeVisible();
- for(const market of ['US','HK','crypto'])await expect(page.locator(`[data-market-topic=${market}] [data-takeaway]`)).toBeVisible();
+ for(const market of ['US','HK','crypto'])await expect(page.locator(`[data-market-topic=${market}] [data-home-market]`)).toBeVisible();
  await expect(page.locator('.legacy-links')).toHaveCount(0);
  await context.close();
 });
@@ -128,10 +108,10 @@ for(const locale of ['en','zh-CN'])test(`${locale}: editorial topic pages retain
  }
 });
 
-test('long localized plot labels and unavailable storage retain a usable homepage',async({page})=>{
+test('long localized market labels and unavailable storage retain a usable homepage',async({page})=>{
  await page.addInitScript(()=>{Object.defineProperty(window,'localStorage',{get(){throw new Error('blocked');}});});
  await page.setViewportSize({width:390,height:844});await page.goto('/2026-quant-competition/zh-CN/');
- await page.locator('.pool-label').first().evaluate(el=>el.textContent+='较长的研究标签'.repeat(15));
+ await page.locator('[data-home-market]').first().evaluate(el=>el.textContent+='较长的研究标签'.repeat(15));
  await page.locator('#theme-preference').selectOption('dark');
  await expect(page.locator('body')).toHaveCSS('background-color','rgb(23, 27, 32)');
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
