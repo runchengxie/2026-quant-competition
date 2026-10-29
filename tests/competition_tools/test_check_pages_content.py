@@ -8,9 +8,17 @@ from competition_tools.check_pages_content import _allowed_source, check_site
 
 
 def test_us_cnn_publication_allowlist_is_narrow():
-    allowed = ["src/data/us-cnn-summary.v1.json", "src/i18n/us-cnn-en.json", "src/i18n/us-cnn-zh-CN.json", "src/lib/us-cnn-summary.mjs", "tests/us-cnn.spec.mjs", "tests/us-cnn-summary.test.mjs"]
+    allowed = [
+        "src/data/us-cnn-summary.v1.json",
+        "src/i18n/us-cnn-en.json",
+        "src/i18n/us-cnn-zh-CN.json",
+        "src/lib/us-cnn-summary.mjs",
+        "tests/us-cnn.spec.mjs",
+        "tests/us-cnn-summary.test.mjs",
+    ]
     assert all(_allowed_source(PurePosixPath(path)) for path in allowed)
     assert not _allowed_source(PurePosixPath("src/data/us-cnn-raw.json"))
+
 
 BASE_PATH = "/2026-quant-competition"
 
