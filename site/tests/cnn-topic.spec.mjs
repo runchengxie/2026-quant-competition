@@ -78,3 +78,16 @@ test('crypto CNN curve changes window, cost, delay and strategy',async({page})=>
  await expect(chart.locator('[data-curve-summary]')).toContainText('CNN');
  expect(await chart.locator('[data-choice]').getAttribute('d')).not.toBe(before);
 });
+
+for (const locale of ['en','zh-CN']) {
+ const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+ test(`${locale}: later crypto windows and sentiment limits remain readable without JS`,async({browser})=>{
+  const context=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});
+  const page=await context.newPage();await page.goto(`${prefix}research/crypto-cnn/`);
+  await expect(page.locator('[data-crypto-followup]')).toContainText('2026-01-06');
+  await expect(page.locator('[data-crypto-followup]')).toContainText('-38.50%');
+  await expect(page.locator('[data-sentiment-availability]')).toContainText('2026-10-14');
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  await context.close();
+ });
+}

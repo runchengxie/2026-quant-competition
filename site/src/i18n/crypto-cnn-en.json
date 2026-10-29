@@ -39,7 +39,7 @@
     "The image model predicts absolute returns; the numeric model ranks coins. Differences cannot be attributed to image input alone.",
     "Signals use the daily close and simulated fills use the next daily open. Crypto trades continuously, so the adjacent open can be optimistic; an extra day's delay also changes the holding period.",
     "The fixed eight-asset universe is not a point-in-time market history. Token events, source data and actual execution conditions remain to be checked.",
-    "Historical sentiment access, coverage and cost are unverified; no sentiment model was run.",
+    "The 2023–2025 comparison used no sentiment data; historical availability and current access to the later snapshot remain unverified.",
     "These are feasibility settings. Each image model trains on just 200 images for two epochs. Results need new data for further testing."
   ],
   "methodTitle": "What we did",
@@ -49,5 +49,19 @@
   "chartSummary": "Ending value",
   "returnLabel": "Window return",
   "sourceData": "Read the data and method notes",
-  "sourceModel": "Read the numerical CNN source"
+  "sourceModel": "Read the numerical CNN source",
+  "followupTitle": "Three later windows in 2026",
+  "followupIntro": "We kept the earlier rules and compared equal weight, momentum and CNN. Each window starts in cash, liquidates at the end and assumes a 0.35% one-way total cost.",
+  "followupCaveat": "These dates had previously been used in other research, so they are not a pristine holdout. Data has not passed formal research acceptance, and the next daily open can be optimistic.",
+  "followupTurnover": "Cumulative turnover adds one-way notional divided by account value at each trade; it is not a trade count. The same volatility target sets target exposure, not necessarily the same realized risk.",
+  "sentimentTitle": "A sentiment snapshot exists, but its timing remains uncertain",
+  "sentimentBody": "A BTC and ETH sentiment history was retrieved on 2026-10-14. An exploratory filter covered only those two assets; its incremental effect against an equal-target-exposure comparison was inconsistent.",
+  "sentimentCaveat": "First publication times and historical revisions are unverified. The assumed 24, 48 and 72 hour waits do not prove what was available at the time; sentiment was not invented for other assets.",
+  "universeTitle": "Why historical asset identity needs checking",
+  "universeBody": "The MATIC to POL migration had a trading gap; old LUNA became LUNC and a new asset reused LUNA. A date or ticker alone does not establish identical asset identity or trading hours. These examples are not a complete historical universe.",
+  "universeSource": "MATIC and POL announcement",
+  "universeSecondSource": "Old and new LUNA announcement",
+  "futureBody": "A future check has been specified for November 2026 through January 2027. The data has not yet been generated or acquired, and there is no result or automatic tracking task.",
+  "followupConclusion": "In all three windows, equal weight and momentum with the same target-exposure control had higher returns than the controlled CNN. Three windows do not establish what will happen next.",
+  "followupDetails": "See each window’s return, drawdown and turnover"
 }
