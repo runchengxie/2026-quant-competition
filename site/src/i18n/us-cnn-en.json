@@ -47,5 +47,6 @@
   "rangeMin": "Lowest window return",
   "rangeMax": "Highest window return",
   "volTitle": "A further comparison: targeting volatility",
-  "volBody": "A separate exploratory run applies a 12% annualized ex-ante volatility target to weekly equal weight, top-three momentum and numeric CNN, capped at 100% equities. Risk uses the preceding 20 daily returns; signals at the close trade at the next open. At 0.2% one-way cost, median window returns were 2.26%, 0.73% and 1.38%; median realized annualized volatilities were 12.02%, 13.57% and 13.34%. Actual risk still differed and the sample was already studied."
+  "volBody": "A separate exploratory run applies a 12% annualized ex-ante volatility target to weekly equal weight, top-three momentum and numeric CNN, capped at 100% equities. Risk uses the preceding 20 daily returns; signals at the close trade at the next open. At 0.2% one-way cost, median window returns were 2.26%, 0.73% and 1.38%; median realized annualized volatilities were 12.02%, 13.57% and 13.34%. Actual risk still differed and the sample was already studied.",
+  "rangeValues": "Window returns (chronological)"
 }

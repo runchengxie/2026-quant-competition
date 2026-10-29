@@ -8,6 +8,7 @@ for (const locale of ['en', 'zh-CN']) {
     await expect(page).toHaveURL(`${prefix}research/us-cnn/`);
     await expect(page.locator('[data-us-cnn-results]')).toContainText('5.30%');
     await expect(page.locator('[data-us-cnn-ranges] tbody tr')).toHaveCount(6);
+    await expect(page.locator('[data-range-method=equal_hold] [data-values]')).toHaveText(/(?:%.*){9}/);
     const initialRange = await page.locator('[data-range-method=equal_hold] [data-min]').textContent();
     await page.locator('[data-exposure]').selectOption('40');
     await expect(page.locator('[data-range-method=equal_hold] [data-min]')).not.toHaveText(initialRange);
