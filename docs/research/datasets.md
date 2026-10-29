@@ -26,7 +26,7 @@ Completed and partial snapshots publish exclusively. A blocked attempt remains i
 Keep `DEXPAPRIKA_API_KEY` in an external `CONFIG_ROOT/projects/<repo>/providers/dexpaprika.env`. The migration CLI uses explicit `workspace.toml`, moves only that assignment from the named primary `.env`, preserves unrelated bytes and retains an owner-restricted recovery copy beside the destination. Conflicts, reparses and source-repository destinations are rejected. A completely empty `.git` placeholder is not a repository; nonempty metadata and Git files remain rejected. Windows migration uses Windows PowerShell and icacls ACL tools. The research child receives neither a credential-file argument nor an inherited `DEXPAPRIKA_API_KEY`.
 
 ```sh
-python -m competition_tools.datasets.dex_credentials migrate --workspace /absolute/private/shared/workspace.toml --source-env /absolute/code/2026-quant-competition/.env --destination /absolute/private/projects/2026-quant-competition/providers/dexpaprika.env
+python -m competition_tools.datasets.dex_credentials migrate --workspace /absolute/private/shared/workspace.toml --source-env /absolute/code/global-market-research/.env --destination /absolute/private/projects/2026-quant-competition/providers/dexpaprika.env
 python -m competition_tools.team data plan --config /absolute/private/team.toml --spec /absolute/private/dex-dataset.json
 python -m competition_tools.team data acquire --config /absolute/private/team.toml --spec /absolute/private/dex-dataset.json
 python -m competition_tools.team factors --config /absolute/private/team.toml --spec /absolute/private/factor-protocol.json --output-root /absolute/data/new-factor-run

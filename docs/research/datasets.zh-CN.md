@@ -26,7 +26,7 @@
 将 `DEXPAPRIKA_API_KEY` 保存在仓库外的 `CONFIG_ROOT/projects/<repo>/providers/dexpaprika.env`。迁移 CLI 读取明确指定的 `workspace.toml`，仅从指定原工作区的 `.env` 移走这一项，保留其他字节，并在目标旁保存仅所有者可访问的恢复副本。凭据冲突、重解析路径和源码仓库内的目标会被拒绝。完全为空的 `.git` 占位目录不视为仓库，非空元数据和 Git 文件仍被拒绝。Windows 迁移使用 Windows PowerShell 和 icacls 权限工具。研究子进程既不接收凭据文件参数，也不继承 `DEXPAPRIKA_API_KEY`。
 
 ```sh
-python -m competition_tools.datasets.dex_credentials migrate --workspace /absolute/private/shared/workspace.toml --source-env /absolute/code/2026-quant-competition/.env --destination /absolute/private/projects/2026-quant-competition/providers/dexpaprika.env
+python -m competition_tools.datasets.dex_credentials migrate --workspace /absolute/private/shared/workspace.toml --source-env /absolute/code/global-market-research/.env --destination /absolute/private/projects/2026-quant-competition/providers/dexpaprika.env
 python -m competition_tools.team data plan --config /absolute/private/team.toml --spec /absolute/private/dex-dataset.json
 python -m competition_tools.team data acquire --config /absolute/private/team.toml --spec /absolute/private/dex-dataset.json
 python -m competition_tools.team factors --config /absolute/private/team.toml --spec /absolute/private/factor-protocol.json --output-root /absolute/data/new-factor-run

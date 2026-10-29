@@ -9,7 +9,7 @@ from competition_tools.datasets import dex_credentials as credentials
 
 def setup(tmp_path):
     code, config = tmp_path / "code", tmp_path / "private"
-    source = code / "2026-quant-competition/.env"
+    source = code / "global-market-research/.env"
     source.parent.mkdir(parents=True)
     (source.parent / ".git").mkdir()
     source.write_bytes(

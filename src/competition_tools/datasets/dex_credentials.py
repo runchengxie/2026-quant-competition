@@ -131,7 +131,7 @@ def migrate_key(source_env: Path, destination: Path, workspace: Path) -> dict:
         source = safe_path(source_env, external=False)
         target = safe_path(destination)
         if (
-            source != code / "2026-quant-competition/.env"
+            source != code / "global-market-research/.env"
             or target
             != config / "projects/2026-quant-competition/providers/dexpaprika.env"
         ):
