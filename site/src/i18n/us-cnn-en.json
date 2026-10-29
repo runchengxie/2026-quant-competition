@@ -2,7 +2,7 @@
  "title":"Can a CNN help select US stocks?",
  "intro":"We compared CNN signals, momentum and simple holding using historical data. In this sample the daily CNN traded frequently and lagged equal-weight holding after assumed costs.",
  "notice":"Exploratory study · fixed universe of 10 stocks · dataset not accepted for research. Results are not competition-account returns and do not establish future performance.",
- "compare":"Results at a glance","compareBody":"The table shows medians across nine independent windows. Each starts in cash and liquidates at the end; they do not form a continuous account. The final window has 20 trading days; the other eight have 58.",
+ "compare":"Results at a glance","compareBody":"The table shows medians across nine separately accounted windows. Each starts in cash and liquidates at the end; they do not form a continuous account. The final window has 20 trading days; the other eight have 58.",
  "exposure":"Target equity exposure","full":"100% equities","partial":"40% equities, rest in cash","fee":"Assumed cost per buy or sell","method":"Method","return":"Median window return","drawdown":"Median maximum drawdown","turnover":"Median cumulative one-way turnover",
  "exposureNote":"40% is the initial or rebalancing target; weights drift between rebalances. Equal exposure does not mean equal risk. Cash earns zero interest in the model.","tableHint":"Scroll the table horizontally to see drawdown and turnover.",
  "chartTitle":"Costs and turnover","chartIntro":"Turnover is cumulative trading value divided by account equity. Frequent trading can make assumed costs more consequential.",
