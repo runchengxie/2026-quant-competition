@@ -1,3 +1,10 @@
+import * as echarts from 'echarts/core';
+import {LineChart} from 'echarts/charts';
+import {GridComponent,TooltipComponent,LegendComponent,DataZoomComponent} from 'echarts/components';
+import {CanvasRenderer} from 'echarts/renderers';
+
+echarts.use([LineChart,GridComponent,TooltipComponent,LegendComponent,DataZoomComponent,CanvasRenderer]);
+
 export async function mountCnnChart(root) {
  const plot=root.querySelector('[data-cnn-chart]');
  const fallback=root.querySelector('[data-cnn-fallback]');
@@ -5,7 +12,6 @@ export async function mountCnnChart(root) {
  const select=root.querySelector('[data-cnn-select]');
  try {
   const config=JSON.parse(root.querySelector('[data-cnn-config]').textContent);
-  const echarts=await import('echarts');
   plot.hidden=false;
   const chart=echarts.init(plot);
   const styles=['solid','dashed','dotted'];

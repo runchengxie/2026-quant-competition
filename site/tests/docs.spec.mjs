@@ -36,9 +36,9 @@ test("research pages separate results, factor evidence and offline guides",async
  for(const locale of ["en","zh-CN"]){
   const prefix=`/2026-quant-competition/${locale==="en"?"":"zh-CN/"}`;
   await page.goto(prefix);await expect(page.locator("#takeaways")).toBeVisible();await expect(page.locator("#demo,#performance,#ablation")).toHaveCount(0);
-  await page.locator("[data-site-nav=strategies]").click();await expect(page).toHaveURL(`${prefix}strategies/`);
+  await page.locator("[data-site-nav=markets]").click();await page.locator(`[data-topic-market=us] a[href="${prefix}strategies/#market-us"]`).first().click();await expect(page).toHaveURL(`${prefix}strategies/#market-us`);
   await expect(page.locator("[data-study-id]")).toHaveCount(318);await expect(page.locator("[data-ablation-id]")).toHaveCount(678);
-  await page.locator("[data-site-nav=factors]").click();await expect(page.locator("[data-factor-signal]")).toHaveCount(4);await expect(page.locator("[data-factor-status]")).toHaveCount(4);await expect(page.locator("[data-factor-score]")).toHaveCount(0);
+  await page.locator("[data-site-nav=markets]").click();await page.locator(`[data-topic-market=us] a[href="${prefix}factors/#market-us"]`).first().click();await expect(page.locator("[data-factor-signal]")).toHaveCount(4);await expect(page.locator("[data-factor-status]")).toHaveCount(4);await expect(page.locator("[data-factor-score]")).toHaveCount(0);
   await page.getByRole("navigation",{name:locale==="en"?"Language":"语言选择",exact:true}).getByRole("link",{name:locale==="en"?"简体中文":"English",exact:true}).click();await expect(page).toHaveURL(new RegExp(`/${locale==="en"?"zh-CN/":""}factors/$`));
   await page.goto(`${prefix}docs/project/`);await expect(page.locator("#demo")).toBeVisible();await expect(page.locator("#engineering")).toBeVisible();await expect(page.locator("[data-result-id]")).toHaveCount(24);await page.locator("label[for=path-crypto]").click();await expect(page.locator(".panel-crypto")).toBeVisible();
   await page.setViewportSize({width:390,height:844});expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
