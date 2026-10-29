@@ -50,7 +50,7 @@ footer{max-width:1220px;padding-inline:42px;font-size:.72rem}
 
 /* Shared editorial rhythm across the research directory and feature pages. */
 :root{--editorial-accent:light-dark(#276a66,#a6d3c7)}
-.project-nav .wordmark{letter-spacing:-.05em}
+.project-nav .wordmark{letter-spacing:-.04em;font-size:clamp(1.15rem,2.2vw,1.6rem);white-space:normal}
 .project-nav [aria-current=page]{border-bottom-color:var(--editorial-accent)}
 .showcase-main .home .hero-copy:before,.topics header:before,.cnn-topic .hero:before{content:"";display:block;width:3rem;height:3px;background:var(--editorial-accent);margin-bottom:1.5rem}
 .showcase-main .home .market-grid article,.showcase-main .home .feature-grid article{box-shadow:0 2px 12px light-dark(#233c3210,#00000018)}
