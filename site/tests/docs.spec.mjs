@@ -82,13 +82,20 @@ test("CNN note shows recovered chart inputs without JavaScript",async({browser},
       await expect(image).toHaveAttribute("alt",/.+/);
     }
     await expect(page.locator("article")).toContainText("59.47%");
+    const performance=page.locator("article .cnn-performance img");
+    await performance.scrollIntoViewIfNeeded();
+    await expect(performance).toBeVisible();
+    await expect(performance).toHaveAttribute("alt",/.+/);
+    await expect.poll(()=>performance.evaluate(el=>el.complete&&el.naturalWidth>0)).toBe(true);
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
     if(prefix){
+      await page.locator(".cnn-performance").screenshot({path:testInfo.outputPath("cnn-mobile-performance.png")});
       await page.locator(".cnn-gallery").screenshot({path:testInfo.outputPath("cnn-mobile-gallery.png")});
       await page.setViewportSize({width:1440,height:1000});
       await page.goto(`/2026-quant-competition/${prefix}docs/cnn-chart-research/`);
       await page.screenshot({path:testInfo.outputPath("cnn-desktop-intro.png")});
       await page.locator(".cnn-gallery").screenshot({path:testInfo.outputPath("cnn-desktop-gallery.png")});
+      await page.locator(".cnn-performance").screenshot({path:testInfo.outputPath("cnn-desktop-performance.png")});
     }
   }
   await context.close();

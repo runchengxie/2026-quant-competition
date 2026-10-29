@@ -47,6 +47,17 @@ One image experiment covers 12 Hong Kong stocks, with portfolio records from Jan
 | Moving-average rule on the same universe | +91.70% | 34.73% |
 | Momentum rule on the same universe | +2.31% | 42.65% |
 
+### Starting each simulated portfolio at 100
+
+The chart uses every daily portfolio value in the old report, scaled to a common starting value of 100. The horizontal axis shows the year; the vertical axis shows simulated portfolio value. A value of 150 means an initial 100 would have become 150.
+
+<figure class="cnn-performance">
+<img src="/2026-quant-competition/research-images/cnn-archive-performance.svg" alt="Daily simulated portfolio values from 2018 to 2026, all starting at 100. Image CNN ends near 115, moving average near 192, and momentum near 102, with substantial declines along the way." width="800" height="400" loading="lazy" />
+<figcaption>Purple solid line: image CNN; green long dashes: moving average; brown short dashes: momentum. Source: daily simulated portfolio records in the public release.</figcaption>
+</figure>
+
+By May 22, 2026, an initial 100 would have become about 114.87 under image CNN, 191.70 under the moving-average rule, and 102.31 under momentum. The CNN curve also fell deeply along the way: its worst decline from an earlier high was about 59.47%. These are historical simulations, not actual competition-account returns, and do not guarantee future results.
+
 These are cumulative returns over more than eight years, not annual returns. Trading frequency and exposure paths differ. Retained image-run positions imply 30 basis points of cost per turnover notional, about 30 currency units per 10,000 traded. This is a historical modeling assumption.
 
 The prediction table carries year-based fold labels. A matching runner and complete fitted-model configuration were not recovered, so those labels do not establish the exact training cutoffs or absence of future-information leakage. Historical universe selection, adjustments and executable fills also remain unverified. These figures belong in an archival retrospective, not the validated-performance tables.
@@ -86,5 +97,7 @@ Until that test is completed, these materials support research and teaching. The
 <summary>Source details for reproduction</summary>
 
 The archive is `chi-futu-quant-lab-bundle-20260616_124229.zip`, SHA256 `418ad65ffe059fc723d3f57b4668abc195bb5c63fdab5d6ff02ed7b320fe79a8`. The 12-stock comparison comes from `artifacts/reports/backtests/image_cnn_mvp/summary.csv`; the 30-stock comparison comes from `walk_forward_hk_cnn_mvp/summary.csv`. The pictures are the first July 15, 2004 exports in `cnn_image_samples` and `cnn_image_samples_paper_ohlc`. Input pictures, historical returns and training-method evidence were checked separately; they do not form one fully bound run receipt.
+
+The chart normalizes the three rules' daily `portfolio_daily.csv` values and checks them against the reported returns and maximum drawdowns. Each rule's retained `positions_daily.csv` records use a modeled cost of 0.3% of turnover. The generator is `competition_tools.cnn_archive_performance`.
 
 </details>
