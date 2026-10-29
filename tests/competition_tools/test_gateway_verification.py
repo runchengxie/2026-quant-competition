@@ -171,7 +171,10 @@ def test_invalid_contracts_do_not_connect(endpoint, contract):
     assert report["api"] == "not_checked"
 
 
-def test_ini_intent_is_not_runtime_evidence(endpoint, contract, tmp_path, monkeypatch):
+@pytest.mark.parametrize("mode,intent", [("yes", "enabled"), ("no", "disabled")])
+def test_ini_intent_is_not_runtime_evidence(
+    endpoint, contract, tmp_path, monkeypatch, mode, intent
+):
     from competition_tools import gateway_launcher as gl
 
     ini = tmp_path / "ibc.ini"
@@ -179,8 +182,9 @@ def test_ini_intent_is_not_runtime_evidence(endpoint, contract, tmp_path, monkey
         "TradingMode=paper\nReadOnlyApi=yes\nReadOnlyLogin=no\nExistingSessionDetectedAction=manual\nReloginAfterSecondFactorAuthenticationTimeout=no\nFIX=no\nIbPassword=PRIVATE_SENTINEL\nSecondFactorAuthenticationExitInterval=60\nCommandServerPort=0\n"
     )
     monkeypatch.setattr(gl, "owner_only_acl", lambda path: True)
+    ini.write_text(ini.read_text().replace("ReadOnlyApi=yes", f"ReadOnlyApi={mode}"))
     report = verify_reading(endpoint, [contract], ini_path=ini, client_factory=Client)
-    assert report["intended_read_only"] == "enabled"
+    assert report["intended_read_only"] == intent
     assert report["server_read_only"] == "not_verified"
     assert "PRIVATE_SENTINEL" not in json.dumps(report)
     ini.write_text(ini.read_text() + "Unknown=PRIVATE_SENTINEL\n")

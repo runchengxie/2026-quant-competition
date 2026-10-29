@@ -123,7 +123,7 @@ def test_verified_archive_shortcut_names_survive_prepare_and_recheck(tmp_path, m
     "line",
     [
         "TradingMode=live",
-        "ReadOnlyApi=no",
+        "ReadOnlyApi=invalid",
         "ReadOnlyLogin=yes",
         "ExistingSessionDetectedAction=primaryoverride",
         "ReloginAfterSecondFactorAuthenticationTimeout=yes",
@@ -142,6 +142,18 @@ def test_unsafe_ini_rejected(tmp_path, monkeypatch, line):
     )
     with pytest.raises(gl.LauncherError, match="UNSAFE_IBC_CONFIGURATION"):
         build(path, workspace)
+
+
+def test_explicit_writable_paper_api_reports_configured_mode(tmp_path, monkeypatch):
+    path, workspace, cfg = fixture(tmp_path, monkeypatch)
+    ini = Path(cfg["ini_path"])
+    ini.write_text(ini.read_text().replace("ReadOnlyApi=yes", "ReadOnlyApi=no"))
+    spec = build(path, workspace)
+    assert spec["status"]["read_only_api"] is False
+    assert spec["status"]["mode"] == "paper"
+    assert spec["status"]["authentication"] == "not_checked"
+    assert spec["status"]["api"] == "not_checked"
+    assert "PRIVATE_" not in json.dumps(spec)
 
 
 def test_missing_mode_and_duplicate_keys_rejected(tmp_path, monkeypatch):

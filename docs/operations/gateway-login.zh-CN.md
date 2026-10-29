@@ -4,7 +4,7 @@
 
 这套 Windows 脚本检查单独安装的 IBC，并准备私有的 Paper 启动器。手机二次验证仍由人完成。`check`、`dry-run` 和 `status` 只检查本地配置，不登录、不连接 API 或历史行情服务。返回的 `authentication`、`api` 和 `historical_data` 均为 `not_checked`。发现正在运行的 Gateway 或任何 Java 进程时，检查会保守地阻止启动。
 
-这里使用的是 IB Gateway 及其 TWS API，与 Client Portal Gateway 不同。脚本没有下单调用。`ReadOnlyLogin=no` 保留正常登录验证，`ReadOnlyApi=yes` 指定只读 API。真正连接的账户身份和运行时设置，仍需在有人监督的部署测试中确认。
+这里使用的是 IB Gateway 及其 TWS API，与 Client Portal Gateway 不同。脚本没有下单调用。`ReadOnlyLogin=no` 保留正常登录验证，`ReadOnlyApi=yes` 为默认值。经用户明确授权后，可在私有 INI 中设置 `ReadOnlyApi=no`，允许 Paper API 写入。启动器的 `read_only_api` 报告这一配置选择，不验证服务端设置，也不代表下单授权。真正连接的账户身份和运行时设置，仍需在有人监督的部署测试中确认。
 
 ## 环境和限制
 
@@ -28,7 +28,7 @@
 
 将 [launcher.example.json](../../config/ibgateway-paper/launcher.example.json) 和 [ibc.example.ini](../../config/ibgateway-paper/ibc.example.ini) 复制到私有目录，替换所有绝对路径占位符。保留 `activation_authorized=false`、`retry_limit=0`，超时设为 30–300 秒。源码模板不含登录凭据。如需自动填入，请自行在私有 INI 中添加 `IbLoginId` 和 `IbPassword`，不要写入启动 JSON、命令行、任务 XML 或聊天。未配置凭据时，在 Gateway 界面手动输入。
 
-INI 必须明确指定 Paper、只读 API、正常登录、关闭 FIX、手动或 secondary 会话策略，以及二次验证超时后不重新登录。配置中的 MFA 退出间隔必须为正数且不大于观察超时。禁用重新登录后，上游可能不使用这个退出间隔；包装脚本只限制观察时长，不保证结束 Gateway。禁止设置自动重启时间、远程命令服务、`IbDir` 和可信 IP 覆盖项。只接受模板中的设置，以及名称完全匹配的 `IbLoginId`、`IbPassword`、`FIXLoginId`、`FIXPassword`。IBC 按 Java Properties 语法解析并记录未知字段，因此拒绝未知字段、转义或不规范的键、续行和重复键。也拒绝相对路径、重解析点和批处理元字符路径。本启动器不支持含圆括号的路径。
+INI 必须明确指定 Paper、`ReadOnlyApi=yes` 或 `no`、正常登录、关闭 FIX、手动或 secondary 会话策略，以及二次验证超时后不重新登录。配置中的 MFA 退出间隔必须为正数且不大于观察超时。禁用重新登录后，上游可能不使用这个退出间隔；包装脚本只限制观察时长，不保证结束 Gateway。禁止设置自动重启时间、远程命令服务、`IbDir` 和可信 IP 覆盖项。只接受模板中的设置，以及名称完全匹配的 `IbLoginId`、`IbPassword`、`FIXLoginId`、`FIXPassword`。IBC 按 Java Properties 语法解析并记录未知字段，因此拒绝未知字段、转义或不规范的键、续行和重复键。也拒绝相对路径、重解析点和批处理元字符路径。本启动器不支持含圆括号的路径。
 
 保存秘密前，请把部署目录、INI、设置、日志和工具路径的允许访问权限限制为当前 Windows 用户 SID 和可选的 SYSTEM。检查包含继承权限的允许条目和所有者，不在检查过程中自动修复 ACL。对于自己新建的空目录，可先审查下面的 PowerShell 示例：
 
@@ -65,7 +65,7 @@ icacls $privateDirectory
 & $deployedWrapper -Action start -PythonPath $pythonPath -ConfigPath $launcherJson -WorkspacePath $workspaceToml
 ```
 
-脚本先在私有日志目录独占创建 `launch.lease`，持锁重新检查配置，再启动隐藏的控制台辅助进程，Gateway 自身的界面仍供用户完成验证。子进程输出仅写入受保护的日志，退出码会传递给调用方。观察超时返回代码 3，不结束或重启子进程，也不推断认证成功与否。超时或无法确定启动结果时会保留 `launch.lease`，阻止再次启动。请先人工检查私有桌面和进程状态，再手动删除这一份锁文件。子进程正常退出时会释放锁。请在本地确认 Paper 身份及 API 只读，再分别检查历史行情。这里没有下单授权。
+脚本先在私有日志目录独占创建 `launch.lease`，持锁重新检查配置，再启动隐藏的控制台辅助进程，Gateway 自身的界面仍供用户完成验证。子进程输出仅写入受保护的日志，退出码会传递给调用方。观察超时返回代码 3，不结束或重启子进程，也不推断认证成功与否。超时或无法确定启动结果时会保留 `launch.lease`，阻止再次启动。请先人工检查私有桌面和进程状态，再手动删除这一份锁文件。子进程正常退出时会释放锁。请在本地确认 Paper 身份及所选 API 模式，再分别检查历史行情。这里没有下单授权。
 
 `scripts/windows/PaperGateway.psm1` 中的 `Export-PaperGatewayTask` 可生成未注册、默认禁用的任务 XML，供审查使用。需要显式的稳定绝对路径和用户 SID，使用 `InteractiveToken`、`LeastPrivilege`、六分钟任务时限，不设置重试。必须引用稳定部署路径，不能引用 worktree。它不会注册或启用任务，需要已登录的桌面，不支持 Windows 自动登录或保存任务密码。
 

@@ -60,7 +60,7 @@ def _ini_intent(path):
         raise gl.LauncherError("UNSAFE_ACL")
     # Existing strict properties parser discards credential values and rejects
     # unknown/duplicate properties. This is configuration intent, not runtime proof.
-    gl._ini(path, 300)
+    return gl._ini(path, 300)
 
 
 def verify_reading(
@@ -89,8 +89,9 @@ def verify_reading(
         return report
     if ini_path is not None:
         try:
-            _ini_intent(ini_path)
-            report["intended_read_only"] = "enabled"
+            report["intended_read_only"] = (
+                "enabled" if _ini_intent(ini_path) else "disabled"
+            )
         except gl.LauncherError as error:
             report["intended_read_only"] = "blocked"
             code = str(error)

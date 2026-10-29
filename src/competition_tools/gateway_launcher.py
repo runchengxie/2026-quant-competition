@@ -126,7 +126,7 @@ def _ini(path, timeout):
     # Constrain Java Properties syntax rather than interpreting a different INI grammar.
     required = {
         "TradingMode": "paper",
-        "ReadOnlyApi": "yes",
+        "ReadOnlyApi": {"yes", "no"},
         "ReadOnlyLogin": "no",
         "ExistingSessionDetectedAction": {"manual", "secondary"},
         "ReloginAfterSecondFactorAuthenticationTimeout": "no",
@@ -172,6 +172,7 @@ def _ini(path, timeout):
         fail("UNSAFE_IBC_CONFIGURATION")
     if values.get("CommandServerPort", "0") != "0":
         fail("UNSAFE_IBC_CONFIGURATION")
+    return values["ReadOnlyApi"] == "yes"
 
 
 def _archive(config):
@@ -353,7 +354,7 @@ def build_launch_spec(
             or exe.parent.parent.name.lower() != "ibgateway"
         ):
             fail("UNSUPPORTED_GATEWAY_LAYOUT")
-        _ini(Path(config["ini_path"]), config["timeout_seconds"])
+        read_only_api = _ini(Path(config["ini_path"]), config["timeout_seconds"])
         contents = _archive(config)
         runtime = _runtime(contents)
         runtime_path = Path(config["configured_launcher"]).parent / "runtime"
@@ -385,7 +386,7 @@ def build_launch_spec(
             schema_version="competition.gateway_status.v1",
             state="preflight_passed",
             mode="paper",
-            read_only_api=True,
+            read_only_api=read_only_api,
             activation_authorized=config["activation_authorized"],
             authentication="not_checked",
             api="not_checked",
