@@ -35,6 +35,21 @@ Image attribution is to the [FUTU Quant Lab public bundle](https://github.com/ru
 
 An out-of-sample test uses later observations that training has not seen. Showing performance on observations already used in training can make a model look better than it is.
 
+### Six CNN-related entries in the old project
+
+The original strategy catalog lists six related entries. They share building blocks and are not six independent neural networks:
+
+| Earlier entry | Plain-language description |
+| --- | --- |
+| `cnn_pattern` | A CNN looks for patterns in numbers derived from prices and volume. |
+| `cnn_pattern_mvp` | The same numeric model with looser thresholds to test the pipeline. |
+| `cnn_image_pattern` | A CNN looks at pictures drawn from price bars. |
+| `cnn_walk_forward_rank` | Train in chronological segments and rank stocks in later periods. |
+| `cnn_plus_sentiment` | Add a sentiment filter to the basic numeric model's signals. |
+| `cnn_vol_regime` | Add volatility-based risk and position sizing on top of CNN plus sentiment. |
+
+The two image styles and choices of window and prediction horizon are experimental settings within the image approach. We did not find a validated, like-for-like scorecard for all six entries, so their names alone do not establish which performed best. See the [original strategy catalog](https://github.com/runchengxie/chi-futu-quant-lab/blob/main/docs/strategies.md) and [CNN implementation guide](https://github.com/runchengxie/chi-futu-quant-lab/blob/main/docs/cnn-strategies.md).
+
 ## What the June bundle preserved
 
 The approximately 56 MB bundle explicitly includes data and research reports and excludes account data. It contains 32 exported chart inputs, image predictions, numeric CNN fold records and comparisons. The original project already exists locally. The release archive was retained in its owner's private data directory; no duplicate clone or raw-data upload to this website was needed.
