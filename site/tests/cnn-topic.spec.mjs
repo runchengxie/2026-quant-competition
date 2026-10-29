@@ -1,5 +1,17 @@
 import { test, expect } from '@playwright/test';
 
+test('CNN chart stays inside a mobile page while resize callbacks are delayed',async({page})=>{
+ await page.addInitScript(()=>{
+  const original=window.addEventListener.bind(window);
+  window.addEventListener=(type,listener,options)=>original(type,type==='resize'&&typeof listener==='function'?(event)=>setTimeout(()=>listener(event),1000):listener,options);
+ });
+ await page.setViewportSize({width:1440,height:1000});
+ await page.goto('/2026-quant-competition/research/cnn-chart/');
+ await expect(page.locator('[data-cnn-curve]')).toHaveAttribute('data-ready','true');
+ await page.setViewportSize({width:390,height:844});
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+});
+
 for (const locale of ['en','zh-CN']) {
  const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
  test(`${locale}: CNN topic has interactive history and retains the source note`,async({page},info)=>{
