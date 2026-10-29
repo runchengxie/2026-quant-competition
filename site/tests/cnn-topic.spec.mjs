@@ -42,3 +42,39 @@ for (const locale of ['en','zh-CN']) {
   await context.close();
  });
 }
+
+for (const locale of ['en','zh-CN']) {
+ const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+ test(`${locale}: crypto CNN research keeps assumptions and scenario results visible`,async({browser})=>{
+  const context=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});
+  const page=await context.newPage();
+  await page.goto(`${prefix}markets/#market-crypto`);
+  await page.locator('[data-crypto-cnn-link]').click();
+  await expect(page).toHaveURL(`${prefix}research/crypto-cnn/`);
+  await expect(page.locator('main h1')).toHaveCount(1);
+  await expect(page.locator('[data-crypto-cnn-table]')).toContainText('-9.17%');
+  await expect(page.locator('[data-crypto-cnn-table]')).toContainText('-4.03%');
+  await expect(page.locator('[data-crypto-cnn-limit]')).toBeVisible();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  await context.close();
+ });
+}
+
+test('crypto CNN curve changes window, cost, delay and strategy',async({page})=>{
+ await page.goto('/2026-quant-competition/zh-CN/research/crypto-cnn/');
+ const chart=page.locator('[data-chart]');
+ await expect(chart).toBeVisible();
+ await expect(chart).toHaveAttribute('data-selection','0/35/0/cnn_weekly');
+ await expect(chart.locator('[data-min]')).toHaveText('2024-03-01');
+ await expect(chart.locator('[data-curve-summary]')).toContainText('USDT');
+ await expect(chart.locator('[data-base]')).toHaveAttribute('stroke','var(--bid)');
+ const before=await chart.locator('[data-choice]').getAttribute('d');
+ await page.locator('[data-window]').selectOption('1');
+ await page.locator('[data-fee]').selectOption('50');
+ await page.locator('[data-delay]').selectOption('1');
+ await page.locator('[data-strategy]').selectOption('image_daily');
+ await expect(chart).toHaveAttribute('data-selection','1/50/1/image_daily');
+ await expect(chart.locator('[data-min]')).toHaveText('2024-05-31');
+ await expect(chart.locator('[data-curve-summary]')).toContainText('CNN');
+ expect(await chart.locator('[data-choice]').getAttribute('d')).not.toBe(before);
+});

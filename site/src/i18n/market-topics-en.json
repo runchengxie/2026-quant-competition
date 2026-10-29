@@ -10,6 +10,9 @@
   "indexes": "Browse by research type",
   "allFactors": "All factor research",
   "allStrategies": "All strategy research",
+  "cryptoCnnTitle": "CNN experiments in crypto",
+  "cryptoCnnBody": "See how turnover, costs and volatility controls affected eight historical windows.",
+  "cryptoCnnScope": "Exploratory results; sentiment, asset events and actual fills remain unverified.",
   "markets": [
     {"id":"us","name":"US equities","description":"Test predictions and portfolio rules on historical stock data.","factorTitle":"Can models rank future stock returns?","factorBody":"Prediction comparisons across two windows have not produced stable rankings.","factorScope":"Historical prediction research with limited samples and data-quality evidence.","strategyTitle":"Does trading less improve returns?","strategyBody":"Keeping stocks whose rankings slipped usually reduced trading; returns improved less often.","strategyScope":"Historical account simulations; real execution remains unverified."},
     {"id":"hk","name":"Hong Kong equities","description":"Explore fixed-universe strategy history and earlier CNN chart experiments.","factorTitle":"Hong Kong signals need separate testing","factorBody":"Momentum and moving-average strategies were compared, but independent signal-ranking and grouped-return tests are still needed.","factorScope":"A complete independent factor test is not yet available.","strategyTitle":"Strategies in a fixed stock universe","strategyBody":"Historical comparisons cover momentum and rebalancing frequency; historical membership and point-in-time data have gaps.","strategyScope":"The limited sample does not represent the full Hong Kong market.","extraTitle":"Earlier CNN chart experiments","extraBody":"See original images, six related entries and historical simulated returns. Training boundaries remain unverified."},

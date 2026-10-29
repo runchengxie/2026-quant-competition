@@ -10,6 +10,9 @@
   "indexes": "按研究类型浏览",
   "allFactors": "全部因子研究",
   "allStrategies": "全部策略研究",
+  "cryptoCnnTitle": "数字货币的 CNN 实验",
+  "cryptoCnnBody": "看看交易次数、费用和波动控制怎样影响八个历史窗口。",
+  "cryptoCnnScope": "探索性结果，情绪数据、币种事件和实际成交仍待核实。",
   "markets": [
     {"id":"us","name":"美股","description":"用历史股票数据检验预测和组合规则。","factorTitle":"模型能分清股票后续涨幅吗","factorBody":"已有两段时间窗口的预测比较，排序结果还不稳定。","factorScope":"历史预测研究，样本和数据质量仍有限。","strategyTitle":"少换股票能否改善收益","strategyBody":"保留排名稍有回落的股票，通常减少了买卖，收益提高的情况较少。","strategyScope":"历史账户模拟，实际成交仍待验证。"},
     {"id":"hk","name":"港股","description":"查看固定股票池的历史策略，以及以前的 CNN 看图实验。","factorTitle":"港股信号还需要单独检验","factorBody":"已有动量和均线策略比较，信号本身的排序与分组收益检验仍待补充。","factorScope":"目前没有完整的独立因子检验。","strategyTitle":"固定股票池的策略比较","strategyBody":"已有动量与调仓频率的历史比较，完整历史成分和时点数据仍有缺口。","strategyScope":"历史样本有限，不能代表完整港股市场。","extraTitle":"CNN 看 K 线的旧实验","extraBody":"查看原来的图片、六个相关方案和历史模拟收益。训练边界仍需核实。"},

@@ -1,0 +1,50 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import SiteNavigation from './SiteNavigation.astro';
+import facts from '../data/crypto-cnn-research.v1.json';
+import en from '../i18n/crypto-cnn-en.json';
+import zh from '../i18n/crypto-cnn-zh-CN.json';
+const locale=Astro.props.locale==='zh-CN'?'zh-CN':'en';
+const t=locale==='zh-CN'?zh:en;
+const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+const names=t.names as Record<string,string>;
+const ids=Object.keys(names);
+const pct=(n:number)=>`${(n*100).toFixed(2)}%`;
+const med=(values:number[])=>{const a=[...values].sort((x,y)=>x-y);return (a[3]+a[4])/2;};
+const rows=ids.map(id=>{const r=facts.records.filter(x=>x.strategy===id&&x.fee_bps===35&&x.extra_delay_days===0);return {id,ret:med(r.map(x=>x.return)),dd:med(r.map(x=>x.max_drawdown)),turn:med(r.map(x=>x.turnover))};});
+---
+<SiteLayout locale={locale} localePath="research/crypto-cnn/" title={`${t.title} | QUANT / LAB`} description={t.intro}>
+ <SiteNavigation locale={locale} active="markets" />
+ <main class="crypto-cnn">
+  <header><p class="eyebrow">QUANT / LAB · CRYPTO RESEARCH</p><h1>{t.title}</h1><p class="lead">{t.intro}</p><p class="notice" data-crypto-cnn-limit>{t.notice}</p></header>
+  <section><h2>{t.chartTitle}</h2><p>{t.chartIntro}</p>
+   <div class="controls" data-controls hidden><label>{t.window}<select data-window>{facts.folds.map(f=><option value={f.fold_index}>{f.test_start} — {f.test_end}</option>)}</select></label><label>{t.cost}<select data-fee><option value="0">0%</option><option value="35" selected>0.35%</option><option value="50">0.50%</option></select></label><label>{t.delay}<select data-delay><option value="0">{t.none}</option><option value="1">{t.oneDay}</option></select></label><label>{t.strategy}<select data-strategy>{ids.filter(id=>id!=='equal_hold').map(id=><option value={id} selected={id==='cnn_weekly'}>{names[id]}</option>)}</select></label></div>
+   <figure data-chart hidden><svg viewBox="0 0 800 300" role="img" aria-label={t.chartLabel}><line x1="45" y1="250" x2="780" y2="250" stroke="currentColor" opacity=".25"/><path data-base fill="none" stroke="var(--bid)" stroke-width="3"/><path data-choice fill="none" stroke="var(--ask)" stroke-width="3"/><text x="45" y="285" font-size="13" fill="currentColor" data-min></text><text x="780" y="285" text-anchor="end" font-size="13" fill="currentColor" data-max></text><text x="45" y="20" font-size="13" fill="currentColor" data-range></text></svg><figcaption><span class="base">● {t.baseline}</span>　<span class="choice">● {t.selected}</span><p data-curve-summary aria-live="polite"></p></figcaption></figure><noscript><p>{t.fallback}</p></noscript>
+  </section>
+  <section><h2>{t.tableTitle}</h2><p>{t.tableIntro}</p><div class="scroll"><table data-crypto-cnn-table><thead><tr><th>{t.method}</th><th>{t.return}</th><th>{t.drawdown}</th><th>{t.turnover}</th></tr></thead><tbody>{rows.map(r=><tr><th scope="row">{names[r.id]}</th><td>{pct(r.ret)}</td><td>{pct(r.dd)}</td><td>{r.turn.toFixed(2)}×</td></tr>)}</tbody></table></div></section>
+  <section><h2>{t.limitsTitle}</h2><ul>{t.limits.map(item=><li>{item}</li>)}</ul><h3>{t.methodTitle}</h3><p>{t.methodBody}</p><p class="notice">{t.riskNote}</p><p><a href={`https://github.com/runchengxie/2026-quant-competition/blob/09b72eae8f0cf0c8a00095161f0b9ee3b19c791a/docs/research/data-expansion-and-evaluation${locale==='zh-CN'?'.zh-CN':''}.md`}>{t.sourceData} ↗</a> · <a href="https://github.com/runchengxie/2026-quant-competition/blob/09b72eae8f0cf0c8a00095161f0b9ee3b19c791a/research/equity-lab/src/equity_lab/signals/cnn_walk_forward_rank.py">{t.sourceModel} ↗</a></p><a href={`${prefix}markets/#market-crypto`}>{t.back} →</a></section>
+ </main>
+</SiteLayout>
+<script is:inline define:vars={{records:facts.records,baseName:t.baseline,endingLabel:t.chartSummary,returnLabel:t.returnLabel}}>
+ const root=document.querySelector('.crypto-cnn');
+ const controls=root.querySelector('[data-controls]'),chart=root.querySelector('[data-chart]');
+ const windowSelect=root.querySelector('[data-window]'),fee=root.querySelector('[data-fee]'),delay=root.querySelector('[data-delay]'),strategy=root.querySelector('[data-strategy]');
+ function update(){
+  const matches=records.filter(r=>r.fold===Number(windowSelect.value)&&r.fee_bps===Number(fee.value)&&r.extra_delay_days===Number(delay.value));
+  const base=matches.find(r=>r.strategy==='equal_hold'),chosen=matches.find(r=>r.strategy===strategy.value);
+  if(!base||!chosen)return;
+  const values=[...base.curve,...chosen.curve],min=Math.min(...values),max=Math.max(...values),span=Math.max(max-min,.0001);
+  const path=a=>a.map((v,i)=>`${i?'L':'M'}${45+i*735/(a.length-1)},${245-(v-min)*220/span}`).join(' ');
+  chart.querySelector('[data-base]').setAttribute('d',path(base.curve));chart.querySelector('[data-choice]').setAttribute('d',path(chosen.curve));
+  const offset=(date,days)=>{const dt=new Date(`${date}T00:00:00Z`);dt.setUTCDate(dt.getUTCDate()+days);return dt.toISOString().slice(0,10);};
+  chart.querySelector('[data-min]').textContent=offset(base.start,1+base.extra_delay_days);chart.querySelector('[data-max]').textContent=offset(base.end,2+base.extra_delay_days);
+  chart.querySelector('[data-range]').textContent=`${min.toFixed(2)} — ${max.toFixed(2)} USDT`;
+  const chosenName=strategy.selectedOptions[0].textContent;
+  chart.querySelector('[data-curve-summary]').textContent=`${baseName}: ${endingLabel} ${base.curve.at(-1).toFixed(3)} USDT, ${returnLabel} ${(base.return*100).toFixed(2)}%. ${chosenName}: ${endingLabel} ${chosen.curve.at(-1).toFixed(3)} USDT, ${returnLabel} ${(chosen.return*100).toFixed(2)}%.`;
+  chart.dataset.selection=`${windowSelect.value}/${fee.value}/${delay.value}/${strategy.value}`;
+ }
+ controls.hidden=false;chart.hidden=false;controls.addEventListener('change',update);update();
+</script>
+<style>
+.crypto-cnn{max-width:1100px;margin:auto;padding:3rem 2rem 5rem}.crypto-cnn header{max-width:80ch}.crypto-cnn h1{font:400 clamp(2.4rem,4.6vw,3.8rem)/1.3 Georgia,'SimSun',serif}.crypto-cnn h2{font:400 clamp(1.6rem,3vw,2.3rem)/1.35 Georgia,'SimSun',serif}.crypto-cnn p,.crypto-cnn li{line-height:1.85}.eyebrow{color:var(--green);font-size:.8rem;letter-spacing:.1em;font-weight:650}.lead{font-size:1.13rem}.notice{background:var(--surface);border-left:3px solid var(--green);padding:1rem 1.2rem;color:var(--muted)}.crypto-cnn section{margin:3rem 0}.controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.8rem}.controls label{display:grid;gap:.4rem;font-size:.85rem}.controls select{font:inherit;background:var(--surface);color:var(--ink);border:1px solid var(--line);padding:.6rem;min-width:0}.crypto-cnn [hidden]{display:none!important}figure{margin:1.5rem 0;border:1px solid var(--line);border-radius:.55rem;background:var(--surface);padding:1rem}svg{width:100%;height:auto}figcaption{font-size:.85rem}.base{color:var(--bid)}.choice{color:var(--ask)}.scroll{overflow-x:auto}table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}th,td{text-align:left;padding:.8rem;border-bottom:1px solid var(--line);white-space:nowrap}.crypto-cnn li{margin-bottom:.7rem}@media(max-width:700px){.crypto-cnn{padding:1.5rem 1.4rem 4rem}.controls{grid-template-columns:repeat(2,minmax(0,1fr))}th,td{padding:.6rem}}
+</style>
