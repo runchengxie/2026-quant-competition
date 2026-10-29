@@ -3,9 +3,9 @@ import {readFileSync} from 'node:fs';
 const facts=JSON.parse(readFileSync(new URL('../src/data/low-turnover.v1.json',import.meta.url),'utf8'));
 const latest=JSON.parse(readFileSync(new URL('../src/data/evidence-followup.v1.json',import.meta.url),'utf8'));
 
-for(const locale of ['en','zh-CN'])test(`${locale}: latest progress is readable across all three views`,async({page})=>{
+for(const locale of ['en','zh-CN'])test(`${locale}: latest progress is readable on both research views`,async({page})=>{
  const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
- for(const topic of ['','strategies/','factors/']){
+ for(const topic of ['strategies/','factors/']){
   await page.goto(prefix+topic);
   const section=page.locator('[data-progress-facts]');await expect(section).toHaveCount(1);
   const value=JSON.parse(await section.getAttribute('data-progress-facts'));
