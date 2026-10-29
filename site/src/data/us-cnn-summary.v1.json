@@ -1,0 +1,332 @@
+{
+  "schema": "us-cnn-exploratory-summary-v1",
+  "dataset_status": "acquired_not_accepted",
+  "data_license_verified": false,
+  "windows": 9,
+  "records": [
+    {
+      "exposure": 100,
+      "fee_bps": 0,
+      "strategy": "equal_hold",
+      "windows": 9,
+      "return": 0.05725243245239686,
+      "drawdown": 0.0415500032107623,
+      "turnover": 2.0
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 0,
+      "strategy": "momentum",
+      "windows": 9,
+      "return": 0.040067315086564026,
+      "drawdown": 0.06140195929798564,
+      "turnover": 19.034606467486874
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 0,
+      "strategy": "cnn_rank_daily",
+      "windows": 9,
+      "return": 0.038032426244767326,
+      "drawdown": 0.08064149856942293,
+      "turnover": 37.633367724828716
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 0,
+      "strategy": "cnn_rank_weekly",
+      "windows": 9,
+      "return": 0.053621078057899396,
+      "drawdown": 0.05953877706527555,
+      "turnover": 12.922461781405255
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 0,
+      "strategy": "matched_numeric",
+      "windows": 9,
+      "return": 0.007082801641014935,
+      "drawdown": 0.08355305902364563,
+      "turnover": 37.7012292668948
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 0,
+      "strategy": "matched_image",
+      "windows": 9,
+      "return": 0.040152503959653085,
+      "drawdown": 0.058338951191411526,
+      "turnover": 27.12652664337296
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 20,
+      "strategy": "equal_hold",
+      "windows": 9,
+      "return": 0.05303186385977243,
+      "drawdown": 0.04346307705664909,
+      "turnover": 1.998003992015968
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 20,
+      "strategy": "momentum",
+      "windows": 9,
+      "return": -0.001784968293915834,
+      "drawdown": 0.06505075300211893,
+      "turnover": 19.026525569181377
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 20,
+      "strategy": "cnn_rank_daily",
+      "windows": 9,
+      "return": -0.041057081194566636,
+      "drawdown": 0.09682277704765618,
+      "turnover": 37.60104737309026
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 20,
+      "strategy": "cnn_rank_weekly",
+      "windows": 9,
+      "return": 0.02429731398343682,
+      "drawdown": 0.06207588361586713,
+      "turnover": 12.908776675253977
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 20,
+      "strategy": "matched_numeric",
+      "windows": 9,
+      "return": -0.0651291996905764,
+      "drawdown": 0.08784644529450247,
+      "turnover": 37.66367672006401
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 20,
+      "strategy": "matched_image",
+      "windows": 9,
+      "return": -0.011672145604172623,
+      "drawdown": 0.071956464977467,
+      "turnover": 27.103531253817447
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 40,
+      "strategy": "equal_hold",
+      "windows": 9,
+      "return": 0.048828110281460724,
+      "drawdown": 0.045368529094384935,
+      "turnover": 1.9960159362549805
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 40,
+      "strategy": "momentum",
+      "windows": 9,
+      "return": -0.039712057112231136,
+      "drawdown": 0.07429188736329573,
+      "turnover": 19.019573973905146
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 40,
+      "strategy": "cnn_rank_daily",
+      "windows": 9,
+      "return": -0.11416315527451915,
+      "drawdown": 0.14255017128015945,
+      "turnover": 37.57277318224374
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 40,
+      "strategy": "cnn_rank_weekly",
+      "windows": 9,
+      "return": -0.004214133467535075,
+      "drawdown": 0.06741955023414925,
+      "turnover": 12.896337201277838
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 40,
+      "strategy": "matched_numeric",
+      "windows": 9,
+      "return": -0.1321725586799284,
+      "drawdown": 0.14772185027214846,
+      "turnover": 37.63206226367245
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 40,
+      "strategy": "matched_image",
+      "windows": 9,
+      "return": -0.061686679658604415,
+      "drawdown": 0.09280482092809494,
+      "turnover": 27.082485320258943
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 0,
+      "strategy": "equal_hold",
+      "windows": 9,
+      "return": 0.022900972980959056,
+      "drawdown": 0.016620001284305075,
+      "turnover": 0.8134329560255791
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 0,
+      "strategy": "momentum",
+      "windows": 9,
+      "return": 0.017364001227225367,
+      "drawdown": 0.02477497626572045,
+      "turnover": 7.632652222626581
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 0,
+      "strategy": "cnn_rank_daily",
+      "windows": 9,
+      "return": 0.015971728218991954,
+      "drawdown": 0.03277082775494378,
+      "turnover": 15.055984377437712
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 0,
+      "strategy": "cnn_rank_weekly",
+      "windows": 9,
+      "return": 0.021582035861935633,
+      "drawdown": 0.02381551082611011,
+      "turnover": 5.18558075029424
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 0,
+      "strategy": "matched_numeric",
+      "windows": 9,
+      "return": 0.006279282497948957,
+      "drawdown": 0.03384482000150246,
+      "turnover": 15.099295555209977
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 0,
+      "strategy": "matched_image",
+      "windows": 9,
+      "return": 0.01664178633557567,
+      "drawdown": 0.023542055339573098,
+      "turnover": 10.856024920875422
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 20,
+      "strategy": "equal_hold",
+      "windows": 9,
+      "return": 0.021238180490604552,
+      "drawdown": 0.017406076423166494,
+      "turnover": 0.8131132118209426
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 20,
+      "strategy": "momentum",
+      "windows": 9,
+      "return": 0.00010851003848499907,
+      "drawdown": 0.026275981507864143,
+      "turnover": 7.631412484564468
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 20,
+      "strategy": "cnn_rank_daily",
+      "windows": 9,
+      "return": -0.01574230899551521,
+      "drawdown": 0.03926664412643499,
+      "turnover": 15.050822939158548
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 20,
+      "strategy": "cnn_rank_weekly",
+      "windows": 9,
+      "return": 0.010109301412016602,
+      "drawdown": 0.024879370527469247,
+      "turnover": 5.183235888406596
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 20,
+      "strategy": "matched_numeric",
+      "windows": 9,
+      "return": -0.023293059376640946,
+      "drawdown": 0.03588391739058727,
+      "turnover": 15.094141993354027
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 20,
+      "strategy": "matched_image",
+      "windows": 9,
+      "return": -0.0016933340015936604,
+      "drawdown": 0.029150968448951597,
+      "turnover": 10.852904741216266
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 40,
+      "strategy": "equal_hold",
+      "windows": 9,
+      "return": 0.01957804421828535,
+      "drawdown": 0.018190895850943578,
+      "turnover": 0.8127939783897965
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 40,
+      "strategy": "momentum",
+      "windows": 9,
+      "return": -0.015524192215865318,
+      "drawdown": 0.030071728078290616,
+      "turnover": 7.630174561821316
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 40,
+      "strategy": "cnn_rank_daily",
+      "windows": 9,
+      "return": -0.04647273776616834,
+      "drawdown": 0.058970266022253415,
+      "turnover": 15.045726901454863
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 40,
+      "strategy": "cnn_rank_weekly",
+      "windows": 9,
+      "return": -0.0012369374557604784,
+      "drawdown": 0.027385342922247813,
+      "turnover": 5.18089399228057
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 40,
+      "strategy": "matched_numeric",
+      "windows": 9,
+      "return": -0.05199680812782059,
+      "drawdown": 0.06136103275890459,
+      "turnover": 15.089357907112511
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 40,
+      "strategy": "matched_image",
+      "windows": 9,
+      "return": -0.02190089367580994,
+      "drawdown": 0.03763489826119393,
+      "turnover": 10.849790176839516
+    }
+  ]
+}

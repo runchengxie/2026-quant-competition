@@ -1,0 +1,59 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import SiteNavigation from './SiteNavigation.astro';
+import data from '../data/us-cnn-summary.v1.json';
+import en from '../i18n/us-cnn-en.json';
+import zh from '../i18n/us-cnn-zh-CN.json';
+import { selectSummary } from '../lib/us-cnn-summary.mjs';
+const locale=Astro.props.locale==='zh-CN'?'zh-CN':'en';
+const t=locale==='zh-CN'?zh:en;
+const names=t.names as Record<string,string>;
+const prefix=`/2026-quant-competition/${locale==='en'?'':'zh-CN/'}`;
+const rows=selectSummary(data,100,20);
+const pct=(n:number)=>`${(n*100).toFixed(2)}%`;
+---
+<SiteLayout locale={locale} localePath="research/us-cnn/" title={`${t.title} | QUANT / LAB`} description={t.intro}>
+ <SiteNavigation locale={locale} active="markets" />
+ <main class="us-cnn">
+  <header><p class="eyebrow">QUANT / LAB · US EQUITIES</p><h1>{t.title}</h1><p class="lead">{t.intro}</p><p class="notice">{t.notice}</p></header>
+  <section><h2>{t.compare}</h2><p>{t.compareBody}</p>
+   <div class="controls" data-us-cnn-controls hidden><label>{t.exposure}<select data-exposure><option value="100">{t.full}</option><option value="40">{t.partial}</option></select></label><label>{t.fee}<select data-fee><option value="0">0%</option><option value="20" selected>0.2%</option><option value="40">0.4%</option></select></label></div>
+   <p class="detail">{t.exposureNote}</p><noscript><p>{t.fallback}</p></noscript>
+   <p class="detail">{t.tableHint}</p><div class="table-scroll" role="region" tabindex="0" aria-label={t.compare}><table data-us-cnn-results data-selection="100/20"><thead><tr><th>{t.method}</th><th>{t.return}</th><th>{t.drawdown}</th><th>{t.turnover}</th></tr></thead><tbody>{rows.map(r=><tr data-method={r.strategy}><th scope="row">{names[r.strategy]}</th><td data-return>{pct(r.return)}</td><td data-drawdown>{pct(r.drawdown)}</td><td data-turnover>{r.turnover.toFixed(2)}×</td></tr>)}</tbody></table></div>
+  </section>
+  <section><h2>{t.chartTitle}</h2><p>{t.chartIntro}</p><div class="chart" data-us-cnn-chart aria-label={t.turnover}>{rows.map(r=><div class="chart-row" data-chart-method={r.strategy}><span>{names[r.strategy]}</span><div class="bar-track"><i style={`width:${Math.min(r.turnover/45*100,100)}%`}></i></div><strong data-chart-value>{r.turnover.toFixed(2)}×</strong></div>)}</div><p class="detail">{t.costExplanation}</p></section>
+  <section><h2>{t.howTitle}</h2><p>{t.howBody}</p><h3>{t.matched}</h3><p>{t.matchedBody}</p></section>
+  <section><h2>{t.limits}</h2><ul>{t.limitItems.map(item=><li>{item}</li>)}</ul></section>
+  <section><h2>{t.nextTitle}</h2><p>{t.nextBody}</p><a href={`https://github.com/runchengxie/2026-quant-competition/blob/main/docs/research/us-cnn-exploratory${locale==='zh-CN'?'.zh-CN':''}.md`}>{t.protocol} ↗</a> · <a href="https://github.com/runchengxie/2026-quant-competition/blob/a85d63be56137b9ea969f3f0af483cd3bf8d9653/research/equity-lab/src/equity_lab/signals/cnn_walk_forward_rank.py">{t.source} ↗</a><p><a href={`${prefix}markets/#market-us`}>{t.back} →</a></p></section>
+ </main>
+</SiteLayout>
+<script>
+ import data from '../data/us-cnn-summary.v1.json';
+ import { selectSummary } from '../lib/us-cnn-summary.mjs';
+ const root=document.querySelector('.us-cnn');
+ const controls=root?.querySelector('[data-us-cnn-controls]');
+ const exposure=root?.querySelector('[data-exposure]');
+ const fee=root?.querySelector('[data-fee]');
+ const table=root?.querySelector('[data-us-cnn-results]');
+ if (controls instanceof HTMLElement && exposure instanceof HTMLSelectElement && fee instanceof HTMLSelectElement && table instanceof HTMLElement) {
+  const update=()=>{
+   const rows=selectSummary(data,Number(exposure.value),Number(fee.value));
+   for (const row of rows) {
+    const tr=table.querySelector(`[data-method="${row.strategy}"]`);
+    const bar=root?.querySelector(`[data-chart-method="${row.strategy}"]`);
+    if (!tr || !bar) continue;
+    tr.querySelector('[data-return]')!.textContent=`${(row.return*100).toFixed(2)}%`;
+    tr.querySelector('[data-drawdown]')!.textContent=`${(row.drawdown*100).toFixed(2)}%`;
+    tr.querySelector('[data-turnover]')!.textContent=`${row.turnover.toFixed(2)}×`;
+    bar.querySelector('[data-chart-value]')!.textContent=`${row.turnover.toFixed(2)}×`;
+    (bar.querySelector('i') as HTMLElement).style.width=`${Math.min(row.turnover/45*100,100)}%`;
+   }
+   table.dataset.selection=`${exposure.value}/${fee.value}`;
+  };
+  controls.hidden=false;
+  controls.addEventListener('change',update);
+ }
+</script>
+<style>
+ .us-cnn{max-width:1100px;margin:auto;padding:3rem 2rem 5rem}.us-cnn header{max-width:85ch}.us-cnn h1{font:400 clamp(2.4rem,4.6vw,3.8rem)/1.3 Georgia,'SimSun',serif}.us-cnn h2{font:400 clamp(1.6rem,3vw,2.3rem)/1.35 Georgia,'SimSun',serif}.us-cnn p,.us-cnn li{line-height:1.85}.eyebrow{color:var(--green);font-size:.8rem;letter-spacing:.1em;font-weight:650}.lead{font-size:1.13rem}.notice{background:var(--surface);border-left:3px solid var(--green);padding:1rem 1.2rem;color:var(--muted)}.us-cnn section{margin:3rem 0}.controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;max-width:45rem}.controls[hidden]{display:none}.controls label{display:grid;gap:.4rem;font-size:.9rem}.controls select{font:inherit;background:var(--surface);color:var(--ink);border:1px solid var(--line);padding:.65rem;min-width:0}.detail{font-size:.88rem;color:var(--muted)}.table-scroll{overflow-x:auto}table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}th,td{text-align:left;padding:.8rem;border-bottom:1px solid var(--line);white-space:nowrap}.chart{padding:1.2rem;border:1px solid var(--line);border-radius:.5rem;background:var(--surface)}.chart-row{display:grid;grid-template-columns:minmax(9rem,2fr) minmax(5rem,3fr) 4rem;align-items:center;gap:.8rem;margin:.8rem 0;font-size:.88rem}.bar-track{height:.65rem;background:var(--line);border-radius:1rem}.bar-track i{display:block;height:100%;background:var(--green);border-radius:1rem}.chart-row strong{text-align:right;font-variant-numeric:tabular-nums}.us-cnn li{margin-bottom:.5rem}@media(max-width:700px){.us-cnn{padding:1.5rem 1.4rem 4rem}.controls{grid-template-columns:1fr}.chart-row{grid-template-columns:minmax(0,1fr) 3.5rem}.chart-row>span{grid-column:1/-1}.chart-row{margin:1rem 0}th,td{padding:.6rem}}
+</style>
