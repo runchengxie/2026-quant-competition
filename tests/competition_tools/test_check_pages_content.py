@@ -126,9 +126,12 @@ def test_followup_progress_is_required_on_research_pages(tmp_path):
     assert check_site(source, built) == []
     for prefix in ("", "zh-CN/"):
         home = built / f"{prefix}index.html"
-        home.write_text(home.read_text(encoding="utf-8").replace(
-            f'<section data-progress-facts="{facts}"></section>', ""
-        ), encoding="utf-8")
+        home.write_text(
+            home.read_text(encoding="utf-8").replace(
+                f'<section data-progress-facts="{facts}"></section>', ""
+            ),
+            encoding="utf-8",
+        )
     assert check_site(source, built) == []
     path = built / "zh-CN/factors/index.html"
     path.write_text(
