@@ -108,7 +108,7 @@ python -m competition_tools.check_ablation_delivery --config /external/team.toml
 
 Use a committed checkout and newly named external outputs. The last command creates its own explicitly synthetic inputs and origin evidence, so it needs no private research archive. Root and both leaf environments must resolve to this checkout. Source snapshots retained beside the private run allow later verification after the development worktree is removed. The new plan cap is 768 jobs with one shared 3600-second deadline and batches of at most 384; the original plan cap remains 384. Failed/blocked jobs keep null metrics and explicit reasons, with no automatic retry.
 
-The [ablation section](https://runchengxie.github.io/global-market-research/#ablation) uses the separate `competition.public_ablation.v1` aggregate. It groups independent windows by market, currency, signal, policy and cost. Paired differences use the same exact window and fee against the original control, not the difference between unrelated medians. Missing counterparts stay null. Charts and filters do not recalculate accounting, publish raw input prices or add new daily curves.
+The [ablation section](https://runchengxie.github.io/global-market-research/strategies/#ablation) uses the separate `competition.public_ablation.v1` aggregate. It groups independent windows by market, currency, signal, policy and cost. Paired differences use the same exact window and fee against the original control, not the difference between unrelated medians. Missing counterparts stay null. Charts and filters do not recalculate accounting, publish raw input prices or add new daily curves.
 
 <a id="forward-observation"></a>
 ## Before forward observation
@@ -131,4 +131,4 @@ Keep these paths outside the source checkout and use new output paths. The publi
 python -m competition_tools.check_study_delivery --config /external/team.toml --output-root /external/new-synthetic-contract
 ```
 
-[Open the performance dashboard](https://runchengxie.github.io/global-market-research/#performance). Compare strategies at the same fee and exact window. Use fee robustness across matching windows to inspect cost dependence. Historical windows are never compounded into a continuous account. The published legacy snapshots retain their original runs; the new controls have a separate protocol and publication gate.
+[Open the performance dashboard](https://runchengxie.github.io/global-market-research/strategies/#performance). Compare strategies at the same fee and exact window. Use fee robustness across matching windows to inspect cost dependence. Historical windows are never compounded into a continuous account. The published legacy snapshots retain their original runs; the new controls have a separate protocol and publication gate.
