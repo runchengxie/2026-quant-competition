@@ -17,8 +17,44 @@
   "usCnnBody": "Compare CNN, momentum and equal-weight holding across costs and turnover.",
   "usCnnScope": "Exploratory results; fixed membership, dividends and risk matching remain limitations.",
   "markets": [
-    {"id":"us","name":"US equities","description":"Test predictions and portfolio rules on historical stock data.","factorTitle":"Can models rank future stock returns?","factorBody":"Prediction comparisons across two windows have not produced stable rankings.","factorScope":"Historical prediction research with limited samples and data-quality evidence.","strategyTitle":"Does trading less improve returns?","strategyBody":"Keeping stocks whose rankings slipped usually reduced trading; returns improved less often.","strategyScope":"Historical account simulations; real execution remains unverified."},
-    {"id":"hk","name":"Hong Kong equities","description":"Explore fixed-universe strategy history and earlier CNN chart experiments.","factorTitle":"Hong Kong signals need separate testing","factorBody":"Momentum and moving-average strategies were compared, but independent signal-ranking and grouped-return tests are still needed.","factorScope":"A complete independent factor test is not yet available.","strategyTitle":"Strategies in a fixed stock universe","strategyBody":"Historical comparisons cover momentum and rebalancing frequency; historical membership and point-in-time data have gaps.","strategyScope":"The limited sample does not represent the full Hong Kong market.","extraTitle":"Earlier CNN chart experiments","extraBody":"See original images, six related entries and historical simulated returns. Training boundaries remain unverified."},
-    {"id":"crypto","name":"Crypto markets","description":"Study price signals, portfolio returns and trading costs.","factorTitle":"Price and on-chain signals","factorBody":"Price-signal research is available; decentralized-exchange factors are still being prepared.","factorScope":"Data and independent testing remain incomplete.","strategyTitle":"Where simulated crypto returns come from","strategyBody":"Historical simulations separate market, exposure, selection and cost contributions.","strategyScope":"Results depend on historical windows and modeled costs."}
-  ]
+    {
+      "id": "us",
+      "name": "US equities",
+      "description": "Test predictions and portfolio rules on historical stock data.",
+      "factorTitle": "Can models rank future stock returns?",
+      "factorBody": "Prediction comparisons across two windows have not produced stable rankings.",
+      "factorScope": "Historical prediction research with limited samples and data-quality evidence.",
+      "strategyTitle": "Does trading less improve returns?",
+      "strategyBody": "Keeping stocks whose rankings slipped usually reduced trading; returns improved less often.",
+      "strategyScope": "Historical account simulations; real execution remains unverified."
+    },
+    {
+      "id": "hk",
+      "name": "Hong Kong equities",
+      "description": "Explore fixed-universe strategy history and earlier CNN chart experiments.",
+      "factorTitle": "Hong Kong signals need separate testing",
+      "factorBody": "Momentum and moving-average strategies were compared, but independent signal-ranking and grouped-return tests are still needed.",
+      "factorScope": "A complete independent factor test is not yet available.",
+      "strategyTitle": "Strategies in a fixed stock universe",
+      "strategyBody": "Historical comparisons cover momentum and rebalancing frequency; historical membership and point-in-time data have gaps.",
+      "strategyScope": "The limited sample does not represent the full Hong Kong market.",
+      "extraTitle": "Earlier CNN chart experiments",
+      "extraBody": "See original images, six related entries and historical simulated returns. Training boundaries remain unverified."
+    },
+    {
+      "id": "crypto",
+      "name": "Crypto markets",
+      "description": "Study price signals, portfolio returns and trading costs.",
+      "factorTitle": "Price and on-chain signals",
+      "factorBody": "Price-signal research is available; decentralized-exchange factors are still being prepared.",
+      "factorScope": "Data and independent testing remain incomplete.",
+      "strategyTitle": "Where simulated crypto returns come from",
+      "strategyBody": "Historical simulations separate market, exposure, selection and cost contributions.",
+      "strategyScope": "Results depend on historical windows and modeled costs."
+    }
+  ],
+  "statusLabel": "Evidence status",
+  "statusExploratory": "Exploratory",
+  "statusPending": "Further tests needed",
+  "statusHistorical": "Historical record, verification pending"
 }

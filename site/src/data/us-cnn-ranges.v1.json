@@ -1,0 +1,257 @@
+{
+  "windows": 9,
+  "records": [
+    {
+      "exposure": 100,
+      "fee_bps": 0,
+      "strategy": "equal_hold",
+      "min": -0.05392377569258133,
+      "max": 0.1181256992542028
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 0,
+      "strategy": "momentum",
+      "min": -0.0038563116793968177,
+      "max": 0.15472963273064666
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 0,
+      "strategy": "cnn_rank_daily",
+      "min": -0.07150329359878038,
+      "max": 0.14833626707996217
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 0,
+      "strategy": "cnn_rank_weekly",
+      "min": -0.03356859555781799,
+      "max": 0.09211148928790136
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 0,
+      "strategy": "matched_numeric",
+      "min": -0.08440379376446805,
+      "max": 0.11610655265038217
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 0,
+      "strategy": "matched_image",
+      "min": -0.05200659798425855,
+      "max": 0.12590077428455926
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 20,
+      "strategy": "equal_hold",
+      "min": -0.05770052708702256,
+      "max": 0.11366212360847716
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 20,
+      "strategy": "momentum",
+      "min": -0.0548696898537564,
+      "max": 0.10561493904646668
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 20,
+      "strategy": "cnn_rank_daily",
+      "min": -0.1490103299798381,
+      "max": 0.07344844716286003
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 20,
+      "strategy": "cnn_rank_weekly",
+      "min": -0.0593465539241278,
+      "max": 0.06878870720173236
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 20,
+      "strategy": "matched_numeric",
+      "min": -0.13977085019384194,
+      "max": 0.03504771099609405
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 20,
+      "strategy": "matched_image",
+      "min": -0.10664480716285041,
+      "max": 0.0666070384293096
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 40,
+      "strategy": "equal_hold",
+      "min": -0.061462231663159006,
+      "max": 0.10921633113265483
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 40,
+      "strategy": "momentum",
+      "min": -0.10330253449823312,
+      "max": 0.05857677768528391
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 40,
+      "strategy": "cnn_rank_daily",
+      "min": -0.2201016624564125,
+      "max": 0.005878046319427899
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 40,
+      "strategy": "cnn_rank_weekly",
+      "min": -0.08444036670320731,
+      "max": 0.0459546873306762
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 40,
+      "strategy": "matched_numeric",
+      "min": -0.19177158305594477,
+      "max": -0.015534772406409214
+    },
+    {
+      "exposure": 100,
+      "fee_bps": 40,
+      "strategy": "matched_image",
+      "min": -0.1581738709704723,
+      "max": 0.010418077257676739
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 0,
+      "strategy": "equal_hold",
+      "min": -0.021569510277033355,
+      "max": 0.04725027970168094
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 0,
+      "strategy": "momentum",
+      "min": -0.00048232665335568026,
+      "max": 0.06004855817705956
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 0,
+      "strategy": "cnn_rank_daily",
+      "min": -0.028337051265751034,
+      "max": 0.05748383361893872
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 0,
+      "strategy": "cnn_rank_weekly",
+      "min": -0.01299961113709902,
+      "max": 0.03636340450663522
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 0,
+      "strategy": "matched_numeric",
+      "min": -0.033378910299565745,
+      "max": 0.04552782000910005
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 0,
+      "strategy": "matched_image",
+      "min": -0.020007118461777162,
+      "max": 0.049479799517483825
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 20,
+      "strategy": "equal_hold",
+      "min": -0.023107884948519897,
+      "max": 0.04551936365135667
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 20,
+      "strategy": "momentum",
+      "min": -0.020783725199371217,
+      "max": 0.04172342172426746
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 20,
+      "strategy": "cnn_rank_daily",
+      "min": -0.06164199664867287,
+      "max": 0.029308860814360793
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 20,
+      "strategy": "cnn_rank_weekly",
+      "min": -0.023604704651680852,
+      "max": 0.02740983381816653
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 20,
+      "strategy": "matched_numeric",
+      "min": -0.057215630437245424,
+      "max": 0.01442515855568205
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 20,
+      "strategy": "matched_image",
+      "min": -0.043026398888243333,
+      "max": 0.02698050607880753
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 40,
+      "strategy": "equal_hold",
+      "min": -0.0246438021524803,
+      "max": 0.04379121264264585
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 40,
+      "strategy": "momentum",
+      "min": -0.04120066335145023,
+      "max": 0.023713184382936348
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 40,
+      "strategy": "cnn_rank_daily",
+      "min": -0.0938111999447867,
+      "max": 0.0024932214351798265
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 40,
+      "strategy": "cnn_rank_weekly",
+      "min": -0.03409640112259671,
+      "max": 0.018531744773817582
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 40,
+      "strategy": "matched_numeric",
+      "min": -0.08045934429748147,
+      "max": -0.0061324016171461215
+    },
+    {
+      "exposure": 40,
+      "fee_bps": 40,
+      "strategy": "matched_image",
+      "min": -0.06551109814928047,
+      "max": 0.004961690993659618
+    }
+  ]
+}

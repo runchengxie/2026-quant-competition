@@ -9,6 +9,7 @@ for (const locale of ['en','zh-CN']) {
     await expect(page.locator('[data-site-nav=markets]')).toHaveAttribute('href', `${prefix}markets/`);
     await page.locator('[data-home-market=hk]').click();
     await expect(page).toHaveURL(`${prefix}markets/#market-hk`);
+    await expect(page.locator('[data-research-kind] .kind')).toHaveCount(9);
     for (const market of ['us','hk','crypto']) {
       const topic = page.locator(`[data-topic-market=${market}]`);
       await expect(topic).toBeVisible();

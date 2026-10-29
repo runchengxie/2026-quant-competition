@@ -17,8 +17,44 @@
   "usCnnBody": "比较 CNN、动量和等权持有，看看换手与成本如何影响结果。",
   "usCnnScope": "探索性结果，固定股票池、分红和风险匹配仍有限制。",
   "markets": [
-    {"id":"us","name":"美股","description":"用历史股票数据检验预测和组合规则。","factorTitle":"模型能分清股票后续涨幅吗","factorBody":"已有两段时间窗口的预测比较，排序结果还不稳定。","factorScope":"历史预测研究，样本和数据质量仍有限。","strategyTitle":"少换股票能否改善收益","strategyBody":"保留排名稍有回落的股票，通常减少了买卖，收益提高的情况较少。","strategyScope":"历史账户模拟，实际成交仍待验证。"},
-    {"id":"hk","name":"港股","description":"查看固定股票池的历史策略，以及以前的 CNN 看图实验。","factorTitle":"港股信号还需要单独检验","factorBody":"已有动量和均线策略比较，信号本身的排序与分组收益检验仍待补充。","factorScope":"目前没有完整的独立因子检验。","strategyTitle":"固定股票池的策略比较","strategyBody":"已有动量与调仓频率的历史比较，完整历史成分和时点数据仍有缺口。","strategyScope":"历史样本有限，不能代表完整港股市场。","extraTitle":"CNN 看 K 线的旧实验","extraBody":"查看原来的图片、六个相关方案和历史模拟收益。训练边界仍需核实。"},
-    {"id":"crypto","name":"加密市场","description":"研究价格信号、组合收益和交易成本。","factorTitle":"价格与链上信号","factorBody":"已有价格信号的研究入口；去中心化交易所因子目前仍处于准备阶段。","factorScope":"数据和独立检验尚未齐备。","strategyTitle":"加密组合的收益从哪里来","strategyBody":"已有历史模拟把收益拆成市场、仓位、选币和费用几部分。","strategyScope":"结果依赖各段历史窗口和成本假设。"}
-  ]
+    {
+      "id": "us",
+      "name": "美股",
+      "description": "用历史股票数据检验预测和组合规则。",
+      "factorTitle": "模型能分清股票后续涨幅吗",
+      "factorBody": "已有两段时间窗口的预测比较，排序结果还不稳定。",
+      "factorScope": "历史预测研究，样本和数据质量仍有限。",
+      "strategyTitle": "少换股票能否改善收益",
+      "strategyBody": "保留排名稍有回落的股票，通常减少了买卖，收益提高的情况较少。",
+      "strategyScope": "历史账户模拟，实际成交仍待验证。"
+    },
+    {
+      "id": "hk",
+      "name": "港股",
+      "description": "查看固定股票池的历史策略，以及以前的 CNN 看图实验。",
+      "factorTitle": "港股信号还需要单独检验",
+      "factorBody": "已有动量和均线策略比较，信号本身的排序与分组收益检验仍待补充。",
+      "factorScope": "目前没有完整的独立因子检验。",
+      "strategyTitle": "固定股票池的策略比较",
+      "strategyBody": "已有动量与调仓频率的历史比较，完整历史成分和时点数据仍有缺口。",
+      "strategyScope": "历史样本有限，不能代表完整港股市场。",
+      "extraTitle": "CNN 看 K 线的旧实验",
+      "extraBody": "查看原来的图片、六个相关方案和历史模拟收益。训练边界仍需核实。"
+    },
+    {
+      "id": "crypto",
+      "name": "加密市场",
+      "description": "研究价格信号、组合收益和交易成本。",
+      "factorTitle": "价格与链上信号",
+      "factorBody": "已有价格信号的研究入口；去中心化交易所因子目前仍处于准备阶段。",
+      "factorScope": "数据和独立检验尚未齐备。",
+      "strategyTitle": "加密组合的收益从哪里来",
+      "strategyBody": "已有历史模拟把收益拆成市场、仓位、选币和费用几部分。",
+      "strategyScope": "结果依赖各段历史窗口和成本假设。"
+    }
+  ],
+  "statusLabel": "研究状态",
+  "statusExploratory": "探索中",
+  "statusPending": "待补充检验",
+  "statusHistorical": "历史实验待核实"
 }

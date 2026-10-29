@@ -2,6 +2,7 @@
 import SiteLayout from '../layouts/SiteLayout.astro';
 import SiteNavigation from './SiteNavigation.astro';
 import data from '../data/us-cnn-summary.v1.json';
+import ranges from '../data/us-cnn-ranges.v1.json';
 import en from '../i18n/us-cnn-en.json';
 import zh from '../i18n/us-cnn-zh-CN.json';
 import { selectSummary } from '../lib/us-cnn-summary.mjs';
@@ -21,6 +22,8 @@ const pct=(n:number)=>`${(n*100).toFixed(2)}%`;
    <p class="detail">{t.exposureNote}</p><noscript><p>{t.fallback}</p></noscript>
    <p class="detail">{t.tableHint}</p><div class="table-scroll" role="region" tabindex="0" aria-label={t.compare}><table data-us-cnn-results data-selection="100/20"><thead><tr><th>{t.method}</th><th>{t.return}</th><th>{t.drawdown}</th><th>{t.turnover}</th></tr></thead><tbody>{rows.map(r=><tr data-method={r.strategy}><th scope="row">{names[r.strategy]}</th><td data-return>{pct(r.return)}</td><td data-drawdown>{pct(r.drawdown)}</td><td data-turnover>{r.turnover.toFixed(2)}×</td></tr>)}</tbody></table></div>
   </section>
+  <section><h2>{t.rangeTitle}</h2><p>{t.rangeBody}</p><div class="table-scroll" role="region" tabindex="0" aria-label={t.rangeTitle}><table data-us-cnn-ranges><thead><tr><th>{t.method}</th><th>{t.rangeMin}</th><th>{t.rangeMax}</th></tr></thead><tbody>{ranges.records.filter(r=>r.exposure===100 && r.fee_bps===20).map(r=><tr data-range-method={r.strategy}><th scope="row">{names[r.strategy]}</th><td data-min>{pct(r.min)}</td><td data-max>{pct(r.max)}</td></tr>)}</tbody></table></div></section>
+  <section><h2>{t.volTitle}</h2><p>{t.volBody}</p></section>
   <section><h2>{t.chartTitle}</h2><p>{t.chartIntro}</p><div class="chart" data-us-cnn-chart aria-label={t.turnover}>{rows.map(r=><div class="chart-row" data-chart-method={r.strategy}><span>{names[r.strategy]}</span><div class="bar-track"><i style={`width:${Math.min(r.turnover/45*100,100)}%`}></i></div><strong data-chart-value>{r.turnover.toFixed(2)}×</strong></div>)}</div><p class="detail">{t.costExplanation}</p></section>
   <section><h2>{t.howTitle}</h2><p>{t.howBody}</p><h3>{t.matched}</h3><p>{t.matchedBody}</p></section>
   <section><h2>{t.limits}</h2><ul>{t.limitItems.map(item=><li>{item}</li>)}</ul></section>
@@ -29,6 +32,7 @@ const pct=(n:number)=>`${(n*100).toFixed(2)}%`;
 </SiteLayout>
 <script>
  import data from '../data/us-cnn-summary.v1.json';
+ import ranges from '../data/us-cnn-ranges.v1.json';
  import { selectSummary } from '../lib/us-cnn-summary.mjs';
  const root=document.querySelector('.us-cnn');
  const controls=root?.querySelector('[data-us-cnn-controls]');
@@ -47,6 +51,10 @@ const pct=(n:number)=>`${(n*100).toFixed(2)}%`;
     tr.querySelector('[data-turnover]')!.textContent=`${row.turnover.toFixed(2)}×`;
     bar.querySelector('[data-chart-value]')!.textContent=`${row.turnover.toFixed(2)}×`;
     (bar.querySelector('i') as HTMLElement).style.width=`${Math.min(row.turnover/45*100,100)}%`;
+   }
+   for (const range of ranges.records.filter(r=>r.exposure===Number(exposure.value) && r.fee_bps===Number(fee.value))) {
+    const tr=root?.querySelector(`[data-range-method="${range.strategy}"]`);
+    if (tr) { tr.querySelector('[data-min]')!.textContent=`${(range.min*100).toFixed(2)}%`; tr.querySelector('[data-max]')!.textContent=`${(range.max*100).toFixed(2)}%`; }
    }
    table.dataset.selection=`${exposure.value}/${fee.value}`;
   };

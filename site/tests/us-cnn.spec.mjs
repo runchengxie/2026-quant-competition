@@ -7,7 +7,10 @@ for (const locale of ['en', 'zh-CN']) {
     await page.locator('[data-us-cnn-link]').first().click();
     await expect(page).toHaveURL(`${prefix}research/us-cnn/`);
     await expect(page.locator('[data-us-cnn-results]')).toContainText('5.30%');
+    await expect(page.locator('[data-us-cnn-ranges] tbody tr')).toHaveCount(6);
+    const initialRange = await page.locator('[data-range-method=equal_hold] [data-min]').textContent();
     await page.locator('[data-exposure]').selectOption('40');
+    await expect(page.locator('[data-range-method=equal_hold] [data-min]')).not.toHaveText(initialRange);
     await expect(page.locator('[data-us-cnn-results]')).toContainText('2.12%');
     await page.locator('[data-fee]').selectOption('40');
     await expect(page.locator('[data-us-cnn-results]')).toHaveAttribute('data-selection', '40/40');
