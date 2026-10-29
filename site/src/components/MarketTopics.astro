@@ -1,0 +1,28 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import SiteNavigation from './SiteNavigation.astro';
+import en from '../i18n/market-topics-en.json';
+import zh from '../i18n/market-topics-zh-CN.json';
+const locale = Astro.props.locale === 'zh-CN' ? 'zh-CN' : 'en';
+const t = locale === 'zh-CN' ? zh : en;
+const prefix = `/2026-quant-competition/${locale === 'en' ? '' : 'zh-CN/'}`;
+---
+<SiteLayout locale={locale} localePath="markets/" title={`${t.title} | QUANT / LAB`} description={t.intro}>
+ <SiteNavigation locale={locale} active="markets" />
+ <main class="topics">
+  <header><p class="eyebrow">QUANT / LAB</p><h1>{t.title}</h1><p>{t.intro}</p><p>{t.note}</p></header>
+  <nav class="market-index" aria-label={t.navigation}>{t.markets.map((market,index)=><a href={`#market-${market.id}`}><span>0{index+1}</span>{market.name}</a>)}</nav>
+  {t.markets.map((market,index)=><section id={`market-${market.id}`} class="market-section" data-topic-market={market.id}>
+   <div class="heading"><span>0{index+1}</span><div><h2>{market.name}</h2><p>{market.description}</p></div></div>
+   <div class="cards">
+    <article><p class="kind">{t.factor}</p><h3><a href={`${prefix}factors/#market-${market.id}`}>{market.factorTitle}</a></h3><p>{market.factorBody}</p><p class="scope">{market.factorScope}</p><a href={`${prefix}factors/#market-${market.id}`} aria-label={`${t.open} · ${market.factorTitle}`}>{t.open} →</a></article>
+    <article><p class="kind">{t.strategy}</p><h3><a href={`${prefix}strategies/#market-${market.id}`}>{market.strategyTitle}</a></h3><p>{market.strategyBody}</p><p class="scope">{market.strategyScope}</p><a href={`${prefix}strategies/#market-${market.id}`} aria-label={`${t.open} · ${market.strategyTitle}`}>{t.open} →</a></article>
+    {'extraTitle' in market && <article><p class="kind">{t.strategy}</p><h3><a href={`${prefix}docs/cnn-chart-research/`}>{market.extraTitle}</a></h3><p>{market.extraBody}</p><a href={`${prefix}docs/cnn-chart-research/`} aria-label={`${t.open} · ${market.extraTitle}`}>{t.open} →</a></article>}
+   </div>
+  </section>)}
+  <aside><h2>{t.indexes}</h2><a href={`${prefix}factors/`}>{t.allFactors} →</a> <a href={`${prefix}strategies/`}>{t.allStrategies} →</a></aside>
+ </main>
+</SiteLayout>
+<style>
+ .topics{max-width:1100px;margin:auto;padding:2rem 2rem 5rem}.topics header{max-width:75ch;padding:1rem 0 2rem}.topics h1{font:400 clamp(2rem,4vw,3rem)/1.3 Georgia,'SimSun',serif}.topics p{line-height:1.85;color:var(--muted)}.eyebrow,.kind{font-size:.78rem;letter-spacing:.04em}.market-index{display:flex;gap:1.5rem;flex-wrap:wrap;border-block:1px solid var(--line);padding:1rem 0}.market-index a{display:flex;gap:.6rem;color:var(--ink)}.market-index span,.heading>span{color:var(--muted)}.market-section{padding:2.5rem 0;border-bottom:1px solid var(--line)}.heading{display:grid;grid-template-columns:3rem 1fr;gap:1rem}.heading h2{margin:0;font:400 1.8rem/1.4 Georgia,'SimSun',serif}.heading p{margin:.4rem 0 1.5rem}.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem}.cards article{padding:1.3rem;border:1px solid var(--line);background:var(--surface);min-width:0}.cards h3{font-size:1.1rem;line-height:1.55}.cards a,aside a{color:var(--ink)}.scope{font-size:.82rem;border-top:1px solid var(--line);padding-top:.8rem}.topics aside{padding-top:2rem}.topics aside a{display:inline-block;margin:0 1.5rem .6rem 0}@media(max-width:700px){.topics{padding:1rem 1.4rem 4rem}.cards{grid-template-columns:1fr}.heading{grid-template-columns:2rem 1fr}}
+</style>
