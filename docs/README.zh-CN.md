@@ -8,6 +8,7 @@
 | --- | --- |
 | 跑通一个离线例子 | [团队快速开始](operations/team-quickstart.zh-CN.md) |
 | 找到该改哪部分代码 | [项目结构与当前限制](project-overview.zh-CN.md) |
+| 核对 Quant 系列借鉴与剩余证据缺口 | [借鉴审计与推进顺序](quant-series-inspiration-audit.zh-CN.md) |
 | 准备行情数据 | [数据准备](research/datasets.zh-CN.md) |
 | 看懂已有实验 | [策略结果](research/strategy-validation-2026-10-19.zh-CN.md)、[扩展数据评估](research/data-expansion-and-evaluation.zh-CN.md) |
 | 看懂模型怎样读 K 线图 | [CNN 图像研究回顾与原有例图](research/cnn-chart-research.zh-CN.md) |
