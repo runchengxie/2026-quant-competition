@@ -4,6 +4,8 @@ import hashlib
 import json
 from pathlib import Path
 
+from ..project_storage import guarded_location, relocated_path
+
 
 def _key(identity):
     # Code corrections must not silently mint a second real-data budget.
@@ -23,7 +25,7 @@ def _check_output(owner, output):
 
 
 def reserve_run(owner_root, identity, output):
-    owner, output = Path(owner_root).resolve(), Path(output).resolve()
+    owner, output = relocated_path(owner_root), relocated_path(output)
     _check_output(owner, output)
     folder = owner / "research-reservations"
     folder.mkdir(parents=True, exist_ok=True)
@@ -35,13 +37,14 @@ def reserve_run(owner_root, identity, output):
         "output": str(output),
         "identity": identity,
     }
-    with path.open("x", encoding="utf-8") as stream:
-        stream.write(json.dumps(receipt, indent=2, allow_nan=False))
+    with guarded_location(owner, "research-reservations/" + path.name):
+        with path.open("x", encoding="utf-8") as stream:
+            stream.write(json.dumps(receipt, indent=2, allow_nan=False))
     return path
 
 
 def validate_reservation(path, identity, output):
-    path = Path(path).resolve(strict=True)
+    path = relocated_path(path).resolve(strict=True)
     receipt = json.loads(path.read_text(encoding="utf-8"))
     if (
         set(receipt) != {"schema", "status", "owner_root", "output", "identity"}
@@ -49,12 +52,12 @@ def validate_reservation(path, identity, output):
         or receipt["status"] != "reserved"
         or receipt["identity"] != identity
         or path.name != _key(identity) + ".json"
-        or Path(receipt["output"]).resolve() != Path(output).resolve()
+        or relocated_path(receipt["output"]) != relocated_path(output)
         or Path(str(path) + ".started").exists()
     ):
         raise ValueError("Invalid or already started reservation")
-    owner = Path(receipt["owner_root"]).resolve()
+    owner = relocated_path(receipt["owner_root"])
     if path.parent != owner / "research-reservations":
         raise ValueError("Reservation outside authoritative owner")
-    _check_output(owner, Path(output).resolve())
+    _check_output(owner, relocated_path(output))
     return receipt

@@ -12,8 +12,21 @@ from crypto_mm.paths import load_data_root
 
 @pytest.fixture(autouse=True)
 def clean_path_environment(monkeypatch):
-    for name in ("WORKSPACE_CONFIG", "CONFIG_ROOT", "DATA_ROOT", "XDG_CONFIG_HOME"):
+    for name in ("WORKSPACE_CONFIG", "CONFIG_ROOT", "DATA_ROOT", "XDG_CONFIG_HOME", "GLOBAL_MARKET_RESEARCH_DATA_ROOT"):
         monkeypatch.delenv(name, raising=False)
+
+
+def test_existing_legacy_and_explicit_canonical_selection(tmp_path, monkeypatch):
+    old = tmp_path / "2026-quant-competition"
+    old.mkdir()
+    monkeypatch.setenv("DATA_ROOT", str(tmp_path))
+    assert load_data_root() == old / "research/crypto-mm/raw_data"
+    new = tmp_path / "global-market-research"
+    new.mkdir()
+    with pytest.raises(ValueError, match="AMBIGUOUS"):
+        load_data_root()
+    monkeypatch.setenv("GLOBAL_MARKET_RESEARCH_DATA_ROOT", str(new))
+    assert load_data_root() == new / "research/crypto-mm/raw_data"
 
 
 def test_workspace_file_maps_to_permanent_project_data(tmp_path, monkeypatch):
@@ -22,7 +35,7 @@ def test_workspace_file_maps_to_permanent_project_data(tmp_path, monkeypatch):
     config.write_text(f'data_root = "{data.as_posix()}"\n', encoding="utf-8")
     monkeypatch.setenv("WORKSPACE_CONFIG", str(config))
     monkeypatch.chdir(tmp_path)
-    assert load_data_root() == data / "2026-quant-competition" / "research" / "crypto-mm" / "raw_data"
+    assert load_data_root() == data / "global-market-research" / "research" / "crypto-mm" / "raw_data"
 
 
 @pytest.mark.parametrize("location", ["home", "xdg", "config_root"])
@@ -38,7 +51,7 @@ def test_discovers_default_configuration(tmp_path, monkeypatch, location):
     config = owner / "shared" / "workspace.toml"
     config.parent.mkdir(parents=True)
     config.write_text(f'data_root = "{tmp_path.as_posix()}"\n', encoding="utf-8")
-    assert load_data_root() == tmp_path / "2026-quant-competition" / "research" / "crypto-mm" / "raw_data"
+    assert load_data_root() == tmp_path / "global-market-research" / "research" / "crypto-mm" / "raw_data"
 
 
 def test_explicit_config_overrides_default_location(tmp_path, monkeypatch):
@@ -46,13 +59,13 @@ def test_explicit_config_overrides_default_location(tmp_path, monkeypatch):
     config = tmp_path / "explicit.toml"
     config.write_text(f'data_root = "{tmp_path.as_posix()}"\n', encoding="utf-8")
     monkeypatch.setenv("WORKSPACE_CONFIG", str(config))
-    assert load_data_root() == tmp_path / "2026-quant-competition" / "research" / "crypto-mm" / "raw_data"
+    assert load_data_root() == tmp_path / "global-market-research" / "research" / "crypto-mm" / "raw_data"
 
 
 def test_data_root_environment_overrides_missing_config(tmp_path, monkeypatch):
     monkeypatch.setenv("WORKSPACE_CONFIG", str(tmp_path / "missing.toml"))
     monkeypatch.setenv("DATA_ROOT", str(tmp_path))
-    assert load_data_root() == tmp_path / "2026-quant-competition" / "research" / "crypto-mm" / "raw_data"
+    assert load_data_root() == tmp_path / "global-market-research" / "research" / "crypto-mm" / "raw_data"
 
 
 def test_missing_config_reports_path_and_remedy(tmp_path, monkeypatch):
@@ -83,7 +96,7 @@ def test_relative_environment_root_is_rejected(monkeypatch):
 def test_config_consumers_use_external_data_without_local_link(tmp_path):
     data = tmp_path / "data"
     for dataset in ("orderbook", "trades", "fundings"):
-        folder = data / "2026-quant-competition" / "research" / "crypto-mm" / "raw_data" / dataset
+        folder = data / "global-market-research" / "research" / "crypto-mm" / "raw_data" / dataset
         folder.mkdir(parents=True)
         for day in ("19", "20", "21"):
             (folder / f"2026-03-{day}.parquet").touch()
@@ -100,5 +113,5 @@ def test_config_consumers_use_external_data_without_local_link(tmp_path):
         cwd=tmp_path, env=env, capture_output=True, text=True, check=True,
     )
     assert result.stdout.splitlines() == [
-        str(data / "2026-quant-competition" / "research" / "crypto-mm" / "raw_data"), "9"
+        str(data / "global-market-research" / "research" / "crypto-mm" / "raw_data"), "9"
     ]

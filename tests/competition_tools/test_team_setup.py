@@ -22,13 +22,13 @@ def test_child_environment_is_copy(tmp_path, monkeypatch):
     assert os.environ["PYTHONPATH"] == "secret-source"
 
 
-def test_child_timeout():
+def test_child_timeout(tmp_path):
     import subprocess
 
     with pytest.raises(subprocess.TimeoutExpired):
         run_child(
             [sys.executable, "-c", "import time; time.sleep(10)"],
-            environment=child_environment(TeamConfig(Path.cwd(), Path.cwd())),
+            environment=child_environment(TeamConfig(tmp_path / "data", tmp_path / "env")),
             timeout=1,
         )
 

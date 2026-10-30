@@ -58,8 +58,8 @@ def execute(
     from competition_tools.datasets.acquisition import acquire
 
     destination = validate_external(
-        config.data_root
-        / "2026-quant-competition/datasets"
+        config.storage_root
+        / "datasets"
         / spec["dataset_id"]
         / spec["version"]
     )
@@ -131,7 +131,7 @@ def _execute_dex(action, config, spec, manifest_path, base_manifest):
         return envelope("data", projects=[inspect_dex(manifest_path)])
     if action != "acquire":
         raise ValueError("INVALID_DATA_ACTION")
-    destination = safe_path(config.data_root / "2026-quant-competition/datasets" / spec["dataset_id"] / spec["version"])
+    destination = safe_path(config.storage_root / "datasets" / spec["dataset_id"] / spec["version"])
     if destination.exists():
         raise ValueError("DATASET_VERSION_EXISTS")
     destination.parent.mkdir(parents=True, exist_ok=True)
@@ -180,7 +180,7 @@ def _execute_daily(action, config, spec, manifest_path, base_manifest):
         return envelope("data", projects=[{"status":"ready", "source":"ibkr_daily", "kind":"bounded_daily_equity", "budget":spec["budget"], "entitlement":"not_checked"}])
     if action not in {"acquire", "refresh"}:
         raise ValueError("INVALID_DATA_ACTION")
-    destination = safe_path(config.data_root / "2026-quant-competition/datasets" / spec["dataset_id"] / spec["version"])
+    destination = safe_path(config.storage_root / "datasets" / spec["dataset_id"] / spec["version"])
     if destination.exists():
         raise ValueError("DATASET_VERSION_EXISTS")
     destination.parent.mkdir(parents=True, exist_ok=True)

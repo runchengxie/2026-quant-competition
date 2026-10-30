@@ -32,9 +32,9 @@ python -m competition_tools.team demo equity --config /absolute/private/team.tom
 python -m competition_tools.team demo crypto --config /absolute/private/team.toml --output-root /absolute/data/crypto-demo-001
 ```
 
-`init` 创建 `competition.team.v1` TOML 配置，拒绝覆盖已有文件。配置键只有 `schema_version`、`data_root` 和 `environment_root`。环境默认放在 `<data_root>/2026-quant-competition/environments`，可用 `init --environment-root` 更改。路径必须是绝对路径，且不能位于 Git 源码目录、关联 worktree 或指向源码的符号链接中。Windows 使用当前用户 ACL，POSIX 使用 `0600` 权限。配置只保存路径，不保存凭据。参见[配置模板](../../config/team.example.toml)。
+`init` 创建 `competition.team.v1` TOML 配置，拒绝覆盖已有文件。配置键只有 `schema_version`、`data_root` 和 `environment_root`。环境默认位于选定项目目录的 `environments`；全新安装使用 `<data_root>/global-market-research/environments`，只有旧目录的安装保留旧位置。可用 `init --environment-root` 更改，或通过 `--project-data-root` 创建明确指定目录的 v2 配置。路径必须是绝对路径，且不能位于 Git 源码目录、关联 worktree 或指向源码的符号链接中。Windows 使用当前用户 ACL，POSIX 使用 `0600` 权限。配置只保存路径，不保存凭据。参见[配置模板](../../config/team.example.toml)和[位置兼容规则](data-root-migration.zh-CN.md)。
 
-`setup` 按已提交锁文件分别安装 `root`、`equity-lab` 和 `crypto-mm` 三个环境。子进程清除继承的 `PYTHONPATH` 和 `PYTHONHOME`，显式接收 `DATA_ROOT`，不搜索相邻仓库。模块入口为 `python -m competition_tools.team`。可编辑安装会保留源码位置，使用 wheel 等非可编辑安装时，需显式传入 `setup --repository-root /absolute/checkout/2026-quant-competition`。
+`setup` 按已提交锁文件分别安装 `root`、`equity-lab` 和 `crypto-mm` 三个环境。子进程清除继承的 `PYTHONPATH` 和 `PYTHONHOME`，显式接收 `DATA_ROOT` 和 `GLOBAL_MARKET_RESEARCH_DATA_ROOT`，不搜索相邻仓库。模块入口为 `python -m competition_tools.team`。可编辑安装会保留源码位置，使用 wheel 等非可编辑安装时，需显式传入 `setup --repository-root /absolute/checkout/global-market-research`。
 
 `doctor` 只在本地检查解释器文件是否存在，不验证依赖完整性、凭据、数据权限或策略就绪状态。使用已安装根环境运行 `python -m competition_tools.check_team_delivery --config FILE`，可另行检查已安装分发包中是否含有框架依赖。两者都不导入服务商模块或进行认证。
 

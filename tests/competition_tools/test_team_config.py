@@ -37,7 +37,7 @@ def test_round_trip_and_exclusive_creation(tmp_path):
     assert load_config(config) == expected
     assert (
         expected.environment_root
-        == expected.data_root / "2026-quant-competition/environments"
+        == expected.data_root / "global-market-research/environments"
     )
     before = config.read_bytes()
     with pytest.raises(ValueError):
