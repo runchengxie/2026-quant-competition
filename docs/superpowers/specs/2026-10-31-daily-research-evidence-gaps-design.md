@@ -4,7 +4,7 @@
 
 Continue the P0 priority in the Quant-series inspiration audit. Provide a reproducible, offline explanation of why the existing IBKR daily snapshots cannot qualify as research evidence. Reuse existing verification; do not design an owner-authentication system without an identified owner protocol.
 
-The proposed implementation is a small stdlib-only API and CLI in `competition_tools.datasets.research_evidence`. It consumes one explicitly selected v2 daily manifest and its expected SHA256 and produces one new external report. The next review step is approval of this design; product implementation has not started.
+The implementation is a small stdlib-only API and CLI in `competition_tools.datasets.research_evidence`. It consumes one explicitly selected v2 daily manifest and its expected SHA256 and produces one new external report. The user approved this design for implementation on 2026-10-31.
 
 ## Approaches considered
 
@@ -12,7 +12,7 @@ The proposed implementation is a small stdlib-only API and CLI in `competition_t
 2. Add a focused research evidence-gap report reusing `verify_daily_manifest`. Recommended for the already selected P0 sequence: US/HK share the same v2 producer and need the same evidence inventory, while existing execution-readiness remains US-specific.
 3. Implement a trusted owner adapter immediately. Deferred because current retained receipts do not supply independently authenticated identity, PIT membership, action coverage or holdout governance. Caller-added booleans cannot fill that gap.
 
-The user authorized continued P0 work; the focused report is the builder's proposed scope, not an already approved implementation design.
+The focused report is the approved scope for continued P0 work.
 
 ## Existing facts checked on 2026-10-31
 

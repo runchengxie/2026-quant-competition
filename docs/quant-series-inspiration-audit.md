@@ -44,4 +44,6 @@ The first P0 implementation needs a named owner dataset and verifiable owner/hol
 
 ## Completion rules
 
+The first P0 implementation is the [daily evidence-gap inventory](research/datasets.md#audit-retained-daily-research-evidence). It reuses complete payload verification for IBKR daily v2 and creates a blocked-only report. This closes reproducible inventory tooling, not owner authentication, PIT coverage or research promotion. The initial triage above remains a dated historical record.
+
 Each capability closes with a pinned source, explicit applicability decision, target implementation, actual validation record and remaining limitations. “Deferred” and “excluded” are valid decisions with a reason and revisit trigger. Engineering closure, scientific acceptance, and broker readiness remain separate. Update this table when new evidence changes a decision; do not mark open evidence gaps complete because CI passes.

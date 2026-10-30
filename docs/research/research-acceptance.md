@@ -14,6 +14,8 @@ Owner provenance and holdout protocol validation are not integrated. Every `rese
 
 ## Input manifest
 
+The separate [daily evidence-gap command](datasets.md#audit-retained-daily-research-evidence) verifies an existing IBKR daily v2 snapshot and records six unverified research requirements. Successful inventory is still `blocked`; it does not supply an owner protocol, a holdout review or an `accepted_research` result, and does not change this experiment gate.
+
 Keep the manifest and receipt outside Git. The dataset root must be an existing absolute directory. File references use canonical `/`-separated relative paths. Absolute references, `..`, duplicate references, symlink escapes, changed hashes and size mismatches are rejected. Inspection hashes files before and after reading and does not rewrite their bytes. This is change detection, not an atomic filesystem snapshot. Recheck at consumption time.
 
 Here is the complete equity manifest shape. Replace the root, hash and size with actual values. `unknown` is a value, not a request to infer missing provenance.
