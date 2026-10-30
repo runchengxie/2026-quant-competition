@@ -32,6 +32,8 @@ The Alpha 810 example uses lags 0/1/5/20/60, circular 20-session blocks and 2,00
 
 ## Ordered next work
 
+Initial P0 receipt triage on 2026-10-31 inspected the retained US/HK fixed-daily v2 receipts and the Databento daily pilot. Both fixed-daily receipts report acquisition complete but `accepted_research=false`; corporate actions and revisions outside the overlap interval remain unverified. The pilot reports partial acquisition, `LISTING_CALENDAR_UNVERIFIED`, and unverified historical availability. These are receipt declarations, not independent owner certification. Receipt hashes and private locations are retained in the task inventory; referenced market-data bytes were not revalidated. An empty acquisition issue list is therefore insufficient for research acceptance.
+
 1. **P0 evidence inventory.** Select one explicit dataset and candidate, list required owner records, record present/missing/contradictory evidence, and freeze references. Do not acquire paid data or reuse consumed research reservations under this task.
 2. **P0 adapter design and implementation.** Specify the trusted owner identity and protocol, versioned receipt schema, artifact/hash binding, availability and universe/action semantics, and negative fixtures. Implement against that selected owner only after the design is settled. Generic caller flags and self-supplied hashes cannot authenticate an owner.
 3. **P0 promotion review.** Independently validate the holdout protocol and its exposure history. Preserve `OWNER_CONTRACT_VALIDATION_UNAVAILABLE` until the actual supported path can prove both provenance and governance. Unsupported owners stay blocked; never remove the blocker globally.
