@@ -8,6 +8,7 @@ Start with the [offline quickstart](operations/team-quickstart.md) if you have n
 | --- | --- |
 | Run an offline example | [Team quickstart](operations/team-quickstart.md) |
 | Find the relevant code | [Project structure and current limits](project-overview.md) |
+| Review Quant-series adoption and remaining evidence gaps | [Inspiration audit and priorities](quant-series-inspiration-audit.md) |
 | Prepare data | [Dataset tools](research/datasets.md) |
 | Understand existing experiments | [Strategy results](research/strategy-validation-2026-10-19.md), [expanded-data evaluation](research/data-expansion-and-evaluation.md) |
 | See how a model reads price charts | [CNN retrospective and recovered pictures](research/cnn-chart-research.md) |
