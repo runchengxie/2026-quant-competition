@@ -2,7 +2,7 @@
 
 [简体中文](low-turnover-tree-study.zh-CN.md)
 
-This opt-in workflow adds shallow histogram gradient boosting and a causal 20-session momentum baseline to the retained stock holding study. It reuses 168 saved parent accounts only after checking the complete parent run record and independently replaying its exported holding evidence. It creates at most 96 new requested accounts and 12 new fit starts. No real study has been run as part of implementation.
+The retained study completed on 2026-10-31. Shallow histogram gradient boosting and a causal 20-session momentum baseline do not establish a stable improvement over simple reversal; no strategy was promoted. Independent verification checked the complete parent run and its exported holding evidence before reusing 168 saved simulated-account configurations. The 96 new simulated-account configurations used 12 fit starts: 60 completed and 36 were blocked, split equally between unusable ranking pools and known corporate-action boundaries.
 
 The two windows, 2026-05-28–2026-07-24 and 2026-07-27–2026-09-21, have already been exposed. Results remain exploratory retrospective comparisons. All six scientific evidence requirements remain blocked. This workflow does not establish total returns, complete historical stock acceptance, availability, liquidity, capacity or tradability, and it creates no execution targets. See the [retained comparison](strategy-comparison.md) and [approved design](../superpowers/specs/2026-10-31-low-turnover-tree-study-design.md).
 
@@ -45,4 +45,17 @@ The leaf's new entry point is `python -m equity_lab.predictive.tree_study_cli --
 
 The new leaf report is `equity.low_turnover_tree.v1`. New prediction CSVs include every test candidate/date, even when outcomes are missing. Validation prediction CSVs allow the root to recompute candidate RankIC/MSE and selected depth independently. Root verification checks the exact prediction grids, causal momentum, selection plans, all gross/net account paths, coverage and paired summaries. Blocked accounts retain their reason, date and partial history. Horizon failures retain their started markers, partial reports, timeout records and unavailable cells; a partial run cannot pass completed-output verification.
 
-Keep protocols, reservations, attempts, source/lock identities, parent records, reports and verification evidence under private retention. Synthetic checks use a separately assigned rehearsal namespace during migration. They do not authorize a real fit. There is no publication command; raw prices, candidate predictions and private paths must remain private. Any future public aggregate needs separate closed-schema review, and an unexposed evaluation needs its own future protocol and availability evidence.
+Keep protocols, reservations, attempts, source/lock identities, parent records, reports and verification evidence under private retention. Synthetic checks use a separately assigned rehearsal namespace during migration. They do not authorize another real fit. Raw prices, candidate predictions and private paths remain private. An unexposed evaluation needs its own future protocol and availability evidence.
+
+## Reproduce the public projection
+
+The existing US strategy and factor pages show a separately reviewed [public aggregate](../../site/src/data/tree-study.v1.json), leaving every earlier snapshot unchanged. Its [closed schema](../../schemas/research/public-tree-study.v1.schema.json) permits only bounded provenance hashes, fixed rules, counts, eight new model summaries and 432 matched return comparisons. Each comparison includes both net returns and their difference; one blocked side leaves the difference unavailable. Equal weight always uses buffer zero. The [publication validator](../../src/competition_tools/evaluation/tree_study_publication.py) pins the reviewed canonical SHA-256 and checks the complete grids, repeated accounts and return relationships.
+
+To recheck saved private results and produce a new private candidate without fitting or acquiring anything, supply the existing protocol and an unused output path:
+
+```powershell
+& $rootPython -m competition_tools.evaluation.tree_study_projection `
+  --protocol $prepared.protocol --output $privateCandidate
+```
+
+The command independently verifies saved outputs with their original source binding, extracts an explicit derived-field allowlist and refuses to overwrite a candidate. It prints the canonical hash. Review that candidate before copying it into public Git; the hash is a publication integrity check, not proof of scientific validity. Both windows were exposed and uncertainty remains unavailable. The six [scientific requirements](datasets.md) remain blocked, including owner provenance and holdout governance; local byte bindings alone do not satisfy them.

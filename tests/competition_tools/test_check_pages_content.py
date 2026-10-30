@@ -24,6 +24,51 @@ def test_us_cnn_publication_allowlist_is_narrow():
 BASE_PATH = "/global-market-research"
 
 
+def test_tree_publication_allowlist_is_narrow():
+    allowed = [
+        "src/data/tree-study.v1.json",
+        "src/i18n/tree-study-en.json",
+        "src/i18n/tree-study-zh-CN.json",
+        "src/scripts/tree-study-state.mjs",
+        "src/scripts/tree-study.mjs",
+        "tests/tree-study.test.mjs",
+        "tests/tree-study.spec.mjs",
+    ]
+    assert all(_allowed_source(PurePosixPath(path)) for path in allowed)
+    assert not _allowed_source(PurePosixPath("src/data/tree-study-private.json"))
+
+
+def test_tree_facts_required_and_exact_for_both_views_and_locales(tmp_path):
+    source, built = make_site_trees(tmp_path)
+    snapshot = Path(__file__).resolve().parents[2] / "site/src/data/tree-study.v1.json"
+    target = source / "src/data/tree-study.v1.json"
+    target.parent.mkdir(parents=True)
+    target.write_text(snapshot.read_text(encoding="utf-8"), encoding="utf-8")
+    assert "invalid public tree-study facts or output" in check_site(source, built)
+    facts = html.escape(snapshot.read_text(encoding="utf-8"), quote=True)
+    for topic, view in (("factors", "factor"), ("strategies", "strategy")):
+        for prefix, locale, other in (("", "en", "zh-CN/"), ("zh-CN/", "zh-CN", "")):
+            page = built / f"{prefix}{topic}/index.html"
+            page.parent.mkdir(parents=True, exist_ok=True)
+            page.write_text(
+                rendered_page(locale, f"{BASE_PATH}/{other}{topic}/").replace(
+                    "</body>",
+                    f'<section data-tree-facts="{facts}" data-tree-view="{view}"></section></body>',
+                ),
+                encoding="utf-8",
+            )
+    assert check_site(source, built) == []
+    page = built / "zh-CN/factors/index.html"
+    original = page.read_text(encoding="utf-8")
+    for altered in (
+        original.replace('data-tree-view="factor"', 'data-tree-view="strategy"'),
+        original.replace("data-tree-facts=", "data-unreviewed-facts="),
+        original.replace("0.002", "0.003"),
+    ):
+        page.write_text(altered, encoding="utf-8")
+        assert "invalid public tree-study facts or output" in check_site(source, built)
+
+
 def rendered_page(locale: str, language_url: str, css_url: str | None = None) -> str:
     stylesheet = css_url or f"{BASE_PATH}/_astro/site.css"
     return (

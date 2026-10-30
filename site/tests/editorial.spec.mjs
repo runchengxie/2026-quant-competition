@@ -60,6 +60,7 @@ for(const locale of ['en','zh-CN'])test(`${locale}: editorial topic pages retain
   if(route==='strategies/'){
    await expect(page.locator('.section-nav a')).toHaveCount(7);
    await expect(page.locator('.section-nav a').first()).toHaveAttribute('href','#comparison-crypto');
+   await page.locator('#holding-equity').scrollIntoViewIfNeeded();
    await expect(page.locator('#holding-equity')).toHaveAttribute('data-lt-ready','true');
    await page.locator('[data-market-link=crypto]').click();
    await page.locator('#comparison-crypto').scrollIntoViewIfNeeded();

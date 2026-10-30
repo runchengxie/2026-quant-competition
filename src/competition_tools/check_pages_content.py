@@ -75,10 +75,15 @@ class _PageMetadata(HTMLParser):
         self.comparison_facts: list[str | None] = []
         self.low_turnover_facts: list[tuple[str | None, str | None, str | None]] = []
         self.progress_facts: list[str | None] = []
+        self.tree_facts: list[tuple[str | None, str | None]] = []
         self.ids: set[str] = set()
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         attributes = dict(attrs)
+        if "data-tree-facts" in attributes:
+            self.tree_facts.append(
+                (attributes.get("data-tree-view"), attributes.get("data-tree-facts"))
+            )
         if "data-progress-facts" in attributes:
             self.progress_facts.append(attributes.get("data-progress-facts"))
         if attributes.get("id"):
@@ -191,6 +196,13 @@ def _allowed_source(relative_path: PurePosixPath) -> bool:
         "src/data/incremental-research.v1.json",
         "src/data/strategy-comparison.v1.json",
         "src/data/low-turnover.v1.json",
+        "src/data/tree-study.v1.json",
+        "src/i18n/tree-study-en.json",
+        "src/i18n/tree-study-zh-CN.json",
+        "src/scripts/tree-study-state.mjs",
+        "src/scripts/tree-study.mjs",
+        "tests/tree-study.test.mjs",
+        "tests/tree-study.spec.mjs",
         "src/data/evidence-followup.v1.json",
         "src/i18n/followup-en.json",
         "src/i18n/followup-zh-CN.json",
@@ -725,6 +737,26 @@ def check_site(source_dir: Path, built_dir: Path) -> list[str]:
                     raise ValueError("Changed comparison facts")
         except (OSError, ValueError, TypeError, KeyError, AttributeError):
             errors.append("invalid public comparison facts or output")
+    tree_path = source_dir / "src/data/tree-study.v1.json"
+    if tree_path.is_file():
+        from .evaluation.tree_study_publication import parse_reviewed as parse_tree
+
+        try:
+            expected = parse_tree(tree_path.read_text(encoding="utf-8"))
+            for topic, view in (("factors", "factor"), ("strategies", "strategy")):
+                for prefix in ("", "zh-CN/"):
+                    page = _PageMetadata()
+                    page.feed(
+                        (built_dir / f"{prefix}{topic}/index.html").read_text(
+                            encoding="utf-8"
+                        )
+                    )
+                    if len(page.tree_facts) != 1 or page.tree_facts[0][0] != view:
+                        raise ValueError("Missing tree-study view")
+                    if parse_tree(page.tree_facts[0][1]) != expected:
+                        raise ValueError("Changed tree-study facts")
+        except (OSError, ValueError, TypeError, KeyError, AttributeError):
+            errors.append("invalid public tree-study facts or output")
     low_turnover_path = source_dir / "src/data/low-turnover.v1.json"
     if low_turnover_path.is_file():
         from .evaluation.low_turnover_publication import parse_reviewed

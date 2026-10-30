@@ -5,6 +5,7 @@ import PredictiveResearch from "./PredictiveResearch.astro";
 import IncrementalResearch from "./IncrementalResearch.astro";
 import ResearchComparison from "./ResearchComparison.astro";
 import LowTurnoverResearch from "./LowTurnoverResearch.astro";
+import TreeStudyResearch from "./TreeStudyResearch.astro";
 import ResearchProgress from "./ResearchProgress.astro";
 import followupEn from '../i18n/followup-en.json';
 import followupZh from '../i18n/followup-zh-CN.json';
@@ -66,7 +67,7 @@ const guide = (directory: string) => file(`research/${directory}/README${locale 
       <section id="market-hk" class="market-panel" data-market-panel="HK" aria-labelledby="tab-hk">
         <h2>{marketText.hkStrategyTitle}</h2><p>{marketText.hkStrategyBody}</p><ResearchTakeaways locale={locale} market="HK" compact /><a href={`${prefix}docs/strategies/`}>{marketText.hkLink} ↗</a>
       </section>
-      <section id="market-us" class="market-panel" data-market-panel="US" aria-labelledby="tab-us"><p class="market-label">{marketText.markets.US}</p><LowTurnoverResearch locale={locale} market="equity" /></section>
+      <section id="market-us" class="market-panel" data-market-panel="US" aria-labelledby="tab-us"><p class="market-label">{marketText.markets.US}</p><TreeStudyResearch locale={locale} /><LowTurnoverResearch locale={locale} market="equity" /></section>
       <section id="market-crypto" class="market-panel" data-market-panel="crypto" aria-labelledby="tab-crypto"><p class="market-label">{marketText.markets.crypto}</p><LowTurnoverResearch locale={locale} market="crypto" /><ResearchComparison locale={locale} market="crypto" /><IncrementalResearch locale={locale} view="crypto" /></section>
       <ResearchProgress locale={locale} view={view} />
       <h2 class="history-heading">{marketText.history}</h2>
@@ -79,7 +80,7 @@ const guide = (directory: string) => file(`research/${directory}/README${locale 
     </>}
     {view==='factors'&&<>
       <section id="market-hk" class="market-panel" data-market-panel="HK" aria-labelledby="tab-hk"><h2>{marketText.hkFactorTitle}</h2><p>{marketText.hkFactorBody}</p><a href={`${prefix}docs/strategies/`}>{marketText.hkLink} ↗</a></section>
-      <section id="market-us" class="market-panel" data-market-panel="US" aria-labelledby="tab-us"><p class="market-label">{marketText.markets.US}</p><LowTurnoverResearch locale={locale} market="equity" view="factor" /><ResearchComparison locale={locale} market="equity" /><IncrementalResearch locale={locale} view="equity" /><PredictiveResearch locale={locale} /><FactorResearch locale={locale} market="equity" /></section>
+      <section id="market-us" class="market-panel" data-market-panel="US" aria-labelledby="tab-us"><p class="market-label">{marketText.markets.US}</p><TreeStudyResearch locale={locale} view="factor" /><LowTurnoverResearch locale={locale} market="equity" view="factor" /><ResearchComparison locale={locale} market="equity" /><IncrementalResearch locale={locale} view="equity" /><PredictiveResearch locale={locale} /><FactorResearch locale={locale} market="equity" /></section>
       <section id="market-crypto" class="market-panel" data-market-panel="crypto" aria-labelledby="tab-crypto"><p class="market-label">{marketText.markets.crypto}</p><FactorResearch locale={locale} market="crypto" /></section>
       <ResearchProgress locale={locale} view={view} />
     </>}

@@ -1,0 +1,418 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "protocol",
+    "retrospective",
+    "formal_performance_ready",
+    "scientific_requirements",
+    "uncertainty",
+    "rules",
+    "provenance",
+    "counts",
+    "models",
+    "comparisons"
+  ],
+  "properties": {
+    "schema": {
+      "const": "competition.public_tree_study.v1"
+    },
+    "protocol": {
+      "const": "equity.low_turnover_tree.20261031.v1"
+    },
+    "retrospective": {
+      "const": true
+    },
+    "formal_performance_ready": {
+      "const": false
+    },
+    "scientific_requirements": {
+      "const": "all_six_remain_blocked"
+    },
+    "uncertainty": {
+      "const": "unavailable_uncertainty_tooling_not_validated"
+    },
+    "rules": {
+      "const": {
+        "horizons": [
+          5,
+          20
+        ],
+        "windows": [
+          [
+            "2026-05-28",
+            "2026-07-24"
+          ],
+          [
+            "2026-07-27",
+            "2026-09-21"
+          ]
+        ],
+        "validation_sessions": 60,
+        "inner_calendar_minimum": 80,
+        "depths": [
+          2,
+          3
+        ],
+        "max_iter": 100,
+        "learning_rate": 0.05,
+        "max_leaf_nodes": 7,
+        "min_samples_leaf": 100,
+        "l2_regularization": 1.0,
+        "max_bins": 63,
+        "seed": 42,
+        "early_stopping": false,
+        "features": [
+          "session_return",
+          "range_fraction",
+          "relative_dollar_volume",
+          "median_spread",
+          "quote_fraction",
+          "active_fraction"
+        ],
+        "minimum_candidates": 30,
+        "minimum_validation_dates": 20,
+        "selection": "mean_daily_rank_ic_then_mse_then_declared_order",
+        "maximum_attempts_per_horizon": 6,
+        "seconds_per_horizon": 1200,
+        "threads": 2,
+        "new_requested_accounts": 96,
+        "reused_requested_accounts": 168,
+        "top_n": 50,
+        "buffers": [
+          0,
+          20
+        ],
+        "fees": [
+          0,
+          20,
+          40
+        ],
+        "delays": [
+          0,
+          1
+        ],
+        "momentum": "close_t_over_close_t_minus_20_contiguous_no_action_or_ticker_change",
+        "accounting": "raw_open_holding_cash.v1",
+        "currency": "USD",
+        "paired_summaries": "cellwise_net_return_and_equal_cohort_daily_rank_ic",
+        "uncertainty": "unavailable_uncertainty_tooling_not_validated",
+        "retrospective": true,
+        "formal_performance_ready": false,
+        "scientific_requirements": "all_six_remain_blocked"
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "binding_sha256",
+        "input_sha256",
+        "parent_result_sha256",
+        "parent_plan_sha256",
+        "calendar_sha256",
+        "leaf_code_sha256",
+        "root_lock_sha256",
+        "equity_lock_sha256",
+        "report_sha256",
+        "verification_sha256",
+        "source_identity_sha256"
+      ],
+      "properties": {
+        "binding_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "input_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "parent_result_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "parent_plan_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "calendar_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "leaf_code_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "root_lock_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "equity_lock_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "report_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "verification_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "source_identity_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "counts": {
+      "const": {
+        "reused_requested_accounts": 168,
+        "new_requested_accounts": 96,
+        "fit_attempts": 12,
+        "completed_new_accounts": 60,
+        "blocked_new_accounts": 36,
+        "ranking_pool_blocks": 18,
+        "known_action_blocks": 18,
+        "matched_comparisons": 432
+      }
+    },
+    "models": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "horizon",
+          "window",
+          "end",
+          "model",
+          "status",
+          "requested_dates",
+          "valid_ic_dates",
+          "valid_mse_dates",
+          "mean_daily_ic",
+          "mean_daily_mse"
+        ],
+        "properties": {
+          "horizon": {
+            "type": "integer",
+            "enum": [
+              5,
+              20
+            ]
+          },
+          "window": {
+            "enum": [
+              "2026-05-28",
+              "2026-07-27"
+            ]
+          },
+          "end": {
+            "enum": [
+              "2026-07-24",
+              "2026-09-21"
+            ]
+          },
+          "model": {
+            "enum": [
+              "shallow_tree",
+              "momentum20"
+            ]
+          },
+          "status": {
+            "enum": [
+              "completed"
+            ]
+          },
+          "requested_dates": {
+            "const": 40
+          },
+          "valid_ic_dates": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 40
+          },
+          "valid_mse_dates": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 40
+          },
+          "mean_daily_ic": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": -1,
+            "maximum": 1
+          },
+          "mean_daily_mse": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "comparisons": {
+      "type": "array",
+      "minItems": 432,
+      "maxItems": 432,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "horizon",
+          "window",
+          "end",
+          "arm",
+          "reference",
+          "buffer",
+          "reference_buffer",
+          "fee_bps",
+          "delay",
+          "arm_status",
+          "reference_status",
+          "arm_reason",
+          "reference_reason",
+          "arm_net_return",
+          "reference_net_return",
+          "difference",
+          "reason"
+        ],
+        "properties": {
+          "horizon": {
+            "type": "integer",
+            "enum": [
+              5,
+              20
+            ]
+          },
+          "window": {
+            "enum": [
+              "2026-05-28",
+              "2026-07-27"
+            ]
+          },
+          "end": {
+            "enum": [
+              "2026-07-24",
+              "2026-09-21"
+            ]
+          },
+          "arm": {
+            "enum": [
+              "ridge",
+              "elastic_net",
+              "shallow_tree"
+            ]
+          },
+          "reference": {
+            "enum": [
+              "equal_weight",
+              "reversal",
+              "momentum20"
+            ]
+          },
+          "buffer": {
+            "type": "integer",
+            "enum": [
+              0,
+              20
+            ]
+          },
+          "reference_buffer": {
+            "type": "integer",
+            "enum": [
+              0,
+              20
+            ]
+          },
+          "fee_bps": {
+            "type": "integer",
+            "enum": [
+              0,
+              20,
+              40
+            ]
+          },
+          "delay": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ]
+          },
+          "arm_status": {
+            "enum": [
+              "completed",
+              "blocked"
+            ]
+          },
+          "reference_status": {
+            "enum": [
+              "completed",
+              "blocked"
+            ]
+          },
+          "arm_reason": {
+            "enum": [
+              null,
+              "INVALID_RANKING_POOL",
+              "KNOWN_ACTION_BOUNDARY",
+              "EMPTY_DECISION_POOL",
+              "MODEL_UNAVAILABLE",
+              "CONSTANT_SCORES",
+              "MISSING_HELD_OR_SELECTED_PRICE"
+            ]
+          },
+          "reference_reason": {
+            "enum": [
+              null,
+              "INVALID_RANKING_POOL",
+              "KNOWN_ACTION_BOUNDARY",
+              "EMPTY_DECISION_POOL",
+              "MODEL_UNAVAILABLE",
+              "CONSTANT_SCORES",
+              "MISSING_HELD_OR_SELECTED_PRICE"
+            ]
+          },
+          "arm_net_return": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "exclusiveMinimum": -1
+          },
+          "reference_net_return": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "exclusiveMinimum": -1
+          },
+          "difference": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "reason": {
+            "enum": [
+              null,
+              "unavailable_account"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://runchengxie.github.io/global-market-research/schemas/public-tree-study.v1.schema.json",
+  "description": "Closed derived-field allowlist. Root publication validator additionally enforces full grids, repeated-account consistency, matched return relationships, exact counts and reviewed canonical hash."
+}

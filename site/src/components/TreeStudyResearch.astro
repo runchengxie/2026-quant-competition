@@ -1,0 +1,58 @@
+---
+import facts from '../data/tree-study.v1.json';
+import rawFacts from '../data/tree-study.v1.json?raw';
+import en from '../i18n/tree-study-en.json';
+import zh from '../i18n/tree-study-zh-CN.json';
+const locale=Astro.props.locale==='zh-CN'?'zh-CN':'en';
+const factor=Astro.props.view==='factor';
+const t=locale==='en'?en:zh;
+const number=(value:number|null,digits=4)=>value===null?t.unavailable:new Intl.NumberFormat(locale,{maximumFractionDigits:digits,minimumFractionDigits:digits}).format(value);
+const pct=(value:number|null)=>value===null?t.unavailable:`${number(value*100,2)}%`;
+const arm=(value:string)=>t.arms[value as keyof typeof t.arms];
+const status=(value:string,reason:string|null)=>reason?t.reasons[reason as keyof typeof t.reasons]:t[value as 'completed'|'blocked'];
+---
+<section id="tree-study" data-tree-study data-tree-facts={rawFacts} data-tree-view={factor?'factor':'strategy'}>
+ <p class="evidence-label">{t.label}</p>
+ <h2>{factor?t.factorTitle:t.strategyTitle}</h2>
+ <p class="conclusion">{t.conclusion}</p>
+ <p>{t.counts}</p>
+ <p class="tree-limit">{t.scope}</p>
+ <p class="detail">{factor?t.factorMethod:t.method}</p>
+ <div class="tree-controls" data-tree-controls hidden>
+  <label>{t.window}<select data-tree-filter="window" data-tree-label={t.window}>{facts.rules.windows.map(([start,end])=><option value={start}>{start} ～ {end}</option>)}</select></label>
+  <label>{t.horizon}<select data-tree-filter="horizon" data-tree-label={t.horizon}>{facts.rules.horizons.map(h=><option value={h}>{h}</option>)}</select></label>
+  {!factor&&<>
+   <label>{t.fee_bps}<select data-tree-filter="fee_bps" data-tree-label={t.fee_bps}>{facts.rules.fees.map(f=><option value={f} selected={f===20}>{f}</option>)}</select></label>
+   <label>{t.delay}<select data-tree-filter="delay" data-tree-label={t.delay}>{facts.rules.delays.map(d=><option value={d}>{d}</option>)}</select></label>
+   <label>{t.buffer}<select data-tree-filter="buffer" data-tree-label={t.buffer}>{facts.rules.buffers.map(b=><option value={b} selected={b===20}>{b}</option>)}</select></label>
+  </>}
+ </div>
+ <noscript><p>{t.nojs}</p></noscript>
+ <p id="tree-selection" class="tree-context-summary" data-tree-context-summary aria-live="polite" hidden></p>
+ <div class="tree-scroll" tabindex="0" role="region" aria-label={factor?t.factorTitle:t.strategyTitle}>
+ <table aria-describedby="tree-selection">
+  <caption>{factor?t.factorTitle:t.strategyTitle}</caption>
+  {factor?<>
+   <thead><tr>{[t.window,t.horizon,t.model,t.ic,t.coverage,t.mse,t.status].map((label,index)=><th scope="col" data-tree-context={index<2?'':undefined}>{label}</th>)}</tr></thead>
+   <tbody>{facts.models.map(row=><tr data-tree-row data-window={row.window} data-horizon={row.horizon}>
+    <td data-tree-context>{row.window} ～ {row.end}</td><td data-tree-context>{row.horizon}</td><th scope="row">{arm(row.model)}</th><td data-tree-ic>{number(row.mean_daily_ic)}</td><td>{row.valid_ic_dates}/{row.requested_dates}</td><td>{number(row.mean_daily_mse,6)}</td><td>{status(row.status,null)}</td>
+   </tr>)}</tbody>
+  </>:<>
+   <thead><tr>{[t.window,t.horizon,t.fee_bps,t.delay,t.buffer,t.model,t.reference,t.armReturn,t.referenceReturn,t.difference,t.status].map((label,index)=><th scope="col" data-tree-context={index<5?'':undefined}>{label}</th>)}</tr></thead>
+   <tbody>{facts.comparisons.map(row=><tr data-tree-row data-window={row.window} data-horizon={row.horizon} data-fee_bps={row.fee_bps} data-delay={row.delay} data-buffer={row.buffer}>
+    <td data-tree-context>{row.window} ～ {row.end}</td><td data-tree-context>{row.horizon}</td><td data-tree-context>{row.fee_bps}</td><td data-tree-context>{row.delay}</td><td data-tree-context>{row.buffer}</td><th scope="row">{arm(row.arm)}</th><td>{arm(row.reference)}</td><td>{pct(row.arm_net_return)}</td><td>{pct(row.reference_net_return)}</td><td>{row.difference===null?t.unavailable:number(row.difference*100,2)}</td><td>{status(row.arm_status,row.arm_reason)} / {status(row.reference_status,row.reference_reason)}</td>
+   </tr>)}</tbody>
+  </>}
+ </table>
+ </div>
+ <div class="tree-gaps" data-tree-gaps><h3>{t.gapsTitle}</h3><ul>{t.gaps.map(gap=><li>{gap}</li>)}</ul></div>
+ <details><summary>{t.provenanceTitle}</summary><p>{t.provenanceBody}</p><p>{t.rules}</p>
+ <dl>{Object.entries(facts.provenance).map(([key,value])=><><dt>{key}</dt><dd><code>{value}</code></dd></>)}</dl>
+ </details>
+</section>
+<script>import '../scripts/tree-study.mjs';</script>
+<style>
+ [data-tree-ready=true] [data-tree-context]{display:none}.tree-context-summary{display:block;font-size:.78rem;font-weight:400;line-height:1.7;color:var(--muted);margin-top:.4rem}.tree-scroll th{white-space:normal;max-width:12rem}.tree-scroll td[data-tree-ic]{white-space:nowrap}
+ .tree-scroll tbody th{min-width:7em;white-space:nowrap}
+ [hidden]{display:none!important}.tree-controls{display:flex;flex-wrap:wrap;gap:1rem;margin:1.4rem 0}.tree-controls label{display:grid;gap:.35rem;font-size:.82rem;color:var(--muted)}.tree-controls select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:.4rem;padding:.55rem}.tree-limit{border-left:3px solid var(--line);padding-left:1rem;line-height:1.7}.tree-scroll{max-width:100%;overflow-x:auto;margin:1.2rem 0;border:1px solid var(--line);border-radius:.6rem}.tree-scroll table{width:100%;border-collapse:collapse;font-size:.82rem;white-space:nowrap;font-variant-numeric:tabular-nums}.tree-scroll caption{text-align:left;padding:.8rem;font-weight:650;white-space:normal}.tree-scroll th,.tree-scroll td{padding:.7rem .8rem;border-top:1px solid var(--line);text-align:left}.tree-scroll thead{background:var(--picker)}.tree-scroll td:last-child{white-space:normal;min-width:14rem}.tree-gaps{padding:.4rem 0}.tree-gaps li{margin:.35rem 0}details{margin-top:1rem}dt{font-size:.8rem;margin-top:.7rem;color:var(--muted)}dd{margin:.2rem 0;overflow-wrap:anywhere}code{font-size:.75rem}summary{cursor:pointer;font-weight:600}
+</style>
