@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/research/low-turnover-tree.v1.schema.json",
+  "title": "Private independently verified retrospective tree study",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "protocol", "binding_sha256", "retrospective", "formal_performance_ready", "scientific_requirements", "reused_requested_accounts", "new_requested_accounts", "fit_attempts", "completed_new_accounts", "blocked_new_accounts", "uncertainty", "paired"],
+  "properties": {
+    "schema": {"const": "competition.low_turnover_tree_verified.v1"},
+    "protocol": {"const": "equity.low_turnover_tree.20261031.v1"},
+    "binding_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "retrospective": {"const": true},
+    "formal_performance_ready": {"const": false},
+    "scientific_requirements": {"const": "all_six_remain_blocked"},
+    "reused_requested_accounts": {"const": 168},
+    "new_requested_accounts": {"const": 96},
+    "fit_attempts": {"type": "integer", "minimum": 0, "maximum": 12},
+    "completed_new_accounts": {"type": "integer", "minimum": 0, "maximum": 96},
+    "blocked_new_accounts": {"type": "integer", "minimum": 0, "maximum": 96},
+    "uncertainty": {
+      "type": "object", "additionalProperties": false, "required": ["status", "reason"],
+      "properties": {"status": {"const": "unavailable"}, "reason": {"const": "uncertainty_tooling_not_validated"}}
+    },
+    "paired": {
+      "type": "object", "additionalProperties": false, "required": ["returns", "rank_ic", "equal_weight_rank_ic"],
+      "properties": {
+        "returns": {"type": "array", "minItems": 432, "maxItems": 432, "items": {"$ref": "#/$defs/returnPair"}},
+        "rank_ic": {"type": "array", "minItems": 24, "maxItems": 24, "items": {"$ref": "#/$defs/rankPair"}},
+        "equal_weight_rank_ic": {
+          "type": "object", "additionalProperties": false, "required": ["status", "reason"],
+          "properties": {"status": {"const": "unavailable"}, "reason": {"const": "constant_equal_weight_scores"}}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "horizon": {"enum": [5, 20]},
+    "window": {"enum": ["2026-05-28", "2026-07-27"]},
+    "arm": {"enum": ["ridge", "elastic_net", "shallow_tree"]},
+    "status": {"enum": ["completed", "blocked"]},
+    "returnPair": {
+      "type": "object", "additionalProperties": false,
+      "required": ["horizon", "window", "arm", "reference", "buffer", "fee_bps", "delay", "difference", "reason", "arm_status", "reference_status"],
+      "properties": {
+        "horizon": {"$ref": "#/$defs/horizon"}, "window": {"$ref": "#/$defs/window"}, "arm": {"$ref": "#/$defs/arm"},
+        "reference": {"enum": ["equal_weight", "reversal", "momentum20"]},
+        "buffer": {"enum": [0, 20]}, "fee_bps": {"enum": [0, 20, 40]}, "delay": {"enum": [0, 1]},
+        "difference": {"type": ["number", "null"]}, "reason": {"enum": [null, "unavailable_account"]},
+        "arm_status": {"$ref": "#/$defs/status"}, "reference_status": {"$ref": "#/$defs/status"}
+      },
+      "allOf": [{"if": {"properties": {"reason": {"const": null}}}, "then": {"properties": {"difference": {"type": "number"}, "arm_status": {"const": "completed"}, "reference_status": {"const": "completed"}}}, "else": {"properties": {"difference": {"type": "null"}}}}]
+    },
+    "rankPair": {
+      "type": "object", "additionalProperties": false,
+      "required": ["horizon", "window", "arm", "reference", "valid_dates", "mean_difference", "reason"],
+      "properties": {
+        "horizon": {"$ref": "#/$defs/horizon"}, "window": {"$ref": "#/$defs/window"}, "arm": {"$ref": "#/$defs/arm"},
+        "reference": {"enum": ["reversal", "momentum20"]}, "valid_dates": {"type": "integer", "minimum": 0, "maximum": 40},
+        "mean_difference": {"type": ["number", "null"], "minimum": -2, "maximum": 2},
+        "reason": {"enum": [null, "unavailable_equal_cohort_ic"]}
+      },
+      "allOf": [{"if": {"properties": {"valid_dates": {"const": 0}}}, "then": {"properties": {"mean_difference": {"type": "null"}, "reason": {"const": "unavailable_equal_cohort_ic"}}}, "else": {"properties": {"mean_difference": {"type": "number"}, "reason": {"const": null}}}}]
+    }
+  }
+}
