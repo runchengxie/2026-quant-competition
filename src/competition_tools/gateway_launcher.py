@@ -16,6 +16,8 @@ import sys
 import tomllib
 import zipfile
 
+from competition_tools.project_storage import project_root
+
 RELEASE_SHA256 = "ba8e95f61f3c7c252620baef41e550c6aab98f6034179156e11a9a1623fdd892"
 KEYS = set(
     "schema_version ibc_version gateway_version release_archive ibc_directory gateway_executable gateway_sha256 ini_path settings_directory log_directory configured_launcher activation_authorized timeout_seconds retry_limit".split()
@@ -322,7 +324,7 @@ def build_launch_spec(
             _inside(Path(config[key]), deployment)
         _inside(
             Path(config["log_directory"]),
-            roots["data_root"] / "2026-quant-competition/operations",
+            project_root(roots["data_root"], workspace.get("project_data_root")) / "operations",
         )
         for key in (
             "release_archive",

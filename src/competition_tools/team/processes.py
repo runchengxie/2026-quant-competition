@@ -13,6 +13,7 @@ def child_environment(config: TeamConfig) -> dict[str, str]:
     for name in ("PYTHONPATH", "PYTHONHOME"):
         environment.pop(name, None)
     environment["DATA_ROOT"] = str(config.data_root)
+    environment["GLOBAL_MARKET_RESEARCH_DATA_ROOT"] = str(config.storage_root)
     environment["MPLBACKEND"] = "Agg"
     environment["PYTHONUTF8"] = "1"
     return environment

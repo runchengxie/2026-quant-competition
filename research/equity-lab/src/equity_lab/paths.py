@@ -4,10 +4,13 @@ import os
 from pathlib import Path
 import tomllib
 
+from ._project_storage import project_root
+
 
 def load_data_root() -> Path:
     """Return this project's raw data directory, independent of its checkout."""
     data_root = os.environ.get("DATA_ROOT")
+    settings = {}
     if data_root is None:
         config_home = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config"))
         config_root = Path(os.environ.get("CONFIG_ROOT", config_home / "quant-competition"))
@@ -33,7 +36,7 @@ def load_data_root() -> Path:
     if not root.is_absolute():
         raise ValueError("data_root / DATA_ROOT must be an absolute path")
     # The permanent owner is fixed; a task worktree name must never select data.
-    return root / "2026-quant-competition" / "research" / "equity-lab"
+    return project_root(root, settings.get("project_data_root")) / "research" / "equity-lab"
 
 PROJECT_ROOT = load_data_root()
 ARTIFACTS_ROOT = PROJECT_ROOT / "artifacts"

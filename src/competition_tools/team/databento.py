@@ -26,8 +26,8 @@ def execute(
         if manifest_path is not None:
             raise ValueError("UNSUPPORTED_DATABENTO_OPTIONS")
         destination = safe_path(
-            config.data_root
-            / "2026-quant-competition/datasets"
+            config.storage_root
+            / "datasets"
             / spec["dataset_id"]
             / spec["version"]
         )

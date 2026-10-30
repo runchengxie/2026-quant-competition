@@ -2,7 +2,7 @@
 
 [English](artifact-retention.md) · [文档目录](../README.zh-CN.md)
 
-每项任务收尾时，在配置的 `DATA_ROOT/2026-quant-competition/retention/<review-date>/` 保存明确清单。清单留在私人数据目录。公共 Git 只保存本规则和复现说明，不保存私人产物、机器路径或策略参数。从明确提供的工作区配置或环境变量解析根目录；任务 worktree 使用所属仓库的永久数据目录。
+每项任务收尾时，在选定项目根目录的 `retention/<review-date>/` 保存明确清单。全新安装使用 `DATA_ROOT/global-market-research`，只有旧目录的安装在[完成有记录的迁移](data-root-migration.zh-CN.md)前继续使用旧目录。清单留在私人数据目录。公共 Git 只保存本规则和复现说明，不保存私人产物、机器路径或策略参数。从明确提供的工作区配置或环境变量解析根目录；任务 worktree 使用所属仓库的永久数据目录。
 
 ## 保留决定
 

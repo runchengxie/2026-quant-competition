@@ -9,6 +9,8 @@ from datetime import datetime, timezone
 from decimal import Decimal
 from pathlib import Path
 
+from ..project_storage import project_root, guarded_location
+
 from .databento_quality import inspect_rows
 from .databento_spec import (
     fingerprint,
@@ -79,17 +81,22 @@ def acquire(spec: dict, destination: Path, *, transport=None, as_of=None) -> dic
     workspace = tomllib.loads(
         safe_path(Path(workspace_file)).read_text(encoding="utf-8-sig")
     )
-    guard = safe_path(
-        Path(workspace["data_root"])
-        / "2026-quant-competition"
-        / "authorizations"
-        / "databento-us-2025-pilot.attempt.json"
-    )
+    owner = project_root(workspace["data_root"], workspace.get("project_data_root"))
+    relative_guard = "authorizations/databento-us-2025-pilot.attempt.json"
+    guard = safe_path(owner / relative_guard)
     guard.parent.mkdir(parents=True, exist_ok=True)
     if guard.exists():
         raise ValueError("PILOT_ATTEMPT_ALREADY_RESERVED")
     if destination.exists():
         raise ValueError("DATASET_VERSION_EXISTS")
+    params = request_parameters(spec)
+    identity = fingerprint(params)
+    try:
+        with guarded_location(owner, relative_guard):
+            write_json(guard, {"request_sha256": identity, "destination": str(destination),
+                               "state": "authorization_reserved"})
+    except FileExistsError:
+        raise ValueError("PILOT_ATTEMPT_ALREADY_RESERVED") from None
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.mkdir()
     binding = PathBinding(destination)
@@ -101,8 +108,6 @@ def acquire(spec: dict, destination: Path, *, transport=None, as_of=None) -> dic
     with checked_open(destination / ".owner", "x") as stream:
         stream.write(MANIFEST)
     write_json(destination / "spec.json", spec)
-    params = request_parameters(spec)
-    identity = fingerprint(params)
     now = as_of or datetime.now(timezone.utc)
     receipt = {
         "status": "blocked",
@@ -115,15 +120,7 @@ def acquire(spec: dict, destination: Path, *, transport=None, as_of=None) -> dic
         "cost": None,
     }
     try:
-        # Reserve one authorization even for an interrupted preflight. No resume.
-        write_json(
-            guard,
-            {
-                "request_sha256": identity,
-                "destination": str(destination),
-                "state": "authorization_reserved",
-            },
-        )
+        # Authorization was durably reserved before setup/preflight; no resume.
         metadata = {}
         for method in (
             "metadata.get_cost",

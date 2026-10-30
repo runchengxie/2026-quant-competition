@@ -8,6 +8,8 @@ from pathlib import Path
 import subprocess
 import sys
 
+from ._project_storage import relocated_path, guarded_location
+
 
 def digest(path):
     with Path(path).open("rb") as stream:
@@ -32,9 +34,9 @@ def source_digest():
 
 def claim_reservation(receipt, source, output, protocol, *, claim=True):
     receipt, source, output = (
-        Path(receipt).resolve(strict=True),
-        Path(source).resolve(strict=True),
-        Path(output).resolve(),
+        relocated_path(receipt).resolve(strict=True),
+        relocated_path(source).resolve(strict=True),
+        relocated_path(output),
     )
     data = json.loads(receipt.read_text(encoding="utf-8"))
     if set(data) != {"schema", "status", "identity", "owner_root", "output"}:
@@ -47,7 +49,7 @@ def claim_reservation(receipt, source, output, protocol, *, claim=True):
         ).hexdigest()
         + ".json"
     )
-    owner = Path(data["owner_root"]).resolve()
+    owner = relocated_path(data["owner_root"])
     if (
         data["schema"] != "competition.research_reservation.v1"
         or data["status"] != "reserved"
@@ -57,7 +59,7 @@ def claim_reservation(receipt, source, output, protocol, *, claim=True):
         or identity.get("lock_sha256") != lock_digest()
         or receipt.parent != owner / "research-reservations"
         or receipt.name != name
-        or Path(data["output"]).resolve() != output
+        or relocated_path(data["output"]) != output
         or output.exists()
         or output == owner
         or not output.is_relative_to(owner)
@@ -70,8 +72,10 @@ def claim_reservation(receipt, source, output, protocol, *, claim=True):
     ):
         raise ValueError("Input, code, output or reservation state mismatch")
     if claim:
-        with Path(str(receipt) + ".started").open("x", encoding="utf-8") as stream:
-            stream.write(json.dumps({"status": "started", "pid": os.getpid()}))
+        relative = "research-reservations/" + receipt.name + ".started"
+        with guarded_location(owner, relative):
+            with Path(str(receipt) + ".started").open("x", encoding="utf-8") as stream:
+                stream.write(json.dumps({"status": "started", "pid": os.getpid()}))
     return data
 
 

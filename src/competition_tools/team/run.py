@@ -36,7 +36,7 @@ def run_experiment(
         return result(["ENVIRONMENT_UNAVAILABLE"])
     try:
         log_root = validate_external(
-            config.data_root / "2026-quant-competition/team-runs"
+            config.storage_root / "team-runs"
         )
         log_root.mkdir(parents=True, exist_ok=True)
         log = log_root / f"{uuid.uuid4().hex}.log"

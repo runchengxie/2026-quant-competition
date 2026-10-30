@@ -2,7 +2,7 @@
 
 [简体中文](artifact-retention.zh-CN.md) · [Documentation](../README.md)
 
-Close each task with an explicit inventory under configured `DATA_ROOT/2026-quant-competition/retention/<review-date>/`. Keep the inventory private. Public Git contains this policy and reproduction instructions, never private artifacts, machine paths or strategy parameters. Resolve workspace roots from the explicitly supplied workspace configuration or environment; a task worktree uses the owning repository's permanent data root.
+Close each task with an explicit inventory under the selected project root's `retention/<review-date>/`. Fresh installations use `DATA_ROOT/global-market-research`; legacy-only installations retain their old root until [recorded migration](data-root-migration.md). Keep the inventory private. Public Git contains this policy and reproduction instructions, never private artifacts, machine paths or strategy parameters. Resolve workspace roots from the explicitly supplied workspace configuration or environment; a task worktree uses the owning repository's permanent data root.
 
 ## Retention decisions
 

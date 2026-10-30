@@ -44,6 +44,7 @@ def main(argv: list[str] | None = None) -> int:
     init.add_argument("--config", type=Path, required=True)
     init.add_argument("--data-root", type=Path, required=True)
     init.add_argument("--environment-root", type=Path)
+    init.add_argument("--project-data-root", type=Path)
     install = commands.add_parser("setup", help="Install a selected locked profile")
     install.add_argument("--config", type=Path, required=True)
     install.add_argument(
@@ -115,7 +116,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0 if not value["issue_codes"] else 2
     try:
         if args.action == "init":
-            init_config(args.config, args.data_root, args.environment_root)
+            init_config(args.config, args.data_root, args.environment_root, args.project_data_root)
             value = envelope(args.action)
         else:
             config = load_config(args.config)
