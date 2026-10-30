@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Daily research evidence-gap inventory",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "dataset_id", "version", "market", "manifest_sha256", "receipt_sha256", "payload_files", "payload_bytes", "checks", "status", "accepted_research", "execution_authorized"],
+  "properties": {
+    "schema": {"const": "competition.daily_research_evidence_gap.v1"},
+    "dataset_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"},
+    "version": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$"},
+    "market": {"enum": ["US", "HK"]},
+    "manifest_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "receipt_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "payload_files": {"type": "integer", "minimum": 1},
+    "payload_bytes": {"type": "integer", "minimum": 0},
+    "checks": {
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
+      "prefixItems": [
+        {"const": {"code": "RETAINED_BYTES_VERIFIED", "status": "passed"}},
+        {"const": {"code": "POINT_IN_TIME_UNIVERSE_UNVERIFIED", "status": "blocked"}},
+        {"const": {"code": "HISTORICAL_SECURITY_IDENTITY_UNVERIFIED", "status": "blocked"}},
+        {"const": {"code": "CORPORATE_ACTION_COVERAGE_UNVERIFIED", "status": "blocked"}},
+        {"const": {"code": "HISTORICAL_AVAILABILITY_UNVERIFIED", "status": "blocked"}},
+        {"const": {"code": "OWNER_PROVENANCE_UNVERIFIED", "status": "blocked"}},
+        {"const": {"code": "HOLDOUT_GOVERNANCE_UNVERIFIED", "status": "blocked"}}
+      ],
+      "items": false
+    },
+    "status": {"const": "blocked"},
+    "accepted_research": {"const": false},
+    "execution_authorized": {"const": false}
+  }
+}

@@ -6,6 +6,31 @@ Daily data preparation is available without a quant-series checkout. The hourly 
 
 The competition repository owns these offline preparation tools. Root orchestration uses the standard library. Daily crypto evaluation and hourly factor diagnostics run in the separate crypto environment; execution packages do not import it.
 
+## Audit retained daily research evidence
+
+For an existing IBKR US/HK daily v2 snapshot, verify its retained payload and inventory the remaining research requirements without acquiring data:
+
+```sh
+python -m competition_tools.datasets.research_evidence --manifest /absolute/dataset/manifest.json --expected-sha256 MANIFEST_SHA256 --output /absolute/new-report.json
+```
+
+Supply the exact lowercase SHA256 of the manifest selected for review. Use drive-qualified absolute paths on Windows. The output parent must already exist outside source repositories and outside the input dataset; the output file must be new. Existing reports are never replaced, including when another writer creates the file during verification.
+
+The command supports the current `ibkr_daily` producer only, with split-adjusted prices and a fixed-current universe. It reuses the full payload/receipt verifier, validates producer metadata, and binds exact manifest and receipt bytes. It does not read connection configuration. Databento, crypto and DEX manifests are not supported by this command.
+
+Exit 0 means the inventory was written successfully; its research status is always `blocked`. Exit 2 means invalid input, failed integrity checks or failed publication; errors use stable codes without private paths. The [closed report schema](../../schemas/research/daily-research-evidence-gap.v1.schema.json) contains hashes, dataset identity, file/byte counts and seven fixed checks. It contains no prices, symbols or source paths. `RETAINED_BYTES_VERIFIED` passes; the six requirements below remain unverified, regardless of caller-supplied trust assertions.
+
+| Requirement | Evidence needed before a future owner-specific adapter can validate it |
+| --- | --- |
+| Point-in-time universe | Dated membership, inclusion/exclusion rules and delisted coverage for the intended population |
+| Historical security identity | Stable identifiers and effective-dated symbol/type mappings |
+| Corporate actions | Complete dated actions and explicit price/return adjustment coverage |
+| Historical availability | Independently evidenced information-availability times and causal usage rules |
+| Owner provenance | A trusted publication protocol binding the owner, immutable asset/version and consumed bytes |
+| Holdout governance | A separate candidate protocol binding frozen code/configuration, sample, access and prior exposure |
+
+These are unmet requirements of this producer, not proof that all possible external evidence has been searched. A dataset-only report cannot assess a candidate's holdout status. Hash verification detects observed changes, not provider authenticity or an atomic snapshot. This report neither promotes research nor authorizes execution. See [research acceptance](research-acceptance.md).
+
 <a id="dexpaprika-hourly-pilot"></a>
 ## DexPaprika hourly pilot
 
