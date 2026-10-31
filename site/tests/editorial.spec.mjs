@@ -80,7 +80,7 @@ for(const locale of ['en','zh-CN'])test(`${locale}: editorial topic pages retain
    await expect(page.locator('[data-factor-score],[data-dex-metric]')).toHaveCount(0);
    expect(JSON.parse(await page.locator('[data-dex-facts]').getAttribute('data-dex-facts')).status).toBe('readiness_only');
   }
-  if(route==='docs/')await expect(page.locator('main [data-doc-slug]')).toHaveCount(16);
+  if(route==='docs/')await expect(page.locator('main [data-doc-slug]')).toHaveCount(17);
   for(const theme of ['light','dark']){
    await page.locator('#theme-preference').selectOption(theme);
    await expect(page.locator('body')).toHaveCSS('background-color',theme==='light'?'rgb(246, 244, 239)':'rgb(23, 27, 32)');

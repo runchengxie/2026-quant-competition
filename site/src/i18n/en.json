@@ -268,6 +268,7 @@
     "canonical": "This page renders the documentation maintained in the repository.",
     "source": "View source",
     "titles": {
+      "research-model-catalog": "Models, parameters and timing",
       "architecture": "Architecture",
       "quickstart": "Team quickstart",
       "datasets": "Data and snapshots",
@@ -285,6 +286,7 @@
       "cnn-chart-research": "How a CNN reads price charts"
     },
     "summaries": {
+      "research-model-catalog": "Current model grids, evidence scope and blocked future intent.",
       "architecture": "One repository, workflow modules and a separate reviewed execution handoff.",
       "quickstart": "Install, configure and run the independent offline packages.",
       "datasets": "Daily acquisition, immutable receipts and input validation.",

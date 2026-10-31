@@ -51,7 +51,7 @@ test("curated documentation is integrated and language switches retain the artic
   await page.goto('/global-market-research/#research-progress-title');
   await expect(page).toHaveURL('/global-market-research/strategies/#research-progress-title');
   await expect(page.locator('#research-progress-title')).toBeVisible();
-  for(const slug of ["architecture","quickstart","datasets","study","strategies","strategy-controls","execution-evidence","observation-registry","strategy-robustness","data-refresh","native-process-diagnostics","incremental-research","strategy-comparison","cnn-chart-research"]){
+  for(const slug of ["architecture","quickstart","datasets","study","strategies","strategy-controls","execution-evidence","observation-registry","strategy-robustness","data-refresh","native-process-diagnostics","incremental-research","strategy-comparison","cnn-chart-research","research-model-catalog"]){
     await page.goto(`/global-market-research/docs/${slug}/`);
     await expect(page.locator("main article h1").first()).toBeVisible();
     await page.getByLabel("Appearance").selectOption("dark");
@@ -63,7 +63,7 @@ test("curated documentation is integrated and language switches retain the artic
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   }
   await page.goto("/global-market-research/docs/");
-  await expect(page.locator("main [data-doc-slug]")).toHaveCount(16);
+  await expect(page.locator("main [data-doc-slug]")).toHaveCount(17);
   const response=await page.goto("/global-market-research/docs/internal-secret/");
   expect(response.status()).toBe(404);
 });

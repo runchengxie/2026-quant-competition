@@ -3,6 +3,8 @@ import en from '../i18n/en.json';
 import zh from '../i18n/zh-CN.json';
 import marketEn from '../i18n/market-topics-en.json';
 import marketZh from '../i18n/market-topics-zh-CN.json';
+import progressEn from '../i18n/progress-en.json';
+import progressZh from '../i18n/progress-zh-CN.json';
 const locale=Astro.props.locale==='zh-CN'?'zh-CN':'en';
 const t=(locale==='en'?en:zh).pages;
 const prefix=`/global-market-research/${locale==='en'?'':'zh-CN/'}`;
@@ -11,5 +13,6 @@ const active=Astro.props.active;
 <nav class="project-nav" aria-label={t.navigation}>
  <a class="wordmark" href={prefix}>{(locale==='en'?en:zh).meta.title}</a>
  <div>{[['markets','markets/'],['docs','docs/']].map(([id,path])=><a data-site-nav={id} href={`${prefix}${path}`} aria-current={active===id?'page':undefined}>{id==='markets'?(locale==='en'?marketEn:marketZh).navigation:t.labels[id as keyof typeof t.labels]}</a>)}</div>
+ <a data-site-nav="progress" href={`${prefix}research/progress/`} aria-current={active==='progress'?'page':undefined}>{(locale==='en'?progressEn:progressZh).title}</a>
  <a class="repo-link" href="https://github.com/runchengxie/global-market-research">{t.source} ↗</a>
 </nav>
