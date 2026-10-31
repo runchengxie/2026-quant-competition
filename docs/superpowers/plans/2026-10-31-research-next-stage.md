@@ -28,10 +28,10 @@
 
 ### A: governance, current-model inventory and public progress
 
-- [ ] Failing tests for six-blocker worklist, intent immutability/future boundary, cost/Paper evidence gates and closed public statuses.
-- [ ] Implement root stdlib templates/validation/intent registration using distinct modules; preserve existing acceptance gates.
-- [ ] Generate private worklist/intake/blocked intent; bilingual accurate model/parameter/rebalance documentation.
-- [ ] Implement reviewed public research progress entry with current/blocked/planned separation and mobile/no-JS checks.
+- [x] Failing tests for six-blocker worklist, intent immutability/future boundary, cost/Paper evidence gates and closed public statuses.
+- [x] Implement root stdlib templates/validation/intent registration using distinct modules; preserve existing acceptance gates.
+- [x] Generate private worklist/intake/blocked intent; bilingual accurate model/parameter/rebalance documentation.
+- [x] Implement reviewed public research progress entry with current/blocked/planned separation and mobile/no-JS checks.
 - [ ] Review, test, commit and hand off PR integration.
 
 ### B: factor diagnostics and uncertainty on saved outputs

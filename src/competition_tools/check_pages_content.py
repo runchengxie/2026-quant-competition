@@ -76,10 +76,13 @@ class _PageMetadata(HTMLParser):
         self.low_turnover_facts: list[tuple[str | None, str | None, str | None]] = []
         self.progress_facts: list[str | None] = []
         self.tree_facts: list[tuple[str | None, str | None]] = []
+        self.next_stage_facts: list[str | None] = []
         self.ids: set[str] = set()
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         attributes = dict(attrs)
+        if "data-next-stage-facts" in attributes:
+            self.next_stage_facts.append(attributes.get("data-next-stage-facts"))
         if "data-tree-facts" in attributes:
             self.tree_facts.append(
                 (attributes.get("data-tree-view"), attributes.get("data-tree-facts"))
@@ -197,6 +200,10 @@ def _allowed_source(relative_path: PurePosixPath) -> bool:
         "src/data/strategy-comparison.v1.json",
         "src/data/low-turnover.v1.json",
         "src/data/tree-study.v1.json",
+        "src/data/research-progress.v1.json",
+        "src/i18n/progress-en.json",
+        "src/i18n/progress-zh-CN.json",
+        "tests/research-progress.spec.mjs",
         "src/i18n/tree-study-en.json",
         "src/i18n/tree-study-zh-CN.json",
         "src/scripts/tree-study-state.mjs",
@@ -737,6 +744,24 @@ def check_site(source_dir: Path, built_dir: Path) -> list[str]:
                     raise ValueError("Changed comparison facts")
         except (OSError, ValueError, TypeError, KeyError, AttributeError):
             errors.append("invalid public comparison facts or output")
+    next_status_path = source_dir / "src/data/research-progress.v1.json"
+    if next_status_path.exists():
+        try:
+            from competition_tools.research_governance import validate_public_status, digest
+            from competition_tools.research_acceptance import read_json
+            next_status = validate_public_status(read_json(next_status_path))
+            if digest(next_status) != "7b9bcef9313152bd14ef1af24716eaa1109904be93bbd2d891df45dd1c24854e":
+                raise ValueError("UNREVIEWED_STATUS")
+            for route in ("research/progress/index.html", "zh-CN/research/progress/index.html"):
+                if route not in output_paths:
+                    raise ValueError("MISSING_PROGRESS_PAGE")
+                page = _PageMetadata()
+                page.feed((built_dir / route).read_text(encoding="utf-8"))
+                rows = page.next_stage_facts
+                if len(rows) != 1 or json.loads(rows[0]) != next_status:
+                    raise ValueError("MISSING_PROGRESS_PROVENANCE")
+        except (OSError, ValueError, TypeError):
+            errors.append("invalid public research-progress facts or output")
     tree_path = source_dir / "src/data/tree-study.v1.json"
     if tree_path.is_file():
         from .evaluation.tree_study_publication import parse_reviewed as parse_tree
@@ -850,6 +875,9 @@ def _validate_documentation(
             "incremental-research",
             "strategy-comparison",
             "cnn-chart-research",
+            *(("research-model-catalog",) if any(
+                path.endswith("docs/research-model-catalog/index.html") for path in output_paths
+            ) else ()),
         )
     }
     if "strategies/index.html" in output_paths:

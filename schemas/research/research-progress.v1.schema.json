@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "competition.research_progress.v1",
+  "title": "Reviewed research progress aggregate",
+  "const": {
+    "accepted_observations": 0,
+    "accepted_research": false,
+    "as_of": "2026-10-31",
+    "diagnostics_status": "planned_post_hoc",
+    "external_blockers": [
+      "point_in_time_universe",
+      "security_identity",
+      "corporate_actions",
+      "availability",
+      "owner_provenance",
+      "holdout_governance"
+    ],
+    "forest_status": "planned_not_yet_run",
+    "future_authorized_fit_cap": 0,
+    "future_status": "frozen_intent_blocked",
+    "retrospective_model_blocks": 16,
+    "risk_filter_status": "design_documented_not_trained",
+    "schema": "competition.research_progress.v1",
+    "source_facts": {
+      "future_intent_sha256": "f796aaa4ae95b1298368dd4e804c7e4740a8b4932e047662c23e645aad40a6f3",
+      "input_sha256": "08244582811c67fa2d4263c9b2a7515446f1b69efa4b00ad2b00c8aa155936e6",
+      "tree_study_canonical_sha256": "cd5bff08818a3eca86d68a21b2a0bb8c67330ef6227792c87e0788f291631c28"
+    }
+  }
+}

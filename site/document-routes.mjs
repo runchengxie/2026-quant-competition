@@ -1,5 +1,6 @@
 export const documentRoutes = Object.entries({
   architecture: "docs/architecture",
+  "research-model-catalog": "docs/research/research-model-catalog",
   quickstart: "docs/operations/team-quickstart",
   datasets: "docs/research/datasets",
   study: "docs/research/real-data-study",
