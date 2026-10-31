@@ -1,0 +1,310 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "binding_sha256",
+    "schema",
+    "status",
+    "history",
+    "formal_performance_ready",
+    "scientific_requirements",
+    "estimand",
+    "family_size",
+    "correction_scope",
+    "quintiles",
+    "original_5_20_labels_verified",
+    "hypotheses"
+  ],
+  "properties": {
+    "binding_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "schema": {
+      "const": "equity.posthoc_diagnostics.v1"
+    },
+    "status": {
+      "const": "completed"
+    },
+    "history": {
+      "const": "POSTHOC_EXPOSED_HISTORY"
+    },
+    "formal_performance_ready": {
+      "const": false
+    },
+    "scientific_requirements": {
+      "const": "all_six_remain_blocked"
+    },
+    "estimand": {
+      "const": "equal_session_mean_cross_sectional_rank_ic"
+    },
+    "family_size": {
+      "const": 64
+    },
+    "correction_scope": {
+      "const": "declared_64_only_not_adaptive_search"
+    },
+    "quintiles": {
+      "const": "descriptive_forward_raw_returns_not_investable_pnl_outside_family"
+    },
+    "original_5_20_labels_verified": {
+      "const": true
+    },
+    "hypotheses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "block",
+          "horizon",
+          "daily",
+          "valid_ic_sessions",
+          "mean_daily_ic",
+          "uncertainty",
+          "holm_p"
+        ],
+        "properties": {
+          "block": {
+            "type": "string"
+          },
+          "horizon": {
+            "enum": [
+              1,
+              5,
+              10,
+              20
+            ]
+          },
+          "daily": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "date",
+                "cohort",
+                "finite_scores",
+                "valid_labels",
+                "coverage",
+                "edges",
+                "quintile_reason",
+                "quintile_counts",
+                "quintile_returns",
+                "top_minus_bottom",
+                "rank_ic",
+                "ic_reason"
+              ],
+              "properties": {
+                "date": {
+                  "type": "string"
+                },
+                "cohort": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "finite_scores": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "valid_labels": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "coverage": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "edges": {
+                  "anyOf": [
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      },
+                      "minItems": 4,
+                      "maxItems": 4
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "quintile_reason": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "quintile_counts": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "minItems": 5,
+                  "maxItems": 5
+                },
+                "quintile_returns": {
+                  "type": "array",
+                  "items": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "minItems": 5,
+                  "maxItems": 5
+                },
+                "top_minus_bottom": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "rank_ic": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "ic_reason": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            }
+          },
+          "valid_ic_sessions": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "mean_daily_ic": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "uncertainty": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "n",
+              "lag",
+              "block_length",
+              "draws",
+              "seed",
+              "status",
+              "reason",
+              "mean",
+              "se",
+              "ci95",
+              "p",
+              "bootstrap95"
+            ],
+            "properties": {
+              "n": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "lag": {
+                "enum": [
+                  0,
+                  4,
+                  9,
+                  19
+                ]
+              },
+              "block_length": {
+                "enum": [
+                  5,
+                  10,
+                  20
+                ]
+              },
+              "draws": {
+                "const": 2000
+              },
+              "seed": {
+                "const": 20261031
+              },
+              "status": {
+                "enum": [
+                  "available",
+                  "unavailable"
+                ]
+              },
+              "reason": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "mean": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "se": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "ci95": {
+                "anyOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "number"
+                    },
+                    "minItems": 2,
+                    "maxItems": 2
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "p": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "bootstrap95": {
+                "anyOf": [
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "number"
+                    },
+                    "minItems": 2,
+                    "maxItems": 2
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          },
+          "holm_p": {
+            "type": [
+              "number",
+              "null"
+            ]
+          }
+        }
+      },
+      "minItems": 64,
+      "maxItems": 64
+    }
+  }
+}
