@@ -1,0 +1,21 @@
+{
+  "title": "Research progress",
+  "description": "Retained studies, missing evidence and bounded experiments.",
+  "lead": "Research remains exploratory. Engineering checks do not establish tradable returns.",
+  "retained": "Completed retrospective studies",
+  "retainedText": "Three learned families (Ridge, Elastic Net, shallow boosting) × two horizons × two exposed windows form 12 learned blocks; four momentum baseline blocks bring the total to 16 score blocks. Added complexity has not established robust improvement over simple references. Negative and blocked results remain visible. Parameter settings, fit starts and simulated account configurations are different counts; 96 configurations are not 96 independent strategies.",
+  "blocked": "Six external evidence blockers",
+  "blockers": ["Point-in-time universe", "Historical security identity", "Complete corporate actions", "Historical availability", "Trusted owner provenance", "Independent holdout governance"],
+  "blockedText": "The scope is the broad monthly pool of up to 500 candidates. A separate fixed ten-stock experiment cannot satisfy these requirements. No trusted issuer adapter is available.",
+  "future": "Frozen future intent · blocked",
+  "futureText": "First eligible XNYS opening after freeze, no earlier than 2 November 2026; 120 evaluation sessions plus a 20-session label tail. Observation import and training are disabled. Accepted observations: 0. Authorized future fits: 0. Unexposed status is not certified.",
+  "next": "Planned work",
+  "nextText": "Two new model families, RF and Extra Trees: two settings each, at most 24 new fit starts; not yet run in this snapshot. Saved-score diagnostics and uncertainty are planned post hoc. The fixed-threshold reversal risk filter has a documented design and has not been trained or evaluated.",
+  "execution": "Execution evidence · blocked",
+  "executionText": "Real fee, spread, liquidity and supervised Paper lifecycle materials are missing. Synthetic format checks do not establish execution readiness. No broker operations are authorized by this page.",
+  "engine": "Optional engine assessment",
+  "engineText": "The external engine is pinned for an optional synthetic CLI comparison. Integer quantities and missing corporate actions differ from fractional-share research. Local Rust is unavailable; no real binary checks are claimed.",
+  "catalog": "Models, parameters and timing",
+  "provenance": "Reviewed status provenance",
+  "provenanceText": "Closed status facts are separately reviewed. Hashes bind the retained aggregate and input; they do not authenticate an owner. Earlier public snapshots remain unchanged."
+}

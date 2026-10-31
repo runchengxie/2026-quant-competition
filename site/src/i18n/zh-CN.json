@@ -268,6 +268,7 @@
     "canonical": "本页直接读取仓库中的说明文档。",
     "source": "查看源文档",
     "titles": {
+      "research-model-catalog": "模型、参数与更新节奏",
       "architecture": "项目架构",
       "quickstart": "队员快速上手",
       "datasets": "数据与快照",
@@ -285,6 +286,7 @@
       "cnn-chart-research": "让 CNN 看 K 线图"
     },
     "summaries": {
+      "research-model-catalog": "当前模型参数、证据范围与受阻的未来研究意向。",
       "architecture": "一个仓库按工作流划分模块，执行通过单独审查的目标文件接入。",
       "quickstart": "安装、配置并运行独立离线研究包。",
       "datasets": "日线采集、不可变回执与输入验证。",

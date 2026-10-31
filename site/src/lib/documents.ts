@@ -1,4 +1,6 @@
 import { Content as robustnessEn } from "../../../docs/research/strategy-robustness.md";
+import { Content as modelCatalogEn } from "../../../docs/research/research-model-catalog.md";
+import { Content as modelCatalogZh } from "../../../docs/research/research-model-catalog.zh-CN.md";
 import { Content as predictiveEn } from "../../../docs/research/equity-predictive.md";
 import { Content as predictiveZh } from "../../../docs/research/equity-predictive.zh-CN.md";
 import { Content as incrementalEn } from "../../../docs/research/incremental-research.md";
@@ -31,6 +33,8 @@ import { Content as cnnEn } from "../../../docs/research/cnn-chart-research.md";
 import { Content as cnnZh } from "../../../docs/research/cnn-chart-research.zh-CN.md";
 
 const content={
+  "research-model-catalog.en":modelCatalogEn,
+  "research-model-catalog.zh-CN":modelCatalogZh,
   "cnn-chart-research.en":cnnEn,
   "cnn-chart-research.zh-CN":cnnZh,
   "strategy-comparison.en":comparisonEn,
