@@ -1,0 +1,246 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "rules",
+    "source",
+    "parents",
+    "owner",
+    "output",
+    "evidence_sha256",
+    "family",
+    "binding_sha256"
+  ],
+  "properties": {
+    "schema": {
+      "const": "competition.posthoc_diagnostics_protocol.v1"
+    },
+    "rules": {
+      "const": {
+        "history": "POSTHOC_EXPOSED_HISTORY",
+        "horizons": [
+          1,
+          5,
+          10,
+          20
+        ],
+        "family_size": 64,
+        "statistic": "one_daily_cross_sectional_rank_ic_equal_session_weight",
+        "label_interval": "t_plus_1_open_to_t_plus_h_close_future_only_validity_actions_identity",
+        "quintiles": "linear_all_finite_decision_scores_before_label_mask_first_upper_edge_ge",
+        "minimum_distinct_scores": 5,
+        "strict_increasing_edges": true,
+        "minimum_candidates": 30,
+        "hac": "bartlett_lag_h_minus_1_n_over_n_minus_1",
+        "ci": "normal_95_diagnostic",
+        "p": "two_sided_erfc_abs_mean_over_se_sqrt2",
+        "bootstrap": "noncircular_moving_blocks_ceil_n_over_length_then_truncate",
+        "block_length": "max_5_h",
+        "draws": 2000,
+        "seed": 20261031,
+        "rng": "python_random_Random_randrange_reset_per_hypothesis",
+        "eligibility": "complete_contiguous_n_ge_30_and_4h_and_4block_nonconstant",
+        "multiplicity": "holm_complete_64_unavailable_padded_1_output_unavailable",
+        "adaptive_search_correction": false,
+        "formal_performance_ready": false,
+        "quintile_long_short_in_family": false,
+        "fit_authorization": 0
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "identity",
+        "locks",
+        "original_public"
+      ],
+      "properties": {
+        "identity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "commit",
+            "source_root",
+            "source_sha256"
+          ],
+          "properties": {
+            "commit": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{40}$"
+            },
+            "source_root": {
+              "type": "string"
+            },
+            "source_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        },
+        "locks": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "uv.lock",
+            "research/equity-lab/uv.lock"
+          ],
+          "properties": {
+            "uv.lock": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "research/equity-lab/uv.lock": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        },
+        "original_public": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "semantic_sha256",
+            "bytes_sha256"
+          ],
+          "properties": {
+            "semantic_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "bytes_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        }
+      }
+    },
+    "parents": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tree_protocol",
+        "tree_binding_sha256",
+        "tree_verification_sha256",
+        "input_sha256",
+        "parent_result_sha256",
+        "parent_records",
+        "tree_records"
+      ],
+      "properties": {
+        "tree_protocol": {
+          "type": "string"
+        },
+        "tree_binding_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "tree_verification_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "input_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "parent_result_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "parent_records": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "bytes",
+              "sha256"
+            ],
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "bytes": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            }
+          }
+        },
+        "tree_records": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "bytes",
+              "sha256"
+            ],
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "bytes": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            }
+          }
+        }
+      }
+    },
+    "owner": {
+      "type": "string"
+    },
+    "output": {
+      "type": "string"
+    },
+    "evidence_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "family": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "block",
+          "horizon"
+        ],
+        "properties": {
+          "block": {
+            "type": "string"
+          },
+          "horizon": {
+            "enum": [
+              1,
+              5,
+              10,
+              20
+            ]
+          }
+        }
+      },
+      "minItems": 64,
+      "maxItems": 64
+    },
+    "binding_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+}

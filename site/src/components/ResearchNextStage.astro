@@ -1,0 +1,25 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import SiteNavigation from './SiteNavigation.astro';
+import en from '../i18n/progress-en.json';
+import zh from '../i18n/progress-zh-CN.json';
+import status from '../data/research-progress.v1.json';
+const locale=Astro.props.locale==='zh-CN'?'zh-CN':'en';
+const t=locale==='en'?en:zh;
+const prefix=`/global-market-research/${locale==='en'?'':'zh-CN/'}`;
+---
+<SiteLayout title={t.title} description={t.description} locale={locale} localePath="research/progress/">
+  <SiteNavigation locale={locale} active="progress" />
+  <main class="progress-page" data-next-stage-facts={JSON.stringify(status)}>
+    <header><p>{status.as_of}</p><h1>{t.title}</h1><p>{t.lead}</p></header>
+    <section><h2>{t.retained}</h2><p>{t.retainedText}</p></section>
+    <section><h2>{t.blocked}</h2><p>{t.blockedText}</p><ul>{t.blockers.map(item=><li>{item}</li>)}</ul></section>
+    <section><h2>{t.future}</h2><p>{t.futureText}</p></section>
+    <section><h2>{t.next}</h2><p>{t.nextText}</p></section>
+    <section><h2>{t.execution}</h2><p>{t.executionText}</p></section>
+    <section><h2>{t.engine}</h2><p>{t.engineText}</p></section>
+    <p><a href={`${prefix}docs/research-model-catalog/`}>{t.catalog}</a></p>
+    <details><summary>{t.provenance}</summary><p>{t.provenanceText}</p><dl>{Object.entries(status.source_facts).map(([key,value])=><><dt>{key}</dt><dd><code>{value}</code></dd></>)}</dl></details>
+  </main>
+</SiteLayout>
+<style>.progress-page{max-width:54rem;margin:2rem auto;padding:0 1.25rem}.progress-page p,.progress-page li{line-height:1.75}.progress-page section{margin:2rem 0}.progress-page code{overflow-wrap:anywhere}.progress-page dd{margin:.5rem 0 1rem}.progress-page h1{font-size:clamp(2rem,6vw,3.5rem)}</style>
