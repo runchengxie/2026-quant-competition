@@ -747,12 +747,22 @@ def check_site(source_dir: Path, built_dir: Path) -> list[str]:
     next_status_path = source_dir / "src/data/research-progress.v1.json"
     if next_status_path.exists():
         try:
-            from competition_tools.research_governance import validate_public_status, digest
+            from competition_tools.research_governance import (
+                validate_public_status,
+                digest,
+            )
             from competition_tools.research_acceptance import read_json
+
             next_status = validate_public_status(read_json(next_status_path))
-            if digest(next_status) != "7b9bcef9313152bd14ef1af24716eaa1109904be93bbd2d891df45dd1c24854e":
+            if (
+                digest(next_status)
+                != "7b9bcef9313152bd14ef1af24716eaa1109904be93bbd2d891df45dd1c24854e"
+            ):
                 raise ValueError("UNREVIEWED_STATUS")
-            for route in ("research/progress/index.html", "zh-CN/research/progress/index.html"):
+            for route in (
+                "research/progress/index.html",
+                "zh-CN/research/progress/index.html",
+            ):
                 if route not in output_paths:
                     raise ValueError("MISSING_PROGRESS_PAGE")
                 page = _PageMetadata()
@@ -875,9 +885,14 @@ def _validate_documentation(
             "incremental-research",
             "strategy-comparison",
             "cnn-chart-research",
-            *(("research-model-catalog",) if any(
-                path.endswith("docs/research-model-catalog/index.html") for path in output_paths
-            ) else ()),
+            *(
+                ("research-model-catalog",)
+                if any(
+                    path.endswith("docs/research-model-catalog/index.html")
+                    for path in output_paths
+                )
+                else ()
+            ),
         )
     }
     if "strategies/index.html" in output_paths:
