@@ -1,0 +1,224 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/research/low-turnover-forest.v1.schema.json",
+  "title": "Private independently verified retrospective forest study",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "protocol",
+    "binding_sha256",
+    "retrospective",
+    "formal_performance_ready",
+    "scientific_requirements",
+    "reused_requested_accounts",
+    "new_requested_accounts",
+    "fit_attempts",
+    "completed_new_accounts",
+    "blocked_new_accounts",
+    "uncertainty",
+    "paired_returns",
+    "combined_requested_accounts"
+  ],
+  "properties": {
+    "schema": {
+      "const": "competition.low_turnover_forest_verified.v1"
+    },
+    "protocol": {
+      "const": "equity.low_turnover_forest.20261031.v1"
+    },
+    "binding_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "retrospective": {
+      "const": true
+    },
+    "formal_performance_ready": {
+      "const": false
+    },
+    "scientific_requirements": {
+      "const": "all_six_remain_blocked"
+    },
+    "reused_requested_accounts": {
+      "const": 264
+    },
+    "new_requested_accounts": {
+      "const": 96
+    },
+    "fit_attempts": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 24
+    },
+    "completed_new_accounts": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 96
+    },
+    "blocked_new_accounts": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 96
+    },
+    "uncertainty": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "reason"
+      ],
+      "properties": {
+        "status": {
+          "const": "unavailable"
+        },
+        "reason": {
+          "const": "uncertainty_tooling_not_validated"
+        }
+      }
+    },
+    "combined_requested_accounts": {
+      "const": 360
+    },
+    "paired_returns": {
+      "type": "array",
+      "minItems": 576,
+      "maxItems": 576,
+      "items": {
+        "$ref": "#/$defs/returnPair"
+      }
+    }
+  },
+  "$defs": {
+    "horizon": {
+      "enum": [
+        5,
+        20
+      ]
+    },
+    "window": {
+      "enum": [
+        "2026-05-28",
+        "2026-07-27"
+      ]
+    },
+    "arm": {
+      "enum": [
+        "random_forest",
+        "extra_trees"
+      ]
+    },
+    "status": {
+      "enum": [
+        "completed",
+        "blocked"
+      ]
+    },
+    "returnPair": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "horizon",
+        "window",
+        "arm",
+        "reference",
+        "buffer",
+        "fee_bps",
+        "delay",
+        "difference",
+        "reason",
+        "arm_status",
+        "reference_status"
+      ],
+      "properties": {
+        "horizon": {
+          "$ref": "#/$defs/horizon"
+        },
+        "window": {
+          "$ref": "#/$defs/window"
+        },
+        "arm": {
+          "$ref": "#/$defs/arm"
+        },
+        "reference": {
+          "enum": [
+            "equal_weight",
+            "reversal",
+            "momentum20",
+            "ridge",
+            "elastic_net",
+            "shallow_tree"
+          ]
+        },
+        "buffer": {
+          "enum": [
+            0,
+            20
+          ]
+        },
+        "fee_bps": {
+          "enum": [
+            0,
+            20,
+            40
+          ]
+        },
+        "delay": {
+          "enum": [
+            0,
+            1
+          ]
+        },
+        "difference": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "reason": {
+          "enum": [
+            null,
+            "unavailable_account"
+          ]
+        },
+        "arm_status": {
+          "$ref": "#/$defs/status"
+        },
+        "reference_status": {
+          "$ref": "#/$defs/status"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "reason": {
+                "const": null
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "difference": {
+                "type": "number"
+              },
+              "arm_status": {
+                "const": "completed"
+              },
+              "reference_status": {
+                "const": "completed"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "difference": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
